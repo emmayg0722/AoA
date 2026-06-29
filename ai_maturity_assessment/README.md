@@ -16,6 +16,23 @@ A structured, interactive assessment tool for evaluating enterprise AI maturity 
 
 ## Quick Start / 快速开始
 
+### Web App (Recommended) / 网页应用（推荐）
+
+```bash
+cd ai_maturity_assessment
+pip install -r requirements.txt
+streamlit run app.py
+```
+
+Open `http://localhost:8501` in your browser. The web app provides:
+- Interactive questionnaire with progress tracking
+- Real-time scoring and visualization
+- Downloadable Markdown report and JSON data
+
+**Deploy to Streamlit Cloud**: Fork this repo, go to [share.streamlit.io](https://share.streamlit.io), and point it to `ai_maturity_assessment/app.py`.
+
+### CLI Mode / 命令行模式
+
 ```bash
 cd ai_maturity_assessment
 
@@ -63,7 +80,10 @@ The tool generates:
 
 ```
 ai_maturity_assessment/
-├── main.py                    # Entry point / 入口
+├── app.py                     # Streamlit web app / 网页应用
+├── main.py                    # CLI entry point / 命令行入口
+├── requirements.txt           # Python dependencies
+├── .streamlit/config.toml     # Streamlit theme & config
 ├── README.md                  # This file
 └── assessment/
     ├── __init__.py
