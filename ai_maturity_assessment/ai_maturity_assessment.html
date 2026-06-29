@@ -6,38 +6,41 @@
 <title>AI Maturity Assessment / AI 成熟度评估</title>
 <style>
   :root {
-    --primary: #667eea;
-    --primary-dark: #5a6fd6;
-    --accent: #764ba2;
-    --bg: #f5f7fb;
+    --primary: #003755;
+    --primary-dark: #002a42;
+    --accent: #009EDC;
+    --bg: #F6F4F2;
     --card: #ffffff;
-    --text: #2d3748;
-    --text-light: #718096;
-    --border: #e2e8f0;
-    --red: #e74c3c;
-    --orange: #e67e22;
-    --yellow: #f1c40f;
-    --green: #2ecc71;
-    --blue: #3498db;
-    --radius: 12px;
+    --text: #222222;
+    --text-light: #5a6872;
+    --border: #d8d4cf;
+    --powder: #C3E0EB;
+    --red: #c0392b;
+    --orange: #d4790e;
+    --yellow: #d4a017;
+    --green: #1a8a5c;
+    --blue: #009EDC;
+    --radius: 6px;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
     background: var(--bg);
     color: var(--text);
-    line-height: 1.6;
+    line-height: 1.65;
+    letter-spacing: 0.01em;
   }
   .container { max-width: 960px; margin: 0 auto; padding: 1rem; }
 
   /* Header */
   .header {
-    background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+    background: var(--primary);
     color: white;
     text-align: center;
     padding: 2.5rem 1rem 2rem;
+    border-bottom: 4px solid var(--accent);
   }
-  .header h1 { font-size: 2rem; margin-bottom: 0.3rem; }
+  .header h1 { font-size: 2rem; margin-bottom: 0.3rem; font-weight: 700; }
   .header p { opacity: 0.9; font-size: 1rem; }
 
   /* Progress bar */
@@ -51,7 +54,7 @@
   }
   .progress-bar {
     height: 100%;
-    background: linear-gradient(90deg, var(--primary), var(--accent));
+    background: var(--accent);
     transition: width 0.4s ease;
   }
 
@@ -79,8 +82,8 @@
   }
   input[type="text"]:focus, select:focus {
     outline: none;
-    border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(102,126,234,0.15);
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(0,158,220,0.15);
   }
 
   /* Buttons */
@@ -95,10 +98,11 @@
     transition: all 0.2s;
   }
   .btn-primary {
-    background: linear-gradient(135deg, var(--primary), var(--accent));
+    background: var(--accent);
     color: white;
+    border-radius: 4px;
   }
-  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(102,126,234,0.4); }
+  .btn-primary:hover { background: #0088c2; box-shadow: 0 2px 8px rgba(0,55,85,0.25); }
   .btn-secondary {
     background: var(--bg);
     color: var(--text);
@@ -109,11 +113,12 @@
 
   /* Questions */
   .dim-header {
-    background: linear-gradient(135deg, var(--primary), var(--accent));
+    background: var(--primary);
     color: white;
     padding: 1rem 1.5rem;
     border-radius: var(--radius);
     margin-bottom: 1rem;
+    border-left: 4px solid var(--accent);
   }
   .dim-header h2 { color: white; margin: 0; font-size: 1.15rem; }
   .dim-header p { opacity: 0.85; font-size: 0.85rem; margin-top: 0.3rem; }
@@ -140,9 +145,9 @@
     transition: all 0.2s;
     font-size: 0.9rem;
   }
-  .option-list li:hover { background: #f0f4ff; }
+  .option-list li:hover { background: var(--powder); }
   .option-list li.selected {
-    background: #eef2ff;
+    background: #daeef6;
     border-color: var(--primary);
     font-weight: 600;
   }
@@ -156,7 +161,7 @@
 
   /* Results */
   .score-hero {
-    background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+    background: var(--primary);
     color: white;
     text-align: center;
     padding: 2rem;
@@ -179,7 +184,7 @@
   .dim-score-row .dim-label small { display: block; color: var(--text-light); font-weight: 400; font-size: 0.8rem; }
   .dim-score-row .bar-wrap {
     flex: 1;
-    background: #edf2f7;
+    background: #e8eef1;
     height: 24px;
     border-radius: 12px;
     overflow: hidden;
@@ -379,7 +384,7 @@ const LEVELS = {
   5: { en:"Transforming",     zh:"转型期", desc:"AI-first culture. Continuous innovation, advanced governance, measurable business transformation." },
 };
 
-const LEVEL_COLORS = { 1:"#e74c3c", 2:"#e67e22", 3:"#f1c40f", 4:"#2ecc71", 5:"#3498db" };
+const LEVEL_COLORS = { 1:"#c0392b", 2:"#d4790e", 3:"#d4a017", 4:"#1a8a5c", 5:"#009EDC" };
 
 const QUESTIONS = [
   // STRATEGY (S1-S6)
@@ -1134,7 +1139,7 @@ function drawRadar(dims, target) {
       const y = cy + r * Math.sin(angle);
       i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
     }
-    ctx.strokeStyle = '#e2e8f0';
+    ctx.strokeStyle = '#d8d4cf';
     ctx.lineWidth = 1;
     ctx.stroke();
   }
@@ -1145,12 +1150,12 @@ function drawRadar(dims, target) {
     ctx.beginPath();
     ctx.moveTo(cx, cy);
     ctx.lineTo(cx + R * Math.cos(angle), cy + R * Math.sin(angle));
-    ctx.strokeStyle = '#e2e8f0';
+    ctx.strokeStyle = '#d8d4cf';
     ctx.stroke();
 
     const lx = cx + (R + 30) * Math.cos(angle);
     const ly = cy + (R + 30) * Math.sin(angle);
-    ctx.fillStyle = '#2d3748';
+    ctx.fillStyle = '#222222';
     ctx.font = '11px sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
@@ -1171,7 +1176,7 @@ function drawRadar(dims, target) {
     i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
   });
   ctx.closePath();
-  ctx.strokeStyle = '#cbd5e0';
+  ctx.strokeStyle = '#b0c4ce';
   ctx.lineWidth = 2;
   ctx.setLineDash([5, 5]);
   ctx.stroke();
@@ -1187,9 +1192,9 @@ function drawRadar(dims, target) {
     i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
   });
   ctx.closePath();
-  ctx.fillStyle = 'rgba(102,126,234,0.2)';
+  ctx.fillStyle = 'rgba(0,55,85,0.2)';
   ctx.fill();
-  ctx.strokeStyle = '#667eea';
+  ctx.strokeStyle = '#003755';
   ctx.lineWidth = 2.5;
   ctx.stroke();
 
@@ -1209,14 +1214,14 @@ function drawRadar(dims, target) {
   });
 
   // Legend
-  ctx.fillStyle = '#667eea';
+  ctx.fillStyle = '#003755';
   ctx.fillRect(10, H - 30, 12, 12);
-  ctx.fillStyle = '#2d3748';
+  ctx.fillStyle = '#222222';
   ctx.font = '11px sans-serif';
   ctx.textAlign = 'left';
   ctx.fillText('Current Score', 26, H - 20);
 
-  ctx.strokeStyle = '#cbd5e0';
+  ctx.strokeStyle = '#b0c4ce';
   ctx.setLineDash([5, 5]);
   ctx.beginPath();
   ctx.moveTo(130, H - 24);
