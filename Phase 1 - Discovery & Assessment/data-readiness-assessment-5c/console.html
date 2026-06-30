@@ -46,6 +46,8 @@
   .btn-secondary { background: #fff; color: var(--primary); border: 1.5px solid var(--accent); }
   .btn-secondary:hover { background: var(--powder); }
   .btn-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
+  .copilot-box { border: 1px solid var(--accent); background: #fbfbff; border-radius: 12px; padding: 14px 16px; margin: 14px 0 18px; }
+  .copilot-head { font-weight: 600; font-size: 14px; color: var(--primary); }
   .prompt-box { position: relative; margin-top: 12px; display: none; }
   pre.prompt { background: #f5f5fc; border: 1px solid var(--line); border-radius: 10px; padding: 14px 14px; font-size: 12.5px; line-height: 1.5; white-space: pre-wrap; word-break: break-word; color: #2a2a3a; max-height: 320px; overflow: auto; }
   .preview { border: 1px dashed var(--line); border-radius: 10px; padding: 4px 16px; margin-top: 12px; background: #fcfcff; font-size: 14px; }
@@ -104,6 +106,19 @@
     <div class="card">
       <h2><span class="step-no">Step A</span> Context &amp; Clarity — interview guide</h2>
       <p class="hint">Generate a tailored interview guide + questionnaire. Run it through the agent, then paste the Markdown back.</p>
+
+      <div class="copilot-box">
+        <div class="copilot-head">🤖 Optional — gather evidence from the client's M365 Copilot</div>
+        <p class="hint">Run these in the client's own Copilot (it already has their data), then paste the findings below. They'll be folded into the Step A prompt as source evidence.</p>
+        <div class="btn-row">
+          <button class="btn btn-secondary" onclick="genCopilot('A')">🤖 Generate M365 Copilot prompts</button>
+        </div>
+        <div class="prompt-box" id="pbc_A"><pre class="prompt" id="ptc_A"></pre>
+          <div class="btn-row"><button class="btn btn-secondary" onclick="copyCopilot('A')">📋 Copy Copilot prompts</button></div></div>
+        <label>Copilot findings (optional)</label>
+        <textarea data-eng="copA" placeholder="Paste the summaries + citations Copilot returned…"></textarea>
+      </div>
+
       <div class="btn-row">
         <button class="btn btn-primary" onclick="genPrompt('A')">⚙️ Generate Step A prompt</button>
       </div>
@@ -118,6 +133,19 @@
     <div class="card">
       <h2><span class="step-no">Step B</span> Document &amp; metadata review checklist</h2>
       <p class="hint">List the artifacts to request from the client, each tied to a C with "good vs. red flag" notes.</p>
+
+      <div class="copilot-box">
+        <div class="copilot-head">🤖 Optional — locate documents via the client's M365 Copilot</div>
+        <p class="hint">Have Copilot find the actual artifacts (data dictionary, schema, policies, SLA/quality reports) in their tenant, then paste what it found below.</p>
+        <div class="btn-row">
+          <button class="btn btn-secondary" onclick="genCopilot('B')">🤖 Generate M365 Copilot prompts</button>
+        </div>
+        <div class="prompt-box" id="pbc_B"><pre class="prompt" id="ptc_B"></pre>
+          <div class="btn-row"><button class="btn btn-secondary" onclick="copyCopilot('B')">📋 Copy Copilot prompts</button></div></div>
+        <label>Copilot findings (optional)</label>
+        <textarea data-eng="copB" placeholder="Paste the documents + locations + citations Copilot returned…"></textarea>
+      </div>
+
       <div class="btn-row">
         <button class="btn btn-primary" onclick="genPrompt('B')">⚙️ Generate Step B prompt</button>
       </div>
@@ -246,17 +274,21 @@ Volume/velocity: ${val('volume') || '[volume]'}
 History needed: ${val('history') || '[history]'}
 Key data entities/fields: ${val('entities') || '[entities]'}`;
 }
+function findingsBlock(key) {
+  const v = val(key);
+  return v ? `\n\nSource evidence gathered from the client's M365 Copilot (ground your output on it and cite where relevant):\n${v}` : '';
+}
 const PROMPTS = {
   A: () => `Act as the dra-5c (Data Readiness Assessment, 5C) agent — Step A: Context & Clarity.
 
-${ctxBlock()}
+${ctxBlock()}${findingsBlock('copA')}
 
 Produce a tailored stakeholder interview guide and a written questionnaire following
 templates/interview-guide.md. Tag every question with the C it informs (mostly Context
 and Clarity) and tie each to the data this specific use case actually needs. Output clean Markdown.`,
   B: () => `Act as the dra-5c agent — Step B: Document & metadata review checklist.
 
-${ctxBlock()}
+${ctxBlock()}${findingsBlock('copB')}
 
 Produce a checklist of artifacts to request from the client (data dictionary, lineage,
 ER/schema, retention & privacy policy, pipeline/ETL docs, access controls). For each:
@@ -301,6 +333,53 @@ function genPrompt(step) {
 }
 function copyPrompt(step) {
   const txt = document.getElementById('pt_' + step).textContent;
+  navigator.clipboard.writeText(txt).then(() => {
+    const btn = event.target; const o = btn.textContent;
+    btn.textContent = '✅ Copied!'; setTimeout(() => { btn.textContent = o; }, 1800);
+  }).catch(() => alert('Copy failed — select the text manually.'));
+}
+
+// ── M365 Copilot prompt-pack (Option A) ──────────────────────────
+// Tailored prompts the architect runs in the CLIENT's own M365 Copilot, then
+// pastes findings into copA/copB (which fold into the dra-5c Step A/B prompts).
+const COPILOT = {
+  A: () => {
+    const uc = val('useCase') || '[use case]';
+    const ent = val('entities') || '[entities]';
+    return `Run these in the client's own M365 Copilot (work/enterprise data). Replace [key fields]/[metric] as needed. Paste the summaries + citations into "Copilot findings" below — never raw records.
+
+1. Source-system inventory (Context): List the systems and repositories that hold data about ${ent} relevant to "${uc}". For each: what it contains, who owns it, and how often it's updated. Cite your sources.
+
+2. Data lineage / flow (Context): Find any lineage or data-flow documents describing how ${ent} data moves from its source systems to reporting/analytics. Summarize the flow and any transformation steps, with citations.
+
+3. Ownership & stewardship (Context): Who are the data owners and stewards for ${ent}? Check org charts, RACI docs, data-governance pages, and SharePoint site ownership. List names/roles and the source for each.
+
+4. Field definitions (Clarity): Find the data dictionary or field definitions for [key fields] in ${ent}. Give each field's business definition, unit, and allowed values. Flag any that are missing, ambiguous, or inconsistent.
+
+5. Metric consistency (Clarity): How is "[metric]" defined across teams and documents? Show each definition you find, who uses it, and highlight any conflicts. Cite sources.`;
+  },
+  B: () => {
+    const uc = val('useCase') || '[use case]';
+    const ent = val('entities') || '[entities]';
+    return `Run these in the client's own M365 Copilot to LOCATE the actual documents. Paste titles, locations/links, and summaries into "Copilot findings" below.
+
+1. Data dictionary (Clarity): Locate the most current data dictionary covering ${ent}. Give its title, location/link, owner, and last-modified date. If several exist, note which is authoritative and whether any are stale.
+
+2. Schema / ER diagrams (Clarity/Coverage): Find ER diagrams, table schemas, or SharePoint/Dataverse list structures for ${ent}. Summarize the keys, the grain (one row per what?), and relationships, with links.
+
+3. Retention / privacy / classification policy (Context/Capacity): Find retention, privacy, and data-classification policies that apply to ${ent}. Summarize retention periods, sensitivity classifications, and any constraints on using this data for "${uc}". Cite the policy documents.
+
+4. Pipeline / ETL docs (Capacity-adjacent): Find documentation for the pipelines or ETL/ELT jobs that produce or move ${ent} data. Note what's automated vs. manual and where docs look thin. Link the sources.
+
+5. SLA / refresh cadence / data-quality reports (Coverage/Credibility): Find SLA docs, refresh schedules, or data-quality reports for the ${ent} feeds. Summarize update frequency and any documented quality issues. Cite sources.`;
+  },
+};
+function genCopilot(step) {
+  document.getElementById('ptc_' + step).textContent = COPILOT[step]();
+  document.getElementById('pbc_' + step).style.display = 'block';
+}
+function copyCopilot(step) {
+  const txt = document.getElementById('ptc_' + step).textContent;
   navigator.clipboard.writeText(txt).then(() => {
     const btn = event.target; const o = btn.textContent;
     btn.textContent = '✅ Copied!'; setTimeout(() => { btn.textContent = o; }, 1800);

@@ -40,5 +40,9 @@ non-sensitive aggregates flow back to the agent.
 ## Integrations
 
 - `m365-copilot-integration.md` — feasibility & architecture comparison for leveraging
-  Microsoft 365 Copilot / Graph to accelerate data-gathering (no code yet). Recommends a
-  staged path; the local profiler stays in every option.
+  Microsoft 365 Copilot / Graph to accelerate data-gathering. Recommends a staged path;
+  the local profiler stays in every option.
+- `copilot-prompt-pack.md` + **console buttons** — Option A (built): on Steps A & B the
+  console's "🤖 Generate M365 Copilot prompts" button produces tailored prompts to run in
+  the client's *own* Copilot; paste the findings into "Copilot findings" and they fold into
+  the dra-5c prompt as source evidence. Zero infrastructure; raw data stays in the client tenant.
