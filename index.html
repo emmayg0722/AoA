@@ -3,11 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI Maturity Assessment</title>
-<meta name="description" content="A self-guided AI maturity assessment across six dimensions — strategy, data, technology, governance, talent, and operations — with instant scoring, gap analysis, and a downloadable report.">
+<title>AI Architect Toolkit</title>
+<meta name="description" content="A working toolkit for AI-architecture consulting engagements — organized by delivery phase, starting with Discovery &amp; Assessment: AI maturity scoring and a 5C data-readiness assessment.">
 <meta property="og:type" content="website">
-<meta property="og:title" content="AI Maturity Assessment">
-<meta property="og:description" content="A self-guided AI maturity assessment across six dimensions — strategy, data, technology, governance, talent, and operations — with instant scoring, gap analysis, and a downloadable report.">
+<meta property="og:title" content="AI Architect Toolkit">
+<meta property="og:description" content="A working toolkit for AI-architecture consulting engagements — organized by delivery phase, starting with Discovery & Assessment.">
 <meta property="og:url" content="https://emmayg0722.github.io/AoA/">
 <meta property="og:image" content="https://emmayg0722.github.io/AoA/og-image.png">
 <meta name="twitter:card" content="summary_large_image">
@@ -20,1406 +20,213 @@
     --primary: #1B1474;
     --primary-dark: #120D52;
     --accent: #DCDDF6;
-    --bg: #F8F6F3;
-    --card: #ffffff;
-    --text: #222222;
-    --text-light: #5a6872;
-    --border: #d8d4cf;
     --powder: #EEEEFA;
-    --red: #c0392b;
-    --orange: #d4790e;
-    --yellow: #d4a017;
-    --green: #1a8a5c;
-    --blue: #DCDDF6;
+    --ink: #1c1c28;
+    --muted: #5b5b6b;
+    --line: #e4e4f0;
     --font-heading: 'Fraunces', Georgia, serif;
-    --font-body: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
-    --radius: 6px;
+    --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
     font-family: var(--font-body);
-    background: var(--bg);
-    color: var(--text);
-    line-height: 1.65;
-    letter-spacing: 0.01em;
+    color: var(--ink);
+    background: #fafaff;
+    line-height: 1.6;
   }
-  .container { max-width: 960px; margin: 0 auto; padding: 1rem; }
-
-  /* Header */
-  .header {
-    background: var(--primary);
-    color: white;
-    text-align: center;
-    padding: 2.5rem 1rem 2rem;
-    border-bottom: 4px solid var(--accent);
-  }
-  .header h1 { font-family: var(--font-heading); font-size: 2.2rem; margin-bottom: 0.3rem; font-weight: 700; }
-  .header p { opacity: 0.9; font-size: 1rem; }
-
-  /* Progress bar */
-  .progress-wrap {
-    background: var(--border);
-    height: 6px;
-    width: 100%;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-  }
-  .progress-bar {
-    height: 100%;
-    background: var(--accent);
-    transition: width 0.4s ease;
-  }
-
-  /* Cards */
-  .card {
-    background: var(--card);
-    border-radius: var(--radius);
-    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-    padding: 1.5rem;
-    margin-bottom: 1rem;
-  }
-  .card h2 { font-family: var(--font-heading); font-size: 1.35rem; margin-bottom: 1rem; color: var(--primary); }
-  .card h3 { font-size: 1.1rem; margin-bottom: 0.8rem; }
-
-  /* Forms */
-  label.field { display: block; margin-bottom: 1rem; }
-  label.field span { display: block; font-weight: 600; margin-bottom: 0.3rem; font-size: 0.9rem; }
-  input[type="text"], select {
-    width: 100%;
-    padding: 0.6rem 0.8rem;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    font-size: 0.95rem;
-    transition: border 0.2s;
-  }
-  input[type="text"]:focus, select:focus {
-    outline: none;
-    border-color: var(--accent);
-    box-shadow: 0 0 0 3px rgba(27,20,116,0.15);
-  }
-
-  /* Buttons */
-  .btn {
-    display: inline-block;
-    padding: 0.7rem 1.8rem;
-    border: none;
-    border-radius: 8px;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  .btn-primary {
-    background: var(--accent);
-    color: var(--primary);
-    border-radius: 4px;
-  }
-  .btn-primary:hover { background: #C3C5EC; box-shadow: 0 2px 8px rgba(27,20,116,0.25); }
-  .btn-secondary {
-    background: var(--bg);
-    color: var(--text);
-    border: 1px solid var(--border);
-  }
-  .btn-secondary:hover { background: var(--border); }
-  .btn-group { display: flex; gap: 0.8rem; justify-content: space-between; margin-top: 1.5rem; }
-
-  /* Questions */
-  .dim-header {
-    background: var(--primary);
-    color: white;
-    padding: 1rem 1.5rem;
-    border-radius: var(--radius);
-    margin-bottom: 1rem;
-    border-left: 4px solid var(--accent);
-  }
-  .dim-header h2 { color: white; margin: 0; font-size: 1.15rem; }
-  .dim-header p { opacity: 0.85; font-size: 0.85rem; margin-top: 0.3rem; }
-
-  .question-card {
-    background: var(--card);
-    border-radius: var(--radius);
-    padding: 1.2rem 1.5rem;
-    margin-bottom: 0.8rem;
-    border-left: 4px solid var(--border);
-    transition: border-color 0.3s;
-  }
-  .question-card.answered { border-left-color: var(--green); }
-  .question-card .q-text { font-weight: 600; margin-bottom: 0.8rem; }
-
-  .option-list { list-style: none; }
-  .option-list li {
-    padding: 0.6rem 0.8rem;
-    margin-bottom: 0.4rem;
-    border-radius: 8px;
-    cursor: pointer;
-    border: 2px solid transparent;
-    transition: all 0.2s;
-    font-size: 0.9rem;
-  }
-  .option-list li:hover { background: var(--powder); }
-  .option-list li.selected {
-    background: var(--powder);
-    border-color: var(--primary);
-    font-weight: 600;
-  }
-  /* Results */
-  .score-hero {
-    background: var(--primary);
-    color: white;
-    text-align: center;
-    padding: 2rem;
-    border-radius: var(--radius);
-    margin-bottom: 1.5rem;
-  }
-  .score-hero .big-score { font-family: var(--font-heading); font-size: 3.5rem; font-weight: 700; }
-  .score-hero .level-name { font-family: var(--font-heading); font-size: 1.3rem; opacity: 0.95; margin-top: 0.3rem; }
-  .score-hero .level-desc { font-size: 0.9rem; opacity: 0.8; margin-top: 0.5rem; }
-
-  .dim-score-row {
-    display: flex;
-    align-items: center;
-    gap: 0.8rem;
-    padding: 0.7rem 0;
-    border-bottom: 1px solid var(--border);
-  }
-  .dim-score-row:last-child { border-bottom: none; }
-  .dim-score-row .dim-label { width: 200px; font-weight: 600; font-size: 0.9rem; flex-shrink: 0; }
-  .dim-score-row .dim-label small { display: block; color: var(--text-light); font-weight: 400; font-size: 0.8rem; }
-  .dim-score-row .bar-wrap {
-    flex: 1;
-    background: #EFEAE3;
-    height: 24px;
-    border-radius: 12px;
-    overflow: hidden;
+  .hero {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    color: #fff;
+    padding: 72px 24px 64px;
     position: relative;
+    overflow: hidden;
   }
-  .dim-score-row .bar-fill {
-    height: 100%;
-    border-radius: 12px;
-    transition: width 0.8s ease;
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    padding-right: 8px;
-    color: white;
-    font-size: 0.75rem;
-    font-weight: 700;
+  .hero::after {
+    content: "";
+    position: absolute;
+    top: -90px; right: -70px;
+    width: 320px; height: 320px;
+    background: var(--accent);
+    opacity: 0.18;
+    border-radius: 50%;
   }
-  .dim-score-row .score-val { width: 60px; text-align: right; font-weight: 700; font-size: 0.95rem; flex-shrink: 0; }
-  .badge {
+  .wrap { max-width: 960px; margin: 0 auto; position: relative; z-index: 1; }
+  .eyebrow {
     display: inline-block;
-    padding: 2px 10px;
-    border-radius: 12px;
-    color: white;
-    font-size: 0.75rem;
+    font-size: 13px;
     font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 18px;
   }
-  .badge.badge-light { color: var(--primary); }
-
-  /* Radar chart (canvas) */
-  .chart-container { text-align: center; margin: 1rem 0; }
-  canvas#radar { max-width: 400px; margin: 0 auto; }
-
-  /* Gap table */
-  .gap-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
-  .gap-table th {
-    background: var(--bg);
-    padding: 0.6rem 0.8rem;
-    text-align: left;
+  .hero h1 {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 46px;
+    line-height: 1.12;
+    max-width: 720px;
+  }
+  .hero p {
+    margin-top: 18px;
+    font-size: 18px;
+    color: #dcdcf2;
+    max-width: 620px;
+  }
+  main { max-width: 960px; margin: 0 auto; padding: 48px 24px 72px; }
+  .phase-head {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    margin: 8px 0 6px;
+  }
+  .phase-head h2 {
+    font-family: var(--font-heading);
     font-weight: 600;
-    border-bottom: 2px solid var(--border);
+    font-size: 28px;
+    color: var(--primary);
   }
-  .gap-table td {
-    padding: 0.6rem 0.8rem;
-    border-bottom: 1px solid var(--border);
+  .phase-tag {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--primary);
+    background: var(--accent);
+    padding: 4px 10px;
+    border-radius: 20px;
   }
-  .priority-high { color: var(--red); font-weight: 700; }
-  .priority-medium { color: var(--orange); font-weight: 700; }
-  .priority-low { color: var(--green); font-weight: 700; }
-
-  /* Recommendations */
-  .rec-section { margin-bottom: 1.2rem; }
-  .rec-section h4 { margin-bottom: 0.5rem; }
-  .rec-item {
-    background: var(--bg);
-    padding: 0.8rem 1rem;
-    border-radius: 8px;
-    margin-bottom: 0.5rem;
-    font-size: 0.9rem;
-    cursor: pointer;
+  .phase-sub { color: var(--muted); margin-bottom: 24px; }
+  .cards { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .card {
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 26px 26px 24px;
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
   }
-  .rec-item .rec-header { display: flex; justify-content: space-between; align-items: center; font-weight: 600; }
-  .rec-item .rec-body { margin-top: 0.5rem; display: none; }
-  .rec-item.open .rec-body { display: block; }
-  .rec-item .rec-body li { margin-bottom: 0.3rem; }
-
-  /* Download */
-  .download-row { display: flex; gap: 1rem; flex-wrap: wrap; }
-  .download-row .btn { flex: 1; min-width: 200px; text-align: center; }
-
-  /* Dimensions grid (setup page) */
-  .dim-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 0.8rem; margin: 1rem 0; }
-  .dim-grid .dim-item {
-    background: var(--bg);
-    border-radius: 8px;
-    padding: 1rem;
-    border-left: 4px solid var(--primary);
+  .card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 28px rgba(27, 20, 116, 0.12);
+    border-color: var(--primary);
   }
-  .dim-grid .dim-item strong { display: block; font-family: var(--font-heading); }
-  .dim-grid .dim-item em { color: var(--text-light); font-size: 0.85rem; }
-  .dim-grid .dim-item small { display: block; margin-top: 0.4rem; color: var(--text-light); font-size: 0.82rem; }
-
-  /* Page visibility */
-  .page { display: none; }
-  .page.active { display: block; }
-
-  /* Responsive */
+  .card .icon { font-size: 30px; margin-bottom: 14px; }
+  .card h3 {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 21px;
+    color: var(--primary);
+    margin-bottom: 8px;
+  }
+  .card p { color: var(--muted); font-size: 15px; flex: 1; }
+  .card .go {
+    margin-top: 18px;
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--primary);
+  }
+  .card.soon { opacity: 0.7; cursor: default; }
+  .card.soon:hover { transform: none; box-shadow: none; border-color: var(--line); }
+  .card .badge-soon {
+    align-self: flex-start;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+    background: var(--powder);
+    padding: 3px 9px;
+    border-radius: 20px;
+    margin-top: 18px;
+  }
+  .future {
+    margin-top: 44px;
+    padding-top: 28px;
+    border-top: 1px solid var(--line);
+  }
+  .future h2 {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 22px;
+    color: var(--primary);
+    margin-bottom: 6px;
+  }
+  .future p { color: var(--muted); font-size: 15px; margin-bottom: 18px; }
+  .pills { display: flex; flex-wrap: wrap; gap: 10px; }
+  .pill {
+    font-size: 13px;
+    color: var(--muted);
+    background: #fff;
+    border: 1px solid var(--line);
+    padding: 7px 14px;
+    border-radius: 20px;
+  }
+  footer {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 24px 56px;
+    color: var(--muted);
+    font-size: 13px;
+  }
   @media (max-width: 640px) {
-    .container { padding: 0.5rem; }
-    .dim-score-row .dim-label { width: 120px; }
-    .header h1 { font-size: 1.5rem; }
-    .score-hero .big-score { font-size: 2.5rem; }
-    .btn-group { flex-direction: column; }
-    .download-row { flex-direction: column; }
+    .hero { padding: 56px 20px 48px; }
+    .hero h1 { font-size: 34px; }
+    .cards { grid-template-columns: 1fr; }
   }
 </style>
 </head>
 <body>
+  <header class="hero">
+    <div class="wrap">
+      <span class="eyebrow">AI Architecture · Consulting Toolkit</span>
+      <h1>Practical tools for AI-architecture engagements, organized by delivery phase.</h1>
+      <p>An evolving set of assessments and accelerators that mirror how an AI architect actually moves a client from discovery to production.</p>
+    </div>
+  </header>
 
-<div class="header">
-  <h1>AI Maturity Assessment</h1>
-  <p>For Enterprise Consulting</p>
-</div>
-<div class="progress-wrap"><div class="progress-bar" id="progressBar" style="width:0%"></div></div>
+  <main>
+    <div class="phase-head">
+      <h2>Discovery &amp; Assessment</h2>
+      <span class="phase-tag">Phase 1</span>
+    </div>
+    <p class="phase-sub">Understand the client's starting point: where they sit on the AI maturity curve, and whether their data is actually ready for the use cases they have in mind.</p>
 
-<!-- ═══════════════════ PAGE: SETUP ═══════════════════ -->
-<div class="page active" id="pageSetup">
-  <div class="container">
-    <div class="card">
-      <h2>Assessment Info</h2>
-      <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
-        <label class="field">
-          <span>Company Name</span>
-          <input type="text" id="inputCompany" placeholder="e.g. Acme Corp">
-        </label>
-        <label class="field">
-          <span>Industry</span>
-          <select id="inputIndustry">
-            <option>Technology</option><option>Financial Services</option>
-            <option>Healthcare</option><option>Manufacturing</option>
-            <option>Retail</option><option>Energy</option>
-            <option>Telecommunications</option><option>Government</option>
-            <option>Education</option><option>Other</option>
-          </select>
-        </label>
-        <label class="field">
-          <span>Assessor</span>
-          <input type="text" id="inputAssessor" placeholder="e.g. AI Architect">
-        </label>
-        <label class="field">
-          <span>Assessment Mode</span>
-          <select id="inputMode">
-            <option value="core">Core (~21 questions, 10 min)</option>
-            <option value="comprehensive">Comprehensive (~33 questions, 20 min)</option>
-          </select>
-        </label>
-      </div>
-      <label class="field">
-        <span>Target Maturity Level</span>
-        <select id="inputTarget">
-          <option value="3">Level 3 — Operationalizing</option>
-          <option value="4" selected>Level 4 — Scaling [Recommended]</option>
-          <option value="5">Level 5 — Transforming</option>
-        </select>
-      </label>
+    <div class="cards">
+      <a class="card" href="Phase%201%20-%20Discovery%20%26%20Assessment/ai-maturity-assessment/">
+        <div class="icon">📊</div>
+        <h3>AI Maturity Assessment</h3>
+        <p>Score an organization across six dimensions — strategy, data, technology, governance, talent, and operations — with instant results, gap analysis, and a downloadable report.</p>
+        <span class="go">Open assessment →</span>
+      </a>
+
+      <a class="card" href="Phase%201%20-%20Discovery%20%26%20Assessment/data-readiness-assessment-5c/profiler.html">
+        <div class="icon">🧪</div>
+        <h3>Data Readiness Assessment (5C)</h3>
+        <p>Profile a real data sample entirely in your browser — fill rate, duplicates, distributions, freshness — to feed the Context / Clarity / Coverage / Credibility / Capacity scorecard. Paired with the DRA-5C agent for the full workflow.</p>
+        <span class="go">Open profiler →</span>
+      </a>
     </div>
 
-    <div class="card">
-      <h2>Assessment Dimensions</h2>
-      <div class="dim-grid" id="dimGrid"></div>
-    </div>
-
-    <div style="text-align:center; margin:1.5rem 0;">
-      <button class="btn btn-primary" onclick="startAssessment()" style="padding:0.9rem 3rem; font-size:1.1rem;">
-        ▶ Start Assessment
-      </button>
-    </div>
-  </div>
-</div>
-
-<!-- ═══════════════════ PAGE: ASSESS ═══════════════════ -->
-<div class="page" id="pageAssess">
-  <div class="container">
-    <div id="assessContent"></div>
-    <div class="btn-group" id="assessNav"></div>
-  </div>
-</div>
-
-<!-- ═══════════════════ PAGE: RESULTS ═══════════════════ -->
-<div class="page" id="pageResults">
-  <div class="container" id="resultsContent"></div>
-</div>
-
-<script>
-// ═══════════════════════════════════════════════════════════════════
-// DATA MODEL
-// ═══════════════════════════════════════════════════════════════════
-
-const DIMENSIONS = [
-  { id:"strategy", en:"Strategy & Vision", weight:0.20,
-    desc:"Executive sponsorship, AI strategy alignment with business goals, investment commitment, and innovation roadmap." },
-  { id:"data", en:"Data & Infrastructure", weight:0.20,
-    desc:"Data quality, availability, governance, infrastructure readiness, and cloud/compute capabilities." },
-  { id:"technology", en:"Technology & Architecture", weight:0.18,
-    desc:"AI/ML platforms, model development practices, integration architecture, and technology stack maturity." },
-  { id:"talent", en:"Talent & Organization", weight:0.15,
-    desc:"AI skills, team structure, training programs, organizational culture, and change readiness." },
-  { id:"governance", en:"Governance & Ethics", weight:0.15,
-    desc:"AI policies, responsible AI practices, compliance readiness, risk management, and audit capabilities." },
-  { id:"operations", en:"Operations & Scale", weight:0.12,
-    desc:"MLOps maturity, model monitoring, CI/CD for ML, production reliability, and scaling capabilities." },
-];
-
-const LEVELS = {
-  1: { en:"Exploring", desc:"Ad-hoc AI initiatives, no formal strategy. Awareness exists but adoption is minimal." },
-  2: { en:"Experimenting", desc:"Isolated pilots and PoCs. Some dedicated resources but limited governance and scalability." },
-  3: { en:"Operationalizing", desc:"AI in production for select use cases. Defined processes, MLOps basics, emerging governance." },
-  4: { en:"Scaling", desc:"Enterprise-wide AI adoption. Mature MLOps, governance framework, and cross-functional collaboration." },
-  5: { en:"Transforming", desc:"AI-first culture. Continuous innovation, advanced governance, measurable business transformation." },
-};
-
-const LEVEL_COLORS = { 1:"#c0392b", 2:"#d4790e", 3:"#d4a017", 4:"#1a8a5c", 5:"#DCDDF6" };
-
-const QUESTIONS = [
-  // STRATEGY (S1-S6)
-  { id:"S1", dim:"strategy", core:true,
-    en:"How would you describe your organization's AI strategy?",
-    opts:[
-      { v:1, en:"No AI strategy exists" },
-      { v:2, en:"Informal discussions about AI potential" },
-      { v:3, en:"Documented AI strategy aligned with business goals" },
-      { v:4, en:"AI strategy integrated into enterprise strategy with KPIs" },
-      { v:5, en:"AI is a core pillar of business model and competitive strategy" },
-    ]},
-  { id:"S2", dim:"strategy", core:true,
-    en:"What level of executive sponsorship does AI have?",
-    opts:[
-      { v:1, en:"No executive sponsor" },
-      { v:2, en:"Mid-level management interest" },
-      { v:3, en:"Senior executive sponsor identified" },
-      { v:4, en:"C-suite ownership (CTO/CDO/CAIO)" },
-      { v:5, en:"Board-level AI governance and oversight" },
-    ]},
-  { id:"S3", dim:"strategy", core:true,
-    en:"How is AI investment managed in your organization?",
-    opts:[
-      { v:1, en:"No dedicated AI budget" },
-      { v:2, en:"Ad-hoc funding for individual projects" },
-      { v:3, en:"Dedicated annual AI budget with project-level tracking" },
-      { v:4, en:"Portfolio-level AI investment with ROI measurement" },
-      { v:5, en:"Strategic AI investment fund with innovation allocation" },
-    ]},
-  { id:"S4", dim:"strategy", core:true,
-    en:"How many AI use cases have been identified and prioritized?",
-    opts:[
-      { v:1, en:"None formally identified" },
-      { v:2, en:"A few ideas discussed informally" },
-      { v:3, en:"5-10 use cases documented and prioritized" },
-      { v:4, en:"Comprehensive use case portfolio across business units" },
-      { v:5, en:"Continuously evolving pipeline with business impact scoring" },
-    ]},
-  { id:"S5", dim:"strategy", core:false,
-    en:"Does your organization have an AI innovation roadmap?",
-    opts:[
-      { v:1, en:"No roadmap exists" },
-      { v:2, en:"Informal plans for next quarter" },
-      { v:3, en:"12-month roadmap with milestones" },
-      { v:4, en:"3-year roadmap updated quarterly" },
-      { v:5, en:"5-year vision with adaptive roadmap and emerging tech tracking" },
-    ]},
-  { id:"S6", dim:"strategy", core:false,
-    en:"How does your organization benchmark AI progress?",
-    opts:[
-      { v:1, en:"No benchmarking" },
-      { v:2, en:"Informal comparison with competitors" },
-      { v:3, en:"Internal KPIs for AI projects" },
-      { v:4, en:"Industry benchmarking with external assessments" },
-      { v:5, en:"Continuous benchmarking driving strategic decisions" },
-    ]},
-
-  // DATA (D1-D6)
-  { id:"D1", dim:"data", core:true,
-    en:"How would you describe your organization's data quality and availability?",
-    opts:[
-      { v:1, en:"Data is siloed, inconsistent, and hard to access" },
-      { v:2, en:"Some data consolidated but quality varies significantly" },
-      { v:3, en:"Centralized data platform with quality monitoring" },
-      { v:4, en:"Enterprise data mesh/fabric with automated quality pipelines" },
-      { v:5, en:"Real-time, self-service data with governance guardrails" },
-    ]},
-  { id:"D2", dim:"data", core:true,
-    en:"What is the state of your data governance?",
-    opts:[
-      { v:1, en:"No formal data governance" },
-      { v:2, en:"Basic data ownership defined for some datasets" },
-      { v:3, en:"Data governance framework with policies and stewards" },
-      { v:4, en:"Automated data governance with lineage tracking" },
-      { v:5, en:"Self-governing data ecosystem with AI-driven quality" },
-    ]},
-  { id:"D3", dim:"data", core:true,
-    en:"How mature is your cloud/compute infrastructure for AI workloads?",
-    opts:[
-      { v:1, en:"On-premises only, no GPU/TPU access" },
-      { v:2, en:"Initial cloud adoption, limited AI-specific resources" },
-      { v:3, en:"Cloud-native AI infrastructure with managed ML services" },
-      { v:4, en:"Multi-cloud/hybrid with auto-scaling for AI workloads" },
-      { v:5, en:"Optimized infrastructure with cost management and edge AI" },
-    ]},
-  { id:"D4", dim:"data", core:true,
-    en:"How is data prepared and managed for AI/ML use cases?",
-    opts:[
-      { v:1, en:"Manual, ad-hoc data preparation" },
-      { v:2, en:"Some scripted data pipelines for specific projects" },
-      { v:3, en:"Standardized ETL/ELT pipelines with feature stores" },
-      { v:4, en:"Automated data pipelines with versioning and lineage" },
-      { v:5, en:"Real-time streaming pipelines with self-service feature engineering" },
-    ]},
-  { id:"D5", dim:"data", core:false,
-    en:"How does your organization handle data privacy and security for AI?",
-    opts:[
-      { v:1, en:"No specific AI data privacy measures" },
-      { v:2, en:"Basic access controls, privacy handled case-by-case" },
-      { v:3, en:"Data classification and encryption for AI datasets" },
-      { v:4, en:"Privacy-preserving techniques (anonymization, differential privacy)" },
-      { v:5, en:"Federated learning and advanced privacy-by-design" },
-    ]},
-  { id:"D6", dim:"data", core:false,
-    en:"How well can your organization integrate external data sources for AI?",
-    opts:[
-      { v:1, en:"No external data integration" },
-      { v:2, en:"Manual import of external datasets" },
-      { v:3, en:"API-based integration with select external sources" },
-      { v:4, en:"Automated ingestion from multiple external sources" },
-      { v:5, en:"Real-time external data enrichment with quality validation" },
-    ]},
-
-  // TECHNOLOGY (T1-T6)
-  { id:"T1", dim:"technology", core:true,
-    en:"What is the state of your AI/ML development platform?",
-    opts:[
-      { v:1, en:"No standardized tools; individuals use local notebooks" },
-      { v:2, en:"Some shared tools but no unified platform" },
-      { v:3, en:"Standardized ML platform with experiment tracking" },
-      { v:4, en:"Enterprise AI platform with multi-tenant support and model registry" },
-      { v:5, en:"Composable AI platform with auto-optimization and self-service" },
-    ]},
-  { id:"T2", dim:"technology", core:true,
-    en:"How does your organization use Generative AI / LLMs?",
-    opts:[
-      { v:1, en:"No GenAI usage" },
-      { v:2, en:"Individual experimentation with ChatGPT/similar tools" },
-      { v:3, en:"Approved GenAI tools with usage guidelines" },
-      { v:4, en:"Custom RAG pipelines and fine-tuned models in production" },
-      { v:5, en:"Agentic AI workflows with multimodal capabilities in production" },
-    ]},
-  { id:"T3", dim:"technology", core:true,
-    en:"How mature is your AI integration architecture?",
-    opts:[
-      { v:1, en:"No integration; AI exists in isolated experiments" },
-      { v:2, en:"Point-to-point integrations for specific projects" },
-      { v:3, en:"API-based microservices architecture for AI" },
-      { v:4, en:"Event-driven architecture with AI service orchestration" },
-      { v:5, en:"Composable, self-healing AI services with autonomous scaling" },
-    ]},
-  { id:"T4", dim:"technology", core:true,
-    en:"How does your organization handle model evaluation and testing?",
-    opts:[
-      { v:1, en:"No formal evaluation process" },
-      { v:2, en:"Manual testing before deployment" },
-      { v:3, en:"Standardized evaluation benchmarks and test suites" },
-      { v:4, en:"Automated evaluation pipeline with bias/fairness checks" },
-      { v:5, en:"Continuous evaluation with LLM-as-judge and human-in-the-loop" },
-    ]},
-  { id:"T5", dim:"technology", core:false,
-    en:"How does your organization manage the AI technology stack?",
-    opts:[
-      { v:1, en:"No standardization; teams choose their own tools" },
-      { v:2, en:"Recommended tools list but not enforced" },
-      { v:3, en:"Standardized tech stack with approved frameworks" },
-      { v:4, en:"Centrally managed platform with vetted components" },
-      { v:5, en:"Platform engineering team maintaining AI golden paths" },
-    ]},
-  { id:"T6", dim:"technology", core:false,
-    en:"What is your approach to AI security (prompt injection, data leakage)?",
-    opts:[
-      { v:1, en:"No AI-specific security measures" },
-      { v:2, en:"Awareness of AI security risks but no formal program" },
-      { v:3, en:"Basic guardrails (input validation, output filtering)" },
-      { v:4, en:"Comprehensive AI security program with red-teaming" },
-      { v:5, en:"Proactive AI security with automated threat detection" },
-    ]},
-
-  // TALENT (P1-P5)
-  { id:"P1", dim:"talent", core:true,
-    en:"What does your AI team structure look like?",
-    opts:[
-      { v:1, en:"No dedicated AI roles" },
-      { v:2, en:"A few data scientists/ML engineers hired" },
-      { v:3, en:"Dedicated AI/ML team with defined roles" },
-      { v:4, en:"AI CoE with embedded AI champions across business units" },
-      { v:5, en:"AI capabilities distributed across all teams" },
-    ]},
-  { id:"P2", dim:"talent", core:true,
-    en:"How mature are your AI training and upskilling programs?",
-    opts:[
-      { v:1, en:"No AI training programs" },
-      { v:2, en:"Ad-hoc learning (individuals take online courses)" },
-      { v:3, en:"Structured AI literacy and technical training programs" },
-      { v:4, en:"Role-based AI training with certification paths" },
-      { v:5, en:"Continuous learning culture with AI skills refreshed quarterly" },
-    ]},
-  { id:"P3", dim:"talent", core:true,
-    en:"How receptive is your organization to AI-driven change?",
-    opts:[
-      { v:1, en:"Significant resistance; fear of job displacement" },
-      { v:2, en:"Mixed reactions; some enthusiasm, some concern" },
-      { v:3, en:"Generally positive with structured change management" },
-      { v:4, en:"Strong adoption culture with internal AI advocates" },
-      { v:5, en:"AI-first mindset embedded in organizational culture" },
-    ]},
-  { id:"P4", dim:"talent", core:false,
-    en:"How does your organization attract and retain AI talent?",
-    opts:[
-      { v:1, en:"Difficulty attracting AI talent" },
-      { v:2, en:"Competitive compensation but limited AI career paths" },
-      { v:3, en:"Defined AI career ladders with growth opportunities" },
-      { v:4, en:"Strong AI employer brand with university partnerships" },
-      { v:5, en:"Industry-leading AI talent brand; thought leadership" },
-    ]},
-  { id:"P5", dim:"talent", core:false,
-    en:"How well do business and technical teams collaborate on AI?",
-    opts:[
-      { v:1, en:"Minimal interaction; teams work in silos" },
-      { v:2, en:"Ad-hoc collaboration on specific projects" },
-      { v:3, en:"Regular cross-functional meetings and shared goals" },
-      { v:4, en:"Embedded product teams with business and AI members" },
-      { v:5, en:"Seamless collaboration; business teams self-serve AI tools" },
-    ]},
-
-  // GOVERNANCE (G1-G5)
-  { id:"G1", dim:"governance", core:true,
-    en:"Does your organization have an AI governance framework?",
-    opts:[
-      { v:1, en:"No AI governance" },
-      { v:2, en:"Informal guidelines for AI use" },
-      { v:3, en:"Formal AI governance framework with policies" },
-      { v:4, en:"Active AI governance committee with enforcement" },
-      { v:5, en:"Industry-leading governance integrated into all AI workflows" },
-    ]},
-  { id:"G2", dim:"governance", core:true,
-    en:"How does your organization address responsible AI (bias, fairness, transparency)?",
-    opts:[
-      { v:1, en:"Not addressed" },
-      { v:2, en:"Awareness but no formal processes" },
-      { v:3, en:"Bias testing and documentation for production models" },
-      { v:4, en:"Automated bias detection, fairness metrics, model cards" },
-      { v:5, en:"Proactive responsible AI with external audits and public reporting" },
-    ]},
-  { id:"G3", dim:"governance", core:true,
-    en:"What is your readiness for AI regulations (EU AI Act, NIST AI RMF)?",
-    opts:[
-      { v:1, en:"Unaware of regulatory requirements" },
-      { v:2, en:"Aware but no action taken" },
-      { v:3, en:"Gap analysis completed; compliance roadmap in progress" },
-      { v:4, en:"Compliance program in place for applicable regulations" },
-      { v:5, en:"Fully compliant with proactive regulatory engagement" },
-    ]},
-  { id:"G4", dim:"governance", core:false,
-    en:"How does your organization manage AI risk?",
-    opts:[
-      { v:1, en:"AI risks not formally assessed" },
-      { v:2, en:"Ad-hoc risk assessment for individual projects" },
-      { v:3, en:"AI risk register with regular reviews" },
-      { v:4, en:"Automated risk monitoring with escalation procedures" },
-      { v:5, en:"Enterprise AI risk management integrated with ERM framework" },
-    ]},
-  { id:"G5", dim:"governance", core:false,
-    en:"Does your organization maintain audit trails for AI decisions?",
-    opts:[
-      { v:1, en:"No audit trails" },
-      { v:2, en:"Basic logging for some AI systems" },
-      { v:3, en:"Structured audit logs for production AI systems" },
-      { v:4, en:"Comprehensive audit trails with explainability records" },
-      { v:5, en:"Real-time audit trails with automated compliance reporting" },
-    ]},
-
-  // OPERATIONS (O1-O5)
-  { id:"O1", dim:"operations", core:true,
-    en:"How many AI/ML models does your organization have in production?",
-    opts:[
-      { v:1, en:"None" },
-      { v:2, en:"1-3 models" },
-      { v:3, en:"4-15 models with defined SLAs" },
-      { v:4, en:"16-50+ models managed as a portfolio" },
-      { v:5, en:"100+ models with autonomous lifecycle management" },
-    ]},
-  { id:"O2", dim:"operations", core:true,
-    en:"What is your MLOps maturity level?",
-    opts:[
-      { v:1, en:"No MLOps practices" },
-      { v:2, en:"Manual model deployment and monitoring" },
-      { v:3, en:"Semi-automated CI/CD for ML with basic monitoring" },
-      { v:4, en:"Fully automated MLOps pipeline with drift detection" },
-      { v:5, en:"Self-optimizing MLOps with automated retraining" },
-    ]},
-  { id:"O3", dim:"operations", core:true,
-    en:"How does your organization monitor AI model performance in production?",
-    opts:[
-      { v:1, en:"No monitoring" },
-      { v:2, en:"Basic uptime monitoring only" },
-      { v:3, en:"Model-specific performance metrics with alerting" },
-      { v:4, en:"Comprehensive monitoring: drift, bias, latency, cost" },
-      { v:5, en:"Real-time observability with automated remediation" },
-    ]},
-  { id:"O4", dim:"operations", core:false,
-    en:"How does your organization handle model retraining?",
-    opts:[
-      { v:1, en:"No retraining process" },
-      { v:2, en:"Manual retraining when performance drops" },
-      { v:3, en:"Scheduled retraining with performance validation" },
-      { v:4, en:"Trigger-based automated retraining pipeline" },
-      { v:5, en:"Continuous learning with automated A/B testing and rollback" },
-    ]},
-  { id:"O5", dim:"operations", core:false,
-    en:"How does your organization manage AI-related costs?",
-    opts:[
-      { v:1, en:"No cost tracking for AI" },
-      { v:2, en:"Basic cloud billing review" },
-      { v:3, en:"Cost allocation by project/model with budgets" },
-      { v:4, en:"Automated cost optimization (spot instances, model compression)" },
-      { v:5, en:"FinOps for AI with real-time cost-per-inference tracking" },
-    ]},
-];
-
-// Recommendations
-const RECOMMENDATIONS = {
-  strategy: {
-    1:["Develop a formal AI strategy document aligned with business objectives",
-       "Identify an executive sponsor for AI initiatives",
-       "Conduct use case discovery workshops across business units"],
-    2:["Formalize AI strategy with measurable KPIs and milestones",
-       "Establish dedicated AI budget with ROI tracking mechanisms",
-       "Create a prioritized AI use case portfolio"],
-    3:["Integrate AI strategy into enterprise strategic planning cycle",
-       "Establish C-level AI ownership (CAIO or equivalent)",
-       "Implement portfolio-level AI investment management"],
-    4:["Evolve toward AI-first business model thinking",
-       "Establish board-level AI governance and reporting",
-       "Drive industry thought leadership in AI strategy"],
-  },
-  data: {
-    1:["Conduct a comprehensive data audit and create a data inventory",
-       "Establish basic data quality standards and ownership",
-       "Begin cloud migration planning for AI workloads"],
-    2:["Build a centralized data platform (data lake/warehouse)",
-       "Implement data quality monitoring and automated checks",
-       "Develop a data governance framework with stewards"],
-    3:["Evolve to data mesh/fabric architecture for scalability",
-       "Implement automated data pipelines with lineage tracking",
-       "Adopt privacy-preserving techniques for sensitive AI use cases"],
-    4:["Enable real-time streaming data for AI applications",
-       "Implement self-service data platforms with governance guardrails",
-       "Optimize data infrastructure for auto-scaling and cost efficiency"],
-  },
-  technology: {
-    1:["Select and standardize an AI/ML development platform",
-       "Establish basic model version control and experiment tracking",
-       "Define integration patterns for AI services"],
-    2:["Implement a model registry with versioning",
-       "Develop standardized evaluation benchmarks and test suites",
-       "Establish approved GenAI tools with usage guidelines"],
-    3:["Build enterprise AI platform with multi-tenant capabilities",
-       "Implement RAG pipelines and agentic AI workflows",
-       "Deploy comprehensive AI security program with red-teaming"],
-    4:["Evolve to composable AI architecture with self-optimization",
-       "Pioneer cutting-edge techniques (multimodal AI, foundation models)",
-       "Establish platform engineering team for AI golden paths"],
-  },
-  talent: {
-    1:["Hire initial AI/ML team (data scientists, ML engineers)",
-       "Launch basic AI literacy program for all employees",
-       "Identify internal AI champions in each business unit"],
-    2:["Establish dedicated AI/ML team with defined roles and career paths",
-       "Implement structured AI training programs by role",
-       "Create cross-functional AI project teams"],
-    3:["Establish AI Center of Excellence (CoE) with clear mandate",
-       "Embed AI champions across all business units",
-       "Build university partnerships for AI talent pipeline"],
-    4:["Distribute AI capabilities across all teams",
-       "Establish continuous learning culture with quarterly skill refreshes",
-       "Build industry-leading AI employer brand"],
-  },
-  governance: {
-    1:["Develop basic AI usage guidelines and policies",
-       "Raise awareness of AI risks across the organization",
-       "Begin mapping applicable AI regulations"],
-    2:["Establish formal AI governance framework and committee",
-       "Implement bias testing for production models",
-       "Start compliance mapping (NIST AI RMF / EU AI Act)"],
-    3:["Activate AI governance committee with enforcement authority",
-       "Automate bias detection and monitoring in production",
-       "Achieve full compliance with applicable regulations"],
-    4:["Establish industry-leading responsible AI practices",
-       "Engage proactively with regulators and standard bodies",
-       "Implement transparent AI audit trails enterprise-wide"],
-  },
-  operations: {
-    1:["Deploy first AI model to production with basic monitoring",
-       "Document manual deployment and operations processes",
-       "Define SLAs for AI systems"],
-    2:["Implement semi-automated CI/CD pipeline for ML models",
-       "Set up model performance monitoring with drift detection",
-       "Create operational runbooks and incident response procedures"],
-    3:["Build fully automated MLOps pipeline",
-       "Implement proactive retraining with canary deployments",
-       "Establish FinOps practices for AI cost optimization"],
-    4:["Evolve to self-healing AI systems with autonomous operations",
-       "Implement real-time optimization across model fleet",
-       "Achieve industry-leading operational efficiency"],
-  },
-};
-
-// ═══════════════════════════════════════════════════════════════════
-// STATE
-// ═══════════════════════════════════════════════════════════════════
-
-let answers = {};
-let activeQuestions = [];
-let dimGroups = [];
-let currentDimIdx = 0;
-
-// ═══════════════════════════════════════════════════════════════════
-// INIT
-// ═══════════════════════════════════════════════════════════════════
-
-function init() {
-  const grid = document.getElementById('dimGrid');
-  DIMENSIONS.forEach(d => {
-    grid.innerHTML += `<div class="dim-item"><strong>${d.en}</strong> — Weight: ${(d.weight*100).toFixed(0)}%<small>${d.desc}</small></div>`;
-  });
-  loadFromShareLink();
-}
-
-function loadFromShareLink() {
-  const hash = location.hash;
-  if (!hash.startsWith('#r=')) return;
-  try {
-    const payload = JSON.parse(decodeURIComponent(atob(hash.slice(3))));
-    answers = payload.a || {};
-    document.getElementById('inputCompany').value = payload.c || '';
-    document.getElementById('inputIndustry').value = payload.i || 'Technology';
-    document.getElementById('inputAssessor').value = payload.as || '';
-    document.getElementById('inputMode').value = payload.m || 'core';
-    document.getElementById('inputTarget').value = payload.t || '4';
-    showResults();
-  } catch (e) {
-    // malformed share link — fall back to the normal setup page
-  }
-}
-
-// ═══════════════════════════════════════════════════════════════════
-// NAVIGATION
-// ═══════════════════════════════════════════════════════════════════
-
-function showPage(id) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  window.scrollTo(0, 0);
-}
-
-function updateProgress() {
-  const total = activeQuestions.length;
-  const done = Object.keys(answers).length;
-  document.getElementById('progressBar').style.width = (done / total * 100) + '%';
-}
-
-// ═══════════════════════════════════════════════════════════════════
-// START ASSESSMENT
-// ═══════════════════════════════════════════════════════════════════
-
-function startAssessment() {
-  const mode = document.getElementById('inputMode').value;
-  const coreOnly = mode === 'core';
-  answers = {};
-  currentDimIdx = 0;
-
-  activeQuestions = QUESTIONS.filter(q => !coreOnly || q.core);
-
-  // Group by dimension
-  dimGroups = [];
-  let lastDim = null;
-  activeQuestions.forEach(q => {
-    if (q.dim !== lastDim) {
-      lastDim = q.dim;
-      dimGroups.push({ dim: DIMENSIONS.find(d => d.id === q.dim), questions: [] });
-    }
-    dimGroups[dimGroups.length - 1].questions.push(q);
-  });
-
-  showPage('pageAssess');
-  renderDimension();
-}
-
-// ═══════════════════════════════════════════════════════════════════
-// RENDER QUESTIONS
-// ═══════════════════════════════════════════════════════════════════
-
-function selectOption(qid, value) {
-  answers[qid] = value;
-  // Update UI
-  document.querySelectorAll(`[data-qid="${qid}"] li`).forEach(li => {
-    li.classList.toggle('selected', parseInt(li.dataset.value) === value);
-  });
-  document.querySelector(`[data-qid="${qid}"]`).closest('.question-card').classList.add('answered');
-  updateProgress();
-}
-
-function renderDimension() {
-  if (currentDimIdx >= dimGroups.length) {
-    showResults();
-    return;
-  }
-
-  const group = dimGroups[currentDimIdx];
-  const dim = group.dim;
-  const content = document.getElementById('assessContent');
-  const nav = document.getElementById('assessNav');
-
-  let html = `
-    <div class="dim-header">
-      <h2>${dim.en}</h2>
-      <p>${dim.desc}</p>
-      <p style="margin-top:0.3rem; font-size:0.8rem;">Section ${currentDimIdx + 1} of ${dimGroups.length} &middot; ${group.questions.length} questions</p>
-    </div>
-  `;
-
-  group.questions.forEach((q, qi) => {
-    const answered = answers[q.id] !== undefined;
-    html += `
-      <div class="question-card ${answered ? 'answered' : ''}">
-        <div class="q-text">${q.en}</div>
-        <ul class="option-list" data-qid="${q.id}">
-          ${q.opts.map(o => `
-            <li data-value="${o.v}" class="${answers[q.id] === o.v ? 'selected' : ''}"
-                onclick="selectOption('${q.id}', ${o.v})">
-              <strong>${o.v}.</strong> ${o.en}
-            </li>
-          `).join('')}
-        </ul>
-      </div>
-    `;
-  });
-
-  content.innerHTML = html;
-
-  // Nav buttons
-  let navHtml = '';
-  if (currentDimIdx > 0) {
-    navHtml += `<button class="btn btn-secondary" onclick="currentDimIdx--;renderDimension();">&#9664; Previous</button>`;
-  } else {
-    navHtml += `<div></div>`;
-  }
-  if (currentDimIdx < dimGroups.length - 1) {
-    navHtml += `<button class="btn btn-primary" onclick="currentDimIdx++;renderDimension();">Next &#9654;</button>`;
-  } else {
-    navHtml += `<button class="btn btn-primary" onclick="showResults();">&#128202; View Results</button>`;
-  }
-  nav.innerHTML = navHtml;
-
-  updateProgress();
-  window.scrollTo(0, 0);
-}
-
-// ═══════════════════════════════════════════════════════════════════
-// SCORING
-// ═══════════════════════════════════════════════════════════════════
-
-function scoreToLevel(s) {
-  if (s < 1.5) return 1;
-  if (s < 2.5) return 2;
-  if (s < 3.5) return 3;
-  if (s < 4.5) return 4;
-  return 5;
-}
-
-function computeScores() {
-  const prefixMap = { S:"strategy", D:"data", T:"technology", P:"talent", G:"governance", O:"operations" };
-  const dimAnswers = {};
-  DIMENSIONS.forEach(d => dimAnswers[d.id] = []);
-
-  Object.entries(answers).forEach(([qid, val]) => {
-    const dimId = prefixMap[qid[0]];
-    if (dimId) dimAnswers[dimId].push(val);
-  });
-
-  const dimScores = DIMENSIONS.map(d => {
-    const vals = dimAnswers[d.id];
-    const raw = vals.length ? vals.reduce((a, b) => a + b, 0) / vals.length : 0;
-    return {
-      id: d.id, en: d.en,
-      weight: d.weight,
-      raw: Math.round(raw * 100) / 100,
-      level: scoreToLevel(raw),
-      count: vals.length,
-    };
-  });
-
-  const totalWeight = DIMENSIONS.reduce((s, d) => s + d.weight, 0);
-  const overall = dimScores.reduce((s, ds) => s + ds.raw * ds.weight, 0) / totalWeight;
-
-  return {
-    overall: Math.round(overall * 100) / 100,
-    overallLevel: scoreToLevel(overall),
-    dims: dimScores,
-    totalQ: Object.keys(answers).length,
-  };
-}
-
-// ═══════════════════════════════════════════════════════════════════
-// RESULTS
-// ═══════════════════════════════════════════════════════════════════
-
-function showResults() {
-  showPage('pageResults');
-  document.getElementById('progressBar').style.width = '100%';
-
-  const result = computeScores();
-  const target = parseInt(document.getElementById('inputTarget').value);
-  const company = document.getElementById('inputCompany').value || 'Assessment Target';
-  const industry = document.getElementById('inputIndustry').value;
-  const level = LEVELS[result.overallLevel];
-  const container = document.getElementById('resultsContent');
-
-  // Gap analysis
-  const gaps = result.dims
-    .map(ds => ({ ...ds, gap: Math.round((target - ds.raw) * 100) / 100 }))
-    .filter(g => g.gap > 0)
-    .sort((a, b) => b.gap - a.gap)
-    .map(g => ({ ...g, priority: g.gap >= 2 ? 'High' : g.gap >= 1 ? 'Medium' : 'Low' }));
-
-  let html = '';
-
-  // Score hero
-  html += `
-    <div class="score-hero">
-      <div class="big-score">${result.overall.toFixed(1)} / 5.0</div>
-      <div class="level-name">Level ${result.overallLevel} — ${level.en}</div>
-      <div class="level-desc">${level.desc}</div>
-      <div style="margin-top:0.8rem; font-size:0.85rem; opacity:0.8;">
-        ${company} &middot; ${industry} &middot; ${new Date().toLocaleDateString()}
+    <div class="future">
+      <h2>Further phases</h2>
+      <p>The toolkit follows the full AI-architect delivery lifecycle. These phases are scaffolded and will be filled in over time.</p>
+      <div class="pills">
+        <span class="pill">Phase 2 · Strategy &amp; Roadmap</span>
+        <span class="pill">Phase 3 · Architecture Design</span>
+        <span class="pill">Phase 4 · PoC / Pilot</span>
+        <span class="pill">Phase 5 · Implementation</span>
+        <span class="pill">Phase 6 · Governance &amp; Security</span>
+        <span class="pill">Phase 7 · MLOps &amp; Operations</span>
       </div>
     </div>
-  `;
+  </main>
 
-  // Dimension bars
-  html += `<div class="card"><h2>Dimension Scores</h2>`;
-  result.dims.forEach(ds => {
-    const pct = (ds.raw / 5 * 100).toFixed(0);
-    const color = LEVEL_COLORS[ds.level];
-    const lightText = ds.level === 5;
-    html += `
-      <div class="dim-score-row">
-        <div class="dim-label">${ds.en}</div>
-        <div class="bar-wrap">
-          <div class="bar-fill" style="width:${pct}%; background:${color};${lightText ? 'color:var(--primary);' : ''}">${ds.raw.toFixed(1)}</div>
-        </div>
-        <div class="score-val">
-          <span class="badge${lightText ? ' badge-light' : ''}" style="background:${color};">L${ds.level}</span>
-        </div>
-      </div>
-    `;
-  });
-  html += `</div>`;
-
-  // Radar chart
-  html += `<div class="card"><h2>Maturity Radar</h2>
-    <div class="chart-container"><canvas id="radar" width="400" height="460"></canvas></div>
-  </div>`;
-
-  // Gap analysis table
-  html += `<div class="card"><h2>Gap Analysis</h2>
-    <p style="margin-bottom:1rem;">Target: <strong>Level ${target} — ${LEVELS[target].en}</strong></p>`;
-  if (gaps.length) {
-    html += `<table class="gap-table"><thead><tr>
-      <th>Dimension</th><th>Current</th><th>Target</th><th>Gap</th><th>Priority</th>
-    </tr></thead><tbody>`;
-    gaps.forEach(g => {
-      html += `<tr>
-        <td>${g.en}</td>
-        <td>${g.raw.toFixed(1)}</td>
-        <td>${target}.0</td>
-        <td>${g.gap.toFixed(1)}</td>
-        <td class="priority-${g.priority.toLowerCase()}">${g.priority}</td>
-      </tr>`;
-    });
-    html += `</tbody></table>`;
-  } else {
-    html += `<p style="color:var(--green); font-weight:600;">All dimensions meet or exceed the target level.</p>`;
-  }
-  html += `</div>`;
-
-  // Recommendations
-  html += `<div class="card"><h2>Recommendations</h2>`;
-  const priorityLabels = { High: '🔴 High Priority (Months 1-3)', Medium: '🟡 Medium Priority (Months 4-9)', Low: '🟢 Low Priority (Months 10-18)' };
-  ['High', 'Medium', 'Low'].forEach(p => {
-    const pGaps = gaps.filter(g => g.priority === p);
-    if (!pGaps.length) return;
-    html += `<div class="rec-section"><h4>${priorityLabels[p]}</h4>`;
-    pGaps.forEach(g => {
-      const lvl = Math.min(g.level, 4);
-      const recs = RECOMMENDATIONS[g.id]?.[lvl] || [];
-      html += `<div class="rec-item" onclick="this.classList.toggle('open')">
-        <div class="rec-header"><span>${g.en}</span><span>Gap: ${g.gap.toFixed(1)}</span></div>
-        <div class="rec-body"><ul>${recs.map(r => `<li>${r}</li>`).join('')}</ul></div>
-      </div>`;
-    });
-    html += `</div>`;
-  });
-  html += `</div>`;
-
-  // Downloads
-  html += `<div class="card"><h2>Download</h2>
-    <div class="download-row">
-      <button class="btn btn-primary" onclick="downloadMarkdown()">📄 Download Markdown Report</button>
-      <button class="btn btn-primary" onclick="downloadHTML()">🌐 Download HTML Report</button>
-      <button id="shareBtn" class="btn btn-secondary" onclick="shareResults()">🔗 Share Results</button>
-      <button class="btn btn-secondary" onclick="resetAssessment()">🔄 New Assessment</button>
-    </div>
-  </div>`;
-
-  container.innerHTML = html;
-
-  // Draw radar
-  setTimeout(() => drawRadar(result.dims, target), 100);
-}
-
-// ═══════════════════════════════════════════════════════════════════
-// RADAR CHART (pure Canvas)
-// ═══════════════════════════════════════════════════════════════════
-
-function drawRadar(dims, target) {
-  const canvas = document.getElementById('radar');
-  if (!canvas) return;
-  const ctx = canvas.getContext('2d');
-  const W = canvas.width, H = canvas.height;
-  const chartH = 400;
-  const cx = W / 2, cy = chartH / 2;
-  const R = Math.min(W, chartH) / 2 - 50;
-  const n = dims.length;
-
-  ctx.clearRect(0, 0, W, H);
-
-  // Grid
-  for (let ring = 1; ring <= 5; ring++) {
-    const r = R * ring / 5;
-    ctx.beginPath();
-    for (let i = 0; i <= n; i++) {
-      const angle = (Math.PI * 2 * i / n) - Math.PI / 2;
-      const x = cx + r * Math.cos(angle);
-      const y = cy + r * Math.sin(angle);
-      i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
-    }
-    ctx.strokeStyle = '#d8d4cf';
-    ctx.lineWidth = 1;
-    ctx.stroke();
-  }
-
-  // Axes + labels
-  dims.forEach((d, i) => {
-    const angle = (Math.PI * 2 * i / n) - Math.PI / 2;
-    ctx.beginPath();
-    ctx.moveTo(cx, cy);
-    ctx.lineTo(cx + R * Math.cos(angle), cy + R * Math.sin(angle));
-    ctx.strokeStyle = '#d8d4cf';
-    ctx.stroke();
-
-    const lx = cx + (R + 30) * Math.cos(angle);
-    const ly = cy + (R + 30) * Math.sin(angle);
-    ctx.fillStyle = '#222222';
-    ctx.font = '11px sans-serif';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    // Wrap label
-    const label = d.en.length > 12 ? d.en.split(' & ').join('\n& ') : d.en;
-    label.split('\n').forEach((line, li) => {
-      ctx.fillText(line, lx, ly + li * 13);
-    });
-  });
-
-  // Target polygon
-  ctx.beginPath();
-  dims.forEach((d, i) => {
-    const angle = (Math.PI * 2 * i / n) - Math.PI / 2;
-    const r = R * target / 5;
-    const x = cx + r * Math.cos(angle);
-    const y = cy + r * Math.sin(angle);
-    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
-  });
-  ctx.closePath();
-  ctx.strokeStyle = '#9A97C9';
-  ctx.lineWidth = 2;
-  ctx.setLineDash([5, 5]);
-  ctx.stroke();
-  ctx.setLineDash([]);
-
-  // Score polygon
-  ctx.beginPath();
-  dims.forEach((d, i) => {
-    const angle = (Math.PI * 2 * i / n) - Math.PI / 2;
-    const r = R * d.raw / 5;
-    const x = cx + r * Math.cos(angle);
-    const y = cy + r * Math.sin(angle);
-    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
-  });
-  ctx.closePath();
-  ctx.fillStyle = 'rgba(27,20,116,0.2)';
-  ctx.fill();
-  ctx.strokeStyle = '#1B1474';
-  ctx.lineWidth = 2.5;
-  ctx.stroke();
-
-  // Score dots
-  dims.forEach((d, i) => {
-    const angle = (Math.PI * 2 * i / n) - Math.PI / 2;
-    const r = R * d.raw / 5;
-    const x = cx + r * Math.cos(angle);
-    const y = cy + r * Math.sin(angle);
-    ctx.beginPath();
-    ctx.arc(x, y, 5, 0, Math.PI * 2);
-    ctx.fillStyle = LEVEL_COLORS[d.level];
-    ctx.fill();
-    ctx.strokeStyle = 'white';
-    ctx.lineWidth = 2;
-    ctx.stroke();
-  });
-
-  // Legend
-  const legendY = chartH + 30;
-  ctx.fillStyle = '#1B1474';
-  ctx.fillRect(10, legendY - 10, 12, 12);
-  ctx.fillStyle = '#222222';
-  ctx.font = '11px sans-serif';
-  ctx.textAlign = 'left';
-  ctx.fillText('Current Score', 26, legendY);
-
-  ctx.strokeStyle = '#9A97C9';
-  ctx.setLineDash([5, 5]);
-  ctx.beginPath();
-  ctx.moveTo(170, legendY - 4);
-  ctx.lineTo(190, legendY - 4);
-  ctx.stroke();
-  ctx.setLineDash([]);
-  ctx.fillText('Target Level', 195, legendY);
-}
-
-// ═══════════════════════════════════════════════════════════════════
-// SHARE
-// ═══════════════════════════════════════════════════════════════════
-
-function shareResults() {
-  const payload = {
-    a: answers,
-    c: document.getElementById('inputCompany').value,
-    i: document.getElementById('inputIndustry').value,
-    as: document.getElementById('inputAssessor').value,
-    m: document.getElementById('inputMode').value,
-    t: document.getElementById('inputTarget').value,
-  };
-  const encoded = btoa(encodeURIComponent(JSON.stringify(payload)));
-  const url = `${location.origin}${location.pathname}#r=${encoded}`;
-  const btn = document.getElementById('shareBtn');
-  const original = btn.textContent;
-
-  navigator.clipboard.writeText(url).then(() => {
-    btn.textContent = '✅ Link Copied!';
-    setTimeout(() => { btn.textContent = original; }, 2000);
-  }).catch(() => {
-    btn.textContent = '⚠️ Copy Failed';
-    setTimeout(() => { btn.textContent = original; }, 2000);
-  });
-}
-
-// ═══════════════════════════════════════════════════════════════════
-// DOWNLOAD
-// ═══════════════════════════════════════════════════════════════════
-
-function downloadMarkdown() {
-  const result = computeScores();
-  const target = parseInt(document.getElementById('inputTarget').value);
-  const company = document.getElementById('inputCompany').value || 'Assessment Target';
-  const industry = document.getElementById('inputIndustry').value;
-  const assessor = document.getElementById('inputAssessor').value || 'AI Architect';
-  const mode = document.getElementById('inputMode').value;
-  const date = new Date().toISOString().split('T')[0];
-  const level = LEVELS[result.overallLevel];
-
-  let md = `# AI Maturity Assessment Report\\n\\n`;
-  md += `| Field | Value |\\n|-------|-------|\\n`;
-  md += `| **Company** | ${company} |\\n`;
-  md += `| **Industry** | ${industry} |\\n`;
-  md += `| **Date** | ${date} |\\n`;
-  md += `| **Assessor** | ${assessor} |\\n`;
-  md += `| **Mode** | ${mode} |\\n\\n---\\n\\n`;
-
-  md += `## Overall Score: ${result.overall.toFixed(1)} / 5.0\\n`;
-  md += `**Level ${result.overallLevel}: ${level.en}**\\n\\n`;
-  md += `${level.desc}\\n\\n---\\n\\n`;
-
-  md += `## Dimension Scores\\n\\n`;
-  md += `| Dimension | Score | Level |\\n|-----------|-------|-------|\\n`;
-  result.dims.forEach(ds => {
-    const dl = LEVELS[ds.level];
-    md += `| ${ds.en} | ${ds.raw.toFixed(1)} | L${ds.level} ${dl.en} |\\n`;
-  });
-
-  md += `\\n---\\n\\n## Gap Analysis (Target: Level ${target})\\n\\n`;
-  md += `| Dimension | Current | Gap | Priority |\\n|-----------|---------|-----|----------|\\n`;
-  const gaps = result.dims
-    .map(ds => ({ ...ds, gap: Math.round((target - ds.raw) * 100) / 100 }))
-    .filter(g => g.gap > 0)
-    .sort((a, b) => b.gap - a.gap)
-    .map(g => ({ ...g, priority: g.gap >= 2 ? 'High' : g.gap >= 1 ? 'Medium' : 'Low' }));
-  gaps.forEach(g => {
-    md += `| ${g.en} | ${g.raw.toFixed(1)} | ${g.gap.toFixed(1)} | ${g.priority} |\\n`;
-  });
-
-  md += `\\n---\\n\\n## Recommendations\\n\\n`;
-  gaps.forEach(g => {
-    const lvl = Math.min(g.level, 4);
-    const recs = RECOMMENDATIONS[g.id]?.[lvl] || [];
-    md += `### ${g.en} — Priority: ${g.priority}\\n\\n`;
-    recs.forEach(r => md += `- ${r}\\n`);
-    md += `\\n`;
-  });
-
-  md += `---\\n\\n*Generated by AI Maturity Assessment Tool*\\n`;
-
-  const blob = new Blob([md.replace(/\\n/g, '\n')], { type: 'text/markdown' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = `AI_Maturity_${company.replace(/\s/g, '_')}_${date}.md`;
-  a.click();
-}
-
-function downloadHTML() {
-  const result = computeScores();
-  const target = parseInt(document.getElementById('inputTarget').value);
-  const company = document.getElementById('inputCompany').value || 'Assessment Target';
-  const industry = document.getElementById('inputIndustry').value;
-  const assessor = document.getElementById('inputAssessor').value || 'AI Architect';
-  const mode = document.getElementById('inputMode').value;
-  const date = new Date().toISOString().split('T')[0];
-  const level = LEVELS[result.overallLevel];
-
-  const gaps = result.dims
-    .map(ds => ({ ...ds, gap: Math.round((target - ds.raw) * 100) / 100 }))
-    .filter(g => g.gap > 0)
-    .sort((a, b) => b.gap - a.gap)
-    .map(g => ({ ...g, priority: g.gap >= 2 ? 'High' : g.gap >= 1 ? 'Medium' : 'Low' }));
-
-  const escapeHtml = s => String(s).replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
-
-  let dimRows = '';
-  result.dims.forEach(ds => {
-    const dl = LEVELS[ds.level];
-    dimRows += `<tr><td>${escapeHtml(ds.en)}</td><td>${ds.raw.toFixed(1)}</td><td>L${ds.level} ${escapeHtml(dl.en)}</td></tr>`;
-  });
-
-  let gapRows = gaps.length
-    ? gaps.map(g => `<tr><td>${escapeHtml(g.en)}</td><td>${g.raw.toFixed(1)}</td><td>${g.gap.toFixed(1)}</td><td>${g.priority}</td></tr>`).join('')
-    : `<tr><td colspan="4">All dimensions meet or exceed the target level.</td></tr>`;
-
-  let recSections = gaps.map(g => {
-    const lvl = Math.min(g.level, 4);
-    const recs = RECOMMENDATIONS[g.id]?.[lvl] || [];
-    return `<div class="rec-block"><h3>${escapeHtml(g.en)} — Priority: ${g.priority}</h3><ul>${recs.map(r => `<li>${escapeHtml(r)}</li>`).join('')}</ul></div>`;
-  }).join('');
-
-  const html = `<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<title>AI Maturity Assessment Report — ${escapeHtml(company)}</title>
-<style>
-  body { font-family: 'Segoe UI', Arial, sans-serif; color: #222; line-height: 1.6; max-width: 860px; margin: 0 auto; padding: 2rem 1.5rem; }
-  h1 { font-size: 1.8rem; margin-bottom: 0.2rem; color: #1B1474; }
-  h2 { color: #1B1474; border-bottom: 2px solid #DCDDF6; padding-bottom: 0.3rem; margin-top: 2rem; }
-  h3 { margin-top: 1.2rem; margin-bottom: 0.4rem; }
-  table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
-  th, td { text-align: left; padding: 0.5rem 0.7rem; border-bottom: 1px solid #d8d4cf; font-size: 0.95rem; }
-  th { background: #F8F6F3; font-weight: 600; }
-  .meta-table td:first-child { font-weight: 600; width: 160px; }
-  .score-hero { background: #1B1474; color: white; text-align: center; padding: 1.8rem; border-radius: 6px; margin: 1.2rem 0; }
-  .score-hero .big { font-size: 2.6rem; font-weight: 700; }
-  .score-hero .lvl { font-size: 1.1rem; opacity: 0.95; margin-top: 0.2rem; }
-  .rec-block { margin-bottom: 1rem; }
-  footer { margin-top: 2.5rem; color: #5a6872; font-size: 0.85rem; border-top: 1px solid #d8d4cf; padding-top: 1rem; }
-</style>
-</head>
-<body>
-  <h1>AI Maturity Assessment Report</h1>
-  <table class="meta-table">
-    <tr><td>Company</td><td>${escapeHtml(company)}</td></tr>
-    <tr><td>Industry</td><td>${escapeHtml(industry)}</td></tr>
-    <tr><td>Date</td><td>${date}</td></tr>
-    <tr><td>Assessor</td><td>${escapeHtml(assessor)}</td></tr>
-    <tr><td>Mode</td><td>${escapeHtml(mode)}</td></tr>
-  </table>
-
-  <div class="score-hero">
-    <div class="big">${result.overall.toFixed(1)} / 5.0</div>
-    <div class="lvl">Level ${result.overallLevel} — ${escapeHtml(level.en)}</div>
-    <div>${escapeHtml(level.desc)}</div>
-  </div>
-
-  <h2>Dimension Scores</h2>
-  <table>
-    <tr><th>Dimension</th><th>Score</th><th>Level</th></tr>
-    ${dimRows}
-  </table>
-
-  <h2>Gap Analysis (Target: Level ${target})</h2>
-  <table>
-    <tr><th>Dimension</th><th>Current</th><th>Gap</th><th>Priority</th></tr>
-    ${gapRows}
-  </table>
-
-  <h2>Recommendations</h2>
-  ${recSections || '<p>No recommendations — all targets met.</p>'}
-
-  <footer>Generated by AI Maturity Assessment Tool</footer>
-</body>
-</html>`;
-
-  const blob = new Blob([html], { type: 'text/html' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = `AI_Maturity_${company.replace(/\s/g, '_')}_${date}.html`;
-  a.click();
-}
-
-function resetAssessment() {
-  answers = {};
-  currentDimIdx = 0;
-  showPage('pageSetup');
-  document.getElementById('progressBar').style.width = '0%';
-}
-
-// ═══════════════════════════════════════════════════════════════════
-// BOOT
-// ═══════════════════════════════════════════════════════════════════
-init();
-</script>
+  <footer>
+    Built as an independent AI-architecture consulting portfolio. All assessment tools run fully client-side — no data leaves your browser.
+  </footer>
 </body>
 </html>

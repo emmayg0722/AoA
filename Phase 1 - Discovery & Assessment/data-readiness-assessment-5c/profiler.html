@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Data Readiness Profiler (5C)</title>
+<meta name="description" content="Profile a data sample entirely in your browser — fill rate, duplicates, distributions, freshness — for a 5C data-readiness assessment. No data leaves your machine.">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='16' fill='%231B1474'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #1B1474;
+    --primary-dark: #120D52;
+    --accent: #DCDDF6;
+    --powder: #EEEEFA;
+    --ink: #1c1c28;
+    --muted: #5b5b6b;
+    --line: #e4e4f0;
+    --green: #1a8a5c;
+    --amber: #d4790e;
+    --red: #c0392b;
+    --font-heading: 'Fraunces', Georgia, serif;
+    --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: var(--font-body); color: var(--ink); background: #fafaff; line-height: 1.6; }
+  .hero {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    color: #fff; padding: 48px 24px 40px;
+  }
+  .wrap { max-width: 1000px; margin: 0 auto; }
+  .hero .crumb { font-size: 13px; color: var(--accent); margin-bottom: 12px; }
+  .hero .crumb a { color: var(--accent); text-decoration: none; }
+  .hero h1 { font-family: var(--font-heading); font-weight: 700; font-size: 36px; line-height: 1.15; }
+  .hero p { margin-top: 12px; font-size: 16px; color: #dcdcf2; max-width: 680px; }
+  main { max-width: 1000px; margin: 0 auto; padding: 32px 24px 72px; }
+  .privacy {
+    display: flex; gap: 12px; align-items: flex-start;
+    background: var(--powder); border: 1px solid var(--accent);
+    border-radius: 12px; padding: 16px 18px; margin-bottom: 28px;
+  }
+  .privacy .lock { font-size: 22px; }
+  .privacy strong { color: var(--primary); }
+  .privacy span { font-size: 14px; color: var(--muted); }
+  .dropzone {
+    border: 2px dashed #b9b8de; border-radius: 16px; background: #fff;
+    padding: 48px 24px; text-align: center; cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .dropzone:hover, .dropzone.drag { border-color: var(--primary); background: var(--powder); }
+  .dropzone .big { font-size: 40px; }
+  .dropzone h2 { font-family: var(--font-heading); font-weight: 600; font-size: 22px; color: var(--primary); margin: 10px 0 4px; }
+  .dropzone p { color: var(--muted); font-size: 14px; }
+  .dropzone .hint { margin-top: 10px; font-size: 12.5px; color: #8a8a9c; }
+  input[type=file] { display: none; }
+  .results { display: none; margin-top: 8px; }
+  .summary-cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 26px; }
+  .scard { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 18px; }
+  .scard .label { font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+  .scard .val { font-family: var(--font-heading); font-weight: 700; font-size: 28px; color: var(--primary); margin-top: 6px; }
+  .scard .val small { font-family: var(--font-body); font-size: 13px; font-weight: 500; color: var(--muted); }
+  .card { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 24px; margin-bottom: 24px; }
+  .card h2 { font-family: var(--font-heading); font-weight: 600; font-size: 22px; color: var(--primary); margin-bottom: 16px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  th, td { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); }
+  td.num { font-variant-numeric: tabular-nums; }
+  .typetag { font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 12px; background: var(--powder); color: var(--primary); }
+  .bar { height: 7px; border-radius: 4px; background: #eee; overflow: hidden; min-width: 70px; margin-top: 4px; }
+  .bar > i { display: block; height: 100%; border-radius: 4px; }
+  .meta-note { font-size: 12px; color: var(--muted); }
+  .flag-good { color: var(--green); font-weight: 600; }
+  .flag-warn { color: var(--amber); font-weight: 600; }
+  .flag-bad { color: var(--red); font-weight: 600; }
+  .btn {
+    font-family: var(--font-body); font-size: 14px; font-weight: 600;
+    padding: 11px 18px; border-radius: 8px; border: none; cursor: pointer; transition: all 0.15s;
+  }
+  .btn-primary { background: var(--accent); color: var(--primary); }
+  .btn-primary:hover { background: #C3C5EC; }
+  .btn-secondary { background: #fff; color: var(--primary); border: 1.5px solid var(--accent); }
+  .btn-secondary:hover { background: var(--powder); }
+  .download-row { display: flex; flex-wrap: wrap; gap: 12px; }
+  .agg-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+  pre.agg {
+    background: #f5f5fc; border: 1px solid var(--line); border-radius: 10px;
+    padding: 16px; font-size: 12.5px; line-height: 1.55; overflow-x: auto;
+    white-space: pre-wrap; word-break: break-word; margin-top: 14px; color: #2a2a3a;
+  }
+  .footnote { font-size: 12px; color: var(--muted); margin-top: 8px; }
+  @media (max-width: 720px) {
+    .summary-cards { grid-template-columns: 1fr 1fr; }
+    .hero h1 { font-size: 28px; }
+  }
+</style>
+</head>
+<body>
+  <header class="hero">
+    <div class="wrap">
+      <div class="crumb"><a href="../../">AI Architect Toolkit</a> · Phase 1 · Data Readiness Assessment (5C)</div>
+      <h1>Data Readiness Profiler</h1>
+      <p>Drop in a representative data sample and get the Coverage &amp; Credibility evidence for a 5C assessment — fill rate, duplicates, type consistency, distributions, and freshness — computed entirely on your machine.</p>
+    </div>
+  </header>
+
+  <main>
+    <div class="privacy">
+      <span class="lock">🔒</span>
+      <span><strong>Your data never leaves your browser.</strong> This page makes no network calls with your file — parsing and all statistics run locally in JavaScript. Only the <em>aggregate summary</em> (counts and rates, never raw rows) is meant to be copied back into the DRA-5C agent.</span>
+    </div>
+
+    <label class="dropzone" id="dropzone" for="fileInput">
+      <div class="big">📂</div>
+      <h2>Drop a CSV or JSON file here</h2>
+      <p>or click to choose a file</p>
+      <div class="hint">Use a representative sample (e.g. a few thousand rows). Everything is processed locally.</div>
+    </label>
+    <input type="file" id="fileInput" accept=".csv,.tsv,.json,text/csv,application/json">
+
+    <div class="results" id="results"></div>
+  </main>
+
+<script>
+// ════════════════════════════════════════════════════════════════
+// Data Readiness Profiler — 100% client-side. No network calls.
+// ════════════════════════════════════════════════════════════════
+
+const dz = document.getElementById('dropzone');
+const fileInput = document.getElementById('fileInput');
+const resultsEl = document.getElementById('results');
+let lastReport = null;
+
+['dragover', 'dragenter'].forEach(ev =>
+  dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.add('drag'); }));
+['dragleave', 'drop'].forEach(ev =>
+  dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.remove('drag'); }));
+dz.addEventListener('drop', e => {
+  if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
+});
+fileInput.addEventListener('change', e => {
+  if (e.target.files.length) handleFile(e.target.files[0]);
+});
+
+function handleFile(file) {
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const name = file.name.toLowerCase();
+      let cols, rows;
+      if (name.endsWith('.json')) {
+        ({ cols, rows } = parseJSON(reader.result));
+      } else {
+        const delim = name.endsWith('.tsv') ? '\t' : ',';
+        ({ cols, rows } = parseCSV(reader.result, delim));
+      }
+      if (!cols.length || !rows.length) {
+        alert('Could not find tabular rows in that file.');
+        return;
+      }
+      const report = analyze(file.name, cols, rows);
+      lastReport = report;
+      render(report);
+    } catch (err) {
+      alert('Failed to parse file: ' + err.message);
+    }
+  };
+  reader.readAsText(file);
+}
+
+// ── Parsers ──────────────────────────────────────────────────────
+function parseCSV(text, delim) {
+  const records = [];
+  let cur = [], field = '', inQ = false;
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+    if (inQ) {
+      if (ch === '"') {
+        if (text[i + 1] === '"') { field += '"'; i++; }
+        else inQ = false;
+      } else field += ch;
+    } else {
+      if (ch === '"') inQ = true;
+      else if (ch === delim) { cur.push(field); field = ''; }
+      else if (ch === '\n') { cur.push(field); records.push(cur); cur = []; field = ''; }
+      else if (ch === '\r') { /* skip */ }
+      else field += ch;
+    }
+  }
+  if (field !== '' || cur.length) { cur.push(field); records.push(cur); }
+  // strip a fully-empty trailing row
+  const cleaned = records.filter(r => !(r.length === 1 && r[0].trim() === ''));
+  const cols = (cleaned.shift() || []).map(c => c.trim());
+  const rows = cleaned.map(r => {
+    const o = {};
+    cols.forEach((c, idx) => { o[c] = (r[idx] !== undefined ? r[idx] : '').trim(); });
+    return o;
+  });
+  return { cols, rows };
+}
+
+function parseJSON(text) {
+  let data = JSON.parse(text);
+  if (!Array.isArray(data)) {
+    // allow {records:[...]} or {data:[...]} shapes
+    data = data.records || data.data || data.rows || [];
+  }
+  const colSet = [];
+  data.forEach(o => Object.keys(o || {}).forEach(k => { if (!colSet.includes(k)) colSet.push(k); }));
+  const rows = data.map(o => {
+    const r = {};
+    colSet.forEach(c => {
+      const v = o ? o[c] : undefined;
+      r[c] = (v === null || v === undefined) ? '' : String(v);
+    });
+    return r;
+  });
+  return { cols: colSet, rows };
+}
+
+// ── Type inference ───────────────────────────────────────────────
+const RE_INT = /^-?\d{1,15}$/;
+const RE_NUM = /^-?\d*\.?\d+(?:[eE][+-]?\d+)?$/;
+const RE_DATE = /^\d{4}[-/]\d{1,2}[-/]\d{1,2}([ T]\d{1,2}:\d{2})?|^\d{1,2}[-/]\d{1,2}[-/]\d{2,4}$/;
+const BOOLS = new Set(['true', 'false', 'yes', 'no']);
+
+function isEmpty(v) { return v === '' || v === null || v === undefined; }
+function valType(v) {
+  if (isEmpty(v)) return 'null';
+  const s = String(v).trim();
+  if (RE_INT.test(s)) return 'integer';
+  if (RE_NUM.test(s)) return 'number';
+  if (RE_DATE.test(s) && !isNaN(Date.parse(s))) return 'date';
+  if (BOOLS.has(s.toLowerCase())) return 'boolean';
+  return 'string';
+}
+
+// ── Analysis ─────────────────────────────────────────────────────
+function analyze(filename, cols, rows) {
+  const n = rows.length;
+  const columns = cols.map(col => {
+    const counts = { null: 0, integer: 0, number: 0, date: 0, boolean: 0, string: 0 };
+    const distinct = new Set();
+    const nums = [];
+    const dates = [];
+    let nonNull = 0;
+    for (const row of rows) {
+      const v = row[col];
+      const t = valType(v);
+      counts[t]++;
+      if (t === 'null') continue;
+      nonNull++;
+      distinct.add(v);
+      if (t === 'integer' || t === 'number') nums.push(parseFloat(v));
+      if (t === 'date') { const d = Date.parse(v); if (!isNaN(d)) dates.push(d); }
+    }
+    // dominant non-null type
+    const typeEntries = Object.entries(counts).filter(([k]) => k !== 'null');
+    typeEntries.sort((a, b) => b[1] - a[1]);
+    const domType = nonNull === 0 ? 'empty' : typeEntries[0][0];
+    const typeConsistency = nonNull === 0 ? 0 : counts[domType] / nonNull;
+
+    const c = {
+      name: col,
+      total: n,
+      nonNull,
+      nullCount: counts.null,
+      fillRate: n ? nonNull / n : 0,
+      distinct: distinct.size,
+      cardinalityRatio: nonNull ? distinct.size / nonNull : 0,
+      type: domType,
+      typeConsistency,
+      isUniqueKey: nonNull === n && distinct.size === n && n > 0,
+    };
+    if (nums.length) {
+      c.min = Math.min(...nums);
+      c.max = Math.max(...nums);
+      c.mean = nums.reduce((a, b) => a + b, 0) / nums.length;
+    }
+    if (dates.length) {
+      c.dateMin = Math.min(...dates);
+      c.dateMax = Math.max(...dates);
+    }
+    return c;
+  });
+
+  // full-row duplicates
+  const seen = new Set();
+  let dupRows = 0;
+  for (const row of rows) {
+    const key = cols.map(c => row[c]).join('');
+    if (seen.has(key)) dupRows++;
+    else seen.add(key);
+  }
+
+  const totalCells = n * cols.length;
+  const filledCells = columns.reduce((a, c) => a + c.nonNull, 0);
+
+  // overall freshness from any date columns
+  const dateCols = columns.filter(c => c.type === 'date' && c.dateMax);
+  let freshness = null;
+  if (dateCols.length) {
+    const newest = Math.max(...dateCols.map(c => c.dateMax));
+    const oldest = Math.min(...dateCols.map(c => c.dateMin));
+    freshness = {
+      newest, oldest,
+      ageDays: Math.round((Date.now() - newest) / 86400000),
+      spanDays: Math.round((newest - oldest) / 86400000),
+    };
+  }
+
+  return {
+    filename, rowCount: n, colCount: cols.length,
+    overallFill: totalCells ? filledCells / totalCells : 0,
+    dupRows, dupRate: n ? dupRows / n : 0,
+    columns, freshness,
+    generatedAt: new Date().toISOString().slice(0, 19).replace('T', ' '),
+  };
+}
+
+// ── Rendering ────────────────────────────────────────────────────
+function pct(x) { return (x * 100).toFixed(1) + '%'; }
+function fmtNum(x) {
+  if (x === undefined || x === null) return '—';
+  if (Math.abs(x) >= 1000 || Number.isInteger(x)) return x.toLocaleString(undefined, { maximumFractionDigits: 2 });
+  return x.toFixed(2);
+}
+function fmtDate(ms) { return new Date(ms).toISOString().slice(0, 10); }
+function barColor(v) { return v >= 0.95 ? 'var(--green)' : v >= 0.8 ? 'var(--amber)' : 'var(--red)'; }
+function flag(v, good, warn) {
+  const cls = v >= good ? 'flag-good' : v >= warn ? 'flag-warn' : 'flag-bad';
+  return '<span class="' + cls + '">' + pct(v) + '</span>';
+}
+
+function render(r) {
+  const dupCls = r.dupRate <= 0.01 ? 'flag-good' : r.dupRate <= 0.05 ? 'flag-warn' : 'flag-bad';
+  let h = '';
+
+  h += '<div class="summary-cards">';
+  h += scard('Rows', r.rowCount.toLocaleString());
+  h += scard('Columns', String(r.colCount));
+  h += scard('Overall fill', '<span class="' + (r.overallFill >= 0.95 ? 'flag-good' : r.overallFill >= 0.8 ? 'flag-warn' : 'flag-bad') + '">' + pct(r.overallFill) + '</span>');
+  h += scard('Dup. rows', '<span class="' + dupCls + '">' + pct(r.dupRate) + '</span> <small>(' + r.dupRows.toLocaleString() + ')</small>');
+  h += '</div>';
+
+  if (r.freshness) {
+    h += '<div class="card"><h2>Freshness</h2>';
+    h += '<p class="meta-note">Date range across detected date columns: <strong>' + fmtDate(r.freshness.oldest) + '</strong> → <strong>' + fmtDate(r.freshness.newest) + '</strong> '
+      + '(span ' + r.freshness.spanDays.toLocaleString() + ' days). Most recent record is <strong>' + r.freshness.ageDays.toLocaleString() + ' days</strong> old.</p></div>';
+  }
+
+  // per-column table
+  h += '<div class="card"><h2>Per-column profile</h2><table><thead><tr>'
+    + '<th>Column</th><th>Type</th><th>Fill</th><th>Type consist.</th><th>Distinct</th><th>Range / notes</th>'
+    + '</tr></thead><tbody>';
+  for (const c of r.columns) {
+    let range = '';
+    if (c.min !== undefined) range = 'min ' + fmtNum(c.min) + ' · max ' + fmtNum(c.max) + ' · avg ' + fmtNum(c.mean);
+    else if (c.dateMin) range = fmtDate(c.dateMin) + ' → ' + fmtDate(c.dateMax);
+    else if (c.isUniqueKey) range = '<span class="flag-good">unique — key candidate</span>';
+    else range = c.distinct <= 12 ? 'low cardinality (' + c.distinct + ' values)' : '';
+
+    h += '<tr>'
+      + '<td><strong>' + esc(c.name) + '</strong></td>'
+      + '<td><span class="typetag">' + c.type + '</span></td>'
+      + '<td class="num">' + flag(c.fillRate, 0.95, 0.8)
+      + '<div class="bar"><i style="width:' + (c.fillRate * 100).toFixed(0) + '%;background:' + barColor(c.fillRate) + '"></i></div></td>'
+      + '<td class="num">' + flag(c.typeConsistency, 0.98, 0.9) + '</td>'
+      + '<td class="num">' + c.distinct.toLocaleString() + '</td>'
+      + '<td class="meta-note">' + range + '</td>'
+      + '</tr>';
+  }
+  h += '</tbody></table></div>';
+
+  // aggregate summary for agent
+  const md = buildSummaryMarkdown(r);
+  h += '<div class="card"><div class="agg-head"><h2>Aggregate summary for the DRA-5C agent</h2>'
+    + '<button class="btn btn-primary" onclick="copyAgg()">📋 Copy summary</button></div>'
+    + '<p class="footnote">Aggregates only — no raw rows. Paste this into the agent at <strong>Step C (Coverage &amp; Credibility)</strong>.</p>'
+    + '<pre class="agg" id="aggBlock">' + esc(md) + '</pre></div>';
+
+  // downloads
+  h += '<div class="card"><h2>Download</h2><div class="download-row">'
+    + '<button class="btn btn-primary" onclick="downloadReport(\'md\')">📄 Markdown report</button>'
+    + '<button class="btn btn-primary" onclick="downloadReport(\'html\')">🌐 HTML report</button>'
+    + '<button class="btn btn-secondary" onclick="location.reload()">🔄 Profile another file</button>'
+    + '</div></div>';
+
+  resultsEl.innerHTML = h;
+  resultsEl.style.display = 'block';
+  dz.style.display = 'none';
+}
+
+function scard(label, val) {
+  return '<div class="scard"><div class="label">' + label + '</div><div class="val">' + val + '</div></div>';
+}
+function esc(s) {
+  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+function buildSummaryMarkdown(r) {
+  let m = '## Data Readiness Profiler — Aggregate Summary\n';
+  m += '- File: ' + r.filename + '\n';
+  m += '- Rows: ' + r.rowCount.toLocaleString() + ' | Columns: ' + r.colCount + '\n';
+  m += '- Overall fill rate: ' + pct(r.overallFill) + '\n';
+  m += '- Full-row duplicate rate: ' + pct(r.dupRate) + ' (' + r.dupRows.toLocaleString() + ' rows)\n';
+  if (r.freshness) {
+    m += '- Date span: ' + fmtDate(r.freshness.oldest) + ' to ' + fmtDate(r.freshness.newest)
+      + ' (most recent record ' + r.freshness.ageDays.toLocaleString() + ' days old)\n';
+  }
+  m += '\n| Column | Type | Fill % | Type consistency | Distinct | Notes |\n';
+  m += '|---|---|---|---|---|---|\n';
+  for (const c of r.columns) {
+    let note = '';
+    if (c.isUniqueKey) note = 'unique key candidate';
+    else if (c.min !== undefined) note = 'min ' + fmtNum(c.min) + ', max ' + fmtNum(c.max);
+    else if (c.dateMin) note = fmtDate(c.dateMin) + '..' + fmtDate(c.dateMax);
+    else if (c.distinct <= 12) note = 'low cardinality (' + c.distinct + ')';
+    m += '| ' + c.name + ' | ' + c.type + ' | ' + pct(c.fillRate) + ' | ' + pct(c.typeConsistency)
+      + ' | ' + c.distinct.toLocaleString() + ' | ' + note + ' |\n';
+  }
+  m += '\n_Generated locally in browser at ' + r.generatedAt + ' — no raw data included._\n';
+  return m;
+}
+
+function copyAgg() {
+  const text = lastReport ? buildSummaryMarkdown(lastReport) : '';
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = event.target;
+    const o = btn.textContent;
+    btn.textContent = '✅ Copied!';
+    setTimeout(() => { btn.textContent = o; }, 2000);
+  }).catch(() => alert('Copy failed — select the text manually.'));
+}
+
+function downloadReport(fmt) {
+  const r = lastReport;
+  if (!r) return;
+  let blob, fname;
+  const base = 'data_readiness_' + r.filename.replace(/\.[^.]+$/, '').replace(/\W+/g, '_');
+  if (fmt === 'md') {
+    blob = new Blob([buildSummaryMarkdown(r)], { type: 'text/markdown' });
+    fname = base + '.md';
+  } else {
+    blob = new Blob([buildHtmlReport(r)], { type: 'text/html' });
+    fname = base + '.html';
+  }
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = fname;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+function buildHtmlReport(r) {
+  let rowsHtml = '';
+  for (const c of r.columns) {
+    let note = c.isUniqueKey ? 'unique key candidate'
+      : c.min !== undefined ? 'min ' + fmtNum(c.min) + ', max ' + fmtNum(c.max)
+      : c.dateMin ? fmtDate(c.dateMin) + '..' + fmtDate(c.dateMax)
+      : c.distinct <= 12 ? 'low cardinality (' + c.distinct + ')' : '';
+    rowsHtml += '<tr><td>' + esc(c.name) + '</td><td>' + c.type + '</td><td>' + pct(c.fillRate)
+      + '</td><td>' + pct(c.typeConsistency) + '</td><td>' + c.distinct.toLocaleString() + '</td><td>' + esc(note) + '</td></tr>';
+  }
+  const fresh = r.freshness
+    ? '<p>Date span: <strong>' + fmtDate(r.freshness.oldest) + '</strong> to <strong>' + fmtDate(r.freshness.newest)
+      + '</strong>; most recent record ' + r.freshness.ageDays.toLocaleString() + ' days old.</p>' : '';
+  return '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Data Readiness Report — ' + esc(r.filename) + '</title>'
+    + '<style>body{font-family:Inter,Segoe UI,sans-serif;color:#1c1c28;max-width:900px;margin:40px auto;padding:0 20px;line-height:1.6}'
+    + 'h1{color:#1B1474}table{width:100%;border-collapse:collapse;font-size:14px}th,td{text-align:left;padding:8px;border-bottom:1px solid #e4e4f0}'
+    + 'th{background:#EEEEFA;color:#1B1474}.k{color:#5b5b6b}</style></head><body>'
+    + '<h1>Data Readiness Report</h1>'
+    + '<p class="k">File: ' + esc(r.filename) + ' · generated locally ' + r.generatedAt + '</p>'
+    + '<p>Rows: <strong>' + r.rowCount.toLocaleString() + '</strong> · Columns: <strong>' + r.colCount + '</strong> · '
+    + 'Overall fill: <strong>' + pct(r.overallFill) + '</strong> · Duplicate rows: <strong>' + pct(r.dupRate) + '</strong> (' + r.dupRows.toLocaleString() + ')</p>'
+    + fresh
+    + '<h2>Per-column profile</h2><table><thead><tr><th>Column</th><th>Type</th><th>Fill %</th><th>Type consistency</th><th>Distinct</th><th>Notes</th></tr></thead><tbody>'
+    + rowsHtml + '</tbody></table>'
+    + '<p class="k" style="margin-top:24px">Generated by the Data Readiness Profiler — aggregates only, no raw data. All processing was done locally in the browser.</p>'
+    + '</body></html>';
+}
+</script>
+</body>
+</html>
