@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI Maturity Assessment / AI 成熟度评估</title>
+<title>AI Maturity Assessment</title>
 <style>
   :root {
     --primary: #003755;
@@ -132,8 +132,7 @@
     transition: border-color 0.3s;
   }
   .question-card.answered { border-left-color: var(--green); }
-  .question-card .q-text { font-weight: 600; margin-bottom: 0.2rem; }
-  .question-card .q-text-zh { color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.8rem; }
+  .question-card .q-text { font-weight: 600; margin-bottom: 0.8rem; }
 
   .option-list { list-style: none; }
   .option-list li {
@@ -151,14 +150,6 @@
     border-color: var(--primary);
     font-weight: 600;
   }
-  .option-list li .opt-zh {
-    display: block;
-    color: var(--text-light);
-    font-size: 0.82rem;
-    font-weight: 400;
-    margin-top: 1px;
-  }
-
   /* Results */
   .score-hero {
     background: var(--primary);
@@ -284,7 +275,7 @@
 
 <div class="header">
   <h1>AI Maturity Assessment</h1>
-  <p>AI 成熟度评估工具 — For Enterprise Consulting</p>
+  <p>For Enterprise Consulting</p>
 </div>
 <div class="progress-wrap"><div class="progress-bar" id="progressBar" style="width:0%"></div></div>
 
@@ -292,14 +283,14 @@
 <div class="page active" id="pageSetup">
   <div class="container">
     <div class="card">
-      <h2>Assessment Info / 评估信息</h2>
+      <h2>Assessment Info</h2>
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
         <label class="field">
-          <span>Company Name / 企业名称</span>
+          <span>Company Name</span>
           <input type="text" id="inputCompany" placeholder="e.g. Acme Corp">
         </label>
         <label class="field">
-          <span>Industry / 行业</span>
+          <span>Industry</span>
           <select id="inputIndustry">
             <option>Technology</option><option>Financial Services</option>
             <option>Healthcare</option><option>Manufacturing</option>
@@ -309,35 +300,35 @@
           </select>
         </label>
         <label class="field">
-          <span>Assessor / 评估师</span>
+          <span>Assessor</span>
           <input type="text" id="inputAssessor" placeholder="e.g. AI Architect">
         </label>
         <label class="field">
-          <span>Assessment Mode / 评估模式</span>
+          <span>Assessment Mode</span>
           <select id="inputMode">
-            <option value="core">Core (~21 questions, 10 min) / 核心评估</option>
-            <option value="comprehensive">Comprehensive (~33 questions, 20 min) / 全面评估</option>
+            <option value="core">Core (~21 questions, 10 min)</option>
+            <option value="comprehensive">Comprehensive (~33 questions, 20 min)</option>
           </select>
         </label>
       </div>
       <label class="field">
-        <span>Target Maturity Level / 目标成熟度等级</span>
+        <span>Target Maturity Level</span>
         <select id="inputTarget">
-          <option value="3">Level 3 — Operationalizing (运营化)</option>
-          <option value="4" selected>Level 4 — Scaling (规模化) [Recommended]</option>
-          <option value="5">Level 5 — Transforming (转型期)</option>
+          <option value="3">Level 3 — Operationalizing</option>
+          <option value="4" selected>Level 4 — Scaling [Recommended]</option>
+          <option value="5">Level 5 — Transforming</option>
         </select>
       </label>
     </div>
 
     <div class="card">
-      <h2>Assessment Dimensions / 评估维度</h2>
+      <h2>Assessment Dimensions</h2>
       <div class="dim-grid" id="dimGrid"></div>
     </div>
 
     <div style="text-align:center; margin:1.5rem 0;">
       <button class="btn btn-primary" onclick="startAssessment()" style="padding:0.9rem 3rem; font-size:1.1rem;">
-        ▶ Start Assessment / 开始评估
+        ▶ Start Assessment
       </button>
     </div>
   </div>
@@ -362,26 +353,26 @@
 // ═══════════════════════════════════════════════════════════════════
 
 const DIMENSIONS = [
-  { id:"strategy", en:"Strategy & Vision", zh:"战略与愿景", weight:0.20,
+  { id:"strategy", en:"Strategy & Vision", weight:0.20,
     desc:"Executive sponsorship, AI strategy alignment with business goals, investment commitment, and innovation roadmap." },
-  { id:"data", en:"Data & Infrastructure", zh:"数据与基础设施", weight:0.20,
+  { id:"data", en:"Data & Infrastructure", weight:0.20,
     desc:"Data quality, availability, governance, infrastructure readiness, and cloud/compute capabilities." },
-  { id:"technology", en:"Technology & Architecture", zh:"技术与架构", weight:0.18,
+  { id:"technology", en:"Technology & Architecture", weight:0.18,
     desc:"AI/ML platforms, model development practices, integration architecture, and technology stack maturity." },
-  { id:"talent", en:"Talent & Organization", zh:"人才与组织", weight:0.15,
+  { id:"talent", en:"Talent & Organization", weight:0.15,
     desc:"AI skills, team structure, training programs, organizational culture, and change readiness." },
-  { id:"governance", en:"Governance & Ethics", zh:"治理与伦理", weight:0.15,
+  { id:"governance", en:"Governance & Ethics", weight:0.15,
     desc:"AI policies, responsible AI practices, compliance readiness, risk management, and audit capabilities." },
-  { id:"operations", en:"Operations & Scale", zh:"运营与规模化", weight:0.12,
+  { id:"operations", en:"Operations & Scale", weight:0.12,
     desc:"MLOps maturity, model monitoring, CI/CD for ML, production reliability, and scaling capabilities." },
 ];
 
 const LEVELS = {
-  1: { en:"Exploring",        zh:"探索期", desc:"Ad-hoc AI initiatives, no formal strategy. Awareness exists but adoption is minimal." },
-  2: { en:"Experimenting",    zh:"实验期", desc:"Isolated pilots and PoCs. Some dedicated resources but limited governance and scalability." },
-  3: { en:"Operationalizing", zh:"运营化", desc:"AI in production for select use cases. Defined processes, MLOps basics, emerging governance." },
-  4: { en:"Scaling",          zh:"规模化", desc:"Enterprise-wide AI adoption. Mature MLOps, governance framework, and cross-functional collaboration." },
-  5: { en:"Transforming",     zh:"转型期", desc:"AI-first culture. Continuous innovation, advanced governance, measurable business transformation." },
+  1: { en:"Exploring", desc:"Ad-hoc AI initiatives, no formal strategy. Awareness exists but adoption is minimal." },
+  2: { en:"Experimenting", desc:"Isolated pilots and PoCs. Some dedicated resources but limited governance and scalability." },
+  3: { en:"Operationalizing", desc:"AI in production for select use cases. Defined processes, MLOps basics, emerging governance." },
+  4: { en:"Scaling", desc:"Enterprise-wide AI adoption. Mature MLOps, governance framework, and cross-functional collaboration." },
+  5: { en:"Transforming", desc:"AI-first culture. Continuous innovation, advanced governance, measurable business transformation." },
 };
 
 const LEVEL_COLORS = { 1:"#c0392b", 2:"#d4790e", 3:"#d4a017", 4:"#1a8a5c", 5:"#009EDC" };
@@ -390,343 +381,310 @@ const QUESTIONS = [
   // STRATEGY (S1-S6)
   { id:"S1", dim:"strategy", core:true,
     en:"How would you describe your organization's AI strategy?",
-    zh:"您如何描述贵组织的 AI 战略？",
     opts:[
-      { v:1, en:"No AI strategy exists", zh:"没有 AI 战略" },
-      { v:2, en:"Informal discussions about AI potential", zh:"对 AI 潜力有非正式讨论" },
-      { v:3, en:"Documented AI strategy aligned with business goals", zh:"已制定与业务目标对齐的 AI 战略文档" },
-      { v:4, en:"AI strategy integrated into enterprise strategy with KPIs", zh:"AI 战略已融入企业战略并有 KPI 跟踪" },
-      { v:5, en:"AI is a core pillar of business model and competitive strategy", zh:"AI 是商业模式和竞争战略的核心支柱" },
+      { v:1, en:"No AI strategy exists" },
+      { v:2, en:"Informal discussions about AI potential" },
+      { v:3, en:"Documented AI strategy aligned with business goals" },
+      { v:4, en:"AI strategy integrated into enterprise strategy with KPIs" },
+      { v:5, en:"AI is a core pillar of business model and competitive strategy" },
     ]},
   { id:"S2", dim:"strategy", core:true,
     en:"What level of executive sponsorship does AI have?",
-    zh:"AI 获得了什么级别的高管支持？",
     opts:[
-      { v:1, en:"No executive sponsor", zh:"没有高管支持" },
-      { v:2, en:"Mid-level management interest", zh:"中层管理者有兴趣" },
-      { v:3, en:"Senior executive sponsor identified", zh:"已确定高级管理层支持者" },
-      { v:4, en:"C-suite ownership (CTO/CDO/CAIO)", zh:"C 级高管负责（CTO/CDO/CAIO）" },
-      { v:5, en:"Board-level AI governance and oversight", zh:"董事会级别的 AI 治理与监督" },
+      { v:1, en:"No executive sponsor" },
+      { v:2, en:"Mid-level management interest" },
+      { v:3, en:"Senior executive sponsor identified" },
+      { v:4, en:"C-suite ownership (CTO/CDO/CAIO)" },
+      { v:5, en:"Board-level AI governance and oversight" },
     ]},
   { id:"S3", dim:"strategy", core:true,
     en:"How is AI investment managed in your organization?",
-    zh:"贵组织如何管理 AI 投资？",
     opts:[
-      { v:1, en:"No dedicated AI budget", zh:"没有专门的 AI 预算" },
-      { v:2, en:"Ad-hoc funding for individual projects", zh:"为个别项目提供临时资金" },
-      { v:3, en:"Dedicated annual AI budget with project-level tracking", zh:"有专门年度 AI 预算并按项目跟踪" },
-      { v:4, en:"Portfolio-level AI investment with ROI measurement", zh:"组合级别的 AI 投资并衡量 ROI" },
-      { v:5, en:"Strategic AI investment fund with innovation allocation", zh:"战略性 AI 投资基金，含创新投入" },
+      { v:1, en:"No dedicated AI budget" },
+      { v:2, en:"Ad-hoc funding for individual projects" },
+      { v:3, en:"Dedicated annual AI budget with project-level tracking" },
+      { v:4, en:"Portfolio-level AI investment with ROI measurement" },
+      { v:5, en:"Strategic AI investment fund with innovation allocation" },
     ]},
   { id:"S4", dim:"strategy", core:true,
     en:"How many AI use cases have been identified and prioritized?",
-    zh:"已识别并排序了多少个 AI 用例？",
     opts:[
-      { v:1, en:"None formally identified", zh:"没有正式识别" },
-      { v:2, en:"A few ideas discussed informally", zh:"有一些非正式讨论的想法" },
-      { v:3, en:"5-10 use cases documented and prioritized", zh:"已记录并排序 5-10 个用例" },
-      { v:4, en:"Comprehensive use case portfolio across business units", zh:"跨业务单元的全面用例组合" },
-      { v:5, en:"Continuously evolving pipeline with business impact scoring", zh:"持续演进的用例管道，有业务影响评分" },
+      { v:1, en:"None formally identified" },
+      { v:2, en:"A few ideas discussed informally" },
+      { v:3, en:"5-10 use cases documented and prioritized" },
+      { v:4, en:"Comprehensive use case portfolio across business units" },
+      { v:5, en:"Continuously evolving pipeline with business impact scoring" },
     ]},
   { id:"S5", dim:"strategy", core:false,
     en:"Does your organization have an AI innovation roadmap?",
-    zh:"贵组织是否有 AI 创新路线图？",
     opts:[
-      { v:1, en:"No roadmap exists", zh:"没有路线图" },
-      { v:2, en:"Informal plans for next quarter", zh:"下季度的非正式计划" },
-      { v:3, en:"12-month roadmap with milestones", zh:"12 个月路线图，有里程碑" },
-      { v:4, en:"3-year roadmap updated quarterly", zh:"3 年路线图，每季度更新" },
-      { v:5, en:"5-year vision with adaptive roadmap and emerging tech tracking", zh:"5 年愿景，自适应路线图并跟踪新兴技术" },
+      { v:1, en:"No roadmap exists" },
+      { v:2, en:"Informal plans for next quarter" },
+      { v:3, en:"12-month roadmap with milestones" },
+      { v:4, en:"3-year roadmap updated quarterly" },
+      { v:5, en:"5-year vision with adaptive roadmap and emerging tech tracking" },
     ]},
   { id:"S6", dim:"strategy", core:false,
     en:"How does your organization benchmark AI progress?",
-    zh:"贵组织如何衡量 AI 进展？",
     opts:[
-      { v:1, en:"No benchmarking", zh:"没有衡量" },
-      { v:2, en:"Informal comparison with competitors", zh:"与竞争对手的非正式比较" },
-      { v:3, en:"Internal KPIs for AI projects", zh:"AI 项目的内部 KPI" },
-      { v:4, en:"Industry benchmarking with external assessments", zh:"通过外部评估进行行业对标" },
-      { v:5, en:"Continuous benchmarking driving strategic decisions", zh:"持续对标驱动战略决策" },
+      { v:1, en:"No benchmarking" },
+      { v:2, en:"Informal comparison with competitors" },
+      { v:3, en:"Internal KPIs for AI projects" },
+      { v:4, en:"Industry benchmarking with external assessments" },
+      { v:5, en:"Continuous benchmarking driving strategic decisions" },
     ]},
 
   // DATA (D1-D6)
   { id:"D1", dim:"data", core:true,
     en:"How would you describe your organization's data quality and availability?",
-    zh:"您如何描述贵组织的数据质量和可用性？",
     opts:[
-      { v:1, en:"Data is siloed, inconsistent, and hard to access", zh:"数据孤立、不一致且难以访问" },
-      { v:2, en:"Some data consolidated but quality varies significantly", zh:"部分数据已整合但质量差异显著" },
-      { v:3, en:"Centralized data platform with quality monitoring", zh:"有集中数据平台并进行质量监控" },
-      { v:4, en:"Enterprise data mesh/fabric with automated quality pipelines", zh:"企业数据网格/织物，自动化质量管道" },
-      { v:5, en:"Real-time, self-service data with governance guardrails", zh:"实时、自助式数据，有治理护栏" },
+      { v:1, en:"Data is siloed, inconsistent, and hard to access" },
+      { v:2, en:"Some data consolidated but quality varies significantly" },
+      { v:3, en:"Centralized data platform with quality monitoring" },
+      { v:4, en:"Enterprise data mesh/fabric with automated quality pipelines" },
+      { v:5, en:"Real-time, self-service data with governance guardrails" },
     ]},
   { id:"D2", dim:"data", core:true,
     en:"What is the state of your data governance?",
-    zh:"贵组织的数据治理现状如何？",
     opts:[
-      { v:1, en:"No formal data governance", zh:"没有正式数据治理" },
-      { v:2, en:"Basic data ownership defined for some datasets", zh:"部分数据集定义了基本数据所有权" },
-      { v:3, en:"Data governance framework with policies and stewards", zh:"有数据治理框架、政策和管理员" },
-      { v:4, en:"Automated data governance with lineage tracking", zh:"自动化数据治理，有血缘追踪" },
-      { v:5, en:"Self-governing data ecosystem with AI-driven quality", zh:"自治数据生态系统，AI 驱动质量管控" },
+      { v:1, en:"No formal data governance" },
+      { v:2, en:"Basic data ownership defined for some datasets" },
+      { v:3, en:"Data governance framework with policies and stewards" },
+      { v:4, en:"Automated data governance with lineage tracking" },
+      { v:5, en:"Self-governing data ecosystem with AI-driven quality" },
     ]},
   { id:"D3", dim:"data", core:true,
     en:"How mature is your cloud/compute infrastructure for AI workloads?",
-    zh:"贵组织用于 AI 工作负载的云/计算基础设施成熟度如何？",
     opts:[
-      { v:1, en:"On-premises only, no GPU/TPU access", zh:"仅本地部署，无 GPU/TPU 访问" },
-      { v:2, en:"Initial cloud adoption, limited AI-specific resources", zh:"初步采用云，有限的 AI 专用资源" },
-      { v:3, en:"Cloud-native AI infrastructure with managed ML services", zh:"云原生 AI 基础设施，有托管 ML 服务" },
-      { v:4, en:"Multi-cloud/hybrid with auto-scaling for AI workloads", zh:"多云/混合，AI 工作负载自动扩缩" },
-      { v:5, en:"Optimized infrastructure with cost management and edge AI", zh:"优化基础设施，成本管理和边缘 AI" },
+      { v:1, en:"On-premises only, no GPU/TPU access" },
+      { v:2, en:"Initial cloud adoption, limited AI-specific resources" },
+      { v:3, en:"Cloud-native AI infrastructure with managed ML services" },
+      { v:4, en:"Multi-cloud/hybrid with auto-scaling for AI workloads" },
+      { v:5, en:"Optimized infrastructure with cost management and edge AI" },
     ]},
   { id:"D4", dim:"data", core:true,
     en:"How is data prepared and managed for AI/ML use cases?",
-    zh:"数据如何为 AI/ML 用例进行准备和管理？",
     opts:[
-      { v:1, en:"Manual, ad-hoc data preparation", zh:"手动、临时数据准备" },
-      { v:2, en:"Some scripted data pipelines for specific projects", zh:"为特定项目编写了一些数据管道脚本" },
-      { v:3, en:"Standardized ETL/ELT pipelines with feature stores", zh:"标准化 ETL/ELT 管道，有特征存储" },
-      { v:4, en:"Automated data pipelines with versioning and lineage", zh:"自动化数据管道，有版本控制和血缘追踪" },
-      { v:5, en:"Real-time streaming pipelines with self-service feature engineering", zh:"实时流式管道，自助特征工程" },
+      { v:1, en:"Manual, ad-hoc data preparation" },
+      { v:2, en:"Some scripted data pipelines for specific projects" },
+      { v:3, en:"Standardized ETL/ELT pipelines with feature stores" },
+      { v:4, en:"Automated data pipelines with versioning and lineage" },
+      { v:5, en:"Real-time streaming pipelines with self-service feature engineering" },
     ]},
   { id:"D5", dim:"data", core:false,
     en:"How does your organization handle data privacy and security for AI?",
-    zh:"贵组织如何处理 AI 的数据隐私和安全？",
     opts:[
-      { v:1, en:"No specific AI data privacy measures", zh:"没有特定的 AI 数据隐私措施" },
-      { v:2, en:"Basic access controls, privacy handled case-by-case", zh:"基本访问控制，隐私逐案处理" },
-      { v:3, en:"Data classification and encryption for AI datasets", zh:"AI 数据集的数据分类和加密" },
-      { v:4, en:"Privacy-preserving techniques (anonymization, differential privacy)", zh:"隐私保护技术（匿名化、差分隐私）" },
-      { v:5, en:"Federated learning and advanced privacy-by-design", zh:"联邦学习和高级隐私设计" },
+      { v:1, en:"No specific AI data privacy measures" },
+      { v:2, en:"Basic access controls, privacy handled case-by-case" },
+      { v:3, en:"Data classification and encryption for AI datasets" },
+      { v:4, en:"Privacy-preserving techniques (anonymization, differential privacy)" },
+      { v:5, en:"Federated learning and advanced privacy-by-design" },
     ]},
   { id:"D6", dim:"data", core:false,
     en:"How well can your organization integrate external data sources for AI?",
-    zh:"贵组织整合外部数据源用于 AI 的能力如何？",
     opts:[
-      { v:1, en:"No external data integration", zh:"没有外部数据整合" },
-      { v:2, en:"Manual import of external datasets", zh:"手动导入外部数据集" },
-      { v:3, en:"API-based integration with select external sources", zh:"与部分外部数据源基于 API 集成" },
-      { v:4, en:"Automated ingestion from multiple external sources", zh:"从多个外部数据源自动采集" },
-      { v:5, en:"Real-time external data enrichment with quality validation", zh:"实时外部数据增强，有质量验证" },
+      { v:1, en:"No external data integration" },
+      { v:2, en:"Manual import of external datasets" },
+      { v:3, en:"API-based integration with select external sources" },
+      { v:4, en:"Automated ingestion from multiple external sources" },
+      { v:5, en:"Real-time external data enrichment with quality validation" },
     ]},
 
   // TECHNOLOGY (T1-T6)
   { id:"T1", dim:"technology", core:true,
     en:"What is the state of your AI/ML development platform?",
-    zh:"贵组织的 AI/ML 开发平台现状如何？",
     opts:[
-      { v:1, en:"No standardized tools; individuals use local notebooks", zh:"没有标准化工具；个人使用本地 notebook" },
-      { v:2, en:"Some shared tools but no unified platform", zh:"有一些共享工具但没有统一平台" },
-      { v:3, en:"Standardized ML platform with experiment tracking", zh:"标准化 ML 平台，有实验追踪" },
-      { v:4, en:"Enterprise AI platform with multi-tenant support and model registry", zh:"企业 AI 平台，多租户支持和模型注册表" },
-      { v:5, en:"Composable AI platform with auto-optimization and self-service", zh:"可组合 AI 平台，自动优化和自助服务" },
+      { v:1, en:"No standardized tools; individuals use local notebooks" },
+      { v:2, en:"Some shared tools but no unified platform" },
+      { v:3, en:"Standardized ML platform with experiment tracking" },
+      { v:4, en:"Enterprise AI platform with multi-tenant support and model registry" },
+      { v:5, en:"Composable AI platform with auto-optimization and self-service" },
     ]},
   { id:"T2", dim:"technology", core:true,
     en:"How does your organization use Generative AI / LLMs?",
-    zh:"贵组织如何使用生成式 AI / 大语言模型？",
     opts:[
-      { v:1, en:"No GenAI usage", zh:"没有使用生成式 AI" },
-      { v:2, en:"Individual experimentation with ChatGPT/similar tools", zh:"个人使用 ChatGPT 等工具进行实验" },
-      { v:3, en:"Approved GenAI tools with usage guidelines", zh:"已批准的 GenAI 工具并有使用指南" },
-      { v:4, en:"Custom RAG pipelines and fine-tuned models in production", zh:"自定义 RAG 管道和微调模型已投产" },
-      { v:5, en:"Agentic AI workflows with multimodal capabilities in production", zh:"Agentic AI 工作流和多模态能力已投产" },
+      { v:1, en:"No GenAI usage" },
+      { v:2, en:"Individual experimentation with ChatGPT/similar tools" },
+      { v:3, en:"Approved GenAI tools with usage guidelines" },
+      { v:4, en:"Custom RAG pipelines and fine-tuned models in production" },
+      { v:5, en:"Agentic AI workflows with multimodal capabilities in production" },
     ]},
   { id:"T3", dim:"technology", core:true,
     en:"How mature is your AI integration architecture?",
-    zh:"贵组织的 AI 集成架构成熟度如何？",
     opts:[
-      { v:1, en:"No integration; AI exists in isolated experiments", zh:"没有集成；AI 存在于独立实验中" },
-      { v:2, en:"Point-to-point integrations for specific projects", zh:"为特定项目进行点对点集成" },
-      { v:3, en:"API-based microservices architecture for AI", zh:"基于 API 的微服务架构用于 AI" },
-      { v:4, en:"Event-driven architecture with AI service orchestration", zh:"事件驱动架构，AI 服务编排" },
-      { v:5, en:"Composable, self-healing AI services with autonomous scaling", zh:"可组合、自愈的 AI 服务，自主扩缩" },
+      { v:1, en:"No integration; AI exists in isolated experiments" },
+      { v:2, en:"Point-to-point integrations for specific projects" },
+      { v:3, en:"API-based microservices architecture for AI" },
+      { v:4, en:"Event-driven architecture with AI service orchestration" },
+      { v:5, en:"Composable, self-healing AI services with autonomous scaling" },
     ]},
   { id:"T4", dim:"technology", core:true,
     en:"How does your organization handle model evaluation and testing?",
-    zh:"贵组织如何处理模型评估和测试？",
     opts:[
-      { v:1, en:"No formal evaluation process", zh:"没有正式评估流程" },
-      { v:2, en:"Manual testing before deployment", zh:"部署前手动测试" },
-      { v:3, en:"Standardized evaluation benchmarks and test suites", zh:"标准化评估基准和测试套件" },
-      { v:4, en:"Automated evaluation pipeline with bias/fairness checks", zh:"自动化评估管道，有偏见/公平性检查" },
-      { v:5, en:"Continuous evaluation with LLM-as-judge and human-in-the-loop", zh:"持续评估，LLM-as-judge 和 human-in-the-loop" },
+      { v:1, en:"No formal evaluation process" },
+      { v:2, en:"Manual testing before deployment" },
+      { v:3, en:"Standardized evaluation benchmarks and test suites" },
+      { v:4, en:"Automated evaluation pipeline with bias/fairness checks" },
+      { v:5, en:"Continuous evaluation with LLM-as-judge and human-in-the-loop" },
     ]},
   { id:"T5", dim:"technology", core:false,
     en:"How does your organization manage the AI technology stack?",
-    zh:"贵组织如何管理 AI 技术栈？",
     opts:[
-      { v:1, en:"No standardization; teams choose their own tools", zh:"没有标准化；团队自选工具" },
-      { v:2, en:"Recommended tools list but not enforced", zh:"推荐工具清单但未强制" },
-      { v:3, en:"Standardized tech stack with approved frameworks", zh:"标准化技术栈，有批准的框架" },
-      { v:4, en:"Centrally managed platform with vetted components", zh:"集中管理的平台，有审查过的组件" },
-      { v:5, en:"Platform engineering team maintaining AI golden paths", zh:"平台工程团队维护 AI 黄金路径" },
+      { v:1, en:"No standardization; teams choose their own tools" },
+      { v:2, en:"Recommended tools list but not enforced" },
+      { v:3, en:"Standardized tech stack with approved frameworks" },
+      { v:4, en:"Centrally managed platform with vetted components" },
+      { v:5, en:"Platform engineering team maintaining AI golden paths" },
     ]},
   { id:"T6", dim:"technology", core:false,
     en:"What is your approach to AI security (prompt injection, data leakage)?",
-    zh:"贵组织对 AI 安全（提示注入、数据泄漏）的做法是什么？",
     opts:[
-      { v:1, en:"No AI-specific security measures", zh:"没有 AI 专用安全措施" },
-      { v:2, en:"Awareness of AI security risks but no formal program", zh:"了解 AI 安全风险但没有正式计划" },
-      { v:3, en:"Basic guardrails (input validation, output filtering)", zh:"基本防护（输入验证、输出过滤）" },
-      { v:4, en:"Comprehensive AI security program with red-teaming", zh:"全面 AI 安全计划，有红队测试" },
-      { v:5, en:"Proactive AI security with automated threat detection", zh:"主动 AI 安全，自动威胁检测" },
+      { v:1, en:"No AI-specific security measures" },
+      { v:2, en:"Awareness of AI security risks but no formal program" },
+      { v:3, en:"Basic guardrails (input validation, output filtering)" },
+      { v:4, en:"Comprehensive AI security program with red-teaming" },
+      { v:5, en:"Proactive AI security with automated threat detection" },
     ]},
 
   // TALENT (P1-P5)
   { id:"P1", dim:"talent", core:true,
     en:"What does your AI team structure look like?",
-    zh:"贵组织的 AI 团队结构是怎样的？",
     opts:[
-      { v:1, en:"No dedicated AI roles", zh:"没有专门的 AI 角色" },
-      { v:2, en:"A few data scientists/ML engineers hired", zh:"聘请了少量数据科学家/ML 工程师" },
-      { v:3, en:"Dedicated AI/ML team with defined roles", zh:"有专门的 AI/ML 团队并定义了角色" },
-      { v:4, en:"AI CoE with embedded AI champions across business units", zh:"AI 卓越中心，各业务单元有 AI 推广者" },
-      { v:5, en:"AI capabilities distributed across all teams", zh:"AI 能力分布在所有团队" },
+      { v:1, en:"No dedicated AI roles" },
+      { v:2, en:"A few data scientists/ML engineers hired" },
+      { v:3, en:"Dedicated AI/ML team with defined roles" },
+      { v:4, en:"AI CoE with embedded AI champions across business units" },
+      { v:5, en:"AI capabilities distributed across all teams" },
     ]},
   { id:"P2", dim:"talent", core:true,
     en:"How mature are your AI training and upskilling programs?",
-    zh:"贵组织的 AI 培训和技能提升计划成熟度如何？",
     opts:[
-      { v:1, en:"No AI training programs", zh:"没有 AI 培训计划" },
-      { v:2, en:"Ad-hoc learning (individuals take online courses)", zh:"临时学习（个人自行参加在线课程）" },
-      { v:3, en:"Structured AI literacy and technical training programs", zh:"结构化的 AI 素养和技术培训计划" },
-      { v:4, en:"Role-based AI training with certification paths", zh:"基于角色的 AI 培训，有认证路径" },
-      { v:5, en:"Continuous learning culture with AI skills refreshed quarterly", zh:"持续学习文化，AI 技能每季度更新" },
+      { v:1, en:"No AI training programs" },
+      { v:2, en:"Ad-hoc learning (individuals take online courses)" },
+      { v:3, en:"Structured AI literacy and technical training programs" },
+      { v:4, en:"Role-based AI training with certification paths" },
+      { v:5, en:"Continuous learning culture with AI skills refreshed quarterly" },
     ]},
   { id:"P3", dim:"talent", core:true,
     en:"How receptive is your organization to AI-driven change?",
-    zh:"贵组织对 AI 驱动的变革接受程度如何？",
     opts:[
-      { v:1, en:"Significant resistance; fear of job displacement", zh:"显著抵触；担心工作被取代" },
-      { v:2, en:"Mixed reactions; some enthusiasm, some concern", zh:"反应不一；有些热情，有些担忧" },
-      { v:3, en:"Generally positive with structured change management", zh:"总体积极，有结构化变革管理" },
-      { v:4, en:"Strong adoption culture with internal AI advocates", zh:"强大的采纳文化，有内部 AI 倡导者" },
-      { v:5, en:"AI-first mindset embedded in organizational culture", zh:"AI 优先思维已融入组织文化" },
+      { v:1, en:"Significant resistance; fear of job displacement" },
+      { v:2, en:"Mixed reactions; some enthusiasm, some concern" },
+      { v:3, en:"Generally positive with structured change management" },
+      { v:4, en:"Strong adoption culture with internal AI advocates" },
+      { v:5, en:"AI-first mindset embedded in organizational culture" },
     ]},
   { id:"P4", dim:"talent", core:false,
     en:"How does your organization attract and retain AI talent?",
-    zh:"贵组织如何吸引和留住 AI 人才？",
     opts:[
-      { v:1, en:"Difficulty attracting AI talent", zh:"难以吸引 AI 人才" },
-      { v:2, en:"Competitive compensation but limited AI career paths", zh:"有竞争力的薪酬但 AI 职业路径有限" },
-      { v:3, en:"Defined AI career ladders with growth opportunities", zh:"定义了 AI 职业阶梯和成长机会" },
-      { v:4, en:"Strong AI employer brand with university partnerships", zh:"强大的 AI 雇主品牌，与高校合作" },
-      { v:5, en:"Industry-leading AI talent brand; thought leadership", zh:"行业领先的 AI 人才品牌；思想领导力" },
+      { v:1, en:"Difficulty attracting AI talent" },
+      { v:2, en:"Competitive compensation but limited AI career paths" },
+      { v:3, en:"Defined AI career ladders with growth opportunities" },
+      { v:4, en:"Strong AI employer brand with university partnerships" },
+      { v:5, en:"Industry-leading AI talent brand; thought leadership" },
     ]},
   { id:"P5", dim:"talent", core:false,
     en:"How well do business and technical teams collaborate on AI?",
-    zh:"业务团队和技术团队在 AI 项目上的协作程度如何？",
     opts:[
-      { v:1, en:"Minimal interaction; teams work in silos", zh:"极少互动；团队各自为政" },
-      { v:2, en:"Ad-hoc collaboration on specific projects", zh:"在特定项目上临时协作" },
-      { v:3, en:"Regular cross-functional meetings and shared goals", zh:"定期跨职能会议和共同目标" },
-      { v:4, en:"Embedded product teams with business and AI members", zh:"嵌入式产品团队，有业务和 AI 成员" },
-      { v:5, en:"Seamless collaboration; business teams self-serve AI tools", zh:"无缝协作；业务团队自助使用 AI 工具" },
+      { v:1, en:"Minimal interaction; teams work in silos" },
+      { v:2, en:"Ad-hoc collaboration on specific projects" },
+      { v:3, en:"Regular cross-functional meetings and shared goals" },
+      { v:4, en:"Embedded product teams with business and AI members" },
+      { v:5, en:"Seamless collaboration; business teams self-serve AI tools" },
     ]},
 
   // GOVERNANCE (G1-G5)
   { id:"G1", dim:"governance", core:true,
     en:"Does your organization have an AI governance framework?",
-    zh:"贵组织是否有 AI 治理框架？",
     opts:[
-      { v:1, en:"No AI governance", zh:"没有 AI 治理" },
-      { v:2, en:"Informal guidelines for AI use", zh:"AI 使用的非正式指南" },
-      { v:3, en:"Formal AI governance framework with policies", zh:"正式 AI 治理框架，有政策" },
-      { v:4, en:"Active AI governance committee with enforcement", zh:"活跃的 AI 治理委员会，有执行力" },
-      { v:5, en:"Industry-leading governance integrated into all AI workflows", zh:"行业领先的治理，集成到所有 AI 工作流" },
+      { v:1, en:"No AI governance" },
+      { v:2, en:"Informal guidelines for AI use" },
+      { v:3, en:"Formal AI governance framework with policies" },
+      { v:4, en:"Active AI governance committee with enforcement" },
+      { v:5, en:"Industry-leading governance integrated into all AI workflows" },
     ]},
   { id:"G2", dim:"governance", core:true,
     en:"How does your organization address responsible AI (bias, fairness, transparency)?",
-    zh:"贵组织如何处理负责任 AI（偏见、公平性、透明度）？",
     opts:[
-      { v:1, en:"Not addressed", zh:"未处理" },
-      { v:2, en:"Awareness but no formal processes", zh:"有意识但没有正式流程" },
-      { v:3, en:"Bias testing and documentation for production models", zh:"生产模型的偏见测试和文档记录" },
-      { v:4, en:"Automated bias detection, fairness metrics, model cards", zh:"自动偏见检测、公平性指标、模型卡片" },
-      { v:5, en:"Proactive responsible AI with external audits and public reporting", zh:"主动负责任 AI，外部审计和公开报告" },
+      { v:1, en:"Not addressed" },
+      { v:2, en:"Awareness but no formal processes" },
+      { v:3, en:"Bias testing and documentation for production models" },
+      { v:4, en:"Automated bias detection, fairness metrics, model cards" },
+      { v:5, en:"Proactive responsible AI with external audits and public reporting" },
     ]},
   { id:"G3", dim:"governance", core:true,
     en:"What is your readiness for AI regulations (EU AI Act, NIST AI RMF)?",
-    zh:"贵组织对 AI 法规（EU AI Act, NIST AI RMF）的准备程度如何？",
     opts:[
-      { v:1, en:"Unaware of regulatory requirements", zh:"不了解监管要求" },
-      { v:2, en:"Aware but no action taken", zh:"了解但未采取行动" },
-      { v:3, en:"Gap analysis completed; compliance roadmap in progress", zh:"差距分析已完成；合规路线图制定中" },
-      { v:4, en:"Compliance program in place for applicable regulations", zh:"已建立适用法规的合规计划" },
-      { v:5, en:"Fully compliant with proactive regulatory engagement", zh:"完全合规，并主动参与监管对话" },
+      { v:1, en:"Unaware of regulatory requirements" },
+      { v:2, en:"Aware but no action taken" },
+      { v:3, en:"Gap analysis completed; compliance roadmap in progress" },
+      { v:4, en:"Compliance program in place for applicable regulations" },
+      { v:5, en:"Fully compliant with proactive regulatory engagement" },
     ]},
   { id:"G4", dim:"governance", core:false,
     en:"How does your organization manage AI risk?",
-    zh:"贵组织如何管理 AI 风险？",
     opts:[
-      { v:1, en:"AI risks not formally assessed", zh:"AI 风险未正式评估" },
-      { v:2, en:"Ad-hoc risk assessment for individual projects", zh:"对个别项目进行临时风险评估" },
-      { v:3, en:"AI risk register with regular reviews", zh:"AI 风险登记册，定期审查" },
-      { v:4, en:"Automated risk monitoring with escalation procedures", zh:"自动风险监控，有升级流程" },
-      { v:5, en:"Enterprise AI risk management integrated with ERM framework", zh:"企业 AI 风险管理与 ERM 框架集成" },
+      { v:1, en:"AI risks not formally assessed" },
+      { v:2, en:"Ad-hoc risk assessment for individual projects" },
+      { v:3, en:"AI risk register with regular reviews" },
+      { v:4, en:"Automated risk monitoring with escalation procedures" },
+      { v:5, en:"Enterprise AI risk management integrated with ERM framework" },
     ]},
   { id:"G5", dim:"governance", core:false,
     en:"Does your organization maintain audit trails for AI decisions?",
-    zh:"贵组织是否维护 AI 决策的审计追踪？",
     opts:[
-      { v:1, en:"No audit trails", zh:"没有审计追踪" },
-      { v:2, en:"Basic logging for some AI systems", zh:"部分 AI 系统有基本日志" },
-      { v:3, en:"Structured audit logs for production AI systems", zh:"生产 AI 系统有结构化审计日志" },
-      { v:4, en:"Comprehensive audit trails with explainability records", zh:"全面审计追踪，有可解释性记录" },
-      { v:5, en:"Real-time audit trails with automated compliance reporting", zh:"实时审计追踪，自动合规报告" },
+      { v:1, en:"No audit trails" },
+      { v:2, en:"Basic logging for some AI systems" },
+      { v:3, en:"Structured audit logs for production AI systems" },
+      { v:4, en:"Comprehensive audit trails with explainability records" },
+      { v:5, en:"Real-time audit trails with automated compliance reporting" },
     ]},
 
   // OPERATIONS (O1-O5)
   { id:"O1", dim:"operations", core:true,
     en:"How many AI/ML models does your organization have in production?",
-    zh:"贵组织有多少 AI/ML 模型在生产中运行？",
     opts:[
-      { v:1, en:"None", zh:"没有" },
-      { v:2, en:"1-3 models", zh:"1-3 个模型" },
-      { v:3, en:"4-15 models with defined SLAs", zh:"4-15 个模型，有定义的 SLA" },
-      { v:4, en:"16-50+ models managed as a portfolio", zh:"16-50+ 个模型，作为组合管理" },
-      { v:5, en:"100+ models with autonomous lifecycle management", zh:"100+ 个模型，自主生命周期管理" },
+      { v:1, en:"None" },
+      { v:2, en:"1-3 models" },
+      { v:3, en:"4-15 models with defined SLAs" },
+      { v:4, en:"16-50+ models managed as a portfolio" },
+      { v:5, en:"100+ models with autonomous lifecycle management" },
     ]},
   { id:"O2", dim:"operations", core:true,
     en:"What is your MLOps maturity level?",
-    zh:"贵组织的 MLOps 成熟度如何？",
     opts:[
-      { v:1, en:"No MLOps practices", zh:"没有 MLOps 实践" },
-      { v:2, en:"Manual model deployment and monitoring", zh:"手动模型部署和监控" },
-      { v:3, en:"Semi-automated CI/CD for ML with basic monitoring", zh:"半自动化的 ML CI/CD，有基本监控" },
-      { v:4, en:"Fully automated MLOps pipeline with drift detection", zh:"全自动 MLOps 管道，有漂移检测" },
-      { v:5, en:"Self-optimizing MLOps with automated retraining", zh:"自优化 MLOps，自动再训练和金丝雀发布" },
+      { v:1, en:"No MLOps practices" },
+      { v:2, en:"Manual model deployment and monitoring" },
+      { v:3, en:"Semi-automated CI/CD for ML with basic monitoring" },
+      { v:4, en:"Fully automated MLOps pipeline with drift detection" },
+      { v:5, en:"Self-optimizing MLOps with automated retraining" },
     ]},
   { id:"O3", dim:"operations", core:true,
     en:"How does your organization monitor AI model performance in production?",
-    zh:"贵组织如何监控生产中 AI 模型的性能？",
     opts:[
-      { v:1, en:"No monitoring", zh:"没有监控" },
-      { v:2, en:"Basic uptime monitoring only", zh:"仅基本可用性监控" },
-      { v:3, en:"Model-specific performance metrics with alerting", zh:"模型特定性能指标和告警" },
-      { v:4, en:"Comprehensive monitoring: drift, bias, latency, cost", zh:"全面监控：漂移、偏见、延迟、成本" },
-      { v:5, en:"Real-time observability with automated remediation", zh:"实时可观测性，自动修复" },
+      { v:1, en:"No monitoring" },
+      { v:2, en:"Basic uptime monitoring only" },
+      { v:3, en:"Model-specific performance metrics with alerting" },
+      { v:4, en:"Comprehensive monitoring: drift, bias, latency, cost" },
+      { v:5, en:"Real-time observability with automated remediation" },
     ]},
   { id:"O4", dim:"operations", core:false,
     en:"How does your organization handle model retraining?",
-    zh:"贵组织如何处理模型再训练？",
     opts:[
-      { v:1, en:"No retraining process", zh:"没有再训练流程" },
-      { v:2, en:"Manual retraining when performance drops", zh:"性能下降时手动再训练" },
-      { v:3, en:"Scheduled retraining with performance validation", zh:"定期再训练，有性能验证" },
-      { v:4, en:"Trigger-based automated retraining pipeline", zh:"基于触发器的自动再训练管道" },
-      { v:5, en:"Continuous learning with automated A/B testing and rollback", zh:"持续学习，自动 A/B 测试和回退" },
+      { v:1, en:"No retraining process" },
+      { v:2, en:"Manual retraining when performance drops" },
+      { v:3, en:"Scheduled retraining with performance validation" },
+      { v:4, en:"Trigger-based automated retraining pipeline" },
+      { v:5, en:"Continuous learning with automated A/B testing and rollback" },
     ]},
   { id:"O5", dim:"operations", core:false,
     en:"How does your organization manage AI-related costs?",
-    zh:"贵组织如何管理 AI 相关成本？",
     opts:[
-      { v:1, en:"No cost tracking for AI", zh:"没有 AI 成本追踪" },
-      { v:2, en:"Basic cloud billing review", zh:"基本的云计费审查" },
-      { v:3, en:"Cost allocation by project/model with budgets", zh:"按项目/模型分配成本并有预算" },
-      { v:4, en:"Automated cost optimization (spot instances, model compression)", zh:"自动成本优化（竞价实例、模型压缩）" },
-      { v:5, en:"FinOps for AI with real-time cost-per-inference tracking", zh:"AI 的 FinOps，实时推理成本追踪" },
+      { v:1, en:"No cost tracking for AI" },
+      { v:2, en:"Basic cloud billing review" },
+      { v:3, en:"Cost allocation by project/model with budgets" },
+      { v:4, en:"Automated cost optimization (spot instances, model compression)" },
+      { v:5, en:"FinOps for AI with real-time cost-per-inference tracking" },
     ]},
 ];
 
@@ -834,7 +792,7 @@ let currentDimIdx = 0;
 function init() {
   const grid = document.getElementById('dimGrid');
   DIMENSIONS.forEach(d => {
-    grid.innerHTML += `<div class="dim-item"><strong>${d.en}</strong><em>${d.zh}</em> — Weight: ${(d.weight*100).toFixed(0)}%<small>${d.desc}</small></div>`;
+    grid.innerHTML += `<div class="dim-item"><strong>${d.en}</strong> — Weight: ${(d.weight*100).toFixed(0)}%<small>${d.desc}</small></div>`;
   });
 }
 
@@ -908,7 +866,7 @@ function renderDimension() {
 
   let html = `
     <div class="dim-header">
-      <h2>${dim.en} / ${dim.zh}</h2>
+      <h2>${dim.en}</h2>
       <p>${dim.desc}</p>
       <p style="margin-top:0.3rem; font-size:0.8rem;">Section ${currentDimIdx + 1} of ${dimGroups.length} &middot; ${group.questions.length} questions</p>
     </div>
@@ -919,13 +877,11 @@ function renderDimension() {
     html += `
       <div class="question-card ${answered ? 'answered' : ''}">
         <div class="q-text">${q.en}</div>
-        <div class="q-text-zh">${q.zh}</div>
         <ul class="option-list" data-qid="${q.id}">
           ${q.opts.map(o => `
             <li data-value="${o.v}" class="${answers[q.id] === o.v ? 'selected' : ''}"
                 onclick="selectOption('${q.id}', ${o.v})">
               <strong>${o.v}.</strong> ${o.en}
-              <span class="opt-zh">${o.zh}</span>
             </li>
           `).join('')}
         </ul>
@@ -938,14 +894,14 @@ function renderDimension() {
   // Nav buttons
   let navHtml = '';
   if (currentDimIdx > 0) {
-    navHtml += `<button class="btn btn-secondary" onclick="currentDimIdx--;renderDimension();">&#9664; Previous / 上一步</button>`;
+    navHtml += `<button class="btn btn-secondary" onclick="currentDimIdx--;renderDimension();">&#9664; Previous</button>`;
   } else {
     navHtml += `<div></div>`;
   }
   if (currentDimIdx < dimGroups.length - 1) {
-    navHtml += `<button class="btn btn-primary" onclick="currentDimIdx++;renderDimension();">Next &#9654; / 下一步</button>`;
+    navHtml += `<button class="btn btn-primary" onclick="currentDimIdx++;renderDimension();">Next &#9654;</button>`;
   } else {
-    navHtml += `<button class="btn btn-primary" onclick="showResults();">&#128202; View Results / 查看结果</button>`;
+    navHtml += `<button class="btn btn-primary" onclick="showResults();">&#128202; View Results</button>`;
   }
   nav.innerHTML = navHtml;
 
@@ -979,7 +935,7 @@ function computeScores() {
     const vals = dimAnswers[d.id];
     const raw = vals.length ? vals.reduce((a, b) => a + b, 0) / vals.length : 0;
     return {
-      id: d.id, en: d.en, zh: d.zh,
+      id: d.id, en: d.en,
       weight: d.weight,
       raw: Math.round(raw * 100) / 100,
       level: scoreToLevel(raw),
@@ -1026,7 +982,7 @@ function showResults() {
   html += `
     <div class="score-hero">
       <div class="big-score">${result.overall.toFixed(1)} / 5.0</div>
-      <div class="level-name">Level ${result.overallLevel} — ${level.en} (${level.zh})</div>
+      <div class="level-name">Level ${result.overallLevel} — ${level.en}</div>
       <div class="level-desc">${level.desc}</div>
       <div style="margin-top:0.8rem; font-size:0.85rem; opacity:0.8;">
         ${company} &middot; ${industry} &middot; ${new Date().toLocaleDateString()}
@@ -1035,13 +991,13 @@ function showResults() {
   `;
 
   // Dimension bars
-  html += `<div class="card"><h2>Dimension Scores / 维度评分</h2>`;
+  html += `<div class="card"><h2>Dimension Scores</h2>`;
   result.dims.forEach(ds => {
     const pct = (ds.raw / 5 * 100).toFixed(0);
     const color = LEVEL_COLORS[ds.level];
     html += `
       <div class="dim-score-row">
-        <div class="dim-label">${ds.en}<small>${ds.zh}</small></div>
+        <div class="dim-label">${ds.en}</div>
         <div class="bar-wrap">
           <div class="bar-fill" style="width:${pct}%; background:${color};">${ds.raw.toFixed(1)}</div>
         </div>
@@ -1054,20 +1010,20 @@ function showResults() {
   html += `</div>`;
 
   // Radar chart
-  html += `<div class="card"><h2>Maturity Radar / 成熟度雷达图</h2>
+  html += `<div class="card"><h2>Maturity Radar</h2>
     <div class="chart-container"><canvas id="radar" width="400" height="400"></canvas></div>
   </div>`;
 
   // Gap analysis table
-  html += `<div class="card"><h2>Gap Analysis / 差距分析</h2>
-    <p style="margin-bottom:1rem;">Target: <strong>Level ${target} — ${LEVELS[target].en} (${LEVELS[target].zh})</strong></p>`;
+  html += `<div class="card"><h2>Gap Analysis</h2>
+    <p style="margin-bottom:1rem;">Target: <strong>Level ${target} — ${LEVELS[target].en}</strong></p>`;
   if (gaps.length) {
     html += `<table class="gap-table"><thead><tr>
-      <th>Dimension / 维度</th><th>Current / 当前</th><th>Target / 目标</th><th>Gap / 差距</th><th>Priority / 优先级</th>
+      <th>Dimension</th><th>Current</th><th>Target</th><th>Gap</th><th>Priority</th>
     </tr></thead><tbody>`;
     gaps.forEach(g => {
       html += `<tr>
-        <td>${g.en} (${g.zh})</td>
+        <td>${g.en}</td>
         <td>${g.raw.toFixed(1)}</td>
         <td>${target}.0</td>
         <td>${g.gap.toFixed(1)}</td>
@@ -1081,8 +1037,8 @@ function showResults() {
   html += `</div>`;
 
   // Recommendations
-  html += `<div class="card"><h2>Recommendations / 建议</h2>`;
-  const priorityLabels = { High: '🔴 High Priority (Months 1-3) / 高优先级', Medium: '🟡 Medium Priority (Months 4-9) / 中优先级', Low: '🟢 Low Priority (Months 10-18) / 低优先级' };
+  html += `<div class="card"><h2>Recommendations</h2>`;
+  const priorityLabels = { High: '🔴 High Priority (Months 1-3)', Medium: '🟡 Medium Priority (Months 4-9)', Low: '🟢 Low Priority (Months 10-18)' };
   ['High', 'Medium', 'Low'].forEach(p => {
     const pGaps = gaps.filter(g => g.priority === p);
     if (!pGaps.length) return;
@@ -1091,7 +1047,7 @@ function showResults() {
       const lvl = Math.min(g.level, 4);
       const recs = RECOMMENDATIONS[g.id]?.[lvl] || [];
       html += `<div class="rec-item" onclick="this.classList.toggle('open')">
-        <div class="rec-header"><span>${g.en} (${g.zh})</span><span>Gap: ${g.gap.toFixed(1)}</span></div>
+        <div class="rec-header"><span>${g.en}</span><span>Gap: ${g.gap.toFixed(1)}</span></div>
         <div class="rec-body"><ul>${recs.map(r => `<li>${r}</li>`).join('')}</ul></div>
       </div>`;
     });
@@ -1100,11 +1056,11 @@ function showResults() {
   html += `</div>`;
 
   // Downloads
-  html += `<div class="card"><h2>Download / 下载</h2>
+  html += `<div class="card"><h2>Download</h2>
     <div class="download-row">
       <button class="btn btn-primary" onclick="downloadMarkdown()">📄 Download Markdown Report</button>
       <button class="btn btn-primary" onclick="downloadJSON()">📊 Download JSON Data</button>
-      <button class="btn btn-secondary" onclick="resetAssessment()">🔄 New Assessment / 重新评估</button>
+      <button class="btn btn-secondary" onclick="resetAssessment()">🔄 New Assessment</button>
     </div>
   </div>`;
 
@@ -1245,7 +1201,7 @@ function downloadMarkdown() {
   const date = new Date().toISOString().split('T')[0];
   const level = LEVELS[result.overallLevel];
 
-  let md = `# AI Maturity Assessment Report\\n# AI 成熟度评估报告\\n\\n`;
+  let md = `# AI Maturity Assessment Report\\n\\n`;
   md += `| Field | Value |\\n|-------|-------|\\n`;
   md += `| **Company** | ${company} |\\n`;
   md += `| **Industry** | ${industry} |\\n`;
@@ -1254,14 +1210,14 @@ function downloadMarkdown() {
   md += `| **Mode** | ${mode} |\\n\\n---\\n\\n`;
 
   md += `## Overall Score: ${result.overall.toFixed(1)} / 5.0\\n`;
-  md += `**Level ${result.overallLevel}: ${level.en} (${level.zh})**\\n\\n`;
+  md += `**Level ${result.overallLevel}: ${level.en}**\\n\\n`;
   md += `${level.desc}\\n\\n---\\n\\n`;
 
   md += `## Dimension Scores\\n\\n`;
   md += `| Dimension | Score | Level |\\n|-----------|-------|-------|\\n`;
   result.dims.forEach(ds => {
     const dl = LEVELS[ds.level];
-    md += `| ${ds.en} (${ds.zh}) | ${ds.raw.toFixed(1)} | L${ds.level} ${dl.en} |\\n`;
+    md += `| ${ds.en} | ${ds.raw.toFixed(1)} | L${ds.level} ${dl.en} |\\n`;
   });
 
   md += `\\n---\\n\\n## Gap Analysis (Target: Level ${target})\\n\\n`;
@@ -1279,7 +1235,7 @@ function downloadMarkdown() {
   gaps.forEach(g => {
     const lvl = Math.min(g.level, 4);
     const recs = RECOMMENDATIONS[g.id]?.[lvl] || [];
-    md += `### ${g.en} (${g.zh}) — Priority: ${g.priority}\\n\\n`;
+    md += `### ${g.en} — Priority: ${g.priority}\\n\\n`;
     recs.forEach(r => md += `- ${r}\\n`);
     md += `\\n`;
   });
@@ -1310,7 +1266,7 @@ function downloadJSON() {
       overall_score: result.overall,
       overall_level: result.overallLevel,
       dimensions: result.dims.map(ds => ({
-        id: ds.id, name_en: ds.en, name_zh: ds.zh,
+        id: ds.id, name_en: ds.en,
         score: ds.raw, level: ds.level, weight: ds.weight,
       })),
     },
