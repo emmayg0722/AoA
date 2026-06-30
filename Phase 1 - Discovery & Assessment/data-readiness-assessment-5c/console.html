@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Data Readiness Assessment (5C) — Console</title>
+<meta name="description" content="A workspace that walks the four-step 5C data-readiness assessment: generate prompts for the dra-5c agent, paste results back, profile a data sample locally, and assemble a 5C scorecard report.">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='16' fill='%231B1474'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #1B1474; --primary-dark: #120D52; --accent: #DCDDF6; --powder: #EEEEFA;
+    --ink: #1c1c28; --muted: #5b5b6b; --line: #e4e4f0;
+    --green: #1a8a5c; --amber: #d4790e; --red: #c0392b;
+    --font-heading: 'Fraunces', Georgia, serif;
+    --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: var(--font-body); color: var(--ink); background: #fafaff; line-height: 1.6; }
+  .hero { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: #fff; padding: 44px 24px 36px; }
+  .wrap { max-width: 920px; margin: 0 auto; }
+  .crumb { font-size: 13px; color: var(--accent); margin-bottom: 10px; }
+  .crumb a { color: var(--accent); text-decoration: none; }
+  .hero h1 { font-family: var(--font-heading); font-weight: 700; font-size: 34px; line-height: 1.15; }
+  .hero p { margin-top: 10px; font-size: 15.5px; color: #dcdcf2; max-width: 660px; }
+  main { max-width: 920px; margin: 0 auto; padding: 28px 24px 80px; }
+  .note { background: var(--powder); border: 1px solid var(--accent); border-radius: 12px; padding: 14px 16px; font-size: 14px; color: var(--muted); margin-bottom: 26px; }
+  .note strong { color: var(--primary); }
+  .card { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 22px 24px; margin-bottom: 20px; }
+  .card > h2 { font-family: var(--font-heading); font-weight: 600; font-size: 21px; color: var(--primary); display: flex; align-items: baseline; gap: 10px; margin-bottom: 4px; }
+  .step-no { font-size: 12px; font-weight: 700; letter-spacing: 0.06em; color: var(--primary); background: var(--accent); padding: 3px 9px; border-radius: 20px; }
+  .card .hint { font-size: 13.5px; color: var(--muted); margin-bottom: 16px; }
+  label { display: block; font-size: 13px; font-weight: 600; color: var(--ink); margin: 12px 0 5px; }
+  input[type=text], textarea, select {
+    width: 100%; font-family: var(--font-body); font-size: 14px; color: var(--ink);
+    border: 1.5px solid var(--line); border-radius: 8px; padding: 9px 11px; background: #fff;
+  }
+  textarea { resize: vertical; min-height: 90px; }
+  input:focus, textarea:focus, select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(27,20,116,0.12); }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; }
+  .btn { font-family: var(--font-body); font-size: 13.5px; font-weight: 600; padding: 9px 16px; border-radius: 8px; border: none; cursor: pointer; transition: all 0.15s; }
+  .btn-primary { background: var(--accent); color: var(--primary); }
+  .btn-primary:hover { background: #C3C5EC; }
+  .btn-secondary { background: #fff; color: var(--primary); border: 1.5px solid var(--accent); }
+  .btn-secondary:hover { background: var(--powder); }
+  .btn-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
+  .prompt-box { position: relative; margin-top: 12px; display: none; }
+  pre.prompt { background: #f5f5fc; border: 1px solid var(--line); border-radius: 10px; padding: 14px 14px; font-size: 12.5px; line-height: 1.5; white-space: pre-wrap; word-break: break-word; color: #2a2a3a; max-height: 320px; overflow: auto; }
+  .preview { border: 1px dashed var(--line); border-radius: 10px; padding: 4px 16px; margin-top: 12px; background: #fcfcff; font-size: 14px; }
+  .preview .empty { color: #aaa; font-style: italic; }
+  .preview h2, .preview h3, .preview h4, .preview h5 { font-family: var(--font-heading); color: var(--primary); margin: 14px 0 6px; }
+  .preview h2 { font-size: 19px; } .preview h3 { font-size: 16px; } .preview h4 { font-size: 14.5px; }
+  .preview p { margin: 8px 0; } .preview ul, .preview ol { margin: 8px 0 8px 22px; }
+  .preview table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 10px 0; }
+  .preview th, .preview td { border: 1px solid var(--line); padding: 6px 9px; text-align: left; vertical-align: top; }
+  .preview th { background: var(--powder); color: var(--primary); }
+  .preview code { background: #ececf6; padding: 1px 5px; border-radius: 4px; font-size: 12.5px; }
+  .preview pre { background: #f5f5fc; border: 1px solid var(--line); border-radius: 8px; padding: 12px; overflow: auto; font-size: 12.5px; white-space: pre-wrap; word-break: break-word; margin: 10px 0; }
+  .pill-link { display: inline-block; font-size: 13.5px; font-weight: 600; color: var(--primary); background: var(--accent); padding: 8px 14px; border-radius: 8px; text-decoration: none; }
+  .pill-link:hover { background: #C3C5EC; }
+  .sc-grid { display: grid; grid-template-columns: 1.4fr 0.7fr 2fr; gap: 8px 14px; align-items: center; margin-top: 6px; }
+  .sc-grid .h { font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); }
+  .sc-grid .c { font-weight: 600; color: var(--primary); }
+  .saved { font-size: 12.5px; color: var(--green); margin-left: auto; }
+  .toolbar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+  @media (max-width: 680px) { .grid2, .sc-grid { grid-template-columns: 1fr; } .hero h1 { font-size: 27px; } }
+</style>
+</head>
+<body>
+  <header class="hero"><div class="wrap">
+    <div class="crumb"><a href="../../">AI Architect Toolkit</a> · Phase 1 · Data Readiness Assessment (5C)</div>
+    <h1>DRA-5C Console</h1>
+    <p>A workspace that walks the four-step data-readiness assessment end to end and assembles the 5C scorecard report.</p>
+  </div></header>
+
+  <main>
+    <div class="note">
+      <strong>How this works.</strong> Generation is done by the <code>dra-5c</code> agent, not this page — each step gives you a prompt to paste into the agent (or any Claude), and you paste the result back here. This page makes <strong>no API calls</strong>; your work <strong>autosaves locally</strong> in your browser and can be exported as a file.
+    </div>
+
+    <!-- Setup -->
+    <div class="card">
+      <h2><span class="step-no">Setup</span> Engagement &amp; use case <span class="saved" id="savedFlag"></span></h2>
+      <p class="hint">Filled once and woven into every prompt. Readiness is always judged against a specific use case.</p>
+      <div class="grid2">
+        <div><label>Client / engagement</label><input type="text" data-eng="client" placeholder="Acme Corp"></div>
+        <div><label>Assessor</label><input type="text" data-eng="assessor" placeholder="Your name"></div>
+      </div>
+      <label>Target AI use case (one line)</label>
+      <input type="text" data-eng="useCase" placeholder="Real-time credit-risk scoring at loan application">
+      <label>What it predicts / decides</label>
+      <input type="text" data-eng="predicts" placeholder="Approve/deny + risk band, returned synchronously at submit">
+      <div class="grid2">
+        <div><label>Latency requirement</label><input type="text" data-eng="latency" placeholder="&lt; 200 ms p99"></div>
+        <div><label>Volume / velocity</label><input type="text" data-eng="volume" placeholder="~50k applications/day, bursty"></div>
+        <div><label>History needed</label><input type="text" data-eng="history" placeholder="3+ years labelled outcomes"></div>
+        <div><label>Key data entities / fields</label><input type="text" data-eng="entities" placeholder="applicant, bureau pull, transactions, prior loans"></div>
+      </div>
+    </div>
+
+    <!-- Step A -->
+    <div class="card">
+      <h2><span class="step-no">Step A</span> Context &amp; Clarity — interview guide</h2>
+      <p class="hint">Generate a tailored interview guide + questionnaire. Run it through the agent, then paste the Markdown back.</p>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="genPrompt('A')">⚙️ Generate Step A prompt</button>
+      </div>
+      <div class="prompt-box" id="pb_A"><pre class="prompt" id="pt_A"></pre>
+        <div class="btn-row"><button class="btn btn-secondary" onclick="copyPrompt('A')">📋 Copy prompt</button></div></div>
+      <label>Paste agent output (Markdown)</label>
+      <textarea data-eng="outA" data-prev="A" placeholder="Paste the interview guide the agent produced…"></textarea>
+      <div class="preview" id="prev_A"></div>
+    </div>
+
+    <!-- Step B -->
+    <div class="card">
+      <h2><span class="step-no">Step B</span> Document &amp; metadata review checklist</h2>
+      <p class="hint">List the artifacts to request from the client, each tied to a C with "good vs. red flag" notes.</p>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="genPrompt('B')">⚙️ Generate Step B prompt</button>
+      </div>
+      <div class="prompt-box" id="pb_B"><pre class="prompt" id="pt_B"></pre>
+        <div class="btn-row"><button class="btn btn-secondary" onclick="copyPrompt('B')">📋 Copy prompt</button></div></div>
+      <label>Paste agent output (Markdown)</label>
+      <textarea data-eng="outB" data-prev="B" placeholder="Paste the document-review checklist…"></textarea>
+      <div class="preview" id="prev_B"></div>
+    </div>
+
+    <!-- Step C -->
+    <div class="card">
+      <h2><span class="step-no">Step C</span> Coverage &amp; Credibility — data spot-check</h2>
+      <p class="hint">Profile a real sample locally, paste its aggregate summary here, then generate the interpretation prompt. Raw data never leaves your browser.</p>
+      <div class="btn-row"><a class="pill-link" href="profiler.html" target="_blank" rel="noopener">🧪 Open data profiler ↗</a></div>
+      <label>Profiler aggregate summary</label>
+      <textarea data-eng="cSummary" placeholder="Paste the 'aggregate summary' block from the profiler here…"></textarea>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="genPrompt('C')">⚙️ Generate Step C prompt</button>
+      </div>
+      <div class="prompt-box" id="pb_C"><pre class="prompt" id="pt_C"></pre>
+        <div class="btn-row"><button class="btn btn-secondary" onclick="copyPrompt('C')">📋 Copy prompt</button></div></div>
+      <label>Paste agent output (Markdown)</label>
+      <textarea data-eng="outC" data-prev="C" placeholder="Paste the Coverage/Credibility interpretation + sub-scores…"></textarea>
+      <div class="preview" id="prev_C"></div>
+    </div>
+
+    <!-- Step D -->
+    <div class="card">
+      <h2><span class="step-no">Step D</span> Capacity &amp; validation plan + scorecard</h2>
+      <p class="hint">Synthesize A–C into a technical validation plan and the final 5C scorecard.</p>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="genPrompt('D')">⚙️ Generate Step D prompt</button>
+      </div>
+      <div class="prompt-box" id="pb_D"><pre class="prompt" id="pt_D"></pre>
+        <div class="btn-row"><button class="btn btn-secondary" onclick="copyPrompt('D')">📋 Copy prompt</button></div></div>
+      <label>Paste agent output (Markdown)</label>
+      <textarea data-eng="outD" data-prev="D" placeholder="Paste the validation plan + scorecard…"></textarea>
+      <div class="preview" id="prev_D"></div>
+
+      <label style="margin-top:18px">Final 5C scores (for the report header)</label>
+      <div class="sc-grid">
+        <div class="h">Dimension</div><div class="h">Score</div><div class="h">One-line note</div>
+        <div class="c">Context</div><div><select data-eng="sc_context"></select></div><div><input type="text" data-eng="note_context" placeholder="evidence / gap"></div>
+        <div class="c">Clarity</div><div><select data-eng="sc_clarity"></select></div><div><input type="text" data-eng="note_clarity" placeholder="evidence / gap"></div>
+        <div class="c">Coverage</div><div><select data-eng="sc_coverage"></select></div><div><input type="text" data-eng="note_coverage" placeholder="evidence / gap"></div>
+        <div class="c">Credibility</div><div><select data-eng="sc_credibility"></select></div><div><input type="text" data-eng="note_credibility" placeholder="evidence / gap"></div>
+        <div class="c">Capacity</div><div><select data-eng="sc_capacity"></select></div><div><input type="text" data-eng="note_capacity" placeholder="evidence / gap"></div>
+      </div>
+      <div class="grid2">
+        <div><label>Overall verdict</label><select data-eng="verdict">
+          <option value="">—</option><option>Ready</option><option>Conditional</option><option>Not ready</option></select></div>
+        <div><label>Recommended next action</label><input type="text" data-eng="nextAction" placeholder="Proceed to PoC / remediate X first"></div>
+      </div>
+      <label>Top gaps</label>
+      <input type="text" data-eng="gaps" placeholder="1) … 2) … 3) …">
+    </div>
+
+    <!-- Report -->
+    <div class="card">
+      <h2>Assemble &amp; export</h2>
+      <p class="hint">Combine setup, all four steps, and the scorecard into one deliverable. Or save/restore the whole engagement as a file.</p>
+      <div class="toolbar">
+        <button class="btn btn-primary" onclick="exportReport('html')">🌐 Export HTML report</button>
+        <button class="btn btn-primary" onclick="exportReport('md')">📄 Export Markdown</button>
+        <button class="btn btn-secondary" onclick="exportEngagement()">💾 Save engagement (.json)</button>
+        <button class="btn btn-secondary" onclick="document.getElementById('importFile').click()">📥 Load engagement</button>
+        <button class="btn btn-secondary" onclick="resetEngagement()">🗑️ Reset</button>
+        <input type="file" id="importFile" accept=".json" style="display:none">
+      </div>
+    </div>
+  </main>
+
+<script>
+// ════════════════════════════════════════════════════════════════
+// DRA-5C Console — fully client-side. No network calls. Autosaves locally.
+// ════════════════════════════════════════════════════════════════
+const KEY = 'dra5c_engagement_v1';
+const FIELDS = () => Array.from(document.querySelectorAll('[data-eng]'));
+
+// inject 1–5 score options
+document.querySelectorAll('select[data-eng^="sc_"]').forEach(sel => {
+  sel.innerHTML = '<option value="">—</option>' + [1,2,3,4,5].map(n => '<option value="'+n+'">'+n+'</option>').join('');
+});
+
+function val(k) { const el = document.querySelector('[data-eng="'+k+'"]'); return el ? el.value.trim() : ''; }
+
+function collect() {
+  const o = {};
+  FIELDS().forEach(el => { o[el.getAttribute('data-eng')] = el.value; });
+  return o;
+}
+function save() {
+  try { localStorage.setItem(KEY, JSON.stringify(collect())); flashSaved(); } catch (e) {}
+}
+function restore(o) {
+  FIELDS().forEach(el => {
+    const k = el.getAttribute('data-eng');
+    if (o[k] !== undefined) el.value = o[k];
+  });
+  ['A','B','C','D'].forEach(renderPreview);
+}
+let savedTimer;
+function flashSaved() {
+  const f = document.getElementById('savedFlag');
+  f.textContent = '✓ saved locally';
+  clearTimeout(savedTimer);
+  savedTimer = setTimeout(() => { f.textContent = ''; }, 1200);
+}
+
+// wire inputs: autosave + live preview
+document.addEventListener('input', e => {
+  if (!e.target.matches('[data-eng]')) return;
+  save();
+  const pv = e.target.getAttribute('data-prev');
+  if (pv) renderPreview(pv);
+});
+
+// ── Prompt builders ──────────────────────────────────────────────
+function ctxBlock() {
+  return `Engagement: ${val('client') || '[client]'}
+Target AI use case: ${val('useCase') || '[use case]'}
+What it predicts/decides: ${val('predicts') || '[prediction/decision]'}
+Latency requirement: ${val('latency') || '[latency]'}
+Volume/velocity: ${val('volume') || '[volume]'}
+History needed: ${val('history') || '[history]'}
+Key data entities/fields: ${val('entities') || '[entities]'}`;
+}
+const PROMPTS = {
+  A: () => `Act as the dra-5c (Data Readiness Assessment, 5C) agent — Step A: Context & Clarity.
+
+${ctxBlock()}
+
+Produce a tailored stakeholder interview guide and a written questionnaire following
+templates/interview-guide.md. Tag every question with the C it informs (mostly Context
+and Clarity) and tie each to the data this specific use case actually needs. Output clean Markdown.`,
+  B: () => `Act as the dra-5c agent — Step B: Document & metadata review checklist.
+
+${ctxBlock()}
+
+Produce a checklist of artifacts to request from the client (data dictionary, lineage,
+ER/schema, retention & privacy policy, pipeline/ETL docs, access controls). For each:
+why it matters, which C it informs, and what "good" vs. a "red flag" looks like — tailored
+to this use case. Use templates/doc-review-checklist.md. Output a clean Markdown table.`,
+  C: () => `Act as the dra-5c agent — Step C: Coverage & Credibility interpretation.
+
+${ctxBlock()}
+
+The architect ran the browser-local profiler on a representative sample. Here is its
+AGGREGATE summary (no raw rows):
+
+${val('cSummary') || '[paste profiler aggregate summary above first]'}
+
+Interpret these aggregates into Coverage and Credibility findings and sub-scores (1–5)
+for THIS use case, citing the specific numbers as evidence. Do not ask for raw data.
+Output clean Markdown.`,
+  D: () => `Act as the dra-5c agent — Step D: Capacity & technical validation plan + 5C scorecard.
+
+${ctxBlock()}
+
+Use the prior step outputs:
+
+--- STEP A (interviews) ---
+${val('outA') || '[not yet completed]'}
+
+--- STEP B (doc review) ---
+${val('outB') || '[not yet completed]'}
+
+--- STEP C (coverage & credibility) ---
+${val('outC') || '[not yet completed]'}
+
+Produce (1) a technical validation plan sized to the latency/volume requirements
+(templates/validation-plan.md) and (2) the filled 5C scorecard with a 1–5 score per C,
+evidence, gap, and remediation, plus an overall verdict (Ready/Conditional/Not ready),
+top 3 gaps, and recommended next action (templates/scorecard.md). Output clean Markdown.`,
+};
+
+function genPrompt(step) {
+  document.getElementById('pt_' + step).textContent = PROMPTS[step]();
+  document.getElementById('pb_' + step).style.display = 'block';
+}
+function copyPrompt(step) {
+  const txt = document.getElementById('pt_' + step).textContent;
+  navigator.clipboard.writeText(txt).then(() => {
+    const btn = event.target; const o = btn.textContent;
+    btn.textContent = '✅ Copied!'; setTimeout(() => { btn.textContent = o; }, 1800);
+  }).catch(() => alert('Copy failed — select the text manually.'));
+}
+
+// ── Minimal Markdown renderer (headings, bold, code, lists, tables) ──
+function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function inlineMd(s) { return esc(s).replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/`(.+?)`/g,'<code>$1</code>'); }
+function splitRow(line) { return line.trim().replace(/^\|/,'').replace(/\|$/,'').split('|').map(c => c.trim()); }
+function mdToHtml(md) {
+  if (!md || !md.trim()) return '<p class="empty">— nothing pasted yet —</p>';
+  const L = md.replace(/\r/g,'').split('\n');
+  let html = '', i = 0;
+  while (i < L.length) {
+    const line = L[i];
+    if (/^\s*$/.test(line)) { i++; continue; }
+    // fenced code block
+    if (/^```/.test(line.trim())) {
+      i++; const buf = [];
+      while (i < L.length && !/^```/.test(L[i].trim())) { buf.push(L[i]); i++; }
+      i++; // skip closing fence
+      html += '<pre>' + esc(buf.join('\n')) + '</pre>';
+      continue;
+    }
+    // table
+    if (line.includes('|') && i+1 < L.length && /-/.test(L[i+1]) && /^[\s:|-]+$/.test(L[i+1].trim())) {
+      const head = splitRow(line); i += 2; const body = [];
+      while (i < L.length && L[i].includes('|') && L[i].trim() !== '') { body.push(splitRow(L[i])); i++; }
+      html += '<table><thead><tr>' + head.map(h => '<th>'+inlineMd(h)+'</th>').join('') + '</tr></thead><tbody>'
+            + body.map(r => '<tr>'+r.map(c => '<td>'+inlineMd(c)+'</td>').join('')+'</tr>').join('') + '</tbody></table>';
+      continue;
+    }
+    let m;
+    if (m = line.match(/^(#{1,4})\s+(.*)/)) { const lv = m[1].length + 1; html += '<h'+lv+'>'+inlineMd(m[2])+'</h'+lv+'>'; i++; continue; }
+    if (/^\s*[-*]\s+/.test(line)) { const it = []; while (i<L.length && /^\s*[-*]\s+/.test(L[i])) { it.push(L[i].replace(/^\s*[-*]\s+/,'')); i++; } html += '<ul>'+it.map(x=>'<li>'+inlineMd(x)+'</li>').join('')+'</ul>'; continue; }
+    if (/^\s*\d+\.\s+/.test(line)) { const it = []; while (i<L.length && /^\s*\d+\.\s+/.test(L[i])) { it.push(L[i].replace(/^\s*\d+\.\s+/,'')); i++; } html += '<ol>'+it.map(x=>'<li>'+inlineMd(x)+'</li>').join('')+'</ol>'; continue; }
+    const para = [line]; i++;
+    while (i<L.length && !/^\s*$/.test(L[i]) && !/^(#{1,4}\s|[-*]\s|\d+\.\s)/.test(L[i]) && !L[i].includes('|')) { para.push(L[i]); i++; }
+    html += '<p>'+inlineMd(para.join(' '))+'</p>';
+  }
+  return html;
+}
+function renderPreview(step) {
+  document.getElementById('prev_' + step).innerHTML = mdToHtml(val('out' + step));
+}
+
+// ── Report assembly ──────────────────────────────────────────────
+function scorecardMd() {
+  const Cs = [['Context','context'],['Clarity','clarity'],['Coverage','coverage'],['Credibility','credibility'],['Capacity','capacity']];
+  let m = '\n| C | Score | Note |\n|---|:--:|---|\n';
+  Cs.forEach(([lab,k]) => { m += '| '+lab+' | '+(val('sc_'+k)||'—')+' | '+(val('note_'+k)||'')+' |\n'; });
+  m += '\n**Overall verdict:** ' + (val('verdict')||'—') + '  \n';
+  m += '**Top gaps:** ' + (val('gaps')||'—') + '  \n';
+  m += '**Recommended next action:** ' + (val('nextAction')||'—') + '\n';
+  return m;
+}
+function reportMarkdown() {
+  const date = new Date().toISOString().slice(0,10);
+  let m = '# Data Readiness Assessment (5C) — ' + (val('client')||'[client]') + '\n\n';
+  m += '**Use case:** ' + (val('useCase')||'—') + '  \n';
+  m += '**Assessor:** ' + (val('assessor')||'—') + ' · **Date:** ' + date + '\n\n';
+  m += '**Predicts/decides:** ' + (val('predicts')||'—') + '  \n';
+  m += '**Latency:** ' + (val('latency')||'—') + ' · **Volume:** ' + (val('volume')||'—')
+     + ' · **History:** ' + (val('history')||'—') + '\n\n';
+  m += '## 5C Scorecard\n' + scorecardMd() + '\n';
+  m += '## Step A — Context & Clarity: Interview Guide\n\n' + (val('outA')||'(not completed)') + '\n\n';
+  m += '## Step B — Document & Metadata Review\n\n' + (val('outB')||'(not completed)') + '\n\n';
+  m += '## Step C — Coverage & Credibility\n\n';
+  if (val('cSummary')) m += '**Profiler aggregate summary:**\n\n```\n' + val('cSummary') + '\n```\n\n';
+  m += (val('outC')||'(not completed)') + '\n\n';
+  m += '## Step D — Capacity & Technical Validation\n\n' + (val('outD')||'(not completed)') + '\n';
+  return m;
+}
+function reportHtml() {
+  const body = mdToHtml(reportMarkdown());
+  return '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>DRA-5C — '
+    + esc(val('client')||'report') + '</title><style>'
+    + 'body{font-family:Inter,Segoe UI,sans-serif;color:#1c1c28;max-width:880px;margin:40px auto;padding:0 22px;line-height:1.6}'
+    + 'h1,h2,h3,h4{color:#1B1474;font-family:Georgia,serif}h1{border-bottom:3px solid #DCDDF6;padding-bottom:8px}'
+    + 'table{width:100%;border-collapse:collapse;font-size:14px;margin:12px 0}th,td{border:1px solid #e4e4f0;padding:7px 10px;text-align:left;vertical-align:top}'
+    + 'th{background:#EEEEFA;color:#1B1474}code{background:#ececf6;padding:1px 5px;border-radius:4px}'
+    + 'pre{background:#f5f5fc;border:1px solid #e4e4f0;border-radius:8px;padding:12px;overflow:auto;font-size:12.5px}</style></head><body>'
+    + body + '</body></html>';
+}
+function download(text, fname, mime) {
+  const blob = new Blob([text], { type: mime });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = fname; a.click();
+  URL.revokeObjectURL(a.href);
+}
+function slug() { return (val('client')||'engagement').replace(/\W+/g,'_'); }
+function exportReport(fmt) {
+  if (fmt === 'md') download(reportMarkdown(), 'DRA5C_'+slug()+'.md', 'text/markdown');
+  else download(reportHtml(), 'DRA5C_'+slug()+'.html', 'text/html');
+}
+function exportEngagement() { download(JSON.stringify(collect(), null, 2), 'DRA5C_'+slug()+'.json', 'application/json'); }
+function resetEngagement() {
+  if (!confirm('Clear all fields for this engagement? (Export first if you want to keep it.)')) return;
+  FIELDS().forEach(el => { el.value = ''; });
+  ['A','B','C','D'].forEach(renderPreview);
+  save();
+}
+document.getElementById('importFile').addEventListener('change', e => {
+  const file = e.target.files[0]; if (!file) return;
+  const r = new FileReader();
+  r.onload = () => { try { restore(JSON.parse(r.result)); save(); } catch (err) { alert('Invalid engagement file.'); } };
+  r.readAsText(file);
+  e.target.value = '';
+});
+
+// ── Boot ─────────────────────────────────────────────────────────
+(function init() {
+  try { const o = JSON.parse(localStorage.getItem(KEY) || '{}'); restore(o); } catch (e) {}
+  ['A','B','C','D'].forEach(renderPreview);
+})();
+</script>
+</body>
+</html>

@@ -8,8 +8,9 @@ Coverage, Credibility, Capacity**.
 
 | File | Purpose |
 |------|---------|
-| `methodology.md` | The 5C method — what each C means, how each is actually assessed, scoring scale, privacy posture. |
+| `console.html` | **The front door.** A workspace that walks all four steps end-to-end: it generates a paste-ready prompt for the `dra-5c` agent at each step, takes the agent's output back, embeds the profiler for Step C, and assembles the final 5C report. No API calls; work autosaves locally and exports as a file. |
 | `profiler.html` | **Browser-local data profiler.** Drop in a CSV/JSON sample; it computes fill rate, duplicates, type consistency, distributions, and freshness entirely in-browser and emits an aggregate summary. **Raw data never leaves the machine.** |
+| `methodology.md` | The 5C method — what each C means, how each is actually assessed, scoring scale, privacy posture. |
 | `templates/` | Fill-in markdown for each deliverable: interview guide, document-review checklist, validation plan, scorecard. |
 
 The orchestrating agent lives at `.claude/agents/dra-5c.md` (Claude Code requires
@@ -17,11 +18,17 @@ agents in `.claude/agents/`); it reads this folder's methodology and templates.
 
 ## How the pieces fit
 
-1. Run the **`dra-5c` agent** with a client's AI use-case plan.
-2. It generates the **interview guide** (Step A) and **doc-review checklist** (Step B).
-3. The architect runs **`profiler.html`** on a representative data sample and pastes
-   the aggregate summary back into the agent (Step C — Coverage & Credibility).
-4. The agent produces the **validation plan** and the filled **5C scorecard** (Step D).
+Open **`console.html`** and work top to bottom. For each step it gives you a
+tailored prompt to run through the `dra-5c` agent (or any Claude), and you paste the
+result back:
+
+1. **Setup** — enter the client and the AI use case (everything is judged against it).
+2. **Step A / B** — generate prompts for the interview guide and doc-review checklist.
+3. **Step C** — run **`profiler.html`** on a sample, paste its aggregate summary in, generate the Coverage/Credibility interpretation.
+4. **Step D** — generate the validation plan + 5C scorecard, set the final scores, and export the combined report.
+
+You can also drive the `dra-5c` agent directly in Claude Code without the console —
+the console is just a human-friendly front-end that keeps everything in one place.
 
 ## Why a separate browser tool for the data step
 
