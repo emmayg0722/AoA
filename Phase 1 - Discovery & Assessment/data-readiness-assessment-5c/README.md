@@ -36,3 +36,9 @@ The generative steps (interviews, checklists, validation plans) are an LLM's
 strength. But the actual-data spot-check must respect that **raw client data cannot
 leave their environment** — so it runs fully client-side in `profiler.html`, and only
 non-sensitive aggregates flow back to the agent.
+
+## Integrations
+
+- `m365-copilot-integration.md` — feasibility & architecture comparison for leveraging
+  Microsoft 365 Copilot / Graph to accelerate data-gathering (no code yet). Recommends a
+  staged path; the local profiler stays in every option.
