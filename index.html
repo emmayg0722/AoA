@@ -808,6 +808,24 @@ function init() {
   DIMENSIONS.forEach(d => {
     grid.innerHTML += `<div class="dim-item"><strong>${d.en}</strong> — Weight: ${(d.weight*100).toFixed(0)}%<small>${d.desc}</small></div>`;
   });
+  loadFromShareLink();
+}
+
+function loadFromShareLink() {
+  const hash = location.hash;
+  if (!hash.startsWith('#r=')) return;
+  try {
+    const payload = JSON.parse(decodeURIComponent(atob(hash.slice(3))));
+    answers = payload.a || {};
+    document.getElementById('inputCompany').value = payload.c || '';
+    document.getElementById('inputIndustry').value = payload.i || 'Technology';
+    document.getElementById('inputAssessor').value = payload.as || '';
+    document.getElementById('inputMode').value = payload.m || 'core';
+    document.getElementById('inputTarget').value = payload.t || '4';
+    showResults();
+  } catch (e) {
+    // malformed share link — fall back to the normal setup page
+  }
 }
 
 // ═══════════════════════════════════════════════════════════════════
@@ -1026,7 +1044,7 @@ function showResults() {
 
   // Radar chart
   html += `<div class="card"><h2>Maturity Radar</h2>
-    <div class="chart-container"><canvas id="radar" width="400" height="400"></canvas></div>
+    <div class="chart-container"><canvas id="radar" width="400" height="460"></canvas></div>
   </div>`;
 
   // Gap analysis table
@@ -1075,6 +1093,7 @@ function showResults() {
     <div class="download-row">
       <button class="btn btn-primary" onclick="downloadMarkdown()">📄 Download Markdown Report</button>
       <button class="btn btn-primary" onclick="downloadHTML()">🌐 Download HTML Report</button>
+      <button id="shareBtn" class="btn btn-secondary" onclick="shareResults()">🔗 Share Results</button>
       <button class="btn btn-secondary" onclick="resetAssessment()">🔄 New Assessment</button>
     </div>
   </div>`;
@@ -1094,8 +1113,9 @@ function drawRadar(dims, target) {
   if (!canvas) return;
   const ctx = canvas.getContext('2d');
   const W = canvas.width, H = canvas.height;
-  const cx = W / 2, cy = H / 2;
-  const R = Math.min(W, H) / 2 - 50;
+  const chartH = 400;
+  const cx = W / 2, cy = chartH / 2;
+  const R = Math.min(W, chartH) / 2 - 50;
   const n = dims.length;
 
   ctx.clearRect(0, 0, W, H);
@@ -1185,21 +1205,49 @@ function drawRadar(dims, target) {
   });
 
   // Legend
+  const legendY = chartH + 30;
   ctx.fillStyle = '#1B1474';
-  ctx.fillRect(10, H - 30, 12, 12);
+  ctx.fillRect(10, legendY - 10, 12, 12);
   ctx.fillStyle = '#222222';
   ctx.font = '11px sans-serif';
   ctx.textAlign = 'left';
-  ctx.fillText('Current Score', 26, H - 20);
+  ctx.fillText('Current Score', 26, legendY);
 
   ctx.strokeStyle = '#9A97C9';
   ctx.setLineDash([5, 5]);
   ctx.beginPath();
-  ctx.moveTo(130, H - 24);
-  ctx.lineTo(150, H - 24);
+  ctx.moveTo(170, legendY - 4);
+  ctx.lineTo(190, legendY - 4);
   ctx.stroke();
   ctx.setLineDash([]);
-  ctx.fillText('Target Level', 155, H - 20);
+  ctx.fillText('Target Level', 195, legendY);
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// SHARE
+// ═══════════════════════════════════════════════════════════════════
+
+function shareResults() {
+  const payload = {
+    a: answers,
+    c: document.getElementById('inputCompany').value,
+    i: document.getElementById('inputIndustry').value,
+    as: document.getElementById('inputAssessor').value,
+    m: document.getElementById('inputMode').value,
+    t: document.getElementById('inputTarget').value,
+  };
+  const encoded = btoa(encodeURIComponent(JSON.stringify(payload)));
+  const url = `${location.origin}${location.pathname}#r=${encoded}`;
+  const btn = document.getElementById('shareBtn');
+  const original = btn.textContent;
+
+  navigator.clipboard.writeText(url).then(() => {
+    btn.textContent = '✅ Link Copied!';
+    setTimeout(() => { btn.textContent = original; }, 2000);
+  }).catch(() => {
+    btn.textContent = '⚠️ Copy Failed';
+    setTimeout(() => { btn.textContent = original; }, 2000);
+  });
 }
 
 // ═══════════════════════════════════════════════════════════════════
