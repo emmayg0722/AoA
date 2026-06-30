@@ -11,26 +11,26 @@
 <meta property="og:url" content="https://emmayg0722.github.io/AoA/">
 <meta property="og:image" content="https://emmayg0722.github.io/AoA/og-image.png">
 <meta name="twitter:card" content="summary_large_image">
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='16' fill='%23D97B3F'/%3E%3C/svg%3E">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='16' fill='%231B1474'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --primary: #271E52;
-    --primary-dark: #1A1438;
-    --accent: #D97B3F;
+    --primary: #1B1474;
+    --primary-dark: #120D52;
+    --accent: #DCDDF6;
     --bg: #F8F6F3;
     --card: #ffffff;
     --text: #222222;
     --text-light: #5a6872;
     --border: #d8d4cf;
-    --powder: #E8E3F4;
+    --powder: #EEEEFA;
     --red: #c0392b;
     --orange: #d4790e;
     --yellow: #d4a017;
     --green: #1a8a5c;
-    --blue: #D97B3F;
+    --blue: #DCDDF6;
     --font-heading: 'Fraunces', Georgia, serif;
     --font-body: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
     --radius: 6px;
@@ -96,7 +96,7 @@
   input[type="text"]:focus, select:focus {
     outline: none;
     border-color: var(--accent);
-    box-shadow: 0 0 0 3px rgba(0,158,220,0.15);
+    box-shadow: 0 0 0 3px rgba(27,20,116,0.15);
   }
 
   /* Buttons */
@@ -112,10 +112,10 @@
   }
   .btn-primary {
     background: var(--accent);
-    color: white;
+    color: var(--primary);
     border-radius: 4px;
   }
-  .btn-primary:hover { background: #C2672D; box-shadow: 0 2px 8px rgba(39,30,82,0.25); }
+  .btn-primary:hover { background: #C3C5EC; box-shadow: 0 2px 8px rgba(27,20,116,0.25); }
   .btn-secondary {
     background: var(--bg);
     color: var(--text);
@@ -215,6 +215,7 @@
     font-size: 0.75rem;
     font-weight: 600;
   }
+  .badge.badge-light { color: var(--primary); }
 
   /* Radar chart (canvas) */
   .chart-container { text-align: center; margin: 1rem 0; }
@@ -388,7 +389,7 @@ const LEVELS = {
   5: { en:"Transforming", desc:"AI-first culture. Continuous innovation, advanced governance, measurable business transformation." },
 };
 
-const LEVEL_COLORS = { 1:"#c0392b", 2:"#d4790e", 3:"#d4a017", 4:"#1a8a5c", 5:"#D97B3F" };
+const LEVEL_COLORS = { 1:"#c0392b", 2:"#d4790e", 3:"#d4a017", 4:"#1a8a5c", 5:"#DCDDF6" };
 
 const QUESTIONS = [
   // STRATEGY (S1-S6)
@@ -1008,14 +1009,15 @@ function showResults() {
   result.dims.forEach(ds => {
     const pct = (ds.raw / 5 * 100).toFixed(0);
     const color = LEVEL_COLORS[ds.level];
+    const lightText = ds.level === 5;
     html += `
       <div class="dim-score-row">
         <div class="dim-label">${ds.en}</div>
         <div class="bar-wrap">
-          <div class="bar-fill" style="width:${pct}%; background:${color};">${ds.raw.toFixed(1)}</div>
+          <div class="bar-fill" style="width:${pct}%; background:${color};${lightText ? 'color:var(--primary);' : ''}">${ds.raw.toFixed(1)}</div>
         </div>
         <div class="score-val">
-          <span class="badge" style="background:${color};">L${ds.level}</span>
+          <span class="badge${lightText ? ' badge-light' : ''}" style="background:${color};">L${ds.level}</span>
         </div>
       </div>
     `;
@@ -1145,7 +1147,7 @@ function drawRadar(dims, target) {
     i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
   });
   ctx.closePath();
-  ctx.strokeStyle = '#a89cc0';
+  ctx.strokeStyle = '#9A97C9';
   ctx.lineWidth = 2;
   ctx.setLineDash([5, 5]);
   ctx.stroke();
@@ -1161,9 +1163,9 @@ function drawRadar(dims, target) {
     i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
   });
   ctx.closePath();
-  ctx.fillStyle = 'rgba(39,30,82,0.2)';
+  ctx.fillStyle = 'rgba(27,20,116,0.2)';
   ctx.fill();
-  ctx.strokeStyle = '#271E52';
+  ctx.strokeStyle = '#1B1474';
   ctx.lineWidth = 2.5;
   ctx.stroke();
 
@@ -1183,14 +1185,14 @@ function drawRadar(dims, target) {
   });
 
   // Legend
-  ctx.fillStyle = '#271E52';
+  ctx.fillStyle = '#1B1474';
   ctx.fillRect(10, H - 30, 12, 12);
   ctx.fillStyle = '#222222';
   ctx.font = '11px sans-serif';
   ctx.textAlign = 'left';
   ctx.fillText('Current Score', 26, H - 20);
 
-  ctx.strokeStyle = '#a89cc0';
+  ctx.strokeStyle = '#9A97C9';
   ctx.setLineDash([5, 5]);
   ctx.beginPath();
   ctx.moveTo(130, H - 24);
