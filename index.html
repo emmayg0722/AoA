@@ -1074,7 +1074,7 @@ function showResults() {
   html += `<div class="card"><h2>Download</h2>
     <div class="download-row">
       <button class="btn btn-primary" onclick="downloadMarkdown()">📄 Download Markdown Report</button>
-      <button class="btn btn-primary" onclick="downloadJSON()">📊 Download JSON Data</button>
+      <button class="btn btn-primary" onclick="downloadHTML()">🌐 Download HTML Report</button>
       <button class="btn btn-secondary" onclick="resetAssessment()">🔄 New Assessment</button>
     </div>
   </div>`;
@@ -1264,32 +1264,100 @@ function downloadMarkdown() {
   a.click();
 }
 
-function downloadJSON() {
+function downloadHTML() {
   const result = computeScores();
   const target = parseInt(document.getElementById('inputTarget').value);
   const company = document.getElementById('inputCompany').value || 'Assessment Target';
-  const data = {
-    metadata: {
-      company, industry: document.getElementById('inputIndustry').value,
-      assessor: document.getElementById('inputAssessor').value || 'AI Architect',
-      mode: document.getElementById('inputMode').value,
-      target_level: target,
-      date: new Date().toISOString(),
-    },
-    answers,
-    scores: {
-      overall_score: result.overall,
-      overall_level: result.overallLevel,
-      dimensions: result.dims.map(ds => ({
-        id: ds.id, name_en: ds.en,
-        score: ds.raw, level: ds.level, weight: ds.weight,
-      })),
-    },
-  };
-  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const industry = document.getElementById('inputIndustry').value;
+  const assessor = document.getElementById('inputAssessor').value || 'AI Architect';
+  const mode = document.getElementById('inputMode').value;
+  const date = new Date().toISOString().split('T')[0];
+  const level = LEVELS[result.overallLevel];
+
+  const gaps = result.dims
+    .map(ds => ({ ...ds, gap: Math.round((target - ds.raw) * 100) / 100 }))
+    .filter(g => g.gap > 0)
+    .sort((a, b) => b.gap - a.gap)
+    .map(g => ({ ...g, priority: g.gap >= 2 ? 'High' : g.gap >= 1 ? 'Medium' : 'Low' }));
+
+  const escapeHtml = s => String(s).replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
+
+  let dimRows = '';
+  result.dims.forEach(ds => {
+    const dl = LEVELS[ds.level];
+    dimRows += `<tr><td>${escapeHtml(ds.en)}</td><td>${ds.raw.toFixed(1)}</td><td>L${ds.level} ${escapeHtml(dl.en)}</td></tr>`;
+  });
+
+  let gapRows = gaps.length
+    ? gaps.map(g => `<tr><td>${escapeHtml(g.en)}</td><td>${g.raw.toFixed(1)}</td><td>${g.gap.toFixed(1)}</td><td>${g.priority}</td></tr>`).join('')
+    : `<tr><td colspan="4">All dimensions meet or exceed the target level.</td></tr>`;
+
+  let recSections = gaps.map(g => {
+    const lvl = Math.min(g.level, 4);
+    const recs = RECOMMENDATIONS[g.id]?.[lvl] || [];
+    return `<div class="rec-block"><h3>${escapeHtml(g.en)} — Priority: ${g.priority}</h3><ul>${recs.map(r => `<li>${escapeHtml(r)}</li>`).join('')}</ul></div>`;
+  }).join('');
+
+  const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>AI Maturity Assessment Report — ${escapeHtml(company)}</title>
+<style>
+  body { font-family: 'Segoe UI', Arial, sans-serif; color: #222; line-height: 1.6; max-width: 860px; margin: 0 auto; padding: 2rem 1.5rem; }
+  h1 { font-size: 1.8rem; margin-bottom: 0.2rem; color: #1B1474; }
+  h2 { color: #1B1474; border-bottom: 2px solid #DCDDF6; padding-bottom: 0.3rem; margin-top: 2rem; }
+  h3 { margin-top: 1.2rem; margin-bottom: 0.4rem; }
+  table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+  th, td { text-align: left; padding: 0.5rem 0.7rem; border-bottom: 1px solid #d8d4cf; font-size: 0.95rem; }
+  th { background: #F8F6F3; font-weight: 600; }
+  .meta-table td:first-child { font-weight: 600; width: 160px; }
+  .score-hero { background: #1B1474; color: white; text-align: center; padding: 1.8rem; border-radius: 6px; margin: 1.2rem 0; }
+  .score-hero .big { font-size: 2.6rem; font-weight: 700; }
+  .score-hero .lvl { font-size: 1.1rem; opacity: 0.95; margin-top: 0.2rem; }
+  .rec-block { margin-bottom: 1rem; }
+  footer { margin-top: 2.5rem; color: #5a6872; font-size: 0.85rem; border-top: 1px solid #d8d4cf; padding-top: 1rem; }
+</style>
+</head>
+<body>
+  <h1>AI Maturity Assessment Report</h1>
+  <table class="meta-table">
+    <tr><td>Company</td><td>${escapeHtml(company)}</td></tr>
+    <tr><td>Industry</td><td>${escapeHtml(industry)}</td></tr>
+    <tr><td>Date</td><td>${date}</td></tr>
+    <tr><td>Assessor</td><td>${escapeHtml(assessor)}</td></tr>
+    <tr><td>Mode</td><td>${escapeHtml(mode)}</td></tr>
+  </table>
+
+  <div class="score-hero">
+    <div class="big">${result.overall.toFixed(1)} / 5.0</div>
+    <div class="lvl">Level ${result.overallLevel} — ${escapeHtml(level.en)}</div>
+    <div>${escapeHtml(level.desc)}</div>
+  </div>
+
+  <h2>Dimension Scores</h2>
+  <table>
+    <tr><th>Dimension</th><th>Score</th><th>Level</th></tr>
+    ${dimRows}
+  </table>
+
+  <h2>Gap Analysis (Target: Level ${target})</h2>
+  <table>
+    <tr><th>Dimension</th><th>Current</th><th>Gap</th><th>Priority</th></tr>
+    ${gapRows}
+  </table>
+
+  <h2>Recommendations</h2>
+  ${recSections || '<p>No recommendations — all targets met.</p>'}
+
+  <footer>Generated by AI Maturity Assessment Tool</footer>
+</body>
+</html>`;
+
+  const blob = new Blob([html], { type: 'text/html' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = `AI_Maturity_${company.replace(/\s/g, '_')}_${new Date().toISOString().split('T')[0]}.json`;
+  a.download = `AI_Maturity_${company.replace(/\s/g, '_')}_${date}.html`;
   a.click();
 }
 
