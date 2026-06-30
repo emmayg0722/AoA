@@ -1,8 +1,11 @@
 # Integrating DRA-5C with Microsoft 365 Copilot — Feasibility & Architecture
 
-> Status: **feasibility study (no code yet).** This document evaluates whether and how
-> the Data Readiness Assessment (5C) tooling could leverage Microsoft 365 Copilot to
-> make client-data gathering easier, and recommends a staged path.
+> Status: **feasibility study.** This document evaluates whether and how the Data Readiness
+> Assessment (5C) tooling could leverage Microsoft 365 Copilot to make client-data gathering
+> easier, and recommends a staged path.
+>
+> **Update — Option A is implemented.** See `copilot-prompt-pack.md` and the console's
+> "🤖 Generate M365 Copilot prompts" buttons on Steps A & B. Options B and C remain proposals.
 
 ## 1. The problem & the core misconception
 
