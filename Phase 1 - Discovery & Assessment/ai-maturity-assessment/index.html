@@ -344,6 +344,10 @@
       <button class="btn btn-primary" onclick="startAssessment()" style="padding:0.9rem 3rem; font-size:1.1rem;">
         ▶ Start Assessment
       </button>
+      <div style="margin-top:1rem;">
+        <button class="btn btn-secondary" onclick="loadSampleResults()">🧪 View sample results</button>
+      </div>
+      <div id="sampleError" style="display:none;color:#c0392b;font-size:0.85rem;margin-top:0.5rem;"></div>
     </div>
   </div>
 </div>
@@ -816,16 +820,34 @@ function loadFromShareLink() {
   if (!hash.startsWith('#r=')) return;
   try {
     const payload = JSON.parse(decodeURIComponent(atob(hash.slice(3))));
-    answers = payload.a || {};
-    document.getElementById('inputCompany').value = payload.c || '';
-    document.getElementById('inputIndustry').value = payload.i || 'Technology';
-    document.getElementById('inputAssessor').value = payload.as || '';
-    document.getElementById('inputMode').value = payload.m || 'core';
-    document.getElementById('inputTarget').value = payload.t || '4';
-    showResults();
+    restorePayload(payload);
   } catch (e) {
     // malformed share link — fall back to the normal setup page
   }
+}
+
+function restorePayload(payload) {
+  answers = payload.a || {};
+  document.getElementById('inputCompany').value = payload.c || '';
+  document.getElementById('inputIndustry').value = payload.i || 'Technology';
+  document.getElementById('inputAssessor').value = payload.as || '';
+  document.getElementById('inputMode').value = payload.m || 'core';
+  document.getElementById('inputTarget').value = payload.t || '4';
+  showResults();
+}
+
+function loadSampleResults() {
+  const errEl = document.getElementById('sampleError');
+  if (errEl) errEl.style.display = 'none';
+  fetch('../sample-data/ai-maturity-assessment/sample-payload.json')
+    .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+    .then(payload => restorePayload(payload))
+    .catch(err => {
+      if (errEl) {
+        errEl.textContent = 'Could not load the sample results (' + err.message + '). This can happen if the page was opened directly from disk rather than served over http(s).';
+        errEl.style.display = 'block';
+      }
+    });
 }
 
 // ═══════════════════════════════════════════════════════════════════

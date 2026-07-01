@@ -119,6 +119,11 @@
     </label>
     <input type="file" id="fileInput" accept=".csv,.tsv,.json,text/csv,application/json">
 
+    <div class="download-row" style="margin-top:16px">
+      <button class="btn btn-secondary" onclick="loadSample()">🧪 Load sample data</button>
+    </div>
+    <div id="sampleError" class="footnote" style="display:none;color:var(--red);margin-top:8px"></div>
+
     <div class="results" id="results"></div>
   </main>
 
@@ -143,25 +148,41 @@ fileInput.addEventListener('change', e => {
   if (e.target.files.length) handleFile(e.target.files[0]);
 });
 
+function processText(filename, text) {
+  const name = filename.toLowerCase();
+  let cols, rows;
+  if (name.endsWith('.json')) {
+    ({ cols, rows } = parseJSON(text));
+  } else {
+    const delim = name.endsWith('.tsv') ? '\t' : ',';
+    ({ cols, rows } = parseCSV(text, delim));
+  }
+  if (!cols.length || !rows.length) {
+    alert('Could not find tabular rows in that file.');
+    return;
+  }
+  const report = analyze(filename, cols, rows);
+  lastReport = report;
+  render(report);
+}
+
+function loadSample() {
+  const errEl = document.getElementById('sampleError');
+  errEl.style.display = 'none';
+  fetch('../sample-data/data-readiness-assessment-5c/sample-transactions.csv')
+    .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.text(); })
+    .then(text => processText('sample-transactions.csv', text))
+    .catch(err => {
+      errEl.textContent = 'Could not load the sample file (' + err.message + '). This can happen if the page was opened directly from disk rather than served over http(s) — try the file at Phase 1 - Discovery & Assessment/sample-data/data-readiness-assessment-5c/sample-transactions.csv instead.';
+      errEl.style.display = 'block';
+    });
+}
+
 function handleFile(file) {
   const reader = new FileReader();
   reader.onload = () => {
     try {
-      const name = file.name.toLowerCase();
-      let cols, rows;
-      if (name.endsWith('.json')) {
-        ({ cols, rows } = parseJSON(reader.result));
-      } else {
-        const delim = name.endsWith('.tsv') ? '\t' : ',';
-        ({ cols, rows } = parseCSV(reader.result, delim));
-      }
-      if (!cols.length || !rows.length) {
-        alert('Could not find tabular rows in that file.');
-        return;
-      }
-      const report = analyze(file.name, cols, rows);
-      lastReport = report;
-      render(report);
+      processText(file.name, reader.result);
     } catch (err) {
       alert('Failed to parse file: ' + err.message);
     }

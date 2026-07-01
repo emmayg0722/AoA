@@ -213,9 +213,11 @@
         <button class="btn btn-primary" onclick="exportReport('md')">📄 Export Markdown</button>
         <button class="btn btn-secondary" onclick="exportEngagement()">💾 Save engagement (.json)</button>
         <button class="btn btn-secondary" onclick="document.getElementById('importFile').click()">📥 Load engagement</button>
+        <button class="btn btn-secondary" onclick="loadSampleEngagement()">🧪 Load sample engagement</button>
         <button class="btn btn-secondary" onclick="resetEngagement()">🗑️ Reset</button>
         <input type="file" id="importFile" accept=".json" style="display:none">
       </div>
+      <div id="sampleError" style="display:none;color:var(--red);font-size:12.5px;margin-top:8px"></div>
     </div>
   </main>
 
@@ -477,6 +479,17 @@ function exportReport(fmt) {
   else download(reportHtml(), 'DRA5C_'+slug()+'.html', 'text/html');
 }
 function exportEngagement() { download(JSON.stringify(collect(), null, 2), 'DRA5C_'+slug()+'.json', 'application/json'); }
+function loadSampleEngagement() {
+  const errEl = document.getElementById('sampleError');
+  errEl.style.display = 'none';
+  fetch('../sample-data/data-readiness-assessment-5c/sample-engagement.json')
+    .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+    .then(o => { restore(o); save(); })
+    .catch(err => {
+      errEl.textContent = 'Could not load the sample engagement (' + err.message + '). This can happen if the page was opened directly from disk rather than served over http(s) — try Phase 1 - Discovery & Assessment/sample-data/data-readiness-assessment-5c/sample-engagement.json instead.';
+      errEl.style.display = 'block';
+    });
+}
 function resetEngagement() {
   if (!confirm('Clear all fields for this engagement? (Export first if you want to keep it.)')) return;
   FIELDS().forEach(el => { el.value = ''; });
