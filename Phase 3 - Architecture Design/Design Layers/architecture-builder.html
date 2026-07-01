@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Architecture Builder — Design Layers</title>
+<meta name="description" content="Compare agentic-AI architecture options layer by layer, pick one per layer like building blocks, and assemble a recommended architecture plan for a specific client.">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='16' fill='%231B1474'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #1B1474; --primary-dark: #120D52; --accent: #DCDDF6; --powder: #EEEEFA;
+    --ink: #1c1c28; --muted: #5b5b6b; --line: #e4e4f0;
+    --green: #1a8a5c; --amber: #d4790e; --red: #c0392b;
+    --font-heading: 'Fraunces', Georgia, serif;
+    --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: var(--font-body); color: var(--ink); background: #fafaff; line-height: 1.6; }
+  .hero { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: #fff; padding: 44px 24px 36px; }
+  .wrap { max-width: 1180px; margin: 0 auto; }
+  .crumb { font-size: 13px; color: var(--accent); margin-bottom: 10px; }
+  .crumb a { color: var(--accent); text-decoration: none; }
+  .hero h1 { font-family: var(--font-heading); font-weight: 700; font-size: 34px; line-height: 1.15; }
+  .hero p { margin-top: 10px; font-size: 15.5px; color: #dcdcf2; max-width: 720px; }
+  main { max-width: 1180px; margin: 0 auto; padding: 28px 24px 80px; }
+  .note { background: var(--powder); border: 1px solid var(--accent); border-radius: 12px; padding: 14px 16px; font-size: 14px; color: var(--muted); margin-bottom: 26px; }
+  .note strong { color: var(--primary); }
+  .card { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 22px 24px; margin-bottom: 20px; }
+  .card > h2 { font-family: var(--font-heading); font-weight: 600; font-size: 21px; color: var(--primary); margin-bottom: 4px; }
+  .card .hint { font-size: 13.5px; color: var(--muted); margin-bottom: 14px; }
+  label { display: block; font-size: 13px; font-weight: 600; color: var(--ink); margin: 10px 0 5px; }
+  input[type=text], textarea { width: 100%; font-family: var(--font-body); font-size: 14px; color: var(--ink); border: 1.5px solid var(--line); border-radius: 8px; padding: 9px 11px; background: #fff; }
+  input:focus, textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(27,20,116,0.12); }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; }
+  .constraints { display: flex; flex-wrap: wrap; gap: 10px 18px; margin-top: 6px; }
+  .constraints label { display: flex; align-items: center; gap: 7px; font-weight: 500; margin: 0; cursor: pointer; }
+  .constraints input { width: auto; }
+  .btn { font-family: var(--font-body); font-size: 13.5px; font-weight: 600; padding: 9px 16px; border-radius: 8px; border: none; cursor: pointer; transition: all 0.15s; }
+  .btn-primary { background: var(--accent); color: var(--primary); }
+  .btn-primary:hover { background: #C3C5EC; }
+  .btn-secondary { background: #fff; color: var(--primary); border: 1.5px solid var(--accent); }
+  .btn-secondary:hover { background: var(--powder); }
+  .btn-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px; }
+
+  .toolbar-row { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+  select#layerFilter { font-family: var(--font-body); font-size: 13.5px; border: 1.5px solid var(--line); border-radius: 8px; padding: 7px 10px; }
+  .saved { font-size: 12.5px; color: var(--green); }
+
+  table.compare { width: 100%; border-collapse: collapse; font-size: 13.5px; margin-top: 10px; }
+  table.compare th { text-align: left; font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); padding: 8px 10px; border-bottom: 2px solid var(--line); }
+  table.compare td { padding: 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  tr.layer-head td { background: var(--primary); color: #fff; font-family: var(--font-heading); font-weight: 600; font-size: 14.5px; padding: 9px 12px; }
+  tr.layer-head .lnum { display: inline-block; background: var(--accent); color: var(--primary); font-family: var(--font-body); font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 20px; margin-right: 8px; }
+  tr.opt-row.picked { background: var(--powder); }
+  tr.opt-row.recommended td.name-cell { position: relative; }
+  .rec-badge { display: inline-block; font-size: 10.5px; font-weight: 700; color: var(--primary); background: var(--accent); padding: 1px 7px; border-radius: 10px; margin-left: 6px; white-space: nowrap; }
+  td.name-cell { font-weight: 600; min-width: 150px; }
+  td.pick-cell { text-align: center; width: 40px; }
+  td.pick-cell input { width: 17px; height: 17px; cursor: pointer; }
+  .layer-link { font-size: 11.5px; color: var(--muted); text-decoration: none; }
+  .layer-link:hover { text-decoration: underline; }
+
+  .summary-list { list-style: none; }
+  .summary-list li { display: flex; justify-content: space-between; gap: 14px; padding: 9px 0; border-bottom: 1px solid var(--line); font-size: 13.5px; }
+  .summary-list li:last-child { border-bottom: none; }
+  .summary-list .slabel { color: var(--muted); min-width: 190px; }
+  .summary-list .schoice { font-weight: 600; color: var(--primary); text-align: right; }
+  .summary-list .schoice.empty { font-weight: 400; color: #aaa; font-style: italic; }
+  .progress { font-size: 13px; color: var(--muted); margin-bottom: 12px; }
+
+  .principles-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap: 14px; }
+  .principle-card { border: 1px dashed var(--line); border-radius: 10px; padding: 14px 16px; }
+  .principle-card h4 { font-family: var(--font-heading); color: var(--primary); font-size: 15px; margin-bottom: 6px; }
+  .principle-card p { font-size: 13px; color: var(--muted); margin-bottom: 8px; }
+  .principle-card a { font-size: 12.5px; color: var(--primary); font-weight: 600; text-decoration: none; }
+  .principle-card a:hover { text-decoration: underline; }
+
+  @media (max-width: 720px) {
+    .grid2 { grid-template-columns: 1fr; }
+    table.compare { font-size: 12.5px; }
+  }
+</style>
+</head>
+<body>
+  <header class="hero"><div class="wrap">
+    <div class="crumb"><a href="../../">AI Architect Toolkit</a> · Phase 3 · <a href="README.md">Design Layers</a></div>
+    <h1>Architecture Builder</h1>
+    <p>One comparison table, every layer's real options with upside/downside — pick one per layer like building blocks, and assemble a recommended architecture for a specific client.</p>
+  </div></header>
+
+  <main>
+    <div class="note">
+      <strong>How this works.</strong> Fill in the client's constraints, then pick one option per layer in the table below — picking a row places that "brick." Your architecture assembles live in the summary panel as you go. No API calls; everything <strong>autosaves locally</strong> in your browser and can be exported as a file.
+    </div>
+
+    <div class="card">
+      <h2>Client &amp; constraints</h2>
+      <p class="hint">Constraints highlight recommended options in the table below (★) — reusing the same "Need → Better Fit" guidance already in the Design Layers reference, not a new heuristic.</p>
+      <div class="grid2">
+        <div><label>Client / engagement</label><input type="text" data-eng="client" placeholder="Acme Corp"></div>
+        <div><label>Target use case (one line)</label><input type="text" data-eng="useCase" placeholder="ERP knowledge agent for D365 consultants"></div>
+      </div>
+      <label>Constraints</label>
+      <div class="constraints">
+        <label><input type="checkbox" data-eng="c_microsoft"> Microsoft-heavy enterprise</label>
+        <label><input type="checkbox" data-eng="c_compliance"> Compliance / regulated</label>
+        <label><input type="checkbox" data-eng="c_lowcode"> Low-code / business-user-facing</label>
+        <label><input type="checkbox" data-eng="c_cost"> Cost-sensitive</label>
+        <label><input type="checkbox" data-eng="c_production"> Production-grade (not a pilot)</label>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="toolbar-row">
+        <h2 style="margin-bottom:0">Comparison &amp; selection</h2>
+        <span class="saved" id="savedFlag"></span>
+      </div>
+      <p class="hint">One table, every layer. Pick one option per layer — that's the "lego" part. ★ marks options matching your checked constraints.</p>
+      <div class="toolbar-row">
+        <div><label style="margin:0 8px 0 0;display:inline">Filter</label>
+          <select id="layerFilter" onchange="renderTable()"><option value="">All layers</option></select>
+        </div>
+      </div>
+      <table class="compare" id="compareTable">
+        <thead><tr><th>Pick</th><th>Option</th><th>Upside</th><th>Downside</th><th>Best fit</th></tr></thead>
+        <tbody id="compareBody"></tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <h2>Your architecture stack</h2>
+      <p class="hint">Assembled live from your picks, in layer order.</p>
+      <div class="progress" id="progressLine"></div>
+      <ul class="summary-list" id="summaryList"></ul>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="exportPlan('html')">🌐 Export architecture plan (HTML)</button>
+        <button class="btn btn-primary" onclick="exportPlan('md')">📄 Export architecture plan (Markdown)</button>
+        <button class="btn btn-secondary" onclick="resetAll()">🔄 Reset</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Architecture principles (not a pick-one)</h2>
+      <p class="hint">These layers aren't competing products you choose between — they're disciplines that apply regardless of your other picks. See each Design Layers file for the full reference.</p>
+      <div class="principles-grid" id="principlesGrid"></div>
+    </div>
+  </main>
+
+<script>
+// ════════════════════════════════════════════════════════════════
+// Architecture Builder — fully client-side. No network calls.
+// ════════════════════════════════════════════════════════════════
+const KEY = 'dra_arch_builder_v1';
+
+// ── Data: 14 selectable comparison groups ──────────────────────
+const LAYER_OPTIONS = [
+  { id: 'agent-type', layerNum: 18, title: 'Agent Type', file: '18-agent-types.md', options: [
+    { name: 'Q&A Agent', upside: 'Simplest to build and evaluate; low blast radius (read-only).', downside: "Doesn't complete multi-step work; limited value beyond information lookup.", bestFor: 'Early pilots, internal knowledge lookup, low-risk first engagement.', tags: [] },
+    { name: 'Document Agent', upside: 'High, tangible ROI — drafts real deliverables; reuses templates/guardrails cleanly.', downside: 'Needs strong validators (structure/placeholder rules) or output quality is inconsistent.', bestFor: 'Consulting deliverables (IDDs, proposals, reports), template-heavy workflows.', tags: ['production'] },
+    { name: 'Data Agent', upside: 'Plugs directly into ERP/CRM/SQL; fast "ask a question about our data" value.', downside: 'Requires careful query/permission scoping — wrong answers on numbers erode trust fast.', bestFor: 'ERP/CRM Q&A, reporting explanation, exception analysis.', tags: ['production'] },
+    { name: 'Workflow Agent', upside: 'Automates a real multi-step business process end-to-end — the biggest efficiency win.', downside: 'Highest orchestration/guardrail/HITL investment; failure modes compound.', bestFor: 'Mature engagements with a clearly-scoped, repeatable process.', tags: ['production'] },
+    { name: 'Compliance Agent', upside: 'High strategic value, strong executive sponsorship potential.', downside: 'Regulatory risk if wrong — needs heavy human review and an audit trail from day one.', bestFor: 'Regulated industries, policy/regulation mapping, audit support.', tags: ['compliance'] },
+    { name: 'Multi-agent System', upside: 'Cleanly separates specialist responsibilities (e.g. retrieval + writer + validator agents).', downside: 'Hardest to debug and most expensive — orchestration failure modes multiply.', bestFor: 'Only once a single-agent version has already proven the use case.', tags: [] },
+  ]},
+  { id: 'core-intelligence', layerNum: 1, title: 'Core Intelligence (model)', file: '01-core-intelligence.md', options: [
+    { name: 'GPT-4.1 / GPT-4o family', upside: 'Strong general reasoning, huge ecosystem/tooling, native function calling.', downside: 'Cost adds up at scale; data residency depends on your API/Azure contract.', bestFor: 'General-purpose reasoning, broad tool-ecosystem needs.', tags: ['production'] },
+    { name: 'Claude', upside: 'Strong careful/structured reasoning and long-document work; strong instruction-following for guardrail-heavy tasks.', downside: 'Smaller third-party agent-framework ecosystem than OpenAI’s.', bestFor: 'Document generation, careful multi-step reasoning, safety-sensitive tasks.', tags: ['compliance', 'production'] },
+    { name: 'Gemini', upside: 'Very large context windows, tight integration with Google Workspace/Cloud data.', downside: 'Historically less mature third-party agent-framework support.', bestFor: 'Google-Workspace-heavy environments, huge-context tasks.', tags: [] },
+    { name: 'Azure OpenAI (enterprise-hosted)', upside: 'Same models as OpenAI but inside the client’s Azure tenant — Purview/Entra ID/data-residency apply natively.', downside: 'Slightly behind the public API on release cadence; still costs per token.', bestFor: 'Microsoft-heavy enterprises needing compliance guarantees.', tags: ['microsoft', 'enterprise', 'compliance'] },
+    { name: 'Llama / Mistral (self-hosted)', upside: 'Full data control, no per-token API cost at scale, can run on-prem/VPC.', downside: 'You own the hosting/ops/scaling burden; generally behind frontier models on complex reasoning.', bestFor: 'Strict data-residency requirements, high-volume low-complexity tasks.', tags: ['compliance', 'cost'] },
+    { name: 'Cheap/fast routed model', upside: 'Very low cost and latency for simple, high-volume tasks.', downside: 'Unreliable for complex reasoning — must be paired with a stronger model.', bestFor: 'Classification, routing, simple extraction inside a multi-model architecture.', tags: ['cost'] },
+  ]},
+  { id: 'orchestration', layerNum: 2, title: 'Agent Orchestration', file: '02-agent-orchestration.md', options: [
+    { name: 'LangGraph', upside: 'Explicit state machine, strong for reliable production multi-step workflows; large community.', downside: 'More boilerplate/learning curve than simpler SDKs.', bestFor: 'Production-reliability multi-step workflows.', tags: ['production'] },
+    { name: 'CrewAI', upside: 'Fast to prototype role-based multi-agent crews.', downside: 'Less battle-tested for production reliability than LangGraph; harder to debug complex failures.', bestFor: 'Multi-agent experiments and prototypes.', tags: [] },
+    { name: 'AutoGen', upside: 'Strong for conversational multi-agent patterns and research-style experimentation.', downside: 'Similar production-maturity gap to CrewAI.', bestFor: 'Multi-agent experiments, research-heavy use cases.', tags: [] },
+    { name: 'Semantic Kernel', upside: 'Native fit for Microsoft-stack enterprises — plugs into Azure AI Foundry, Graph, M365.', downside: 'Smaller open-source community than LangChain-ecosystem tools.', bestFor: 'Microsoft-heavy enterprise environments.', tags: ['microsoft', 'enterprise'] },
+    { name: 'OpenAI Agents SDK', upside: 'Lightweight, official, tight integration with OpenAI’s own tool-calling and tracing.', downside: 'Most naturally paired with OpenAI models specifically.', bestFor: 'OpenAI-model-centric stacks wanting an official, minimal SDK.', tags: [] },
+    { name: 'Copilot Studio / n8n / Make', upside: 'Business users can build/maintain workflows without engineering; fast time-to-value.', downside: 'Limited flexibility for complex reasoning/branching logic — hits a ceiling fast.', bestFor: 'No-code business users, simple automations.', tags: ['lowcode'] },
+  ]},
+  { id: 'tool-calling', layerNum: 3, title: 'Tool Calling / Action Framework', file: '03-tool-calling-action.md', options: [
+    { name: 'OpenAI function calling (native)', upside: 'Simplest to implement, tightly integrated, well-documented.', downside: 'Tied to OpenAI’s request/response model — less portable across providers.', bestFor: 'OpenAI-model stacks with a handful of well-defined tools.', tags: [] },
+    { name: 'MCP (Model Context Protocol)', upside: 'Open standard — tool servers are reusable across different agents/models; growing ecosystem.', downside: 'Newer — fewer battle-tested enterprise deployments, still maturing tooling.', bestFor: 'Building reusable, provider-agnostic tool servers.', tags: ['production'] },
+    { name: 'Composio / Pipedream', upside: 'Hundreds of pre-built connectors (CRM, email, etc.), fast to wire up.', downside: 'Another vendor dependency and cost line; less control over exact request shaping.', bestFor: 'Fast integration with common SaaS tools without custom API work.', tags: ['cost'] },
+    { name: 'Custom internal APIs', upside: 'Full control over exactly what the agent can do and how — fits internal security review.', downside: 'You build and maintain every integration yourself.', bestFor: 'Tight control requirements, ERP/legacy systems with no good connector.', tags: ['enterprise', 'compliance'] },
+  ]},
+  { id: 'rag-framework', layerNum: 4, title: 'Knowledge / RAG Framework', file: '04-knowledge-rag.md', options: [
+    { name: 'LangChain', upside: 'Huge ecosystem, most integrations, most tutorials/community support.', downside: 'Can feel heavyweight/abstracted for simple use cases.', bestFor: 'Broad integration needs, teams wanting max community support.', tags: [] },
+    { name: 'LlamaIndex', upside: 'Strong purpose-built RAG/indexing primitives (chunking, retrieval strategies).', downside: 'Smaller general-agent ecosystem than LangChain.', bestFor: 'RAG-first use cases where retrieval quality is the main challenge.', tags: ['production'] },
+    { name: 'Haystack', upside: 'Production-oriented, strong pipeline/eval tooling built in.', downside: 'Smaller community than LangChain/LlamaIndex.', bestFor: 'Teams wanting an opinionated, production-first RAG pipeline.', tags: ['production'] },
+    { name: 'RAGFlow', upside: 'Strong out-of-the-box document parsing (complex layouts/tables), lower setup effort.', downside: 'Younger project, less flexible for fully custom pipelines.', bestFor: 'Document-heavy RAG with minimal custom engineering.', tags: [] },
+  ]},
+  { id: 'vector-db', layerNum: 4, title: 'Vector Database', file: '04-knowledge-rag.md', options: [
+    { name: 'Pinecone', upside: 'Fully managed, scales easily, minimal ops burden.', downside: 'Recurring SaaS cost, data leaves your own infra.', bestFor: 'Teams wanting zero ops overhead and willing to pay for it.', tags: ['production'] },
+    { name: 'Weaviate', upside: 'Open-source with a managed-cloud option, hybrid search built in.', downside: 'Self-hosted ops burden if not using their cloud.', bestFor: 'Hybrid (keyword + vector) search needs.', tags: [] },
+    { name: 'Qdrant', upside: 'Fast, open-source, good self-hosting story, cost-efficient at scale.', downside: 'Smaller enterprise support ecosystem than Pinecone.', bestFor: 'Cost-conscious teams comfortable self-hosting.', tags: ['cost'] },
+    { name: 'Chroma', upside: 'Extremely simple to start with — great for prototypes and small-to-mid scale.', downside: 'Less proven at very large enterprise scale.', bestFor: 'Prototypes, small-to-mid document sets.', tags: [] },
+    { name: 'Azure AI Search', upside: 'Native Azure integration (Entra ID, Purview, same tenant); vector + keyword + semantic ranking in one.', downside: 'Tied to Azure; cost scales with index size.', bestFor: 'Microsoft-heavy enterprises wanting one governed search layer.', tags: ['microsoft', 'enterprise', 'compliance'] },
+    { name: 'FAISS / Milvus (self-hosted)', upside: 'No per-query SaaS cost, full control, proven at very large scale.', downside: 'You own scaling, HA, and ops entirely.', bestFor: 'Very large-scale, cost-sensitive, ops-capable teams.', tags: ['cost'] },
+  ]},
+  { id: 'memory', layerNum: 5, title: 'Memory / State Store', file: '05-memory-context.md', options: [
+    { name: 'Mem0', upside: 'Purpose-built agent-memory abstraction (user/session/long-term), fast to integrate.', downside: 'Another dependency layer; younger project.', bestFor: 'Teams wanting memory "out of the box" without designing the schema themselves.', tags: [] },
+    { name: 'Zep', upside: 'Built-in summarization and long-term memory extraction, reduces context-window bloat.', downside: 'Adds latency for the summarization step.', bestFor: 'Long-running conversational agents needing compressed history.', tags: [] },
+    { name: 'Redis', upside: 'Extremely fast, ubiquitous, great for session/cache-style short-term memory.', downside: 'Not built for semantic/long-term memory search out of the box.', bestFor: 'Session state, caching, fast key-value lookups.', tags: ['production'] },
+    { name: 'PostgreSQL / Supabase', upside: 'Durable, queryable, auditable — good for business memory needing governance and reporting.', downside: 'Not optimized for vector/semantic recall without extensions (e.g. pgvector).', bestFor: 'Business memory needing an audit trail (approvals, decisions, outputs).', tags: ['compliance', 'enterprise'] },
+  ]},
+  { id: 'planning', layerNum: 6, title: 'Planning / Reasoning Pattern', file: '06-planning-reasoning.md', options: [
+    { name: 'ReAct (think-act-observe)', upside: 'Simple, flexible, handles unpredictable multi-step tasks well.', downside: 'Can loop or wander without hard step limits — harder to guarantee reliability.', bestFor: 'Exploratory research/search-style tasks.', tags: [] },
+    { name: 'Plan-and-execute', upside: 'More predictable and debuggable — the plan is visible before execution starts.', downside: 'Less adaptive if the plan turns out wrong mid-execution.', bestFor: 'Well-understood multi-step business tasks.', tags: ['production'] },
+    { name: 'Router', upside: 'Simple, fast, cheap — sends each request to the right specialist without full agentic reasoning.', downside: "Only as good as the routing logic — doesn't handle novel/compound requests.", bestFor: 'Multiple narrow specialist agents behind one entry point.', tags: ['cost'] },
+    { name: 'Reflection / Critic model', upside: 'Catches its own mistakes before they reach the user — meaningfully raises output quality.', downside: 'Doubles (or more) the cost and latency per request.', bestFor: 'High-stakes outputs (compliance, customer-facing content).', tags: ['compliance', 'production'] },
+    { name: 'Supervisor-agent', upside: 'Clean separation of concerns for multi-agent systems, one place to enforce policy.', downside: 'Adds an orchestration hop and a potential bottleneck.', bestFor: 'Multi-agent systems needing centralized control.', tags: ['enterprise'] },
+    { name: 'State machine', upside: 'Most reliable and auditable — every transition is explicit and enforced.', downside: 'Least flexible — new scenarios require new states/transitions.', bestFor: 'Regulated, must-not-improvise enterprise workflows.', tags: ['compliance', 'production', 'enterprise'] },
+  ]},
+  { id: 'hitl', layerNum: 7, title: 'Human-in-the-Loop Channel', file: '07-human-in-the-loop.md', options: [
+    { name: 'Slack', upside: 'Fits existing team workflows, fast approvals — good for internal ops teams.', downside: 'Not ideal for formal/auditable sign-off trails.', bestFor: 'Internal team approvals, fast iteration.', tags: ['lowcode'] },
+    { name: 'Outlook / Teams', upside: 'Native fit for Microsoft-heavy orgs, ties into existing identity/approval habits.', downside: 'Less flexible for custom approval UI than a dedicated app.', bestFor: 'Microsoft-365-centric organizations.', tags: ['microsoft', 'enterprise'] },
+    { name: 'Jira / Linear (ticket-based)', upside: 'Strong audit trail, fits existing engineering/ops review processes.', downside: 'Slower turnaround than chat-based approval for time-sensitive decisions.', bestFor: 'Processes that already run through ticketing, needing traceability.', tags: ['compliance'] },
+    { name: 'Custom in-app approval UI', upside: 'Tailored exactly to the risk level and data shown per decision — best UX.', downside: 'Most build/maintenance effort of any option.', bestFor: 'High-volume, high-stakes approval flows worth the investment.', tags: ['production', 'compliance'] },
+  ]},
+  { id: 'evaluation', layerNum: 8, title: 'Evaluation Tool', file: '08-evaluation-testing.md', options: [
+    { name: 'LangSmith', upside: 'Tight integration if already on LangChain/LangGraph — tracing + eval in one place.', downside: 'Adds most value inside the LangChain ecosystem specifically.', bestFor: 'LangChain/LangGraph-based stacks.', tags: ['production'] },
+    { name: 'Ragas', upside: 'Purpose-built RAG metrics (faithfulness, relevance, precision/recall) out of the box, open-source.', downside: 'RAG-focused — less suited for general action/tool-calling agents.', bestFor: 'RAG-heavy Q&A/knowledge agents.', tags: [] },
+    { name: 'DeepEval', upside: 'Broad metric library, pytest-style workflow familiar to engineering teams.', downside: 'Still requires you to build good test/golden datasets yourself.', bestFor: 'Teams wanting eval-as-code in their existing test suite.', tags: ['production'] },
+    { name: 'Braintrust', upside: 'Strong collaborative eval workflow (product + eng reviewing outputs together), good experiment tracking.', downside: 'Another SaaS cost/vendor to manage.', bestFor: 'Teams needing product stakeholders reviewing outputs alongside engineers.', tags: [] },
+  ]},
+  { id: 'observability', layerNum: 9, title: 'Observability Tool', file: '09-observability-monitoring.md', options: [
+    { name: 'Helicone', upside: 'Simple, fast to add, good cost/token visibility out of the box.', downside: 'Lighter-weight tracing than dedicated APM tools.', bestFor: 'Fast, low-effort cost/usage visibility.', tags: ['cost'] },
+    { name: 'Arize AI', upside: 'Strong ML/LLM-observability-specific tooling, drift and quality monitoring over time.', downside: 'More setup investment than a lightweight logging tool.', bestFor: 'Production agents needing ongoing quality/drift monitoring.', tags: ['production'] },
+    { name: 'Datadog', upside: "Unifies LLM observability with the rest of the org's existing infra monitoring.", downside: 'LLM-specific features are less deep than dedicated AI-observability tools.', bestFor: 'Orgs already standardized on Datadog for infra.', tags: ['enterprise'] },
+    { name: 'OpenTelemetry (open standard)', upside: 'Vendor-neutral, portable across backends, avoids lock-in.', downside: 'You assemble the full observability stack yourself.', bestFor: 'Teams wanting a vendor-neutral, future-proof tracing foundation.', tags: ['cost', 'enterprise'] },
+  ]},
+  { id: 'guardrails', layerNum: 10, title: 'Guardrails Tool', file: '10-guardrails-safety.md', options: [
+    { name: 'Guardrails AI', upside: 'Flexible, open-source, strong schema/output validation.', downside: 'You define most of the validation logic yourself.', bestFor: 'Custom business-rule and schema validation.', tags: [] },
+    { name: 'NeMo Guardrails', upside: 'Strong conversational/dialogue-flow guardrails (topic control, jailbreak resistance).', downside: 'Steeper setup for non-conversational (e.g. document-generation) use cases.', bestFor: 'Conversational agents needing topic/behavior boundaries.', tags: [] },
+    { name: 'Lakera', upside: 'Strong, managed prompt-injection and adversarial-input detection.', downside: 'Adds a managed-service dependency and latency per request.', bestFor: 'Public-facing or adversarial-input-exposed agents.', tags: ['production', 'compliance'] },
+    { name: 'Llama Guard', upside: 'Open-weight, self-hostable content-safety classifier, no per-call API cost.', downside: 'Narrower scope (safety classification) than a full guardrails framework.', bestFor: 'Cost-sensitive, self-hosted content-safety needs.', tags: ['cost', 'compliance'] },
+  ]},
+  { id: 'security-governance', layerNum: 11, title: 'Security / Governance Tooling', file: '11-security-governance.md', options: [
+    { name: 'Microsoft Purview', upside: 'Native fit for Microsoft/Azure environments — classification, DLP, and audit in the same governance plane.', downside: 'Most value is Microsoft-ecosystem-specific.', bestFor: 'Microsoft-heavy enterprises.', tags: ['microsoft', 'enterprise', 'compliance'] },
+    { name: 'Credo AI / Holistic AI', upside: 'Purpose-built for AI-specific risk/compliance frameworks (EU AI Act, model risk).', downside: 'Another platform to adopt and maintain.', bestFor: 'Regulated industries needing formal AI governance reporting.', tags: ['compliance'] },
+    { name: 'Protect AI', upside: 'Focused on AI/ML supply-chain and model security (scanning models/pipelines for vulnerabilities).', downside: 'Narrower scope than a full governance platform.', bestFor: 'Orgs concerned about model/pipeline supply-chain risk.', tags: ['compliance'] },
+    { name: 'OpenMetadata', upside: "Open-source data catalog/lineage — a foundation for knowing what data the agent can touch.", downside: 'Cataloging effort is ongoing and org-wide, not agent-specific.', bestFor: 'Orgs needing a data catalog/lineage foundation before agent rollout.', tags: ['enterprise'] },
+  ]},
+  { id: 'deployment', layerNum: 12, title: 'Deployment Platform', file: '12-deployment-serving.md', options: [
+    { name: 'Streamlit / Vercel / Replit', upside: 'Fastest path from code to a shareable demo.', downside: 'Not built for enterprise auth, scale, or compliance out of the box.', bestFor: 'Early demos and pilots.', tags: [] },
+    { name: 'Docker + Kubernetes (self-managed)', upside: 'Full control, portable across any cloud, proven at scale.', downside: 'Highest ops burden — you own the whole platform.', bestFor: 'Teams with existing K8s ops capability wanting full control.', tags: ['enterprise'] },
+    { name: 'Azure App Service / Container Apps / Functions', upside: 'Managed, scales automatically, native Azure identity/Key Vault integration.', downside: 'Some platform lock-in to Azure.', bestFor: 'Microsoft-heavy enterprises wanting managed hosting.', tags: ['microsoft', 'enterprise', 'production'] },
+    { name: 'Copilot Studio / Power Platform', upside: 'Business users can deploy and maintain without engineering involvement.', downside: 'Ceiling on complexity/customization.', bestFor: 'No-code business-user-facing agents.', tags: ['lowcode', 'microsoft'] },
+  ]},
+];
+
+// ── Data: 5 non-comparison "principle" layers ──────────────────
+const PRINCIPLE_LAYERS = [
+  { title: 'Business Application Integration', file: '13-business-application-integration.md', note: "Determined by the client's existing systems (ERP, CRM, SharePoint...) — usually several integrations at once, not a single pick." },
+  { title: 'Data', file: '14-data.md', note: "Structured data → SQL/API, not RAG. Don't put ERP records, prices, or balances in a vector DB." },
+  { title: 'Prompt & Instruction', file: '15-prompt-instruction.md', note: 'Manage prompts like code: versioned, tested, reviewed, and rollback-able.' },
+  { title: 'Workflow & Process', file: '16-workflow-process.md', note: 'The 12-step agentic loop, from request to logged, evaluated result.' },
+  { title: 'Cost & Performance', file: '17-cost-performance.md', note: 'Model routing, caching, and context compression control cost — not model choice alone.' },
+];
+
+const CONSTRAINT_KEYS = ['c_microsoft', 'c_compliance', 'c_lowcode', 'c_cost', 'c_production'];
+const CONSTRAINT_TAG = { c_microsoft: 'microsoft', c_compliance: 'compliance', c_lowcode: 'lowcode', c_cost: 'cost', c_production: 'production' };
+
+let picks = {}; // layerId -> option index
+
+// ── State: fields (client/useCase/constraints) ──────────────────
+function fieldEls() { return Array.from(document.querySelectorAll('[data-eng]')); }
+function collectFields() {
+  const o = {};
+  fieldEls().forEach(el => { o[el.getAttribute('data-eng')] = el.type === 'checkbox' ? el.checked : el.value; });
+  return o;
+}
+function restoreFields(o) {
+  fieldEls().forEach(el => {
+    const k = el.getAttribute('data-eng');
+    if (o[k] === undefined) return;
+    if (el.type === 'checkbox') el.checked = !!o[k]; else el.value = o[k];
+  });
+}
+function activeConstraintTags() {
+  return CONSTRAINT_KEYS.filter(k => document.querySelector(`[data-eng="${k}"]`).checked).map(k => CONSTRAINT_TAG[k]);
+}
+
+function save() {
+  try {
+    localStorage.setItem(KEY, JSON.stringify({ fields: collectFields(), picks }));
+    flashSaved();
+  } catch (e) {}
+}
+let savedTimer;
+function flashSaved() {
+  const f = document.getElementById('savedFlag');
+  f.textContent = '✓ saved locally';
+  clearTimeout(savedTimer);
+  savedTimer = setTimeout(() => { f.textContent = ''; }, 1200);
+}
+function restore() {
+  try {
+    const o = JSON.parse(localStorage.getItem(KEY) || '{}');
+    if (o.fields) restoreFields(o.fields);
+    if (o.picks) picks = o.picks;
+  } catch (e) {}
+}
+
+// ── Rendering: filter dropdown ──────────────────────────────────
+function initFilter() {
+  const sel = document.getElementById('layerFilter');
+  LAYER_OPTIONS.forEach(g => {
+    const opt = document.createElement('option');
+    opt.value = g.id;
+    opt.textContent = 'Layer ' + g.layerNum + ' · ' + g.title;
+    sel.appendChild(opt);
+  });
+}
+
+// ── Rendering: comparison table ─────────────────────────────────
+function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function renderTable() {
+  const filter = document.getElementById('layerFilter').value;
+  const tags = activeConstraintTags();
+  const body = document.getElementById('compareBody');
+  let h = '';
+  LAYER_OPTIONS.forEach(group => {
+    if (filter && group.id !== filter) return;
+    h += `<tr class="layer-head"><td colspan="5"><span class="lnum">Layer ${group.layerNum}</span>${esc(group.title)} <a class="layer-link" href="layers/${group.file}" style="color:#DCDDF6;margin-left:8px">view layer →</a></td></tr>`;
+    group.options.forEach((opt, idx) => {
+      const isPicked = picks[group.id] === idx;
+      const isRecommended = tags.length && opt.tags.some(t => tags.includes(t));
+      h += `<tr class="opt-row${isPicked ? ' picked' : ''}${isRecommended ? ' recommended' : ''}">`
+        + `<td class="pick-cell"><input type="radio" name="pick_${group.id}" ${isPicked ? 'checked' : ''} onchange="choose('${group.id}', ${idx})"></td>`
+        + `<td class="name-cell">${esc(opt.name)}${isRecommended ? '<span class="rec-badge">★ recommended</span>' : ''}</td>`
+        + `<td>${esc(opt.upside)}</td>`
+        + `<td>${esc(opt.downside)}</td>`
+        + `<td>${esc(opt.bestFor)}</td>`
+        + `</tr>`;
+    });
+  });
+  body.innerHTML = h;
+}
+
+function choose(layerId, idx) {
+  picks[layerId] = idx;
+  renderTable();
+  renderSummary();
+  save();
+}
+
+// ── Rendering: live summary ──────────────────────────────────────
+function renderSummary() {
+  const list = document.getElementById('summaryList');
+  let h = '';
+  let chosen = 0;
+  LAYER_OPTIONS.forEach(group => {
+    const idx = picks[group.id];
+    const has = idx !== undefined;
+    if (has) chosen++;
+    const label = `Layer ${group.layerNum} · ${group.title}`;
+    const choiceText = has ? group.options[idx].name : '— not yet chosen —';
+    h += `<li><span class="slabel">${esc(label)}</span><span class="schoice${has ? '' : ' empty'}">${esc(choiceText)}</span></li>`;
+  });
+  list.innerHTML = h;
+  document.getElementById('progressLine').textContent = `${chosen} of ${LAYER_OPTIONS.length} layers chosen`;
+}
+
+// ── Rendering: principles ─────────────────────────────────────────
+function renderPrinciples() {
+  const grid = document.getElementById('principlesGrid');
+  grid.innerHTML = PRINCIPLE_LAYERS.map(p =>
+    `<div class="principle-card"><h4>${esc(p.title)}</h4><p>${esc(p.note)}</p><a href="layers/${p.file}">Read the full layer →</a></div>`
+  ).join('');
+}
+
+// ── Autosave wiring ────────────────────────────────────────────
+document.addEventListener('input', e => {
+  if (e.target.matches('[data-eng]')) { save(); if (e.target.matches('[type=checkbox]')) renderTable(); }
+});
+document.addEventListener('change', e => {
+  if (e.target.matches('[type=checkbox][data-eng]')) { save(); renderTable(); }
+});
+
+function resetAll() {
+  if (!confirm('Clear all picks and client info? (Export first if you want to keep it.)')) return;
+  picks = {};
+  fieldEls().forEach(el => { if (el.type === 'checkbox') el.checked = false; else el.value = ''; });
+  renderTable();
+  renderSummary();
+  save();
+}
+
+// ── Export ────────────────────────────────────────────────────
+function val(k) { const el = document.querySelector(`[data-eng="${k}"]`); return el ? el.value : ''; }
+function slug() { return (val('client') || 'architecture').replace(/\W+/g, '_'); }
+
+function planMarkdown() {
+  const date = new Date().toISOString().slice(0, 10);
+  const tags = activeConstraintTags();
+  let m = `# Architecture Plan — ${val('client') || '[client]'}\n\n`;
+  m += `**Use case:** ${val('useCase') || '—'}  \n`;
+  m += `**Date:** ${date}  \n`;
+  m += `**Constraints:** ${tags.length ? tags.join(', ') : 'none specified'}\n\n`;
+  m += `## Chosen stack\n\n| Layer | Choice | Why |\n|---|---|---|\n`;
+  LAYER_OPTIONS.forEach(group => {
+    const idx = picks[group.id];
+    if (idx === undefined) { m += `| Layer ${group.layerNum} · ${group.title} | _not yet decided_ | |\n`; return; }
+    const opt = group.options[idx];
+    m += `| Layer ${group.layerNum} · ${group.title} | **${opt.name}** | ${opt.bestFor} |\n`;
+  });
+  m += `\n## Architecture principles to apply regardless of stack\n\n`;
+  PRINCIPLE_LAYERS.forEach(p => { m += `- **${p.title}:** ${p.note}\n`; });
+  m += `\nFull layer-by-layer reference: [Design Layers](README.md)\n`;
+  return m;
+}
+
+function planHtml() {
+  const tags = activeConstraintTags();
+  let rows = '';
+  LAYER_OPTIONS.forEach(group => {
+    const idx = picks[group.id];
+    if (idx === undefined) { rows += `<tr><td>Layer ${group.layerNum} · ${esc(group.title)}</td><td><em>not yet decided</em></td><td></td></tr>`; return; }
+    const opt = group.options[idx];
+    rows += `<tr><td>Layer ${group.layerNum} · ${esc(group.title)}</td><td><strong>${esc(opt.name)}</strong></td><td>${esc(opt.bestFor)}</td></tr>`;
+  });
+  const principles = PRINCIPLE_LAYERS.map(p => `<li><strong>${esc(p.title)}:</strong> ${esc(p.note)}</li>`).join('');
+  return '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Architecture Plan — ' + esc(val('client') || 'client') + '</title>'
+    + '<style>body{font-family:Inter,Segoe UI,sans-serif;color:#1c1c28;max-width:880px;margin:40px auto;padding:0 22px;line-height:1.6}'
+    + 'h1,h2{color:#1B1474;font-family:Georgia,serif}table{width:100%;border-collapse:collapse;font-size:14px;margin:12px 0}'
+    + 'th,td{border:1px solid #e4e4f0;padding:8px 10px;text-align:left;vertical-align:top}th{background:#EEEEFA;color:#1B1474}</style></head><body>'
+    + '<h1>Architecture Plan — ' + esc(val('client') || '[client]') + '</h1>'
+    + '<p><strong>Use case:</strong> ' + esc(val('useCase') || '—') + '<br><strong>Constraints:</strong> ' + esc(tags.length ? tags.join(', ') : 'none specified') + '</p>'
+    + '<h2>Chosen stack</h2><table><thead><tr><th>Layer</th><th>Choice</th><th>Why</th></tr></thead><tbody>' + rows + '</tbody></table>'
+    + '<h2>Architecture principles to apply regardless of stack</h2><ul>' + principles + '</ul>'
+    + '<p><a href="README.md">Full Design Layers reference</a></p>'
+    + '</body></html>';
+}
+
+function download(text, fname, mime) {
+  const blob = new Blob([text], { type: mime });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = fname; a.click();
+  URL.revokeObjectURL(a.href);
+}
+function exportPlan(fmt) {
+  if (fmt === 'md') download(planMarkdown(), 'architecture_plan_' + slug() + '.md', 'text/markdown');
+  else download(planHtml(), 'architecture_plan_' + slug() + '.html', 'text/html');
+}
+
+// ── Boot ─────────────────────────────────────────────────────────
+(function init() {
+  initFilter();
+  restore();
+  renderTable();
+  renderSummary();
+  renderPrinciples();
+})();
+</script>
+</body>
+</html>

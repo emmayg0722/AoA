@@ -6,6 +6,8 @@ Phase 3 (Architecture Design) asset. This is not a tool list. Most "AI stack" di
 
 This reference reshapes the usual tool-collage view into 18 capability stacks / decision layers. Tools are replaceable. Architecture decisions are not.
 
+> **Want to build one, interactively?** Open **[architecture-builder.html](architecture-builder.html)** — one comparison table across the 14 layers with real "pick one" options (upside, downside, best fit), select one option per layer like building blocks, and export a recommended architecture plan for a specific client.
+
 ## The reshaped stack
 
 A flat view, top to bottom:
