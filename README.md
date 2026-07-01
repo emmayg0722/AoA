@@ -28,6 +28,10 @@ its own subfolder. New phases and assets follow the same structure.
     └── sample-data/                   # Synthetic demo data only — see its README
         ├── ai-maturity-assessment/
         └── data-readiness-assessment-5c/
+└── Phase 3 - Architecture Design/
+    └── Design Layers/                 # 18-layer agentic AI architecture reference
+        ├── README.md                  # Overview, reshaped stack diagrams, ERP example
+        └── layers/                    # One file per layer (01-core-intelligence.md ... 18-agent-types.md)
 ```
 
 ## Phase 1 — Discovery & Assessment
@@ -39,7 +43,17 @@ its own subfolder. New phases and assets follow the same structure.
   whether a client's data is ready for a specific AI use case (Context, Clarity,
   Coverage, Credibility, Capacity).
 
-Further phases (Strategy & Roadmap, Architecture Design, PoC/Pilot, Implementation,
-Governance, MLOps) follow the same folder pattern and will be added over time.
+## Phase 3 — Architecture Design
+
+- **Design Layers** — reframes "which tools should I use?" into a capability-stack
+  view: 18 layers covering how an agent understands, decides, acts, remembers,
+  verifies, and improves inside a business system (core intelligence, orchestration,
+  tools/actions, RAG, memory, planning, human-in-the-loop, evaluation, observability,
+  guardrails, security/governance, deployment, business integration, data, prompts,
+  workflow, cost, and agent types), plus a worked ERP example and an architect's
+  checklist.
+
+Further phases (Strategy & Roadmap, PoC/Pilot, Implementation, Governance, MLOps)
+follow the same folder pattern and will be added over time.
 
 All assessment tools run fully client-side — no data leaves the browser.
