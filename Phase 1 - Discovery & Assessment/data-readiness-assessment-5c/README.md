@@ -46,3 +46,10 @@ non-sensitive aggregates flow back to the agent.
   console's "🤖 Generate M365 Copilot prompts" button produces tailored prompts to run in
   the client's *own* Copilot; paste the findings into "Copilot findings" and they fold into
   the dra-5c prompt as source evidence. Zero infrastructure; raw data stays in the client tenant.
+
+## Try it without a real engagement
+
+Both `console.html` ("🧪 Load sample engagement") and `profiler.html` ("🧪 Load sample data")
+have a one-click demo using the fake "Northwind Lending" engagement in
+`../sample-data/data-readiness-assessment-5c/` — see that folder's README for what's synthetic
+vs. what real client data should never be committed here.

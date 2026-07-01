@@ -19,11 +19,15 @@ its own subfolder. New phases and assets follow the same structure.
     ├── ai-maturity-assessment/        # Browser tool: 6-dimension AI maturity scoring
     │   ├── index.html
     │   └── python/                    # Streamlit/Python implementation
-    └── data-readiness-assessment-5c/  # 5C data-readiness assessment
-        ├── methodology.md
-        ├── profiler.html              # Browser-local data profiler (data stays local)
-        ├── templates/
-        └── README.md
+    ├── data-readiness-assessment-5c/  # 5C data-readiness assessment
+    │   ├── methodology.md
+    │   ├── console.html               # Workspace front-end for the 4-step assessment
+    │   ├── profiler.html              # Browser-local data profiler (data stays local)
+    │   ├── templates/
+    │   └── README.md
+    └── sample-data/                   # Synthetic demo data only — see its README
+        ├── ai-maturity-assessment/
+        └── data-readiness-assessment-5c/
 ```
 
 ## Phase 1 — Discovery & Assessment
