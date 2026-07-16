@@ -31,6 +31,11 @@ its own subfolder. New phases and assets follow the same structure.
     └── sample-data/                   # Synthetic demo data only — see its README
         ├── ai-maturity-assessment/
         └── data-readiness-assessment-5c/
+└── Phase 2 - Strategy & Roadmap/
+    ├── ai-strategy-planning/          # SOP + intake + milestone roadmap + auto-generated doc (EN/DA/SV)
+    ├── business-case-development/     # SOP + intake + live ROI/payback model + auto-generated doc (EN/DA/SV)
+    ├── technology-roadmap/            # SOP + platform-strategy intake + milestone timeline (EN/DA/SV)
+    └── organizational-roadmap/        # SOP + intake (CoE, talent, structure, partners) (EN/DA/SV)
 └── Phase 3 - Architecture Design/
     └── Design Layers/                 # 18-layer agentic AI architecture reference
         ├── README.md                  # Overview, reshaped stack diagrams, ERP example
@@ -60,6 +65,21 @@ form (autosaved locally), a live document preview built from a `{{field}}` templ
 HTML/Markdown export, and an English/Danish/Swedish language selector — the pattern
 now used across the toolkit.
 
+## Phase 2 — Strategy & Roadmap
+
+- **AI Strategy Planning** — SOP + intake covering vision/mission, strategic
+  alignment, and success metrics, plus a 3-5 year milestone-roadmap builder,
+  auto-generating an AI strategy document.
+- **Business Case Development** — SOP + intake with a **live ROI model**
+  (payback period, net benefit over horizon, ROI%) that computes as you type,
+  auto-generating a business case document with the computed figures embedded.
+- **Technology Roadmap** — SOP + platform-strategy intake (cloud-first / hybrid /
+  private / multi-cloud) and a milestone timeline with dependencies, auto-
+  generating the technology roadmap Phase 3 architecture work designs against.
+- **Organizational Roadmap** — SOP + intake covering AI CoE design, talent
+  acquisition/development, structure changes, and partner ecosystem, auto-
+  generating an organizational change roadmap.
+
 ## Phase 3 — Architecture Design
 
 - **Design Layers** — reframes "which tools should I use?" into a capability-stack
@@ -70,7 +90,7 @@ now used across the toolkit.
   workflow, cost, and agent types), plus a worked ERP example and an architect's
   checklist.
 
-Further phases (Strategy & Roadmap, PoC/Pilot, Implementation, Governance, MLOps)
-follow the same folder pattern and will be added over time.
+Further phases (PoC/Pilot, Implementation, Governance, MLOps) follow the same
+folder pattern and will be added over time.
 
 All assessment tools run fully client-side — no data leaves the browser.

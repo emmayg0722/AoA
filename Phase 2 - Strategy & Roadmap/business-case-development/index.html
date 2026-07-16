@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Business Case Development — Phase 2</title>
+<meta name="description" content="Business case SOP, client intake, a live ROI/payback model, and an auto-generated business case document.">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='16' fill='%231B1474'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #1B1474; --primary-dark: #120D52; --accent: #DCDDF6; --powder: #EEEEFA;
+    --ink: #1c1c28; --muted: #5b5b6b; --line: #e4e4f0;
+    --green: #1a8a5c; --amber: #d4790e; --red: #c0392b;
+    --font-heading: 'Fraunces', Georgia, serif;
+    --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: var(--font-body); color: var(--ink); background: #fafaff; line-height: 1.6; }
+  .hero { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: #fff; padding: 44px 24px 36px; }
+  .wrap { max-width: 1100px; margin: 0 auto; }
+  .crumb { font-size: 13px; color: var(--accent); margin-bottom: 10px; }
+  .crumb a { color: var(--accent); text-decoration: none; }
+  .hero-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; flex-wrap: wrap; }
+  .hero h1 { font-family: var(--font-heading); font-weight: 700; font-size: 34px; line-height: 1.15; }
+  .hero p { margin-top: 10px; font-size: 15.5px; color: #dcdcf2; max-width: 680px; }
+  select#langSelect { font-family: var(--font-body); font-size: 13px; font-weight: 600; border: 1.5px solid rgba(255,255,255,0.4); background: rgba(255,255,255,0.08); color: #fff; border-radius: 8px; padding: 7px 10px; }
+  select#langSelect option { color: var(--ink); }
+  main { max-width: 1100px; margin: 0 auto; padding: 28px 24px 80px; }
+  .note { background: var(--powder); border: 1px solid var(--accent); border-radius: 12px; padding: 14px 16px; font-size: 14px; color: var(--muted); margin-bottom: 26px; }
+  .note strong { color: var(--primary); }
+  .card { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 22px 24px; margin-bottom: 20px; }
+  .card > h2 { font-family: var(--font-heading); font-weight: 600; font-size: 21px; color: var(--primary); margin-bottom: 4px; }
+  .card .hint { font-size: 13.5px; color: var(--muted); margin-bottom: 14px; }
+  ol.sop { margin-left: 20px; }
+  ol.sop li { margin-bottom: 10px; font-size: 14px; }
+  label { display: block; font-size: 13px; font-weight: 600; color: var(--ink); margin: 10px 0 5px; }
+  input[type=text], input[type=number], textarea, select.field { width: 100%; font-family: var(--font-body); font-size: 14px; color: var(--ink); border: 1.5px solid var(--line); border-radius: 8px; padding: 9px 11px; background: #fff; }
+  textarea { resize: vertical; min-height: 70px; }
+  input:focus, textarea:focus, select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(27,20,116,0.12); }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; }
+  .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0 16px; }
+  .btn { font-family: var(--font-body); font-size: 13.5px; font-weight: 600; padding: 9px 16px; border-radius: 8px; border: none; cursor: pointer; transition: all 0.15s; }
+  .btn-primary { background: var(--accent); color: var(--primary); }
+  .btn-primary:hover { background: #C3C5EC; }
+  .btn-secondary { background: #fff; color: var(--primary); border: 1.5px solid var(--accent); }
+  .btn-secondary:hover { background: var(--powder); }
+  .btn-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px; }
+  .roi-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px,1fr)); gap: 14px; margin-top: 14px; }
+  .roi-card { background: var(--powder); border-radius: 10px; padding: 14px 16px; }
+  .roi-card .label { font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); }
+  .roi-card .val { font-family: var(--font-heading); font-weight: 700; font-size: 22px; color: var(--primary); margin-top: 4px; }
+  .preview { border: 1px dashed var(--line); border-radius: 10px; padding: 18px 20px; background: #fcfcff; font-size: 14px; }
+  .preview h3 { font-family: var(--font-heading); color: var(--primary); font-size: 16px; margin: 14px 0 6px; }
+  .preview h3:first-child { margin-top: 0; }
+  .preview p { margin: 6px 0; white-space: pre-wrap; }
+  .preview table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 8px 0; }
+  .preview th, .preview td { border: 1px solid var(--line); padding: 6px 9px; text-align: left; }
+  .preview th { background: var(--powder); color: var(--primary); }
+  .preview .meta { font-size: 13px; color: var(--muted); margin-bottom: 10px; }
+  .saved { font-size: 12.5px; color: var(--green); margin-left: 8px; }
+  @media (max-width: 720px) { .grid2, .grid3 { grid-template-columns: 1fr; } .hero h1 { font-size: 27px; } }
+</style>
+</head>
+<body>
+  <header class="hero"><div class="wrap">
+    <div class="hero-top">
+      <div class="crumb"><a href="../">AI Architect Toolkit</a> · Phase 2 · Strategy &amp; Roadmap</div>
+      <select id="langSelect" onchange="setLang(this.value)">
+        <option value="en">English</option>
+        <option value="da">Dansk</option>
+        <option value="sv">Svenska</option>
+      </select>
+    </div>
+    <h1 data-i18n="heroTitle"></h1>
+    <p data-i18n="heroDesc"></p>
+  </div></header>
+
+  <main>
+    <div class="note"><strong data-i18n="noteLabel"></strong> <span data-i18n="noteBody"></span></div>
+
+    <div class="card">
+      <h2 data-i18n="sopTitle"></h2>
+      <p class="hint" data-i18n="sopHint"></p>
+      <ol class="sop" id="sopList"></ol>
+    </div>
+
+    <div class="card">
+      <h2 data-i18n="intakeTitle"></h2>
+      <div class="grid2">
+        <div><label data-i18n="lblClient"></label><input type="text" data-eng="client" placeholder="Acme Corp"></div>
+        <div><label data-i18n="lblAssessor"></label><input type="text" data-eng="assessor"></div>
+      </div>
+      <label data-i18n="lblUseCase"></label>
+      <input type="text" data-eng="useCase" placeholder="Predictive maintenance for logistics fleet">
+    </div>
+
+    <div class="card">
+      <h2 data-i18n="roiTitle"></h2>
+      <p class="hint" data-i18n="roiHint"></p>
+      <div class="grid3">
+        <div><label data-i18n="lblInvestment"></label><input type="number" data-eng="investment" data-calc="1" placeholder="250000"></div>
+        <div><label data-i18n="lblAnnualBenefit"></label><input type="number" data-eng="annualBenefit" data-calc="1" placeholder="120000"></div>
+        <div><label data-i18n="lblHorizon"></label><input type="number" data-eng="horizon" data-calc="1" placeholder="3"></div>
+      </div>
+      <div class="roi-cards">
+        <div class="roi-card"><div class="label" data-i18n="calcPayback"></div><div class="val" id="calcPaybackVal">—</div></div>
+        <div class="roi-card"><div class="label" data-i18n="calcNetBenefit"></div><div class="val" id="calcNetBenefitVal">—</div></div>
+        <div class="roi-card"><div class="label" data-i18n="calcRoiPct"></div><div class="val" id="calcRoiPctVal">—</div></div>
+      </div>
+      <label data-i18n="lblRisk"></label>
+      <textarea data-eng="riskNotes"></textarea>
+      <label data-i18n="lblRecommendation"></label>
+      <textarea data-eng="recommendation"></textarea>
+    </div>
+
+    <div class="card">
+      <h2 data-i18n="previewTitle"></h2>
+      <p class="hint" data-i18n="previewHint"></p>
+      <div class="preview" id="preview"></div>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="exportDoc('html')" data-i18n="btnExportHtml"></button>
+        <button class="btn btn-primary" onclick="exportDoc('md')" data-i18n="btnExportMd"></button>
+        <button class="btn btn-secondary" onclick="resetAll()" data-i18n="btnReset"></button>
+        <span class="saved" id="savedFlag"></span>
+      </div>
+    </div>
+  </main>
+
+<script>
+const KEY = 'aoa_business_case_v1';
+
+const STRINGS = {
+  en: {
+    heroTitle: 'Business Case Development',
+    heroDesc: 'SOP, client intake, a live ROI/payback model, and an auto-generated business case document.',
+    noteLabel: 'How this works.',
+    noteBody: 'Enter the investment, expected annual benefit, and time horizon; payback, net benefit, and ROI% compute live. This is a simple model for a first-pass business case, not a substitute for finance-team-grade NPV/IRR modeling. No API calls — everything autosaves locally.',
+    sopTitle: 'SOP — how this is usually done',
+    sopHint: 'The order an architect actually works this exercise in.',
+    sop: [
+      'Quantify the expected return — work with the business owner to estimate the annual benefit in real currency, not just "efficiency gains."',
+      'Estimate total cost of ownership (TCO) — not just build cost, but licensing, infra, and ongoing MLOps/maintenance.',
+      'Build the ROI model — payback period, net benefit over the horizon, and ROI% (this tool computes a simple version live).',
+      'Run a sensitivity check — what happens to the case if benefit realization is 50% lower than assumed, or delayed by a year?',
+      'Get finance/sponsor sign-off on the assumptions before the business case becomes the basis for a budget request.',
+    ],
+    intakeTitle: 'Client intake',
+    lblClient: 'Client / engagement',
+    lblAssessor: 'Assessor',
+    lblUseCase: 'Target AI use case',
+    roiTitle: 'ROI model',
+    roiHint: 'Simple first-pass model. Numbers in your local currency (unspecified — keep consistent).',
+    lblInvestment: 'Total investment',
+    lblAnnualBenefit: 'Expected annual benefit',
+    lblHorizon: 'Time horizon (years)',
+    calcPayback: 'Payback period (years)',
+    calcNetBenefit: 'Net benefit over horizon',
+    calcRoiPct: 'ROI %',
+    lblRisk: 'Risk & sensitivity notes',
+    lblRecommendation: 'Recommendation',
+    previewTitle: 'Business case document',
+    previewHint: 'This is the actual deliverable — auto-generated from your intake, customized for this client.',
+    btnExportHtml: '🌐 Export HTML',
+    btnExportMd: '📄 Export Markdown',
+    btnReset: '🔄 Reset',
+    docTitle: 'Business Case',
+    docFor: 'Prepared for',
+    docUseCase: 'Target AI use case',
+    docAssessor: 'Assessor',
+    docDate: 'Date',
+    secRoi: '1. ROI Model',
+    secRisk: '2. Risk & Sensitivity',
+    secRec: '3. Recommendation',
+    emptyNote: '(not yet documented)',
+    notEnough: 'Enter investment and annual benefit above.',
+  },
+  da: {
+    heroTitle: 'Business Case-udvikling',
+    heroDesc: 'SOP, kundeoptag, en live ROI-/tilbagebetalingsmodel, og et automatisk genereret business case-dokument.',
+    noteLabel: 'Sådan virker det.',
+    noteBody: 'Indtast investering, forventet årlig gevinst og tidshorisont; tilbagebetalingstid, nettogevinst og ROI% beregnes live. Dette er en simpel model til et første udkast, ikke en erstatning for finansafdelingens NPV/IRR-modellering. Ingen API-kald — alt gemmes automatisk lokalt.',
+    sopTitle: 'SOP — sådan gøres det normalt',
+    sopHint: 'Rækkefølgen en arkitekt reelt arbejder denne øvelse igennem.',
+    sop: [
+      'Kvantificér det forventede afkast — arbejd sammen med forretningsejeren for at estimere den årlige gevinst i reel valuta, ikke bare "effektivitetsgevinster".',
+      'Estimér den samlede ejeromkostning (TCO) — ikke kun byggeomkostning, men licensiering, infrastruktur og løbende MLOps/vedligeholdelse.',
+      'Byg ROI-modellen — tilbagebetalingstid, nettogevinst over horisonten og ROI% (dette værktøj beregner en simpel version live).',
+      'Kør et følsomhedstjek — hvad sker der med casen, hvis gevinstrealiseringen er 50% lavere end antaget, eller forsinket et år?',
+      'Få finans/sponsor-godkendelse af antagelserne, før business casen bliver grundlaget for en budgetanmodning.',
+    ],
+    intakeTitle: 'Kundeoptag',
+    lblClient: 'Kunde / engagement',
+    lblAssessor: 'Vurderingsmand',
+    lblUseCase: 'Mål-AI-anvendelse',
+    roiTitle: 'ROI-model',
+    roiHint: 'Simpel model til et første udkast. Tal i din lokale valuta (uspecificeret — hold det konsistent).',
+    lblInvestment: 'Samlet investering',
+    lblAnnualBenefit: 'Forventet årlig gevinst',
+    lblHorizon: 'Tidshorisont (år)',
+    calcPayback: 'Tilbagebetalingstid (år)',
+    calcNetBenefit: 'Nettogevinst over horisonten',
+    calcRoiPct: 'ROI %',
+    lblRisk: 'Risiko- og følsomhedsnoter',
+    lblRecommendation: 'Anbefaling',
+    previewTitle: 'Business case-dokument',
+    previewHint: 'Dette er selve leverancen — automatisk genereret fra dit optag, tilpasset denne kunde.',
+    btnExportHtml: '🌐 Eksportér HTML',
+    btnExportMd: '📄 Eksportér Markdown',
+    btnReset: '🔄 Nulstil',
+    docTitle: 'Business Case',
+    docFor: 'Udarbejdet for',
+    docUseCase: 'Mål-AI-anvendelse',
+    docAssessor: 'Vurderingsmand',
+    docDate: 'Dato',
+    secRoi: '1. ROI-model',
+    secRisk: '2. Risiko og følsomhed',
+    secRec: '3. Anbefaling',
+    emptyNote: '(endnu ikke dokumenteret)',
+    notEnough: 'Indtast investering og årlig gevinst ovenfor.',
+  },
+  sv: {
+    heroTitle: 'Utveckling av Business Case',
+    heroDesc: 'SOP, kundintag, en live ROI-/återbetalningsmodell, och ett automatiskt genererat business case-dokument.',
+    noteLabel: 'Så här fungerar det.',
+    noteBody: 'Ange investering, förväntad årlig nytta och tidshorisont; återbetalningstid, nettonytta och ROI% beräknas live. Detta är en enkel modell för ett första utkast, inte en ersättning för finansavdelningens NPV-/IRR-modellering. Inga API-anrop — allt sparas automatiskt lokalt.',
+    sopTitle: 'SOP — så här görs det vanligtvis',
+    sopHint: 'Ordningen en arkitekt faktiskt arbetar igenom denna övning.',
+    sop: [
+      'Kvantifiera den förväntade avkastningen — arbeta med verksamhetsägaren för att uppskatta den årliga nyttan i reell valuta, inte bara "effektivitetsvinster".',
+      'Uppskatta total ägandekostnad (TCO) — inte bara byggkostnad, utan licensiering, infrastruktur och löpande MLOps/underhåll.',
+      'Bygg ROI-modellen — återbetalningstid, nettonytta över horisonten och ROI% (detta verktyg beräknar en enkel version live).',
+      'Kör en känslighetskontroll — vad händer med caset om nyttorealiseringen är 50% lägre än antaget, eller försenad ett år?',
+      'Få finans-/sponsorgodkännande av antagandena innan business caset blir grunden för en budgetförfrågan.',
+    ],
+    intakeTitle: 'Kundintag',
+    lblClient: 'Kund / uppdrag',
+    lblAssessor: 'Bedömare',
+    lblUseCase: 'Mål-AI-användningsfall',
+    roiTitle: 'ROI-modell',
+    roiHint: 'Enkel modell för ett första utkast. Siffror i din lokala valuta (ospecificerad — håll det konsekvent).',
+    lblInvestment: 'Total investering',
+    lblAnnualBenefit: 'Förväntad årlig nytta',
+    lblHorizon: 'Tidshorisont (år)',
+    calcPayback: 'Återbetalningstid (år)',
+    calcNetBenefit: 'Nettonytta över horisonten',
+    calcRoiPct: 'ROI %',
+    lblRisk: 'Risk- och känslighetsanteckningar',
+    lblRecommendation: 'Rekommendation',
+    previewTitle: 'Business case-dokument',
+    previewHint: 'Detta är själva leveransen — automatiskt genererad från ditt intag, anpassad för denna kund.',
+    btnExportHtml: '🌐 Exportera HTML',
+    btnExportMd: '📄 Exportera Markdown',
+    btnReset: '🔄 Återställ',
+    docTitle: 'Business Case',
+    docFor: 'Framtagen för',
+    docUseCase: 'Mål-AI-användningsfall',
+    docAssessor: 'Bedömare',
+    docDate: 'Datum',
+    secRoi: '1. ROI-modell',
+    secRisk: '2. Risk och känslighet',
+    secRec: '3. Rekommendation',
+    emptyNote: '(ännu inte dokumenterat)',
+    notEnough: 'Ange investering och årlig nytta ovan.',
+  },
+};
+
+let lang = localStorage.getItem('aoa_lang') || 'en';
+function t(key) { return (STRINGS[lang] && STRINGS[lang][key] !== undefined) ? STRINGS[lang][key] : (STRINGS.en[key] !== undefined ? STRINGS.en[key] : key); }
+function esc(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function setLang(l) { lang = l; localStorage.setItem('aoa_lang', l); document.getElementById('langSelect').value = l; applyI18n(); computeRoi(); renderPreview(); save(); }
+function applyI18n() {
+  document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.getAttribute('data-i18n')); });
+  document.title = t('heroTitle') + ' — Phase 2';
+  document.getElementById('sopList').innerHTML = t('sop').map(s => `<li>${esc(s)}</li>`).join('');
+}
+
+function fieldEls() { return Array.from(document.querySelectorAll('[data-eng]')); }
+function collectFields() { const o = {}; fieldEls().forEach(el => { o[el.getAttribute('data-eng')] = el.value; }); return o; }
+function restoreFields(o) { fieldEls().forEach(el => { const k = el.getAttribute('data-eng'); if (o[k] !== undefined) el.value = o[k]; }); }
+function val(k) { const el = document.querySelector(`[data-eng="${k}"]`); return el ? el.value : ''; }
+function num(k) { const v = parseFloat(val(k)); return isNaN(v) ? null : v; }
+function orEmpty(v) { return v && v.trim() ? esc(v) : `<em>${esc(t('emptyNote'))}</em>`; }
+function fmtNum(n) { return n.toLocaleString(undefined, { maximumFractionDigits: 1 }); }
+
+let savedTimer;
+function save() { try { localStorage.setItem(KEY, JSON.stringify({ fields: collectFields(), lang })); flashSaved(); } catch (e) {} }
+function flashSaved() { const f = document.getElementById('savedFlag'); f.textContent = '✓'; clearTimeout(savedTimer); savedTimer = setTimeout(() => { f.textContent = ''; }, 1200); }
+function loadSaved() { try { const o = JSON.parse(localStorage.getItem(KEY) || '{}'); if (o.fields) restoreFields(o.fields); } catch (e) {} }
+
+function roiResult() {
+  const inv = num('investment'), ben = num('annualBenefit'), yrs = num('horizon');
+  if (inv === null || ben === null || inv <= 0 || ben <= 0) return null;
+  const payback = inv / ben;
+  const horizon = (yrs && yrs > 0) ? yrs : 3;
+  const netBenefit = ben * horizon - inv;
+  const roiPct = (netBenefit / inv) * 100;
+  return { payback, netBenefit, roiPct, horizon };
+}
+
+function computeRoi() {
+  const r = roiResult();
+  document.getElementById('calcPaybackVal').textContent = r ? fmtNum(r.payback) : '—';
+  document.getElementById('calcNetBenefitVal').textContent = r ? fmtNum(r.netBenefit) : '—';
+  document.getElementById('calcRoiPctVal').textContent = r ? fmtNum(r.roiPct) + '%' : '—';
+}
+
+function renderPreview() {
+  const date = new Date().toISOString().slice(0, 10);
+  const r = roiResult();
+  let h = `<div class="meta"><strong>${esc(t('docFor'))}:</strong> ${esc(val('client')) || '—'} &nbsp;·&nbsp; <strong>${esc(t('docUseCase'))}:</strong> ${esc(val('useCase')) || '—'}<br>`
+    + `<strong>${esc(t('docAssessor'))}:</strong> ${esc(val('assessor')) || '—'} &nbsp;·&nbsp; <strong>${esc(t('docDate'))}:</strong> ${date}</div>`;
+  h += `<h3>${esc(t('secRoi'))}</h3>`;
+  if (r) {
+    h += `<table><thead><tr><th>${esc(t('lblInvestment'))}</th><th>${esc(t('lblAnnualBenefit'))}</th><th>${esc(t('calcPayback'))}</th><th>${esc(t('calcNetBenefit'))}</th><th>${esc(t('calcRoiPct'))}</th></tr></thead>`
+      + `<tbody><tr><td>${fmtNum(num('investment'))}</td><td>${fmtNum(num('annualBenefit'))}</td><td>${fmtNum(r.payback)}</td><td>${fmtNum(r.netBenefit)}</td><td>${fmtNum(r.roiPct)}%</td></tr></tbody></table>`;
+  } else {
+    h += `<p><em>${esc(t('notEnough'))}</em></p>`;
+  }
+  h += `<h3>${esc(t('secRisk'))}</h3><p>${orEmpty(val('riskNotes'))}</p>`;
+  h += `<h3>${esc(t('secRec'))}</h3><p>${orEmpty(val('recommendation'))}</p>`;
+  document.getElementById('preview').innerHTML = h;
+}
+
+document.addEventListener('input', e => { if (e.target.matches('[data-eng]')) { if (e.target.matches('[data-calc]')) computeRoi(); renderPreview(); save(); } });
+document.addEventListener('change', e => { if (e.target.matches('[data-eng]')) { if (e.target.matches('[data-calc]')) computeRoi(); renderPreview(); save(); } });
+
+function resetAll() {
+  if (!confirm('Clear all fields? / Ryd alle felter? / Rensa alla fält?')) return;
+  fieldEls().forEach(el => { el.value = ''; });
+  computeRoi(); renderPreview(); save();
+}
+
+function slug() { return (val('client') || 'business_case').replace(/\W+/g, '_'); }
+function docMarkdown() {
+  const date = new Date().toISOString().slice(0, 10);
+  const r = roiResult();
+  let m = `# ${t('docTitle')} — ${val('client') || '[client]'}\n\n`;
+  m += `**${t('docFor')}:** ${val('client') || '—'}  \n**${t('docUseCase')}:** ${val('useCase') || '—'}  \n`;
+  m += `**${t('docAssessor')}:** ${val('assessor') || '—'}  \n**${t('docDate')}:** ${date}\n\n`;
+  m += `## ${t('secRoi')}\n\n`;
+  if (r) {
+    m += `| ${t('lblInvestment')} | ${t('lblAnnualBenefit')} | ${t('calcPayback')} | ${t('calcNetBenefit')} | ${t('calcRoiPct')} |\n|---|---|---|---|---|\n`;
+    m += `| ${fmtNum(num('investment'))} | ${fmtNum(num('annualBenefit'))} | ${fmtNum(r.payback)} | ${fmtNum(r.netBenefit)} | ${fmtNum(r.roiPct)}% |\n\n`;
+  } else { m += `${t('notEnough')}\n\n`; }
+  m += `## ${t('secRisk')}\n${val('riskNotes') || t('emptyNote')}\n\n`;
+  m += `## ${t('secRec')}\n${val('recommendation') || t('emptyNote')}\n`;
+  return m;
+}
+function docHtml() {
+  return '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>' + esc(t('docTitle')) + ' — ' + esc(val('client') || 'client') + '</title>'
+    + '<style>body{font-family:Inter,Segoe UI,sans-serif;color:#1c1c28;max-width:880px;margin:40px auto;padding:0 22px;line-height:1.6}'
+    + 'h1,h3{color:#1B1474;font-family:Georgia,serif}table{width:100%;border-collapse:collapse;font-size:14px}th,td{border:1px solid #e4e4f0;padding:7px 10px;text-align:left}th{background:#EEEEFA;color:#1B1474}</style></head><body>'
+    + document.getElementById('preview').outerHTML.replace('id="preview"', '')
+    + '</body></html>';
+}
+function download(text, fname, mime) {
+  const blob = new Blob([text], { type: mime });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = fname; a.click();
+  URL.revokeObjectURL(a.href);
+}
+function exportDoc(fmt) {
+  if (fmt === 'md') download(docMarkdown(), 'business_case_' + slug() + '.md', 'text/markdown');
+  else download(docHtml(), 'business_case_' + slug() + '.html', 'text/html');
+}
+
+(function init() {
+  document.getElementById('langSelect').value = lang;
+  loadSaved();
+  applyI18n();
+  computeRoi();
+  renderPreview();
+})();
+</script>
+</body>
+</html>
