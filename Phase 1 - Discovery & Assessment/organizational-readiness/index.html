@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Organizational Readiness Assessment — Phase 1</title>
+<meta name="description" content="Organizational readiness SOP, client intake, and an auto-generated readiness document for a specific AI use case.">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='16' fill='%231B1474'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #1B1474; --primary-dark: #120D52; --accent: #DCDDF6; --powder: #EEEEFA;
+    --ink: #1c1c28; --muted: #5b5b6b; --line: #e4e4f0;
+    --green: #1a8a5c; --amber: #d4790e; --red: #c0392b;
+    --font-heading: 'Fraunces', Georgia, serif;
+    --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: var(--font-body); color: var(--ink); background: #fafaff; line-height: 1.6; }
+  .hero { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: #fff; padding: 44px 24px 36px; }
+  .wrap { max-width: 1000px; margin: 0 auto; }
+  .crumb { font-size: 13px; color: var(--accent); margin-bottom: 10px; }
+  .crumb a { color: var(--accent); text-decoration: none; }
+  .hero-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; flex-wrap: wrap; }
+  .hero h1 { font-family: var(--font-heading); font-weight: 700; font-size: 34px; line-height: 1.15; }
+  .hero p { margin-top: 10px; font-size: 15.5px; color: #dcdcf2; max-width: 680px; }
+  select#langSelect { font-family: var(--font-body); font-size: 13px; font-weight: 600; border: 1.5px solid rgba(255,255,255,0.4); background: rgba(255,255,255,0.08); color: #fff; border-radius: 8px; padding: 7px 10px; }
+  select#langSelect option { color: var(--ink); }
+  main { max-width: 1000px; margin: 0 auto; padding: 28px 24px 80px; }
+  .note { background: var(--powder); border: 1px solid var(--accent); border-radius: 12px; padding: 14px 16px; font-size: 14px; color: var(--muted); margin-bottom: 26px; }
+  .note strong { color: var(--primary); }
+  .card { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 22px 24px; margin-bottom: 20px; }
+  .card > h2 { font-family: var(--font-heading); font-weight: 600; font-size: 21px; color: var(--primary); margin-bottom: 4px; }
+  .card .hint { font-size: 13.5px; color: var(--muted); margin-bottom: 14px; }
+  ol.sop { margin-left: 20px; }
+  ol.sop li { margin-bottom: 10px; font-size: 14px; }
+  label { display: block; font-size: 13px; font-weight: 600; color: var(--ink); margin: 10px 0 5px; }
+  input[type=text], textarea, select.field { width: 100%; font-family: var(--font-body); font-size: 14px; color: var(--ink); border: 1.5px solid var(--line); border-radius: 8px; padding: 9px 11px; background: #fff; }
+  textarea { resize: vertical; min-height: 70px; }
+  input:focus, textarea:focus, select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(27,20,116,0.12); }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; }
+  .btn { font-family: var(--font-body); font-size: 13.5px; font-weight: 600; padding: 9px 16px; border-radius: 8px; border: none; cursor: pointer; transition: all 0.15s; }
+  .btn-primary { background: var(--accent); color: var(--primary); }
+  .btn-primary:hover { background: #C3C5EC; }
+  .btn-secondary { background: #fff; color: var(--primary); border: 1.5px solid var(--accent); }
+  .btn-secondary:hover { background: var(--powder); }
+  .btn-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px; }
+  .preview { border: 1px dashed var(--line); border-radius: 10px; padding: 18px 20px; background: #fcfcff; font-size: 14px; }
+  .preview h3 { font-family: var(--font-heading); color: var(--primary); font-size: 16px; margin: 14px 0 6px; }
+  .preview h3:first-child { margin-top: 0; }
+  .preview p { margin: 6px 0; white-space: pre-wrap; }
+  .preview .meta { font-size: 13px; color: var(--muted); margin-bottom: 10px; }
+  .saved { font-size: 12.5px; color: var(--green); margin-left: 8px; }
+  @media (max-width: 680px) { .grid2 { grid-template-columns: 1fr; } .hero h1 { font-size: 27px; } }
+</style>
+</head>
+<body>
+  <header class="hero"><div class="wrap">
+    <div class="hero-top">
+      <div class="crumb"><a href="../">AI Architect Toolkit</a> · Phase 1 · Discovery &amp; Assessment</div>
+      <select id="langSelect" onchange="setLang(this.value)">
+        <option value="en">English</option>
+        <option value="da">Dansk</option>
+        <option value="sv">Svenska</option>
+      </select>
+    </div>
+    <h1 data-i18n="heroTitle"></h1>
+    <p data-i18n="heroDesc"></p>
+  </div></header>
+
+  <main>
+    <div class="note"><strong data-i18n="noteLabel"></strong> <span data-i18n="noteBody"></span></div>
+
+    <div class="card">
+      <h2 data-i18n="sopTitle"></h2>
+      <p class="hint" data-i18n="sopHint"></p>
+      <ol class="sop" id="sopList"></ol>
+    </div>
+
+    <div class="card">
+      <h2 data-i18n="intakeTitle"></h2>
+      <p class="hint" data-i18n="intakeHint"></p>
+      <div class="grid2">
+        <div><label data-i18n="lblClient"></label><input type="text" data-eng="client" placeholder="Acme Corp"></div>
+        <div><label data-i18n="lblAssessor"></label><input type="text" data-eng="assessor"></div>
+      </div>
+      <label data-i18n="lblUseCase"></label>
+      <input type="text" data-eng="useCase" placeholder="Real-time credit-risk scoring">
+      <div class="grid2">
+        <div><label data-i18n="lblTeamSize"></label><input type="text" data-eng="teamSize" placeholder="~40 in IT, 3 data scientists"></div>
+        <div><label data-i18n="lblInitiatives"></label><input type="text" data-eng="initiatives" placeholder="One completed chatbot pilot"></div>
+      </div>
+      <label data-i18n="lblSkillNotes"></label>
+      <textarea data-eng="skillNotes"></textarea>
+      <label data-i18n="lblCultureNotes"></label>
+      <textarea data-eng="cultureNotes"></textarea>
+      <label data-i18n="lblProcessNotes"></label>
+      <textarea data-eng="processNotes"></textarea>
+      <label data-i18n="lblStakeholderNotes"></label>
+      <textarea data-eng="stakeholderNotes"></textarea>
+      <label data-i18n="lblRecommendations"></label>
+      <textarea data-eng="recommendations"></textarea>
+      <label data-i18n="lblVerdict"></label>
+      <select class="field" data-eng="verdict">
+        <option value="">—</option>
+        <option data-i18n-opt="verdictReady" value="ready"></option>
+        <option data-i18n-opt="verdictConditional" value="conditional"></option>
+        <option data-i18n-opt="verdictNotReady" value="notready"></option>
+      </select>
+    </div>
+
+    <div class="card">
+      <h2 data-i18n="previewTitle"></h2>
+      <p class="hint" data-i18n="previewHint"></p>
+      <div class="preview" id="preview"></div>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="exportDoc('html')" data-i18n="btnExportHtml"></button>
+        <button class="btn btn-primary" onclick="exportDoc('md')" data-i18n="btnExportMd"></button>
+        <button class="btn btn-secondary" onclick="resetAll()" data-i18n="btnReset"></button>
+        <span class="saved" id="savedFlag"></span>
+      </div>
+    </div>
+  </main>
+
+<script>
+// ════════════════════════════════════════════════════════════════
+// Organizational Readiness Assessment — fully client-side. No network calls.
+// ════════════════════════════════════════════════════════════════
+const KEY = 'aoa_org_readiness_v1';
+
+const STRINGS = {
+  en: {
+    heroTitle: 'Organizational Readiness Assessment',
+    heroDesc: 'SOP, client intake, and an auto-generated readiness document — team capability, culture, process maturity, and stakeholders, scored against a specific AI use case.',
+    noteLabel: 'How this works.',
+    noteBody: 'Fill in the intake fields below; the document preview builds live from your inputs. No API calls — everything autosaves locally in your browser and can be exported as a file.',
+    sopTitle: 'SOP — how this is usually done',
+    sopHint: 'The order an architect actually works this assessment in.',
+    sop: [
+      'Team capability & skill-gap analysis — interview engineering/data leads and HR to map current AI/ML/data skills against what the target use case actually requires.',
+      'Culture & change-readiness — gauge appetite for change through leadership and frontline interviews; look at how past technology rollouts landed (adopted vs. resisted).',
+      'Current process maturity — review how decisions are made today (ad-hoc vs. documented), and whether there is a defined path from pilot to production for new tools.',
+      'Stakeholder analysis — map who benefits, who is threatened, and who has veto power over the target use case; identify the actual executive sponsor.',
+      'Score against the target use case — readiness is relative: a team ready for a low-risk internal chatbot may not be ready for a customer-facing, compliance-heavy agent.',
+    ],
+    intakeTitle: 'Client intake',
+    intakeHint: 'Fill in what you know; leave the rest for follow-up interviews.',
+    lblClient: 'Client / engagement',
+    lblAssessor: 'Assessor',
+    lblUseCase: 'Target AI use case',
+    lblTeamSize: 'Team size / composition',
+    lblInitiatives: 'Current or past AI initiatives',
+    lblSkillNotes: 'Team capability & skill gaps — notes',
+    lblCultureNotes: 'Culture & change readiness — notes',
+    lblProcessNotes: 'Current process maturity — notes',
+    lblStakeholderNotes: 'Stakeholder analysis — notes',
+    lblRecommendations: 'Gaps & recommendations',
+    lblVerdict: 'Overall readiness verdict',
+    verdictReady: 'Ready',
+    verdictConditional: 'Conditional',
+    verdictNotReady: 'Not ready',
+    previewTitle: 'Organizational readiness document',
+    previewHint: 'This is the actual deliverable — auto-generated from your intake, customized for this client.',
+    btnExportHtml: '🌐 Export HTML',
+    btnExportMd: '📄 Export Markdown',
+    btnReset: '🔄 Reset',
+    docTitle: 'Organizational Readiness Assessment',
+    docFor: 'Prepared for',
+    docUseCase: 'Target AI use case',
+    docAssessor: 'Assessor',
+    docDate: 'Date',
+    secSkill: '1. Team Capability & Skill Gaps',
+    secCulture: '2. Culture & Change Readiness',
+    secProcess: '3. Current Process Maturity',
+    secStakeholder: '4. Stakeholder Analysis',
+    secRecs: '5. Gaps & Recommendations',
+    secVerdict: 'Overall verdict',
+    emptyNote: '(not yet documented)',
+    teamLine: 'Team size / composition:',
+    initiativesLine: 'Current or past AI initiatives:',
+  },
+  da: {
+    heroTitle: 'Organisatorisk parathedsvurdering',
+    heroDesc: 'SOP, kundeoptag og et automatisk genereret parathedsdokument — teamkapacitet, kultur, procesmodenhed og interessenter, vurderet i forhold til en specifik AI-anvendelse.',
+    noteLabel: 'Sådan virker det.',
+    noteBody: 'Udfyld optagelsesfelterne nedenfor; dokumentforhåndsvisningen opbygges live fra dine input. Ingen API-kald — alt gemmes automatisk lokalt i din browser og kan eksporteres som fil.',
+    sopTitle: 'SOP — sådan gøres det normalt',
+    sopHint: 'Rækkefølgen en arkitekt reelt arbejder denne vurdering igennem.',
+    sop: [
+      'Teamkapacitet og kompetencegab — interview engineering-/dataledere og HR for at kortlægge nuværende AI/ML/data-kompetencer op mod, hvad målanvendelsen reelt kræver.',
+      'Kultur og forandringsparathed — vurdér forandringsvilje gennem ledelses- og frontlinjeinterviews; se på, hvordan tidligere teknologiudrulninger landede (adopteret vs. modstået).',
+      'Nuværende procesmodenhed — gennemgå hvordan beslutninger træffes i dag (ad-hoc vs. dokumenteret), og om der findes en defineret vej fra pilot til produktion for nye værktøjer.',
+      'Interessentanalyse — kortlæg hvem der har fordel, hvem der føler sig truet, og hvem der har vetoret over målanvendelsen; identificér den reelle executive sponsor.',
+      'Vurdér i forhold til målanvendelsen — parathed er relativ: et team klar til en lav-risiko intern chatbot er ikke nødvendigvis klar til en kundevendt, compliance-tung agent.',
+    ],
+    intakeTitle: 'Kundeoptag',
+    intakeHint: 'Udfyld det, du ved; lad resten vente til opfølgende interviews.',
+    lblClient: 'Kunde / engagement',
+    lblAssessor: 'Vurderingsmand',
+    lblUseCase: 'Mål-AI-anvendelse',
+    lblTeamSize: 'Teamstørrelse / sammensætning',
+    lblInitiatives: 'Nuværende eller tidligere AI-initiativer',
+    lblSkillNotes: 'Teamkapacitet og kompetencegab — noter',
+    lblCultureNotes: 'Kultur og forandringsparathed — noter',
+    lblProcessNotes: 'Nuværende procesmodenhed — noter',
+    lblStakeholderNotes: 'Interessentanalyse — noter',
+    lblRecommendations: 'Mangler & anbefalinger',
+    lblVerdict: 'Samlet parathedsvurdering',
+    verdictReady: 'Klar',
+    verdictConditional: 'Betinget',
+    verdictNotReady: 'Ikke klar',
+    previewTitle: 'Organisatorisk parathedsdokument',
+    previewHint: 'Dette er selve leverancen — automatisk genereret fra dit optag, tilpasset denne kunde.',
+    btnExportHtml: '🌐 Eksportér HTML',
+    btnExportMd: '📄 Eksportér Markdown',
+    btnReset: '🔄 Nulstil',
+    docTitle: 'Organisatorisk Parathedsvurdering',
+    docFor: 'Udarbejdet for',
+    docUseCase: 'Mål-AI-anvendelse',
+    docAssessor: 'Vurderingsmand',
+    docDate: 'Dato',
+    secSkill: '1. Teamkapacitet og kompetencegab',
+    secCulture: '2. Kultur og forandringsparathed',
+    secProcess: '3. Nuværende procesmodenhed',
+    secStakeholder: '4. Interessentanalyse',
+    secRecs: '5. Mangler & anbefalinger',
+    secVerdict: 'Samlet vurdering',
+    emptyNote: '(endnu ikke dokumenteret)',
+    teamLine: 'Teamstørrelse / sammensætning:',
+    initiativesLine: 'Nuværende eller tidligere AI-initiativer:',
+  },
+  sv: {
+    heroTitle: 'Organisatorisk beredskapsbedömning',
+    heroDesc: 'SOP, kundintag och ett automatiskt genererat beredskapsdokument — teamkapacitet, kultur, processmognad och intressenter, bedömt mot ett specifikt AI-användningsfall.',
+    noteLabel: 'Så här fungerar det.',
+    noteBody: 'Fyll i intagsfälten nedan; dokumentförhandsgranskningen byggs upp live utifrån dina svar. Inga API-anrop — allt sparas automatiskt lokalt i din webbläsare och kan exporteras som fil.',
+    sopTitle: 'SOP — så här görs det vanligtvis',
+    sopHint: 'Ordningen en arkitekt faktiskt arbetar igenom denna bedömning.',
+    sop: [
+      'Teamkapacitet och kompetensgap — intervjua engineering-/dataledare och HR för att kartlägga nuvarande AI/ML/data-kompetens mot vad målanvändningsfallet faktiskt kräver.',
+      'Kultur och förändringsberedskap — bedöm förändringsvilja genom lednings- och frontlinjeintervjuer; se hur tidigare teknikutrullningar landade (accepterade vs. motarbetade).',
+      'Nuvarande processmognad — granska hur beslut fattas idag (ad hoc vs. dokumenterat), och om det finns en definierad väg från pilot till produktion för nya verktyg.',
+      'Intressentanalys — kartlägg vem som gynnas, vem som känner sig hotad, och vem som har vetorätt över målanvändningsfallet; identifiera den faktiska sponsorn på ledningsnivå.',
+      'Bedöm mot målanvändningsfallet — beredskap är relativ: ett team redo för en lågrisk intern chattbot är inte nödvändigtvis redo för en kundvänd, regelverkstung agent.',
+    ],
+    intakeTitle: 'Kundintag',
+    intakeHint: 'Fyll i det du vet; lämna resten till uppföljande intervjuer.',
+    lblClient: 'Kund / uppdrag',
+    lblAssessor: 'Bedömare',
+    lblUseCase: 'Mål-AI-användningsfall',
+    lblTeamSize: 'Teamstorlek / sammansättning',
+    lblInitiatives: 'Nuvarande eller tidigare AI-initiativ',
+    lblSkillNotes: 'Teamkapacitet och kompetensgap — anteckningar',
+    lblCultureNotes: 'Kultur och förändringsberedskap — anteckningar',
+    lblProcessNotes: 'Nuvarande processmognad — anteckningar',
+    lblStakeholderNotes: 'Intressentanalys — anteckningar',
+    lblRecommendations: 'Brister & rekommendationer',
+    lblVerdict: 'Samlad beredskapsbedömning',
+    verdictReady: 'Redo',
+    verdictConditional: 'Villkorat',
+    verdictNotReady: 'Inte redo',
+    previewTitle: 'Organisatoriskt beredskapsdokument',
+    previewHint: 'Detta är själva leveransen — automatiskt genererad från ditt intag, anpassad för denna kund.',
+    btnExportHtml: '🌐 Exportera HTML',
+    btnExportMd: '📄 Exportera Markdown',
+    btnReset: '🔄 Återställ',
+    docTitle: 'Organisatorisk Beredskapsbedömning',
+    docFor: 'Framtagen för',
+    docUseCase: 'Mål-AI-användningsfall',
+    docAssessor: 'Bedömare',
+    docDate: 'Datum',
+    secSkill: '1. Teamkapacitet och kompetensgap',
+    secCulture: '2. Kultur och förändringsberedskap',
+    secProcess: '3. Nuvarande processmognad',
+    secStakeholder: '4. Intressentanalys',
+    secRecs: '5. Brister & rekommendationer',
+    secVerdict: 'Samlad bedömning',
+    emptyNote: '(ännu inte dokumenterat)',
+    teamLine: 'Teamstorlek / sammansättning:',
+    initiativesLine: 'Nuvarande eller tidigare AI-initiativ:',
+  },
+};
+
+let lang = localStorage.getItem('aoa_lang') || 'en';
+function t(key) { return (STRINGS[lang] && STRINGS[lang][key] !== undefined) ? STRINGS[lang][key] : (STRINGS.en[key] !== undefined ? STRINGS.en[key] : key); }
+function esc(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function setLang(l) {
+  lang = l;
+  localStorage.setItem('aoa_lang', l);
+  document.getElementById('langSelect').value = l;
+  applyI18n();
+  renderPreview();
+  save();
+}
+
+function applyI18n() {
+  document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.getAttribute('data-i18n')); });
+  document.querySelectorAll('[data-i18n-opt]').forEach(el => { el.textContent = t(el.getAttribute('data-i18n-opt')); });
+  document.title = t('heroTitle') + ' — Phase 1';
+  document.getElementById('sopList').innerHTML = t('sop').map(s => `<li>${esc(s)}</li>`).join('');
+}
+
+function fieldEls() { return Array.from(document.querySelectorAll('[data-eng]')); }
+function collect() { const o = {}; fieldEls().forEach(el => { o[el.getAttribute('data-eng')] = el.value; }); return o; }
+function restore(o) { fieldEls().forEach(el => { const k = el.getAttribute('data-eng'); if (o[k] !== undefined) el.value = o[k]; }); }
+let savedTimer;
+function save() { try { localStorage.setItem(KEY, JSON.stringify({ fields: collect(), lang })); flashSaved(); } catch (e) {} }
+function flashSaved() { const f = document.getElementById('savedFlag'); f.textContent = '✓'; clearTimeout(savedTimer); savedTimer = setTimeout(() => { f.textContent = ''; }, 1200); }
+function loadSaved() { try { const o = JSON.parse(localStorage.getItem(KEY) || '{}'); if (o.fields) restore(o.fields); } catch (e) {} }
+
+function val(k) { const el = document.querySelector(`[data-eng="${k}"]`); return el ? el.value : ''; }
+function orEmpty(v) { return v && v.trim() ? esc(v) : `<em>${esc(t('emptyNote'))}</em>`; }
+
+function renderPreview() {
+  const date = new Date().toISOString().slice(0, 10);
+  const verdictKey = { ready: 'verdictReady', conditional: 'verdictConditional', notready: 'verdictNotReady' }[val('verdict')];
+  let h = `<div class="meta"><strong>${esc(t('docFor'))}:</strong> ${esc(val('client')) || '—'} &nbsp;·&nbsp; <strong>${esc(t('docUseCase'))}:</strong> ${esc(val('useCase')) || '—'}<br>`
+    + `<strong>${esc(t('docAssessor'))}:</strong> ${esc(val('assessor')) || '—'} &nbsp;·&nbsp; <strong>${esc(t('docDate'))}:</strong> ${date}</div>`;
+  h += `<h3>${esc(t('secSkill'))}</h3><p><strong>${esc(t('teamLine'))}</strong> ${esc(val('teamSize')) || '—'}</p><p>${orEmpty(val('skillNotes'))}</p>`;
+  h += `<h3>${esc(t('secCulture'))}</h3><p>${orEmpty(val('cultureNotes'))}</p>`;
+  h += `<h3>${esc(t('secProcess'))}</h3><p><strong>${esc(t('initiativesLine'))}</strong> ${esc(val('initiatives')) || '—'}</p><p>${orEmpty(val('processNotes'))}</p>`;
+  h += `<h3>${esc(t('secStakeholder'))}</h3><p>${orEmpty(val('stakeholderNotes'))}</p>`;
+  h += `<h3>${esc(t('secRecs'))}</h3><p>${orEmpty(val('recommendations'))}</p>`;
+  h += `<h3>${esc(t('secVerdict'))}</h3><p>${verdictKey ? esc(t(verdictKey)) : `<em>${esc(t('emptyNote'))}</em>`}</p>`;
+  document.getElementById('preview').innerHTML = h;
+}
+
+document.addEventListener('input', e => { if (e.target.matches('[data-eng]')) { renderPreview(); save(); } });
+document.addEventListener('change', e => { if (e.target.matches('[data-eng]')) { renderPreview(); save(); } });
+
+function resetAll() {
+  if (!confirm('Clear all fields? / Ryd alle felter? / Rensa alla fält?')) return;
+  fieldEls().forEach(el => { el.value = ''; });
+  renderPreview();
+  save();
+}
+
+function slug() { return (val('client') || 'org_readiness').replace(/\W+/g, '_'); }
+function docMarkdown() {
+  const date = new Date().toISOString().slice(0, 10);
+  const verdictKey = { ready: 'verdictReady', conditional: 'verdictConditional', notready: 'verdictNotReady' }[val('verdict')];
+  let m = `# ${t('docTitle')} — ${val('client') || '[client]'}\n\n`;
+  m += `**${t('docFor')}:** ${val('client') || '—'}  \n**${t('docUseCase')}:** ${val('useCase') || '—'}  \n`;
+  m += `**${t('docAssessor')}:** ${val('assessor') || '—'}  \n**${t('docDate')}:** ${date}\n\n`;
+  m += `## ${t('secSkill')}\n**${t('teamLine')}** ${val('teamSize') || '—'}\n\n${val('skillNotes') || t('emptyNote')}\n\n`;
+  m += `## ${t('secCulture')}\n${val('cultureNotes') || t('emptyNote')}\n\n`;
+  m += `## ${t('secProcess')}\n**${t('initiativesLine')}** ${val('initiatives') || '—'}\n\n${val('processNotes') || t('emptyNote')}\n\n`;
+  m += `## ${t('secStakeholder')}\n${val('stakeholderNotes') || t('emptyNote')}\n\n`;
+  m += `## ${t('secRecs')}\n${val('recommendations') || t('emptyNote')}\n\n`;
+  m += `## ${t('secVerdict')}\n${verdictKey ? t(verdictKey) : t('emptyNote')}\n`;
+  return m;
+}
+function docHtml() {
+  return '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>' + esc(t('docTitle')) + ' — ' + esc(val('client') || 'client') + '</title>'
+    + '<style>body{font-family:Inter,Segoe UI,sans-serif;color:#1c1c28;max-width:880px;margin:40px auto;padding:0 22px;line-height:1.6}'
+    + 'h1,h3{color:#1B1474;font-family:Georgia,serif}</style></head><body>'
+    + document.getElementById('preview').outerHTML.replace('id="preview"', '')
+    + '</body></html>';
+}
+function download(text, fname, mime) {
+  const blob = new Blob([text], { type: mime });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = fname; a.click();
+  URL.revokeObjectURL(a.href);
+}
+function exportDoc(fmt) {
+  if (fmt === 'md') download(docMarkdown(), 'org_readiness_' + slug() + '.md', 'text/markdown');
+  else download(docHtml(), 'org_readiness_' + slug() + '.html', 'text/html');
+}
+
+(function init() {
+  document.getElementById('langSelect').value = lang;
+  loadSaved();
+  applyI18n();
+  renderPreview();
+})();
+</script>
+</body>
+</html>
