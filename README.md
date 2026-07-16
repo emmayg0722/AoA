@@ -50,6 +50,12 @@ its own subfolder. New phases and assets follow the same structure.
     ├── poc-planning/                  # SOP + intake + feasibility report w/ Proceed/Iterate/Stop (EN/DA/SV)
     ├── pilot-planning/                # SOP + intake + checkpoint timeline + pilot plan doc (EN/DA/SV)
     └── evaluation-godecision/         # SOP + scorable matrix + live Go/Conditional/No-Go verdict (EN/DA/SV)
+└── Phase 5 - Implementation & Delivery/
+    ├── implementation-management/     # SOP + intake + sprint/milestone tracker + decision log (EN/DA/SV)
+    ├── system-integration/            # SOP + intake + integration-points tracker (EN/DA/SV)
+    ├── quality-assurance/             # SOP + intake + test-coverage tracker (EN/DA/SV)
+    ├── deployment-golive/             # SOP + intake + rollout-wave tracker + rollback plan (EN/DA/SV)
+    └── technical-documentation/       # SOP + documentation-inventory tracker (EN/DA/SV)
 ```
 
 ## Phase 1 — Discovery & Assessment
@@ -139,7 +145,30 @@ All three new Phase 4 tools follow the same established pattern (SOP card,
 autosaved client intake, live document preview, HTML/Markdown export,
 English/Danish/Swedish language selector).
 
-Further phases (Implementation, Governance, MLOps) follow the same folder
-pattern and will be added over time.
+## Phase 5 — Implementation & Delivery
+
+- **Implementation Management Plan** — SOP + intake (delivery team structure,
+  agile cadence, technical decision log) plus a sprint/milestone tracker,
+  auto-generating an implementation management plan.
+- **System Integration Plan** — SOP + intake (API design, data migration,
+  legacy-system constraints) plus an integration-points tracker (system,
+  method, data flow, status), auto-generating a system integration plan.
+- **Quality Assurance Test Plan** — SOP + intake plus a test-coverage tracker
+  spanning model performance, integration, load, and security testing,
+  auto-generating a QA test plan.
+- **Deployment & Go-Live Plan** — SOP + intake (deployment strategy, production
+  configuration, rollback plan, hypercare support) plus a rollout-wave
+  tracker, auto-generating a go-live runbook.
+- **Technical Documentation Index** — SOP plus a documentation-inventory
+  tracker pre-seeded with the minimum viable set (API docs, deployment
+  manual, operations runbook, test report), auto-generating a documentation
+  index.
+
+All five new Phase 5 tools follow the same established pattern (SOP card,
+autosaved client intake, live document preview, HTML/Markdown export,
+English/Danish/Swedish language selector).
+
+Further phases (Governance, MLOps) follow the same folder pattern and will
+be added over time.
 
 All assessment tools run fully client-side — no data leaves the browser.
