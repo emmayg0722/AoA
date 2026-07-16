@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Technology Roadmap — Phase 2</title>
+<meta name="description" content="Technology roadmap SOP, client intake, a platform-milestone builder, and an auto-generated technology roadmap document.">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='16' fill='%231B1474'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #1B1474; --primary-dark: #120D52; --accent: #DCDDF6; --powder: #EEEEFA;
+    --ink: #1c1c28; --muted: #5b5b6b; --line: #e4e4f0;
+    --green: #1a8a5c; --amber: #d4790e; --red: #c0392b;
+    --font-heading: 'Fraunces', Georgia, serif;
+    --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: var(--font-body); color: var(--ink); background: #fafaff; line-height: 1.6; }
+  .hero { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: #fff; padding: 44px 24px 36px; }
+  .wrap { max-width: 1100px; margin: 0 auto; }
+  .crumb { font-size: 13px; color: var(--accent); margin-bottom: 10px; }
+  .crumb a { color: var(--accent); text-decoration: none; }
+  .hero-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; flex-wrap: wrap; }
+  .hero h1 { font-family: var(--font-heading); font-weight: 700; font-size: 34px; line-height: 1.15; }
+  .hero p { margin-top: 10px; font-size: 15.5px; color: #dcdcf2; max-width: 680px; }
+  select#langSelect { font-family: var(--font-body); font-size: 13px; font-weight: 600; border: 1.5px solid rgba(255,255,255,0.4); background: rgba(255,255,255,0.08); color: #fff; border-radius: 8px; padding: 7px 10px; }
+  select#langSelect option { color: var(--ink); }
+  main { max-width: 1100px; margin: 0 auto; padding: 28px 24px 80px; }
+  .note { background: var(--powder); border: 1px solid var(--accent); border-radius: 12px; padding: 14px 16px; font-size: 14px; color: var(--muted); margin-bottom: 26px; }
+  .note strong { color: var(--primary); }
+  .card { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 22px 24px; margin-bottom: 20px; }
+  .card > h2 { font-family: var(--font-heading); font-weight: 600; font-size: 21px; color: var(--primary); margin-bottom: 4px; }
+  .card .hint { font-size: 13.5px; color: var(--muted); margin-bottom: 14px; }
+  ol.sop { margin-left: 20px; }
+  ol.sop li { margin-bottom: 10px; font-size: 14px; }
+  label { display: block; font-size: 13px; font-weight: 600; color: var(--ink); margin: 10px 0 5px; }
+  input[type=text], textarea, select.field { width: 100%; font-family: var(--font-body); font-size: 14px; color: var(--ink); border: 1.5px solid var(--line); border-radius: 8px; padding: 9px 11px; background: #fff; }
+  textarea { resize: vertical; min-height: 70px; }
+  input:focus, textarea:focus, select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(27,20,116,0.12); }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; }
+  .btn { font-family: var(--font-body); font-size: 13.5px; font-weight: 600; padding: 9px 16px; border-radius: 8px; border: none; cursor: pointer; transition: all 0.15s; }
+  .btn-primary { background: var(--accent); color: var(--primary); }
+  .btn-primary:hover { background: #C3C5EC; }
+  .btn-secondary { background: #fff; color: var(--primary); border: 1.5px solid var(--accent); }
+  .btn-secondary:hover { background: var(--powder); }
+  .btn-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px; }
+  table.matrix { width: 100%; border-collapse: collapse; font-size: 13.5px; margin-top: 10px; }
+  table.matrix th { text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); padding: 6px 8px; border-bottom: 2px solid var(--line); }
+  table.matrix td { padding: 6px 8px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+  table.matrix input[type=text] { padding: 6px 8px; font-size: 13px; }
+  .rm-btn { background: none; border: none; color: var(--red); cursor: pointer; font-size: 15px; }
+  .preview { border: 1px dashed var(--line); border-radius: 10px; padding: 18px 20px; background: #fcfcff; font-size: 14px; }
+  .preview h3 { font-family: var(--font-heading); color: var(--primary); font-size: 16px; margin: 14px 0 6px; }
+  .preview h3:first-child { margin-top: 0; }
+  .preview p { margin: 6px 0; white-space: pre-wrap; }
+  .preview table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 8px 0; }
+  .preview th, .preview td { border: 1px solid var(--line); padding: 6px 9px; text-align: left; }
+  .preview th { background: var(--powder); color: var(--primary); }
+  .preview .meta { font-size: 13px; color: var(--muted); margin-bottom: 10px; }
+  .saved { font-size: 12.5px; color: var(--green); margin-left: 8px; }
+  @media (max-width: 720px) { .grid2 { grid-template-columns: 1fr; } .hero h1 { font-size: 27px; } table.matrix { font-size: 12px; } }
+</style>
+</head>
+<body>
+  <header class="hero"><div class="wrap">
+    <div class="hero-top">
+      <div class="crumb"><a href="../">AI Architect Toolkit</a> · Phase 2 · Strategy &amp; Roadmap</div>
+      <select id="langSelect" onchange="setLang(this.value)">
+        <option value="en">English</option>
+        <option value="da">Dansk</option>
+        <option value="sv">Svenska</option>
+      </select>
+    </div>
+    <h1 data-i18n="heroTitle"></h1>
+    <p data-i18n="heroDesc"></p>
+  </div></header>
+
+  <main>
+    <div class="note"><strong data-i18n="noteLabel"></strong> <span data-i18n="noteBody"></span></div>
+
+    <div class="card">
+      <h2 data-i18n="sopTitle"></h2>
+      <p class="hint" data-i18n="sopHint"></p>
+      <ol class="sop" id="sopList"></ol>
+    </div>
+
+    <div class="card">
+      <h2 data-i18n="intakeTitle"></h2>
+      <div class="grid2">
+        <div><label data-i18n="lblClient"></label><input type="text" data-eng="client" placeholder="Acme Corp"></div>
+        <div><label data-i18n="lblAssessor"></label><input type="text" data-eng="assessor"></div>
+      </div>
+      <label data-i18n="lblPlatformStrategy"></label>
+      <select class="field" data-eng="platformStrategy">
+        <option value="">—</option>
+        <option data-i18n-opt="platCloudFirst" value="cloud-first"></option>
+        <option data-i18n-opt="platHybrid" value="hybrid"></option>
+        <option data-i18n-opt="platPrivate" value="private"></option>
+        <option data-i18n-opt="platMultiCloud" value="multi-cloud"></option>
+      </select>
+      <label data-i18n="lblBuildVsBuy"></label>
+      <textarea data-eng="buildVsBuy"></textarea>
+      <label data-i18n="lblDataPlatform"></label>
+      <textarea data-eng="dataPlatform"></textarea>
+    </div>
+
+    <div class="card">
+      <h2 data-i18n="roadmapTitle"></h2>
+      <p class="hint" data-i18n="roadmapHint"></p>
+      <table class="matrix">
+        <thead><tr><th data-i18n="colYear"></th><th data-i18n="colMilestone"></th><th data-i18n="colDependency"></th><th></th></tr></thead>
+        <tbody id="matrixBody"></tbody>
+      </table>
+      <div class="btn-row"><button class="btn btn-secondary" onclick="addRow()" data-i18n="btnAddRow"></button></div>
+    </div>
+
+    <div class="card">
+      <h2 data-i18n="previewTitle"></h2>
+      <p class="hint" data-i18n="previewHint"></p>
+      <div class="preview" id="preview"></div>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="exportDoc('html')" data-i18n="btnExportHtml"></button>
+        <button class="btn btn-primary" onclick="exportDoc('md')" data-i18n="btnExportMd"></button>
+        <button class="btn btn-secondary" onclick="resetAll()" data-i18n="btnReset"></button>
+        <span class="saved" id="savedFlag"></span>
+      </div>
+    </div>
+  </main>
+
+<script>
+const KEY = 'aoa_tech_roadmap_v1';
+
+const STRINGS = {
+  en: {
+    heroTitle: 'Technology Roadmap',
+    heroDesc: 'SOP, client intake, a platform-milestone builder, and an auto-generated technology roadmap document.',
+    noteLabel: 'How this works.',
+    noteBody: 'Fill in the intake fields and roadmap milestones below; the document preview builds live. No API calls — everything autosaves locally.',
+    sopTitle: 'SOP — how this is usually done',
+    sopHint: 'The order an architect actually works this exercise in.',
+    sop: [
+      'Plan the technology stack evolution path — where the current stack needs to go to support the AI strategy, not a wishlist of new tools.',
+      'Make explicit build-vs-buy decisions for each major component — and write down why, since this gets revisited every engagement.',
+      'Set the platform strategy (cloud-first, hybrid, private, or multi-cloud) — this single decision constrains almost everything downstream.',
+      'Define the data platform roadmap — how the data architecture evolves alongside the AI roadmap, not as an afterthought.',
+      'Sequence it all into a milestone timeline with explicit dependencies, so Phase 3 architecture work has a real target to design against.',
+    ],
+    intakeTitle: 'Client intake',
+    lblClient: 'Client / engagement',
+    lblAssessor: 'Assessor',
+    lblPlatformStrategy: 'Platform strategy',
+    platCloudFirst: 'Cloud-first',
+    platHybrid: 'Hybrid',
+    platPrivate: 'Private / on-prem',
+    platMultiCloud: 'Multi-cloud',
+    lblBuildVsBuy: 'Build vs. buy decisions & rationale',
+    lblDataPlatform: 'Data platform roadmap notes',
+    roadmapTitle: 'Milestone timeline',
+    roadmapHint: 'Add one row per major technology milestone.',
+    colYear: 'Timeframe',
+    colMilestone: 'Milestone',
+    colDependency: 'Dependency',
+    btnAddRow: '+ Add milestone',
+    previewTitle: 'Technology roadmap document',
+    previewHint: 'This is the actual deliverable — auto-generated from your intake, customized for this client.',
+    btnExportHtml: '🌐 Export HTML',
+    btnExportMd: '📄 Export Markdown',
+    btnReset: '🔄 Reset',
+    docTitle: 'Technology Roadmap',
+    docFor: 'Prepared for',
+    docAssessor: 'Assessor',
+    docDate: 'Date',
+    secPlatform: '1. Platform Strategy',
+    secBuildBuy: '2. Build vs. Buy',
+    secData: '3. Data Platform Roadmap',
+    secTimeline: '4. Milestone Timeline',
+    emptyNote: '(not yet documented)',
+    noRows: 'No milestones added yet.',
+    placeholderYear: 'e.g. Q1',
+    placeholderMilestone: 'e.g. Migrate to cloud-native data platform',
+    placeholderDependency: 'e.g. Infrastructure audit complete',
+  },
+  da: {
+    heroTitle: 'Teknologi-roadmap',
+    heroDesc: 'SOP, kundeoptag, en platforms-milepælsbygger, og et automatisk genereret teknologi-roadmap-dokument.',
+    noteLabel: 'Sådan virker det.',
+    noteBody: 'Udfyld optagelsesfelterne og roadmap-milepælene nedenfor; dokumentforhåndsvisningen opbygges live. Ingen API-kald — alt gemmes automatisk lokalt.',
+    sopTitle: 'SOP — sådan gøres det normalt',
+    sopHint: 'Rækkefølgen en arkitekt reelt arbejder denne øvelse igennem.',
+    sop: [
+      'Planlæg teknologistakkens udviklingsvej — hvor den nuværende stak skal hen for at understøtte AI-strategien, ikke en ønskeliste af nye værktøjer.',
+      'Træf eksplicitte build-vs-buy-beslutninger for hver større komponent — og skriv hvorfor ned, da dette genbesøges ved hvert engagement.',
+      'Fastsæt platformstrategien (cloud-first, hybrid, privat eller multi-cloud) — denne ene beslutning begrænser næsten alt nedstrøms.',
+      'Definér data-platformens roadmap — hvordan dataarkitekturen udvikler sig sammen med AI-roadmappen, ikke som en eftertanke.',
+      'Sekvensér det hele til en milepælstidslinje med eksplicitte afhængigheder, så Phase 3-arkitekturarbejdet har et reelt mål at designe imod.',
+    ],
+    intakeTitle: 'Kundeoptag',
+    lblClient: 'Kunde / engagement',
+    lblAssessor: 'Vurderingsmand',
+    lblPlatformStrategy: 'Platformstrategi',
+    platCloudFirst: 'Cloud-first',
+    platHybrid: 'Hybrid',
+    platPrivate: 'Privat / on-prem',
+    platMultiCloud: 'Multi-cloud',
+    lblBuildVsBuy: 'Build vs. buy-beslutninger og begrundelse',
+    lblDataPlatform: 'Noter om data-platformens roadmap',
+    roadmapTitle: 'Milepælstidslinje',
+    roadmapHint: 'Tilføj en række pr. større teknologimilepæl.',
+    colYear: 'Tidsramme',
+    colMilestone: 'Milepæl',
+    colDependency: 'Afhængighed',
+    btnAddRow: '+ Tilføj milepæl',
+    previewTitle: 'Teknologi-roadmap-dokument',
+    previewHint: 'Dette er selve leverancen — automatisk genereret fra dit optag, tilpasset denne kunde.',
+    btnExportHtml: '🌐 Eksportér HTML',
+    btnExportMd: '📄 Eksportér Markdown',
+    btnReset: '🔄 Nulstil',
+    docTitle: 'Teknologi-roadmap',
+    docFor: 'Udarbejdet for',
+    docAssessor: 'Vurderingsmand',
+    docDate: 'Dato',
+    secPlatform: '1. Platformstrategi',
+    secBuildBuy: '2. Build vs. buy',
+    secData: '3. Data-platformens roadmap',
+    secTimeline: '4. Milepælstidslinje',
+    emptyNote: '(endnu ikke dokumenteret)',
+    noRows: 'Ingen milepæle tilføjet endnu.',
+    placeholderYear: 'fx K1',
+    placeholderMilestone: 'fx Migrér til cloud-native dataplatform',
+    placeholderDependency: 'fx Infrastrukturaudit færdig',
+  },
+  sv: {
+    heroTitle: 'Teknikfärdplan',
+    heroDesc: 'SOP, kundintag, en plattforms-milstolpsbyggare, och ett automatiskt genererat teknikfärdplansdokument.',
+    noteLabel: 'Så här fungerar det.',
+    noteBody: 'Fyll i intagsfälten och färdplans-milstolparna nedan; dokumentförhandsgranskningen byggs upp live. Inga API-anrop — allt sparas automatiskt lokalt.',
+    sopTitle: 'SOP — så här görs det vanligtvis',
+    sopHint: 'Ordningen en arkitekt faktiskt arbetar igenom denna övning.',
+    sop: [
+      'Planera teknikstackens utvecklingsväg — vart den nuvarande stacken behöver ta vägen för att stödja AI-strategin, inte en önskelista med nya verktyg.',
+      'Fatta explicita build-vs-buy-beslut för varje större komponent — och skriv ner varför, eftersom detta återbesöks vid varje uppdrag.',
+      'Fastställ plattformsstrategin (cloud-first, hybrid, privat eller multi-moln) — detta enda beslut begränsar nästan allt nedströms.',
+      'Definiera dataplattformens färdplan — hur dataarkitekturen utvecklas tillsammans med AI-färdplanen, inte som en eftertanke.',
+      'Sekvensera allt till en milstolpstidslinje med explicita beroenden, så att Fas 3-arkitekturarbetet har ett verkligt mål att designa mot.',
+    ],
+    intakeTitle: 'Kundintag',
+    lblClient: 'Kund / uppdrag',
+    lblAssessor: 'Bedömare',
+    lblPlatformStrategy: 'Plattformsstrategi',
+    platCloudFirst: 'Cloud-first',
+    platHybrid: 'Hybrid',
+    platPrivate: 'Privat / on-prem',
+    platMultiCloud: 'Multimoln',
+    lblBuildVsBuy: 'Build vs. buy-beslut och motivering',
+    lblDataPlatform: 'Anteckningar om dataplattformens färdplan',
+    roadmapTitle: 'Milstolpstidslinje',
+    roadmapHint: 'Lägg till en rad per större teknikmilstolpe.',
+    colYear: 'Tidsram',
+    colMilestone: 'Milstolpe',
+    colDependency: 'Beroende',
+    btnAddRow: '+ Lägg till milstolpe',
+    previewTitle: 'Teknikfärdplansdokument',
+    previewHint: 'Detta är själva leveransen — automatiskt genererad från ditt intag, anpassad för denna kund.',
+    btnExportHtml: '🌐 Exportera HTML',
+    btnExportMd: '📄 Exportera Markdown',
+    btnReset: '🔄 Återställ',
+    docTitle: 'Teknikfärdplan',
+    docFor: 'Framtagen för',
+    docAssessor: 'Bedömare',
+    docDate: 'Datum',
+    secPlatform: '1. Plattformsstrategi',
+    secBuildBuy: '2. Build vs. buy',
+    secData: '3. Dataplattformens färdplan',
+    secTimeline: '4. Milstolpstidslinje',
+    emptyNote: '(ännu inte dokumenterat)',
+    noRows: 'Inga milstolpar tillagda än.',
+    placeholderYear: 't.ex. K1',
+    placeholderMilestone: 't.ex. Migrera till molnnativ dataplattform',
+    placeholderDependency: 't.ex. Infrastrukturgranskning klar',
+  },
+};
+
+let lang = localStorage.getItem('aoa_lang') || 'en';
+function t(key) { return (STRINGS[lang] && STRINGS[lang][key] !== undefined) ? STRINGS[lang][key] : (STRINGS.en[key] !== undefined ? STRINGS.en[key] : key); }
+function esc(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+let rows = [];
+let nextId = 1;
+const PLAT_LABEL = { 'cloud-first': 'platCloudFirst', hybrid: 'platHybrid', private: 'platPrivate', 'multi-cloud': 'platMultiCloud' };
+
+function setLang(l) { lang = l; localStorage.setItem('aoa_lang', l); document.getElementById('langSelect').value = l; applyI18n(); renderMatrix(); renderPreview(); save(); }
+function applyI18n() {
+  document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.getAttribute('data-i18n')); });
+  document.querySelectorAll('[data-i18n-opt]').forEach(el => { el.textContent = t(el.getAttribute('data-i18n-opt')); });
+  document.title = t('heroTitle') + ' — Phase 2';
+  document.getElementById('sopList').innerHTML = t('sop').map(s => `<li>${esc(s)}</li>`).join('');
+}
+
+function fieldEls() { return Array.from(document.querySelectorAll('[data-eng]')); }
+function collectFields() { const o = {}; fieldEls().forEach(el => { o[el.getAttribute('data-eng')] = el.value; }); return o; }
+function restoreFields(o) { fieldEls().forEach(el => { const k = el.getAttribute('data-eng'); if (o[k] !== undefined) el.value = o[k]; }); }
+function val(k) { const el = document.querySelector(`[data-eng="${k}"]`); return el ? el.value : ''; }
+function orEmpty(v) { return v && v.trim() ? esc(v) : `<em>${esc(t('emptyNote'))}</em>`; }
+
+let savedTimer;
+function save() { try { localStorage.setItem(KEY, JSON.stringify({ fields: collectFields(), rows, nextId, lang })); flashSaved(); } catch (e) {} }
+function flashSaved() { const f = document.getElementById('savedFlag'); f.textContent = '✓'; clearTimeout(savedTimer); savedTimer = setTimeout(() => { f.textContent = ''; }, 1200); }
+function loadSaved() {
+  try {
+    const o = JSON.parse(localStorage.getItem(KEY) || '{}');
+    if (o.fields) restoreFields(o.fields);
+    if (o.rows) rows = o.rows;
+    if (o.nextId) nextId = o.nextId;
+  } catch (e) {}
+}
+
+function addRow() { rows.push({ id: nextId++, year: '', milestone: '', dependency: '' }); renderMatrix(); renderPreview(); save(); }
+function removeRow(id) { rows = rows.filter(r => r.id !== id); renderMatrix(); renderPreview(); save(); }
+function updateRow(id, field, value) { const r = rows.find(r => r.id === id); if (r) r[field] = value; renderPreview(); save(); }
+
+function renderMatrix() {
+  const body = document.getElementById('matrixBody');
+  if (!rows.length) { body.innerHTML = `<tr><td colspan="4" style="color:var(--muted);font-style:italic;padding:14px 8px">${esc(t('noRows'))}</td></tr>`; return; }
+  body.innerHTML = rows.map(r => `<tr>
+    <td><input type="text" value="${esc(r.year)}" placeholder="${esc(t('placeholderYear'))}" oninput="updateRow(${r.id},'year',this.value)"></td>
+    <td><input type="text" value="${esc(r.milestone)}" placeholder="${esc(t('placeholderMilestone'))}" oninput="updateRow(${r.id},'milestone',this.value)"></td>
+    <td><input type="text" value="${esc(r.dependency)}" placeholder="${esc(t('placeholderDependency'))}" oninput="updateRow(${r.id},'dependency',this.value)"></td>
+    <td><button class="rm-btn" onclick="removeRow(${r.id})">✕</button></td>
+  </tr>`).join('');
+}
+
+function renderPreview() {
+  const date = new Date().toISOString().slice(0, 10);
+  const filled = rows.filter(r => r.year.trim() || r.milestone.trim());
+  const platKey = PLAT_LABEL[val('platformStrategy')];
+  let h = `<div class="meta"><strong>${esc(t('docFor'))}:</strong> ${esc(val('client')) || '—'} &nbsp;·&nbsp; <strong>${esc(t('docAssessor'))}:</strong> ${esc(val('assessor')) || '—'} &nbsp;·&nbsp; <strong>${esc(t('docDate'))}:</strong> ${date}</div>`;
+  h += `<h3>${esc(t('secPlatform'))}</h3><p>${platKey ? esc(t(platKey)) : `<em>${esc(t('emptyNote'))}</em>`}</p>`;
+  h += `<h3>${esc(t('secBuildBuy'))}</h3><p>${orEmpty(val('buildVsBuy'))}</p>`;
+  h += `<h3>${esc(t('secData'))}</h3><p>${orEmpty(val('dataPlatform'))}</p>`;
+  h += `<h3>${esc(t('secTimeline'))}</h3>`;
+  if (filled.length) {
+    h += `<table><thead><tr><th>${esc(t('colYear'))}</th><th>${esc(t('colMilestone'))}</th><th>${esc(t('colDependency'))}</th></tr></thead><tbody>`;
+    h += filled.map(r => `<tr><td>${esc(r.year)}</td><td>${esc(r.milestone)}</td><td>${esc(r.dependency)}</td></tr>`).join('');
+    h += '</tbody></table>';
+  } else { h += `<p><em>${esc(t('noRows'))}</em></p>`; }
+  document.getElementById('preview').innerHTML = h;
+}
+
+document.addEventListener('input', e => { if (e.target.matches('[data-eng]')) { renderPreview(); save(); } });
+document.addEventListener('change', e => { if (e.target.matches('[data-eng]')) { renderPreview(); save(); } });
+
+function resetAll() {
+  if (!confirm('Clear all fields? / Ryd alle felter? / Rensa alla fält?')) return;
+  fieldEls().forEach(el => { el.value = ''; });
+  rows = []; nextId = 1;
+  renderMatrix(); renderPreview(); save();
+}
+
+function slug() { return (val('client') || 'tech_roadmap').replace(/\W+/g, '_'); }
+function docMarkdown() {
+  const date = new Date().toISOString().slice(0, 10);
+  const filled = rows.filter(r => r.year.trim() || r.milestone.trim());
+  const platKey = PLAT_LABEL[val('platformStrategy')];
+  let m = `# ${t('docTitle')} — ${val('client') || '[client]'}\n\n`;
+  m += `**${t('docFor')}:** ${val('client') || '—'}  \n**${t('docAssessor')}:** ${val('assessor') || '—'}  \n**${t('docDate')}:** ${date}\n\n`;
+  m += `## ${t('secPlatform')}\n${platKey ? t(platKey) : t('emptyNote')}\n\n`;
+  m += `## ${t('secBuildBuy')}\n${val('buildVsBuy') || t('emptyNote')}\n\n`;
+  m += `## ${t('secData')}\n${val('dataPlatform') || t('emptyNote')}\n\n`;
+  m += `## ${t('secTimeline')}\n\n`;
+  if (filled.length) {
+    m += `| ${t('colYear')} | ${t('colMilestone')} | ${t('colDependency')} |\n|---|---|---|\n`;
+    m += filled.map(r => `| ${r.year} | ${r.milestone} | ${r.dependency} |`).join('\n') + '\n';
+  } else { m += `${t('noRows')}\n`; }
+  return m;
+}
+function docHtml() {
+  return '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>' + esc(t('docTitle')) + ' — ' + esc(val('client') || 'client') + '</title>'
+    + '<style>body{font-family:Inter,Segoe UI,sans-serif;color:#1c1c28;max-width:880px;margin:40px auto;padding:0 22px;line-height:1.6}'
+    + 'h1,h3{color:#1B1474;font-family:Georgia,serif}table{width:100%;border-collapse:collapse;font-size:14px}th,td{border:1px solid #e4e4f0;padding:7px 10px;text-align:left}th{background:#EEEEFA;color:#1B1474}</style></head><body>'
+    + document.getElementById('preview').outerHTML.replace('id="preview"', '')
+    + '</body></html>';
+}
+function download(text, fname, mime) {
+  const blob = new Blob([text], { type: mime });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = fname; a.click();
+  URL.revokeObjectURL(a.href);
+}
+function exportDoc(fmt) {
+  if (fmt === 'md') download(docMarkdown(), 'tech_roadmap_' + slug() + '.md', 'text/markdown');
+  else download(docHtml(), 'tech_roadmap_' + slug() + '.html', 'text/html');
+}
+
+(function init() {
+  document.getElementById('langSelect').value = lang;
+  loadSaved();
+  applyI18n();
+  if (!rows.length) { rows.push({ id: nextId++, year: '', milestone: '', dependency: '' }); }
+  renderMatrix();
+  renderPreview();
+})();
+</script>
+</body>
+</html>

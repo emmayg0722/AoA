@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Organizational Roadmap — Phase 2</title>
+<meta name="description" content="Organizational roadmap SOP, client intake, and an auto-generated organizational change roadmap document (AI CoE, talent, structure, partners).">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='16' fill='%231B1474'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #1B1474; --primary-dark: #120D52; --accent: #DCDDF6; --powder: #EEEEFA;
+    --ink: #1c1c28; --muted: #5b5b6b; --line: #e4e4f0;
+    --green: #1a8a5c; --amber: #d4790e; --red: #c0392b;
+    --font-heading: 'Fraunces', Georgia, serif;
+    --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: var(--font-body); color: var(--ink); background: #fafaff; line-height: 1.6; }
+  .hero { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: #fff; padding: 44px 24px 36px; }
+  .wrap { max-width: 1000px; margin: 0 auto; }
+  .crumb { font-size: 13px; color: var(--accent); margin-bottom: 10px; }
+  .crumb a { color: var(--accent); text-decoration: none; }
+  .hero-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; flex-wrap: wrap; }
+  .hero h1 { font-family: var(--font-heading); font-weight: 700; font-size: 34px; line-height: 1.15; }
+  .hero p { margin-top: 10px; font-size: 15.5px; color: #dcdcf2; max-width: 680px; }
+  select#langSelect { font-family: var(--font-body); font-size: 13px; font-weight: 600; border: 1.5px solid rgba(255,255,255,0.4); background: rgba(255,255,255,0.08); color: #fff; border-radius: 8px; padding: 7px 10px; }
+  select#langSelect option { color: var(--ink); }
+  main { max-width: 1000px; margin: 0 auto; padding: 28px 24px 80px; }
+  .note { background: var(--powder); border: 1px solid var(--accent); border-radius: 12px; padding: 14px 16px; font-size: 14px; color: var(--muted); margin-bottom: 26px; }
+  .note strong { color: var(--primary); }
+  .card { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 22px 24px; margin-bottom: 20px; }
+  .card > h2 { font-family: var(--font-heading); font-weight: 600; font-size: 21px; color: var(--primary); margin-bottom: 4px; }
+  .card .hint { font-size: 13.5px; color: var(--muted); margin-bottom: 14px; }
+  ol.sop { margin-left: 20px; }
+  ol.sop li { margin-bottom: 10px; font-size: 14px; }
+  label { display: block; font-size: 13px; font-weight: 600; color: var(--ink); margin: 10px 0 5px; }
+  input[type=text], textarea { width: 100%; font-family: var(--font-body); font-size: 14px; color: var(--ink); border: 1.5px solid var(--line); border-radius: 8px; padding: 9px 11px; background: #fff; }
+  textarea { resize: vertical; min-height: 70px; }
+  input:focus, textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(27,20,116,0.12); }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; }
+  .btn { font-family: var(--font-body); font-size: 13.5px; font-weight: 600; padding: 9px 16px; border-radius: 8px; border: none; cursor: pointer; transition: all 0.15s; }
+  .btn-primary { background: var(--accent); color: var(--primary); }
+  .btn-primary:hover { background: #C3C5EC; }
+  .btn-secondary { background: #fff; color: var(--primary); border: 1.5px solid var(--accent); }
+  .btn-secondary:hover { background: var(--powder); }
+  .btn-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px; }
+  .preview { border: 1px dashed var(--line); border-radius: 10px; padding: 18px 20px; background: #fcfcff; font-size: 14px; }
+  .preview h3 { font-family: var(--font-heading); color: var(--primary); font-size: 16px; margin: 14px 0 6px; }
+  .preview h3:first-child { margin-top: 0; }
+  .preview p { margin: 6px 0; white-space: pre-wrap; }
+  .preview .meta { font-size: 13px; color: var(--muted); margin-bottom: 10px; }
+  .saved { font-size: 12.5px; color: var(--green); margin-left: 8px; }
+  @media (max-width: 680px) { .grid2 { grid-template-columns: 1fr; } .hero h1 { font-size: 27px; } }
+</style>
+</head>
+<body>
+  <header class="hero"><div class="wrap">
+    <div class="hero-top">
+      <div class="crumb"><a href="../">AI Architect Toolkit</a> · Phase 2 · Strategy &amp; Roadmap</div>
+      <select id="langSelect" onchange="setLang(this.value)">
+        <option value="en">English</option>
+        <option value="da">Dansk</option>
+        <option value="sv">Svenska</option>
+      </select>
+    </div>
+    <h1 data-i18n="heroTitle"></h1>
+    <p data-i18n="heroDesc"></p>
+  </div></header>
+
+  <main>
+    <div class="note"><strong data-i18n="noteLabel"></strong> <span data-i18n="noteBody"></span></div>
+
+    <div class="card">
+      <h2 data-i18n="sopTitle"></h2>
+      <p class="hint" data-i18n="sopHint"></p>
+      <ol class="sop" id="sopList"></ol>
+    </div>
+
+    <div class="card">
+      <h2 data-i18n="intakeTitle"></h2>
+      <div class="grid2">
+        <div><label data-i18n="lblClient"></label><input type="text" data-eng="client" placeholder="Acme Corp"></div>
+        <div><label data-i18n="lblAssessor"></label><input type="text" data-eng="assessor"></div>
+      </div>
+      <label data-i18n="lblCoeNotes"></label>
+      <textarea data-eng="coeNotes"></textarea>
+      <label data-i18n="lblTalentNotes"></label>
+      <textarea data-eng="talentNotes"></textarea>
+      <label data-i18n="lblStructureNotes"></label>
+      <textarea data-eng="structureNotes"></textarea>
+      <label data-i18n="lblPartnerNotes"></label>
+      <textarea data-eng="partnerNotes"></textarea>
+    </div>
+
+    <div class="card">
+      <h2 data-i18n="previewTitle"></h2>
+      <p class="hint" data-i18n="previewHint"></p>
+      <div class="preview" id="preview"></div>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="exportDoc('html')" data-i18n="btnExportHtml"></button>
+        <button class="btn btn-primary" onclick="exportDoc('md')" data-i18n="btnExportMd"></button>
+        <button class="btn btn-secondary" onclick="resetAll()" data-i18n="btnReset"></button>
+        <span class="saved" id="savedFlag"></span>
+      </div>
+    </div>
+  </main>
+
+<script>
+const KEY = 'aoa_org_roadmap_v1';
+
+const STRINGS = {
+  en: {
+    heroTitle: 'Organizational Roadmap',
+    heroDesc: 'SOP, client intake, and an auto-generated organizational change roadmap — AI CoE design, talent, structure, and partner ecosystem.',
+    noteLabel: 'How this works.',
+    noteBody: 'Fill in the intake fields below; the document preview builds live from your inputs. No API calls — everything autosaves locally and can be exported as a file.',
+    sopTitle: 'SOP — how this is usually done',
+    sopHint: 'The order an architect actually works this exercise in.',
+    sop: [
+      'Design the AI Center of Excellence (CoE) — its charter, reporting line, and whether it is centralized, federated, or hub-and-spoke, matched to the organization\'s culture.',
+      'Build the talent acquisition and development plan — which roles to hire externally vs. upskill internally, and over what timeframe.',
+      'Recommend organizational structure changes — new reporting lines, RACI updates, and where AI decision rights should actually sit.',
+      'Plan the partner ecosystem — which capabilities the org builds in-house vs. sources from vendors/SIs, and how that shifts over the roadmap.',
+      'Sequence the organizational changes alongside the technology roadmap — org change is usually the slower-moving constraint, not the technology.',
+    ],
+    intakeTitle: 'Client intake',
+    lblClient: 'Client / engagement',
+    lblAssessor: 'Assessor',
+    lblCoeNotes: 'AI Center of Excellence (CoE) design',
+    lblTalentNotes: 'Talent acquisition & development plan',
+    lblStructureNotes: 'Organizational structure changes',
+    lblPartnerNotes: 'Partner ecosystem plan',
+    previewTitle: 'Organizational roadmap document',
+    previewHint: 'This is the actual deliverable — auto-generated from your intake, customized for this client.',
+    btnExportHtml: '🌐 Export HTML',
+    btnExportMd: '📄 Export Markdown',
+    btnReset: '🔄 Reset',
+    docTitle: 'Organizational Change Roadmap',
+    docFor: 'Prepared for',
+    docAssessor: 'Assessor',
+    docDate: 'Date',
+    secCoe: '1. AI Center of Excellence Design',
+    secTalent: '2. Talent Acquisition & Development',
+    secStructure: '3. Organizational Structure Changes',
+    secPartner: '4. Partner Ecosystem',
+    emptyNote: '(not yet documented)',
+  },
+  da: {
+    heroTitle: 'Organisatorisk roadmap',
+    heroDesc: 'SOP, kundeoptag, og et automatisk genereret organisatorisk forandrings-roadmap — AI CoE-design, talent, struktur og partnerøkosystem.',
+    noteLabel: 'Sådan virker det.',
+    noteBody: 'Udfyld optagelsesfelterne nedenfor; dokumentforhåndsvisningen opbygges live fra dine input. Ingen API-kald — alt gemmes automatisk lokalt og kan eksporteres som fil.',
+    sopTitle: 'SOP — sådan gøres det normalt',
+    sopHint: 'Rækkefølgen en arkitekt reelt arbejder denne øvelse igennem.',
+    sop: [
+      'Design AI Center of Excellence (CoE) — dets charter, referenceforhold, og om det er centraliseret, føderalt eller hub-and-spoke, tilpasset organisationens kultur.',
+      'Byg planen for talenttiltrækning og -udvikling — hvilke roller der skal ansættes eksternt vs. opkvalificeres internt, og over hvilken tidsramme.',
+      'Anbefal organisatoriske strukturændringer — nye referenceforhold, RACI-opdateringer, og hvor AI-beslutningsretten reelt bør ligge.',
+      'Planlæg partnerøkosystemet — hvilke kompetencer organisationen bygger internt vs. sourcer fra leverandører/SI\'er, og hvordan det skifter over roadmappen.',
+      'Sekvensér de organisatoriske ændringer sammen med teknologi-roadmappen — organisatorisk forandring er normalt den langsommere begrænsning, ikke teknologien.',
+    ],
+    intakeTitle: 'Kundeoptag',
+    lblClient: 'Kunde / engagement',
+    lblAssessor: 'Vurderingsmand',
+    lblCoeNotes: 'Design af AI Center of Excellence (CoE)',
+    lblTalentNotes: 'Plan for talenttiltrækning og -udvikling',
+    lblStructureNotes: 'Organisatoriske strukturændringer',
+    lblPartnerNotes: 'Plan for partnerøkosystem',
+    previewTitle: 'Organisatorisk roadmap-dokument',
+    previewHint: 'Dette er selve leverancen — automatisk genereret fra dit optag, tilpasset denne kunde.',
+    btnExportHtml: '🌐 Eksportér HTML',
+    btnExportMd: '📄 Eksportér Markdown',
+    btnReset: '🔄 Nulstil',
+    docTitle: 'Organisatorisk Forandrings-Roadmap',
+    docFor: 'Udarbejdet for',
+    docAssessor: 'Vurderingsmand',
+    docDate: 'Dato',
+    secCoe: '1. Design af AI Center of Excellence',
+    secTalent: '2. Talenttiltrækning og -udvikling',
+    secStructure: '3. Organisatoriske strukturændringer',
+    secPartner: '4. Partnerøkosystem',
+    emptyNote: '(endnu ikke dokumenteret)',
+  },
+  sv: {
+    heroTitle: 'Organisatorisk färdplan',
+    heroDesc: 'SOP, kundintag, och ett automatiskt genererat organisatoriskt förändringsfärdplansdokument — AI CoE-design, talang, struktur och partnerekosystem.',
+    noteLabel: 'Så här fungerar det.',
+    noteBody: 'Fyll i intagsfälten nedan; dokumentförhandsgranskningen byggs upp live utifrån dina svar. Inga API-anrop — allt sparas automatiskt lokalt och kan exporteras som fil.',
+    sopTitle: 'SOP — så här görs det vanligtvis',
+    sopHint: 'Ordningen en arkitekt faktiskt arbetar igenom denna övning.',
+    sop: [
+      'Designa AI Center of Excellence (CoE) — dess stadga, rapporteringsväg, och om det är centraliserat, federerat eller hub-and-spoke, anpassat efter organisationens kultur.',
+      'Bygg planen för talangförvärv och -utveckling — vilka roller som ska rekryteras externt vs. kompetensutvecklas internt, och inom vilken tidsram.',
+      'Rekommendera organisatoriska strukturförändringar — nya rapporteringsvägar, RACI-uppdateringar, och var AI-beslutsrätten faktiskt bör ligga.',
+      'Planera partnerekosystemet — vilka förmågor organisationen bygger internt vs. sourcar från leverantörer/SI:er, och hur det förändras över färdplanen.',
+      'Sekvensera de organisatoriska förändringarna tillsammans med teknikfärdplanen — organisatorisk förändring är vanligtvis den långsammare begränsningen, inte tekniken.',
+    ],
+    intakeTitle: 'Kundintag',
+    lblClient: 'Kund / uppdrag',
+    lblAssessor: 'Bedömare',
+    lblCoeNotes: 'Design av AI Center of Excellence (CoE)',
+    lblTalentNotes: 'Plan för talangförvärv och -utveckling',
+    lblStructureNotes: 'Organisatoriska strukturförändringar',
+    lblPartnerNotes: 'Plan för partnerekosystem',
+    previewTitle: 'Organisatoriskt färdplansdokument',
+    previewHint: 'Detta är själva leveransen — automatiskt genererad från ditt intag, anpassad för denna kund.',
+    btnExportHtml: '🌐 Exportera HTML',
+    btnExportMd: '📄 Exportera Markdown',
+    btnReset: '🔄 Återställ',
+    docTitle: 'Organisatorisk Förändringsfärdplan',
+    docFor: 'Framtagen för',
+    docAssessor: 'Bedömare',
+    docDate: 'Datum',
+    secCoe: '1. Design av AI Center of Excellence',
+    secTalent: '2. Talangförvärv och -utveckling',
+    secStructure: '3. Organisatoriska strukturförändringar',
+    secPartner: '4. Partnerekosystem',
+    emptyNote: '(ännu inte dokumenterat)',
+  },
+};
+
+let lang = localStorage.getItem('aoa_lang') || 'en';
+function t(key) { return (STRINGS[lang] && STRINGS[lang][key] !== undefined) ? STRINGS[lang][key] : (STRINGS.en[key] !== undefined ? STRINGS.en[key] : key); }
+function esc(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function setLang(l) { lang = l; localStorage.setItem('aoa_lang', l); document.getElementById('langSelect').value = l; applyI18n(); renderPreview(); save(); }
+function applyI18n() {
+  document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.getAttribute('data-i18n')); });
+  document.title = t('heroTitle') + ' — Phase 2';
+  document.getElementById('sopList').innerHTML = t('sop').map(s => `<li>${esc(s)}</li>`).join('');
+}
+
+function fieldEls() { return Array.from(document.querySelectorAll('[data-eng]')); }
+function collect() { const o = {}; fieldEls().forEach(el => { o[el.getAttribute('data-eng')] = el.value; }); return o; }
+function restore(o) { fieldEls().forEach(el => { const k = el.getAttribute('data-eng'); if (o[k] !== undefined) el.value = o[k]; }); }
+let savedTimer;
+function save() { try { localStorage.setItem(KEY, JSON.stringify({ fields: collect(), lang })); flashSaved(); } catch (e) {} }
+function flashSaved() { const f = document.getElementById('savedFlag'); f.textContent = '✓'; clearTimeout(savedTimer); savedTimer = setTimeout(() => { f.textContent = ''; }, 1200); }
+function loadSaved() { try { const o = JSON.parse(localStorage.getItem(KEY) || '{}'); if (o.fields) restore(o.fields); } catch (e) {} }
+
+function val(k) { const el = document.querySelector(`[data-eng="${k}"]`); return el ? el.value : ''; }
+function orEmpty(v) { return v && v.trim() ? esc(v) : `<em>${esc(t('emptyNote'))}</em>`; }
+
+function renderPreview() {
+  const date = new Date().toISOString().slice(0, 10);
+  let h = `<div class="meta"><strong>${esc(t('docFor'))}:</strong> ${esc(val('client')) || '—'} &nbsp;·&nbsp; <strong>${esc(t('docAssessor'))}:</strong> ${esc(val('assessor')) || '—'} &nbsp;·&nbsp; <strong>${esc(t('docDate'))}:</strong> ${date}</div>`;
+  h += `<h3>${esc(t('secCoe'))}</h3><p>${orEmpty(val('coeNotes'))}</p>`;
+  h += `<h3>${esc(t('secTalent'))}</h3><p>${orEmpty(val('talentNotes'))}</p>`;
+  h += `<h3>${esc(t('secStructure'))}</h3><p>${orEmpty(val('structureNotes'))}</p>`;
+  h += `<h3>${esc(t('secPartner'))}</h3><p>${orEmpty(val('partnerNotes'))}</p>`;
+  document.getElementById('preview').innerHTML = h;
+}
+
+document.addEventListener('input', e => { if (e.target.matches('[data-eng]')) { renderPreview(); save(); } });
+document.addEventListener('change', e => { if (e.target.matches('[data-eng]')) { renderPreview(); save(); } });
+
+function resetAll() {
+  if (!confirm('Clear all fields? / Ryd alle felter? / Rensa alla fält?')) return;
+  fieldEls().forEach(el => { el.value = ''; });
+  renderPreview();
+  save();
+}
+
+function slug() { return (val('client') || 'org_roadmap').replace(/\W+/g, '_'); }
+function docMarkdown() {
+  const date = new Date().toISOString().slice(0, 10);
+  let m = `# ${t('docTitle')} — ${val('client') || '[client]'}\n\n`;
+  m += `**${t('docFor')}:** ${val('client') || '—'}  \n**${t('docAssessor')}:** ${val('assessor') || '—'}  \n**${t('docDate')}:** ${date}\n\n`;
+  m += `## ${t('secCoe')}\n${val('coeNotes') || t('emptyNote')}\n\n`;
+  m += `## ${t('secTalent')}\n${val('talentNotes') || t('emptyNote')}\n\n`;
+  m += `## ${t('secStructure')}\n${val('structureNotes') || t('emptyNote')}\n\n`;
+  m += `## ${t('secPartner')}\n${val('partnerNotes') || t('emptyNote')}\n`;
+  return m;
+}
+function docHtml() {
+  return '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>' + esc(t('docTitle')) + ' — ' + esc(val('client') || 'client') + '</title>'
+    + '<style>body{font-family:Inter,Segoe UI,sans-serif;color:#1c1c28;max-width:880px;margin:40px auto;padding:0 22px;line-height:1.6}'
+    + 'h1,h3{color:#1B1474;font-family:Georgia,serif}</style></head><body>'
+    + document.getElementById('preview').outerHTML.replace('id="preview"', '')
+    + '</body></html>';
+}
+function download(text, fname, mime) {
+  const blob = new Blob([text], { type: mime });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = fname; a.click();
+  URL.revokeObjectURL(a.href);
+}
+function exportDoc(fmt) {
+  if (fmt === 'md') download(docMarkdown(), 'org_roadmap_' + slug() + '.md', 'text/markdown');
+  else download(docHtml(), 'org_roadmap_' + slug() + '.html', 'text/html');
+}
+
+(function init() {
+  document.getElementById('langSelect').value = lang;
+  loadSaved();
+  applyI18n();
+  renderPreview();
+})();
+</script>
+</body>
+</html>
