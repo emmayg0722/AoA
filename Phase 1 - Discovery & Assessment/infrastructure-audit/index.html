@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Infrastructure Audit — Phase 1</title>
+<meta name="description" content="Infrastructure audit SOP, client intake, and an auto-generated current-state document for a specific AI use case.">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='16' fill='%231B1474'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #1B1474; --primary-dark: #120D52; --accent: #DCDDF6; --powder: #EEEEFA;
+    --ink: #1c1c28; --muted: #5b5b6b; --line: #e4e4f0;
+    --green: #1a8a5c; --amber: #d4790e; --red: #c0392b;
+    --font-heading: 'Fraunces', Georgia, serif;
+    --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: var(--font-body); color: var(--ink); background: #fafaff; line-height: 1.6; }
+  .hero { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: #fff; padding: 44px 24px 36px; }
+  .wrap { max-width: 1000px; margin: 0 auto; }
+  .crumb { font-size: 13px; color: var(--accent); margin-bottom: 10px; }
+  .crumb a { color: var(--accent); text-decoration: none; }
+  .hero-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; flex-wrap: wrap; }
+  .hero h1 { font-family: var(--font-heading); font-weight: 700; font-size: 34px; line-height: 1.15; }
+  .hero p { margin-top: 10px; font-size: 15.5px; color: #dcdcf2; max-width: 680px; }
+  select#langSelect { font-family: var(--font-body); font-size: 13px; font-weight: 600; border: 1.5px solid rgba(255,255,255,0.4); background: rgba(255,255,255,0.08); color: #fff; border-radius: 8px; padding: 7px 10px; }
+  select#langSelect option { color: var(--ink); }
+  main { max-width: 1000px; margin: 0 auto; padding: 28px 24px 80px; }
+  .note { background: var(--powder); border: 1px solid var(--accent); border-radius: 12px; padding: 14px 16px; font-size: 14px; color: var(--muted); margin-bottom: 26px; }
+  .note strong { color: var(--primary); }
+  .card { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 22px 24px; margin-bottom: 20px; }
+  .card > h2 { font-family: var(--font-heading); font-weight: 600; font-size: 21px; color: var(--primary); margin-bottom: 4px; }
+  .card .hint { font-size: 13.5px; color: var(--muted); margin-bottom: 14px; }
+  ol.sop { margin-left: 20px; }
+  ol.sop li { margin-bottom: 10px; font-size: 14px; }
+  ol.sop li strong { color: var(--primary); }
+  label { display: block; font-size: 13px; font-weight: 600; color: var(--ink); margin: 10px 0 5px; }
+  input[type=text], textarea, select.field { width: 100%; font-family: var(--font-body); font-size: 14px; color: var(--ink); border: 1.5px solid var(--line); border-radius: 8px; padding: 9px 11px; background: #fff; }
+  textarea { resize: vertical; min-height: 70px; }
+  input:focus, textarea:focus, select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(27,20,116,0.12); }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; }
+  .btn { font-family: var(--font-body); font-size: 13.5px; font-weight: 600; padding: 9px 16px; border-radius: 8px; border: none; cursor: pointer; transition: all 0.15s; }
+  .btn-primary { background: var(--accent); color: var(--primary); }
+  .btn-primary:hover { background: #C3C5EC; }
+  .btn-secondary { background: #fff; color: var(--primary); border: 1.5px solid var(--accent); }
+  .btn-secondary:hover { background: var(--powder); }
+  .btn-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px; }
+  .preview { border: 1px dashed var(--line); border-radius: 10px; padding: 18px 20px; background: #fcfcff; font-size: 14px; }
+  .preview h3 { font-family: var(--font-heading); color: var(--primary); font-size: 16px; margin: 14px 0 6px; }
+  .preview h3:first-child { margin-top: 0; }
+  .preview p { margin: 6px 0; white-space: pre-wrap; }
+  .preview .meta { font-size: 13px; color: var(--muted); margin-bottom: 10px; }
+  .saved { font-size: 12.5px; color: var(--green); margin-left: 8px; }
+  @media (max-width: 680px) { .grid2 { grid-template-columns: 1fr; } .hero h1 { font-size: 27px; } }
+</style>
+</head>
+<body>
+  <header class="hero"><div class="wrap">
+    <div class="hero-top">
+      <div class="crumb"><a href="../">AI Architect Toolkit</a> · Phase 1 · Discovery &amp; Assessment</div>
+      <select id="langSelect" onchange="setLang(this.value)">
+        <option value="en">English</option>
+        <option value="da">Dansk</option>
+        <option value="sv">Svenska</option>
+      </select>
+    </div>
+    <h1 data-i18n="heroTitle"></h1>
+    <p data-i18n="heroDesc"></p>
+  </div></header>
+
+  <main>
+    <div class="note"><strong data-i18n="noteLabel"></strong> <span data-i18n="noteBody"></span></div>
+
+    <div class="card">
+      <h2 data-i18n="sopTitle"></h2>
+      <p class="hint" data-i18n="sopHint"></p>
+      <ol class="sop" id="sopList"></ol>
+    </div>
+
+    <div class="card">
+      <h2 data-i18n="intakeTitle"></h2>
+      <p class="hint" data-i18n="intakeHint"></p>
+      <div class="grid2">
+        <div><label data-i18n="lblClient"></label><input type="text" data-eng="client" placeholder="Acme Corp"></div>
+        <div><label data-i18n="lblAssessor"></label><input type="text" data-eng="assessor"></div>
+      </div>
+      <label data-i18n="lblUseCase"></label>
+      <input type="text" data-eng="useCase" placeholder="Real-time credit-risk scoring">
+      <div class="grid2">
+        <div><label data-i18n="lblCloud"></label><input type="text" data-eng="cloudProvider" placeholder="Azure, on-prem VMware"></div>
+        <div><label data-i18n="lblCerts"></label><input type="text" data-eng="certifications" placeholder="SOC 2, ISO 27001"></div>
+      </div>
+      <label data-i18n="lblStackNotes"></label>
+      <textarea data-eng="stackNotes"></textarea>
+      <label data-i18n="lblCloudNotes"></label>
+      <textarea data-eng="cloudCapNotes"></textarea>
+      <label data-i18n="lblIntegrationNotes"></label>
+      <textarea data-eng="integrationNotes"></textarea>
+      <label data-i18n="lblSecurityNotes"></label>
+      <textarea data-eng="securityNotes"></textarea>
+      <label data-i18n="lblRecommendations"></label>
+      <textarea data-eng="recommendations"></textarea>
+      <label data-i18n="lblVerdict"></label>
+      <select class="field" data-eng="verdict">
+        <option value="">—</option>
+        <option data-i18n-opt="verdictReady" value="ready"></option>
+        <option data-i18n-opt="verdictConditional" value="conditional"></option>
+        <option data-i18n-opt="verdictNotReady" value="notready"></option>
+      </select>
+    </div>
+
+    <div class="card">
+      <h2 data-i18n="previewTitle"></h2>
+      <p class="hint" data-i18n="previewHint"></p>
+      <div class="preview" id="preview"></div>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="exportDoc('html')" data-i18n="btnExportHtml"></button>
+        <button class="btn btn-primary" onclick="exportDoc('md')" data-i18n="btnExportMd"></button>
+        <button class="btn btn-secondary" onclick="resetAll()" data-i18n="btnReset"></button>
+        <span class="saved" id="savedFlag"></span>
+      </div>
+    </div>
+  </main>
+
+<script>
+// ════════════════════════════════════════════════════════════════
+// Infrastructure Audit — fully client-side. No network calls.
+// ════════════════════════════════════════════════════════════════
+const KEY = 'aoa_infra_audit_v1';
+
+const STRINGS = {
+  en: {
+    heroTitle: 'Infrastructure Audit',
+    heroDesc: 'SOP, client intake, and an auto-generated current-state document — scored against a specific AI use case, not in the abstract.',
+    noteLabel: 'How this works.',
+    noteBody: 'Fill in the intake fields below; the document preview builds live from your inputs. No API calls — everything autosaves locally in your browser and can be exported as a file.',
+    sopTitle: 'SOP — how this is usually done',
+    sopHint: 'The order an architect actually works this audit in.',
+    sop: [
+      'Interview stakeholders first — platform/DevOps lead, security lead, and whoever owns the systems the AI workload needs to reach. This surfaces the undocumented reality faster than stale diagrams.',
+      'Review documentation — network diagrams, architecture decision records, IAM policies, prior audit reports if any exist.',
+      'Direct technical inspection — read-only, least-privilege, time-boxed access to the cloud console(s) or an inventory tool (Azure Resource Graph, AWS Config, GCP Asset Inventory) to see what is actually running.',
+      'Capacity and cost pass — current utilization, idle capacity, reserved vs. on-demand spend, whether the org can afford to run the target workload here.',
+      'Score against the target use case — infrastructure is not "ready" in the abstract; it is ready (or not) for this specific latency, throughput, and compliance need.',
+    ],
+    intakeTitle: 'Client intake',
+    intakeHint: 'Fill in what you know; leave the rest for follow-up interviews.',
+    lblClient: 'Client / engagement',
+    lblAssessor: 'Assessor',
+    lblUseCase: 'Target AI use case',
+    lblCloud: 'Primary cloud provider(s) / hosting',
+    lblCerts: 'Existing certifications',
+    lblStackNotes: 'Current technology stack — notes',
+    lblCloudNotes: 'Cloud infrastructure capability — notes',
+    lblIntegrationNotes: 'Integration feasibility — notes (systems the AI workload must reach)',
+    lblSecurityNotes: 'Security posture — notes',
+    lblRecommendations: 'Gaps & recommendations',
+    lblVerdict: 'Overall readiness verdict',
+    verdictReady: 'Ready',
+    verdictConditional: 'Conditional',
+    verdictNotReady: 'Not ready',
+    previewTitle: 'Infrastructure current-state document',
+    previewHint: 'This is the actual deliverable — auto-generated from your intake, customized for this client.',
+    btnExportHtml: '🌐 Export HTML',
+    btnExportMd: '📄 Export Markdown',
+    btnReset: '🔄 Reset',
+    docTitle: 'Infrastructure Current-State Assessment',
+    docFor: 'Prepared for',
+    docUseCase: 'Target AI use case',
+    docAssessor: 'Assessor',
+    docDate: 'Date',
+    secStack: '1. Current Technology Stack',
+    secCloud: '2. Cloud Infrastructure Capability',
+    secIntegration: '3. Integration Feasibility',
+    secSecurity: '4. Security Posture',
+    secRecs: '5. Gaps & Recommendations',
+    secVerdict: 'Overall verdict',
+    emptyNote: '(not yet documented)',
+    cloudLine: 'Provider(s) / hosting:',
+    certLine: 'Existing certifications:',
+  },
+  da: {
+    heroTitle: 'Infrastrukturaudit',
+    heroDesc: 'SOP, kundeoptag og et automatisk genereret nutidsdokument — vurderet i forhold til en specifik AI-anvendelse, ikke i det abstrakte.',
+    noteLabel: 'Sådan virker det.',
+    noteBody: 'Udfyld optagelsesfelterne nedenfor; dokumentforhåndsvisningen opbygges live fra dine input. Ingen API-kald — alt gemmes automatisk lokalt i din browser og kan eksporteres som fil.',
+    sopTitle: 'SOP — sådan gøres det normalt',
+    sopHint: 'Rækkefølgen en arkitekt reelt arbejder denne audit igennem.',
+    sop: [
+      'Interview interessenter først — platform-/DevOps-ansvarlig, sikkerhedsansvarlig og den, der ejer de systemer, AI-arbejdsbyrden skal nå. Dette afdækker den udokumenterede virkelighed hurtigere end forældede diagrammer.',
+      'Gennemgå dokumentation — netværksdiagrammer, arkitekturbeslutningsregistre, IAM-politikker, tidligere revisionsrapporter hvis de findes.',
+      'Direkte teknisk inspektion — skrivebeskyttet, mindst-privilegie, tidsbegrænset adgang til cloud-konsollen(erne) eller et inventarværktøj (Azure Resource Graph, AWS Config, GCP Asset Inventory) for at se, hvad der faktisk kører.',
+      'Kapacitets- og omkostningsgennemgang — nuværende udnyttelse, ledig kapacitet, reserveret vs. on-demand forbrug, om organisationen har råd til at køre målarbejdsbyrden her.',
+      'Vurdér i forhold til målanvendelsen — infrastruktur er ikke "klar" i det abstrakte; den er klar (eller ej) til dette specifikke latens-, gennemløbs- og compliance-behov.',
+    ],
+    intakeTitle: 'Kundeoptag',
+    intakeHint: 'Udfyld det, du ved; lad resten vente til opfølgende interviews.',
+    lblClient: 'Kunde / engagement',
+    lblAssessor: 'Vurderingsmand',
+    lblUseCase: 'Mål-AI-anvendelse',
+    lblCloud: 'Primær(e) cloud-udbyder(e) / hosting',
+    lblCerts: 'Eksisterende certificeringer',
+    lblStackNotes: 'Nuværende teknologistak — noter',
+    lblCloudNotes: 'Cloud-infrastrukturkapacitet — noter',
+    lblIntegrationNotes: 'Integrationsgennemførlighed — noter (systemer AI-arbejdsbyrden skal nå)',
+    lblSecurityNotes: 'Sikkerhedsposition — noter',
+    lblRecommendations: 'Mangler & anbefalinger',
+    lblVerdict: 'Samlet parathedsvurdering',
+    verdictReady: 'Klar',
+    verdictConditional: 'Betinget',
+    verdictNotReady: 'Ikke klar',
+    previewTitle: 'Infrastruktur nutidsdokument',
+    previewHint: 'Dette er selve leverancen — automatisk genereret fra dit optag, tilpasset denne kunde.',
+    btnExportHtml: '🌐 Eksportér HTML',
+    btnExportMd: '📄 Eksportér Markdown',
+    btnReset: '🔄 Nulstil',
+    docTitle: 'Infrastruktur Nutidsvurdering',
+    docFor: 'Udarbejdet for',
+    docUseCase: 'Mål-AI-anvendelse',
+    docAssessor: 'Vurderingsmand',
+    docDate: 'Dato',
+    secStack: '1. Nuværende teknologistak',
+    secCloud: '2. Cloud-infrastrukturkapacitet',
+    secIntegration: '3. Integrationsgennemførlighed',
+    secSecurity: '4. Sikkerhedsposition',
+    secRecs: '5. Mangler & anbefalinger',
+    secVerdict: 'Samlet vurdering',
+    emptyNote: '(endnu ikke dokumenteret)',
+    cloudLine: 'Udbyder(e) / hosting:',
+    certLine: 'Eksisterende certificeringer:',
+  },
+  sv: {
+    heroTitle: 'Infrastrukturgranskning',
+    heroDesc: 'SOP, kundintag och ett automatiskt genererat nulägesdokument — bedömt mot ett specifikt AI-användningsfall, inte i abstrakt mening.',
+    noteLabel: 'Så här fungerar det.',
+    noteBody: 'Fyll i intagsfälten nedan; dokumentförhandsgranskningen byggs upp live utifrån dina svar. Inga API-anrop — allt sparas automatiskt lokalt i din webbläsare och kan exporteras som fil.',
+    sopTitle: 'SOP — så här görs det vanligtvis',
+    sopHint: 'Ordningen en arkitekt faktiskt arbetar igenom denna granskning.',
+    sop: [
+      'Intervjua intressenter först — plattforms-/DevOps-ansvarig, säkerhetsansvarig och den som äger de system AI-arbetsbelastningen behöver nå. Detta avslöjar den odokumenterade verkligheten snabbare än inaktuella diagram.',
+      'Granska dokumentation — nätverksdiagram, arkitekturbeslutsregister, IAM-policyer, tidigare granskningsrapporter om de finns.',
+      'Direkt teknisk inspektion — skrivskyddad, minsta-privilegium, tidsbegränsad åtkomst till molnkonsolen(erna) eller ett inventeringsverktyg (Azure Resource Graph, AWS Config, GCP Asset Inventory) för att se vad som faktiskt körs.',
+      'Kapacitets- och kostnadsgenomgång — nuvarande utnyttjande, ledig kapacitet, reserverad vs. on-demand-förbrukning, om organisationen har råd att köra målarbetsbelastningen här.',
+      'Bedöm mot målanvändningsfallet — infrastruktur är inte "redo" i abstrakt mening; den är redo (eller inte) för just detta latens-, genomströmnings- och efterlevnadsbehov.',
+    ],
+    intakeTitle: 'Kundintag',
+    intakeHint: 'Fyll i det du vet; lämna resten till uppföljande intervjuer.',
+    lblClient: 'Kund / uppdrag',
+    lblAssessor: 'Bedömare',
+    lblUseCase: 'Mål-AI-användningsfall',
+    lblCloud: 'Primär(a) molnleverantör(er) / hosting',
+    lblCerts: 'Befintliga certifieringar',
+    lblStackNotes: 'Nuvarande teknikstack — anteckningar',
+    lblCloudNotes: 'Molninfrastrukturens kapacitet — anteckningar',
+    lblIntegrationNotes: 'Integrationsgenomförbarhet — anteckningar (system AI-arbetsbelastningen måste nå)',
+    lblSecurityNotes: 'Säkerhetsläge — anteckningar',
+    lblRecommendations: 'Brister & rekommendationer',
+    lblVerdict: 'Samlad beredskapsbedömning',
+    verdictReady: 'Redo',
+    verdictConditional: 'Villkorat',
+    verdictNotReady: 'Inte redo',
+    previewTitle: 'Infrastruktur nulägesdokument',
+    previewHint: 'Detta är själva leveransen — automatiskt genererad från ditt intag, anpassad för denna kund.',
+    btnExportHtml: '🌐 Exportera HTML',
+    btnExportMd: '📄 Exportera Markdown',
+    btnReset: '🔄 Återställ',
+    docTitle: 'Infrastruktur Nulägesbedömning',
+    docFor: 'Framtagen för',
+    docUseCase: 'Mål-AI-användningsfall',
+    docAssessor: 'Bedömare',
+    docDate: 'Datum',
+    secStack: '1. Nuvarande teknikstack',
+    secCloud: '2. Molninfrastrukturens kapacitet',
+    secIntegration: '3. Integrationsgenomförbarhet',
+    secSecurity: '4. Säkerhetsläge',
+    secRecs: '5. Brister & rekommendationer',
+    secVerdict: 'Samlad bedömning',
+    emptyNote: '(ännu inte dokumenterat)',
+    cloudLine: 'Leverantör(er) / hosting:',
+    certLine: 'Befintliga certifieringar:',
+  },
+};
+
+let lang = localStorage.getItem('aoa_lang') || 'en';
+function t(key) { return (STRINGS[lang] && STRINGS[lang][key] !== undefined) ? STRINGS[lang][key] : (STRINGS.en[key] !== undefined ? STRINGS.en[key] : key); }
+function esc(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function setLang(l) {
+  lang = l;
+  localStorage.setItem('aoa_lang', l);
+  document.getElementById('langSelect').value = l;
+  applyI18n();
+  renderPreview();
+  save();
+}
+
+function applyI18n() {
+  document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.getAttribute('data-i18n')); });
+  document.querySelectorAll('[data-i18n-opt]').forEach(el => { el.textContent = t(el.getAttribute('data-i18n-opt')); });
+  document.title = t('heroTitle') + ' — Phase 1';
+  const sop = document.getElementById('sopList');
+  sop.innerHTML = t('sop').map((s, i) => `<li>${esc(s)}</li>`).join('');
+}
+
+// ── Autosave ──────────────────────────────────────────────
+function fieldEls() { return Array.from(document.querySelectorAll('[data-eng]')); }
+function collect() {
+  const o = {};
+  fieldEls().forEach(el => { o[el.getAttribute('data-eng')] = el.value; });
+  return o;
+}
+function restore(o) {
+  fieldEls().forEach(el => { const k = el.getAttribute('data-eng'); if (o[k] !== undefined) el.value = o[k]; });
+}
+let savedTimer;
+function save() {
+  try { localStorage.setItem(KEY, JSON.stringify({ fields: collect(), lang })); flashSaved(); } catch (e) {}
+}
+function flashSaved() {
+  const f = document.getElementById('savedFlag');
+  f.textContent = '✓';
+  clearTimeout(savedTimer);
+  savedTimer = setTimeout(() => { f.textContent = ''; }, 1200);
+}
+function loadSaved() {
+  try {
+    const o = JSON.parse(localStorage.getItem(KEY) || '{}');
+    if (o.fields) restore(o.fields);
+  } catch (e) {}
+}
+
+function val(k) { const el = document.querySelector(`[data-eng="${k}"]`); return el ? el.value : ''; }
+function orEmpty(v) { return v && v.trim() ? esc(v) : `<em>${esc(t('emptyNote'))}</em>`; }
+
+// ── Live preview ──────────────────────────────────────────
+function renderPreview() {
+  const date = new Date().toISOString().slice(0, 10);
+  const verdictKey = { ready: 'verdictReady', conditional: 'verdictConditional', notready: 'verdictNotReady' }[val('verdict')];
+  let h = `<div class="meta"><strong>${esc(t('docFor'))}:</strong> ${esc(val('client')) || '—'} &nbsp;·&nbsp; <strong>${esc(t('docUseCase'))}:</strong> ${esc(val('useCase')) || '—'}<br>`
+    + `<strong>${esc(t('docAssessor'))}:</strong> ${esc(val('assessor')) || '—'} &nbsp;·&nbsp; <strong>${esc(t('docDate'))}:</strong> ${date}</div>`;
+  h += `<h3>${esc(t('secStack'))}</h3><p>${orEmpty(val('stackNotes'))}</p>`;
+  h += `<h3>${esc(t('secCloud'))}</h3><p><strong>${esc(t('cloudLine'))}</strong> ${esc(val('cloudProvider')) || '—'}</p><p>${orEmpty(val('cloudCapNotes'))}</p>`;
+  h += `<h3>${esc(t('secIntegration'))}</h3><p>${orEmpty(val('integrationNotes'))}</p>`;
+  h += `<h3>${esc(t('secSecurity'))}</h3><p><strong>${esc(t('certLine'))}</strong> ${esc(val('certifications')) || '—'}</p><p>${orEmpty(val('securityNotes'))}</p>`;
+  h += `<h3>${esc(t('secRecs'))}</h3><p>${orEmpty(val('recommendations'))}</p>`;
+  h += `<h3>${esc(t('secVerdict'))}</h3><p>${verdictKey ? esc(t(verdictKey)) : `<em>${esc(t('emptyNote'))}</em>`}</p>`;
+  document.getElementById('preview').innerHTML = h;
+}
+
+document.addEventListener('input', e => { if (e.target.matches('[data-eng]')) { renderPreview(); save(); } });
+document.addEventListener('change', e => { if (e.target.matches('[data-eng]')) { renderPreview(); save(); } });
+
+function resetAll() {
+  if (!confirm('Clear all fields? / Ryd alle felter? / Rensa alla fält?')) return;
+  fieldEls().forEach(el => { el.value = ''; });
+  renderPreview();
+  save();
+}
+
+// ── Export ──────────────────────────────────────────────
+function slug() { return (val('client') || 'infrastructure_audit').replace(/\W+/g, '_'); }
+function docMarkdown() {
+  const date = new Date().toISOString().slice(0, 10);
+  const verdictKey = { ready: 'verdictReady', conditional: 'verdictConditional', notready: 'verdictNotReady' }[val('verdict')];
+  let m = `# ${t('docTitle')} — ${val('client') || '[client]'}\n\n`;
+  m += `**${t('docFor')}:** ${val('client') || '—'}  \n**${t('docUseCase')}:** ${val('useCase') || '—'}  \n`;
+  m += `**${t('docAssessor')}:** ${val('assessor') || '—'}  \n**${t('docDate')}:** ${date}\n\n`;
+  m += `## ${t('secStack')}\n${val('stackNotes') || t('emptyNote')}\n\n`;
+  m += `## ${t('secCloud')}\n**${t('cloudLine')}** ${val('cloudProvider') || '—'}\n\n${val('cloudCapNotes') || t('emptyNote')}\n\n`;
+  m += `## ${t('secIntegration')}\n${val('integrationNotes') || t('emptyNote')}\n\n`;
+  m += `## ${t('secSecurity')}\n**${t('certLine')}** ${val('certifications') || '—'}\n\n${val('securityNotes') || t('emptyNote')}\n\n`;
+  m += `## ${t('secRecs')}\n${val('recommendations') || t('emptyNote')}\n\n`;
+  m += `## ${t('secVerdict')}\n${verdictKey ? t(verdictKey) : t('emptyNote')}\n`;
+  return m;
+}
+function docHtml() {
+  return '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>' + esc(t('docTitle')) + ' — ' + esc(val('client') || 'client') + '</title>'
+    + '<style>body{font-family:Inter,Segoe UI,sans-serif;color:#1c1c28;max-width:880px;margin:40px auto;padding:0 22px;line-height:1.6}'
+    + 'h1,h3{color:#1B1474;font-family:Georgia,serif}</style></head><body>'
+    + document.getElementById('preview').outerHTML.replace('id="preview"', '')
+    + '</body></html>';
+}
+function download(text, fname, mime) {
+  const blob = new Blob([text], { type: mime });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = fname; a.click();
+  URL.revokeObjectURL(a.href);
+}
+function exportDoc(fmt) {
+  if (fmt === 'md') download(docMarkdown(), 'infrastructure_audit_' + slug() + '.md', 'text/markdown');
+  else download(docHtml(), 'infrastructure_audit_' + slug() + '.html', 'text/html');
+}
+
+// ── Boot ──────────────────────────────────────────────
+(function init() {
+  document.getElementById('langSelect').value = lang;
+  loadSaved();
+  applyI18n();
+  renderPreview();
+})();
+</script>
+</body>
+</html>

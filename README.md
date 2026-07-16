@@ -25,6 +25,9 @@ its own subfolder. New phases and assets follow the same structure.
     │   ├── profiler.html              # Browser-local data profiler (data stays local)
     │   ├── templates/
     │   └── README.md
+    ├── infrastructure-audit/          # SOP + intake + auto-generated current-state doc (EN/DA/SV)
+    ├── organizational-readiness/      # SOP + intake + auto-generated readiness doc (EN/DA/SV)
+    ├── use-case-prioritization/       # SOP + ROI/feasibility/impact matrix + priority doc (EN/DA/SV)
     └── sample-data/                   # Synthetic demo data only — see its README
         ├── ai-maturity-assessment/
         └── data-readiness-assessment-5c/
@@ -42,6 +45,20 @@ its own subfolder. New phases and assets follow the same structure.
 - **Data Readiness Assessment (5C)** — an agent + browser-local profiler that judge
   whether a client's data is ready for a specific AI use case (Context, Clarity,
   Coverage, Credibility, Capacity).
+- **Infrastructure Audit** — SOP for the interview → document review → technical
+  inspection → capacity/cost → use-case scoring workflow, with client intake that
+  auto-generates a customized current-state document.
+- **Organizational Readiness Assessment** — SOP + intake covering team capability,
+  culture/change readiness, process maturity, and stakeholder analysis, auto-
+  generating a customized readiness document.
+- **Use Case Identification & Prioritization** — SOP plus a live, scorable ROI /
+  feasibility / impact matrix that ranks candidate AI use cases, flags quick wins,
+  and auto-generates a priority document.
+
+All three new Phase 1 tools follow the same pattern: an SOP card, a client-intake
+form (autosaved locally), a live document preview built from a `{{field}}` template,
+HTML/Markdown export, and an English/Danish/Swedish language selector — the pattern
+now used across the toolkit.
 
 ## Phase 3 — Architecture Design
 
