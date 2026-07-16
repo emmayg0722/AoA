@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Evaluation &amp; Go/No-Go Decision — Phase 4</title>
+<meta name="description" content="Evaluation SOP, a scorable go/no-go criteria matrix, and an auto-generated production-readiness decision report.">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='16' fill='%231B1474'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #1B1474; --primary-dark: #120D52; --accent: #DCDDF6; --powder: #EEEEFA;
+    --ink: #1c1c28; --muted: #5b5b6b; --line: #e4e4f0;
+    --green: #1a8a5c; --amber: #d4790e; --red: #c0392b;
+    --font-heading: 'Fraunces', Georgia, serif;
+    --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: var(--font-body); color: var(--ink); background: #fafaff; line-height: 1.6; }
+  .hero { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: #fff; padding: 44px 24px 36px; }
+  .wrap { max-width: 1100px; margin: 0 auto; }
+  .crumb { font-size: 13px; color: var(--accent); margin-bottom: 10px; }
+  .crumb a { color: var(--accent); text-decoration: none; }
+  .hero-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; flex-wrap: wrap; }
+  .hero h1 { font-family: var(--font-heading); font-weight: 700; font-size: 34px; line-height: 1.15; }
+  .hero p { margin-top: 10px; font-size: 15.5px; color: #dcdcf2; max-width: 680px; }
+  select#langSelect { font-family: var(--font-body); font-size: 13px; font-weight: 600; border: 1.5px solid rgba(255,255,255,0.4); background: rgba(255,255,255,0.08); color: #fff; border-radius: 8px; padding: 7px 10px; }
+  select#langSelect option { color: var(--ink); }
+  main { max-width: 1100px; margin: 0 auto; padding: 28px 24px 80px; }
+  .note { background: var(--powder); border: 1px solid var(--accent); border-radius: 12px; padding: 14px 16px; font-size: 14px; color: var(--muted); margin-bottom: 26px; }
+  .note strong { color: var(--primary); }
+  .card { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 22px 24px; margin-bottom: 20px; }
+  .card > h2 { font-family: var(--font-heading); font-weight: 600; font-size: 21px; color: var(--primary); margin-bottom: 4px; }
+  .card .hint { font-size: 13.5px; color: var(--muted); margin-bottom: 14px; }
+  ol.sop { margin-left: 20px; }
+  ol.sop li { margin-bottom: 10px; font-size: 14px; }
+  label { display: block; font-size: 13px; font-weight: 600; color: var(--ink); margin: 10px 0 5px; }
+  input[type=text], select.field { width: 100%; font-family: var(--font-body); font-size: 14px; color: var(--ink); border: 1.5px solid var(--line); border-radius: 8px; padding: 9px 11px; background: #fff; }
+  input:focus, select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(27,20,116,0.12); }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; }
+  .btn { font-family: var(--font-body); font-size: 13.5px; font-weight: 600; padding: 9px 16px; border-radius: 8px; border: none; cursor: pointer; transition: all 0.15s; }
+  .btn-primary { background: var(--accent); color: var(--primary); }
+  .btn-primary:hover { background: #C3C5EC; }
+  .btn-secondary { background: #fff; color: var(--primary); border: 1.5px solid var(--accent); }
+  .btn-secondary:hover { background: var(--powder); }
+  .btn-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px; }
+  table.matrix { width: 100%; border-collapse: collapse; font-size: 13.5px; margin-top: 10px; }
+  table.matrix th { text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); padding: 6px 8px; border-bottom: 2px solid var(--line); }
+  table.matrix td { padding: 6px 8px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+  table.matrix input[type=text] { padding: 6px 8px; font-size: 13px; }
+  table.matrix select { padding: 6px 6px; font-size: 13px; }
+  .score-cell { font-weight: 700; color: var(--primary); text-align: center; }
+  .rm-btn { background: none; border: none; color: var(--red); cursor: pointer; font-size: 15px; }
+  .preview { border: 1px dashed var(--line); border-radius: 10px; padding: 18px 20px; background: #fcfcff; font-size: 14px; }
+  .preview h3 { font-family: var(--font-heading); color: var(--primary); font-size: 16px; margin: 14px 0 6px; }
+  .preview h3:first-child { margin-top: 0; }
+  .preview table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 8px 0; }
+  .preview th, .preview td { border: 1px solid var(--line); padding: 6px 9px; text-align: left; }
+  .preview th { background: var(--powder); color: var(--primary); }
+  .verdict-banner { display: flex; align-items: center; gap: 12px; padding: 14px 18px; border-radius: 10px; margin-bottom: 14px; font-size: 14px; }
+  .verdict-banner .score { font-family: var(--font-heading); font-size: 26px; font-weight: 700; }
+  .verdict-go { background: #e7f5ee; color: var(--green); }
+  .verdict-conditional { background: #fdf3e3; color: var(--amber); }
+  .verdict-nogo { background: #fbeaea; color: var(--red); }
+  .saved { font-size: 12.5px; color: var(--green); margin-left: 8px; }
+  @media (max-width: 720px) { .grid2 { grid-template-columns: 1fr; } .hero h1 { font-size: 27px; } table.matrix { font-size: 12px; } }
+</style>
+</head>
+<body>
+  <header class="hero"><div class="wrap">
+    <div class="hero-top">
+      <div class="crumb"><a href="../">AI Architect Toolkit</a> · Phase 4 · PoC &amp; Pilot</div>
+      <select id="langSelect" onchange="setLang(this.value)">
+        <option value="en">English</option>
+        <option value="da">Dansk</option>
+        <option value="sv">Svenska</option>
+      </select>
+    </div>
+    <h1 data-i18n="heroTitle"></h1>
+    <p data-i18n="heroDesc"></p>
+  </div></header>
+
+  <main>
+    <div class="note"><strong data-i18n="noteLabel"></strong> <span data-i18n="noteBody"></span></div>
+
+    <div class="card">
+      <h2 data-i18n="sopTitle"></h2>
+      <p class="hint" data-i18n="sopHint"></p>
+      <ol class="sop" id="sopList"></ol>
+    </div>
+
+    <div class="card">
+      <h2 data-i18n="clientTitle"></h2>
+      <div class="grid2">
+        <div><label data-i18n="lblClient"></label><input type="text" data-eng="client" placeholder="Acme Corp"></div>
+        <div><label data-i18n="lblAssessor"></label><input type="text" data-eng="assessor"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2 data-i18n="matrixTitle"></h2>
+      <p class="hint" data-i18n="matrixHint"></p>
+      <table class="matrix">
+        <thead><tr>
+          <th data-i18n="colCriterion"></th><th data-i18n="colEvidence"></th>
+          <th data-i18n="colScore"></th><th></th>
+        </tr></thead>
+        <tbody id="matrixBody"></tbody>
+      </table>
+      <div class="btn-row">
+        <button class="btn btn-secondary" onclick="addRow()" data-i18n="btnAddRow"></button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2 data-i18n="previewTitle"></h2>
+      <p class="hint" data-i18n="previewHint"></p>
+      <div class="preview" id="preview"></div>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="exportDoc('html')" data-i18n="btnExportHtml"></button>
+        <button class="btn btn-primary" onclick="exportDoc('md')" data-i18n="btnExportMd"></button>
+        <button class="btn btn-secondary" onclick="resetAll()" data-i18n="btnReset"></button>
+        <span class="saved" id="savedFlag"></span>
+      </div>
+    </div>
+  </main>
+
+<script>
+const KEY = 'aoa_eval_godecision_v1';
+
+const STRINGS = {
+  en: {
+    heroTitle: 'Evaluation & Go/No-Go Decision',
+    heroDesc: 'SOP, a scorable evaluation matrix, and an auto-generated decision report — Go, Conditional Go, or No-Go, backed by task-specific evidence.',
+    noteLabel: 'How this works.',
+    noteBody: 'Score each evaluation criterion 1-5 with supporting evidence; the recommendation computes live from the average score. No API calls — everything autosaves locally.',
+    sopTitle: 'SOP — how this is usually done',
+    sopHint: 'The order an architect actually works this exercise in.',
+    sop: [
+      'Establish task-specific benchmarks before evaluation begins — generic ML metrics (accuracy, F1) rarely map cleanly onto a business outcome on their own.',
+      'Design an A/B test or controlled before/after comparison where feasible, so results are attributable to the AI solution and not confounded by other changes.',
+      'Collect evidence across three dimensions: technical performance (against the PoC/pilot success criteria), user acceptance (adoption, satisfaction, override rate), and business impact (the metric the use case was chosen to move).',
+      'Score every criterion 1 (fails to meet bar) to 5 (exceeds bar) with a one-line evidence note, so the decision is auditable, not a gut call.',
+      'Synthesize into a Go / Conditional Go / No-Go recommendation with named conditions and next steps — this is the production-readiness decision the whole PoC → Pilot arc has been building toward.',
+    ],
+    clientTitle: 'Client',
+    lblClient: 'Client / engagement',
+    lblAssessor: 'Assessor',
+    matrixTitle: 'Evaluation matrix',
+    matrixHint: 'Add each evaluation criterion and score it 1 (fails to meet bar) to 5 (exceeds bar). The overall score is the average across all rows.',
+    colCriterion: 'Criterion',
+    colEvidence: 'Evidence',
+    colScore: 'Score',
+    btnAddRow: '+ Add criterion',
+    previewTitle: 'Go/No-Go decision report',
+    previewHint: 'This is the actual deliverable — the scored matrix plus the computed recommendation, customized for this client.',
+    btnExportHtml: '🌐 Export HTML',
+    btnExportMd: '📄 Export Markdown',
+    btnReset: '🔄 Reset',
+    docTitle: 'Evaluation & Go/No-Go Decision Report',
+    docFor: 'Prepared for',
+    docAssessor: 'Assessor',
+    docDate: 'Date',
+    overallScore: 'Overall score',
+    recommendation: 'Recommendation',
+    verdictGo: 'Go',
+    verdictConditional: 'Conditional Go',
+    verdictNogo: 'No-Go',
+    verdictGoDesc: 'Criteria met the bar across the board — proceed to production scale-out.',
+    verdictConditionalDesc: 'Most criteria met the bar, but at least one needs remediation before scale-out. List explicit conditions before proceeding.',
+    verdictNogoDesc: 'Criteria did not meet the bar — do not proceed to production without a materially different approach.',
+    criteriaTable: 'Scored criteria',
+    noRows: 'No criteria added yet.',
+    placeholderCriterion: 'e.g. Technical performance vs. success criteria',
+    placeholderEvidence: 'e.g. 92% accuracy on holdout set, meets ≥90% bar',
+    emptyNote: '(not yet documented)',
+  },
+  da: {
+    heroTitle: 'Evaluering & Go/No-Go-beslutning',
+    heroDesc: 'SOP, en scorbar evalueringsmatrix, og en automatisk genereret beslutningsrapport — Go, Betinget Go, eller No-Go, understøttet af opgavespecifik evidens.',
+    noteLabel: 'Sådan virker det.',
+    noteBody: 'Score hvert evalueringskriterium 1-5 med understøttende evidens; anbefalingen beregnes live ud fra gennemsnitsscoren. Ingen API-kald — alt gemmes automatisk lokalt.',
+    sopTitle: 'SOP — sådan gøres det normalt',
+    sopHint: 'Rækkefølgen en arkitekt reelt arbejder denne øvelse igennem.',
+    sop: [
+      'Etablér opgavespecifikke benchmarks, før evalueringen begynder — generiske ML-metrics (accuracy, F1) mapper sjældent rent til et forretningsresultat på egen hånd.',
+      'Design en A/B-test eller kontrolleret før/efter-sammenligning, hvor det er muligt, så resultater kan tilskrives AI-løsningen og ikke forstyrres af andre ændringer.',
+      'Indsaml evidens på tre dimensioner: teknisk performance (mod PoC/pilot-succeskriterierne), brugeraccept (adoption, tilfredshed, overstyringsrate), og forretningsimpact (den metrik use casen blev valgt for at flytte).',
+      'Score hvert kriterium 1 (opfylder ikke bar) til 5 (overgår bar) med en enkelt evidensnote, så beslutningen kan revideres og ikke er et mavefornemmelses-kald.',
+      'Syntetisér til en Go / Betinget Go / No-Go-anbefaling med navngivne betingelser og næste skridt — dette er produktionsparathedsbeslutningen, som hele PoC → Pilot-buen har bygget hen imod.',
+    ],
+    clientTitle: 'Kunde',
+    lblClient: 'Kunde / engagement',
+    lblAssessor: 'Vurderingsmand',
+    matrixTitle: 'Evalueringsmatrix',
+    matrixHint: 'Tilføj hvert evalueringskriterium og score det 1 (opfylder ikke bar) til 5 (overgår bar). Samlet score er gennemsnittet på tværs af alle rækker.',
+    colCriterion: 'Kriterium',
+    colEvidence: 'Evidens',
+    colScore: 'Score',
+    btnAddRow: '+ Tilføj kriterium',
+    previewTitle: 'Go/No-Go-beslutningsrapport',
+    previewHint: 'Dette er selve leverancen — den scorede matrix plus den beregnede anbefaling, tilpasset denne kunde.',
+    btnExportHtml: '🌐 Eksportér HTML',
+    btnExportMd: '📄 Eksportér Markdown',
+    btnReset: '🔄 Nulstil',
+    docTitle: 'Evaluerings- & Go/No-Go-beslutningsrapport',
+    docFor: 'Udarbejdet for',
+    docAssessor: 'Vurderingsmand',
+    docDate: 'Dato',
+    overallScore: 'Samlet score',
+    recommendation: 'Anbefaling',
+    verdictGo: 'Go',
+    verdictConditional: 'Betinget Go',
+    verdictNogo: 'No-Go',
+    verdictGoDesc: 'Kriterier opfyldte bar på tværs af linjen — gå videre til produktionsskalering.',
+    verdictConditionalDesc: 'De fleste kriterier opfyldte bar, men mindst ét kræver udbedring før skalering. Angiv eksplicitte betingelser før der fortsættes.',
+    verdictNogoDesc: 'Kriterier opfyldte ikke bar — gå ikke videre til produktion uden en væsentligt anderledes tilgang.',
+    criteriaTable: 'Scorede kriterier',
+    noRows: 'Ingen kriterier tilføjet endnu.',
+    placeholderCriterion: 'fx Teknisk performance vs. succeskriterier',
+    placeholderEvidence: 'fx 92% accuracy på holdout-sæt, opfylder ≥90% bar',
+    emptyNote: '(endnu ikke dokumenteret)',
+  },
+  sv: {
+    heroTitle: 'Utvärdering & Go/No-Go-beslut',
+    heroDesc: 'SOP, en poängsatt utvärderingsmatris, och en automatiskt genererad beslutsrapport — Go, Villkorad Go, eller No-Go, understödd av uppgiftsspecifik evidens.',
+    noteLabel: 'Så här fungerar det.',
+    noteBody: 'Poängsätt varje utvärderingskriterium 1-5 med stödjande evidens; rekommendationen beräknas live utifrån medelpoängen. Inga API-anrop — allt sparas automatiskt lokalt.',
+    sopTitle: 'SOP — så här görs det vanligtvis',
+    sopHint: 'Ordningen en arkitekt faktiskt arbetar igenom denna övning.',
+    sop: [
+      'Etablera uppgiftsspecifika riktmärken innan utvärderingen börjar — generiska ML-mått (accuracy, F1) mappar sällan rent till ett affärsresultat på egen hand.',
+      'Designa ett A/B-test eller en kontrollerad före/efter-jämförelse där det är möjligt, så resultat kan tillskrivas AI-lösningen och inte förväxlas med andra förändringar.',
+      'Samla in evidens över tre dimensioner: teknisk prestanda (mot PoC/pilot-framgångskriterierna), användaracceptans (adoption, nöjdhet, överstyrningsgrad), och affärspåverkan (måttet användningsfallet valdes för att flytta).',
+      'Poängsätt varje kriterium 1 (uppfyller inte ribban) till 5 (överträffar ribban) med en enrads evidensanteckning, så beslutet är granskningsbart, inte ett magkänslebeslut.',
+      'Syntetisera till en Go / Villkorad Go / No-Go-rekommendation med namngivna villkor och nästa steg — detta är produktionsberedskapsbeslutet som hela PoC → Pilot-bågen har byggt mot.',
+    ],
+    clientTitle: 'Kund',
+    lblClient: 'Kund / uppdrag',
+    lblAssessor: 'Bedömare',
+    matrixTitle: 'Utvärderingsmatris',
+    matrixHint: 'Lägg till varje utvärderingskriterium och poängsätt det 1 (uppfyller inte ribban) till 5 (överträffar ribban). Total poäng är medelvärdet över alla rader.',
+    colCriterion: 'Kriterium',
+    colEvidence: 'Evidens',
+    colScore: 'Poäng',
+    btnAddRow: '+ Lägg till kriterium',
+    previewTitle: 'Go/No-Go-beslutsrapport',
+    previewHint: 'Detta är själva leveransen — den poängsatta matrisen plus den beräknade rekommendationen, anpassad för denna kund.',
+    btnExportHtml: '🌐 Exportera HTML',
+    btnExportMd: '📄 Exportera Markdown',
+    btnReset: '🔄 Återställ',
+    docTitle: 'Utvärderings- & Go/No-Go-beslutsrapport',
+    docFor: 'Framtagen för',
+    docAssessor: 'Bedömare',
+    docDate: 'Datum',
+    overallScore: 'Total poäng',
+    recommendation: 'Rekommendation',
+    verdictGo: 'Go',
+    verdictConditional: 'Villkorad Go',
+    verdictNogo: 'No-Go',
+    verdictGoDesc: 'Kriterier uppfyllde ribban genomgående — gå vidare till produktionsskalning.',
+    verdictConditionalDesc: 'De flesta kriterier uppfyllde ribban, men minst ett behöver åtgärdas före skalning. Ange explicita villkor innan ni fortsätter.',
+    verdictNogoDesc: 'Kriterier uppfyllde inte ribban — gå inte vidare till produktion utan en väsentligt annorlunda ansats.',
+    criteriaTable: 'Poängsatta kriterier',
+    noRows: 'Inga kriterier tillagda än.',
+    placeholderCriterion: 't.ex. Teknisk prestanda vs. framgångskriterier',
+    placeholderEvidence: 't.ex. 92% accuracy på holdout-set, uppfyller ≥90% ribba',
+    emptyNote: '(ännu inte dokumenterat)',
+  },
+};
+
+let lang = localStorage.getItem('aoa_lang') || 'en';
+function t(key) { return (STRINGS[lang] && STRINGS[lang][key] !== undefined) ? STRINGS[lang][key] : (STRINGS.en[key] !== undefined ? STRINGS.en[key] : key); }
+function esc(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+let rows = []; // { id, criterion, evidence, score }
+let nextId = 1;
+
+function setLang(l) {
+  lang = l;
+  localStorage.setItem('aoa_lang', l);
+  document.getElementById('langSelect').value = l;
+  applyI18n();
+  renderMatrix();
+  renderPreview();
+  save();
+}
+function applyI18n() {
+  document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.getAttribute('data-i18n')); });
+  document.title = t('heroTitle') + ' — Phase 4';
+  document.getElementById('sopList').innerHTML = t('sop').map(s => `<li>${esc(s)}</li>`).join('');
+}
+
+function fieldEls() { return Array.from(document.querySelectorAll('[data-eng]')); }
+function collectFields() { const o = {}; fieldEls().forEach(el => { o[el.getAttribute('data-eng')] = el.value; }); return o; }
+function restoreFields(o) { fieldEls().forEach(el => { const k = el.getAttribute('data-eng'); if (o[k] !== undefined) el.value = o[k]; }); }
+function val(k) { const el = document.querySelector(`[data-eng="${k}"]`); return el ? el.value : ''; }
+
+let savedTimer;
+function save() { try { localStorage.setItem(KEY, JSON.stringify({ fields: collectFields(), rows, nextId, lang })); flashSaved(); } catch (e) {} }
+function flashSaved() { const f = document.getElementById('savedFlag'); f.textContent = '✓'; clearTimeout(savedTimer); savedTimer = setTimeout(() => { f.textContent = ''; }, 1200); }
+function loadSaved() {
+  try {
+    const o = JSON.parse(localStorage.getItem(KEY) || '{}');
+    if (o.fields) restoreFields(o.fields);
+    if (o.rows) rows = o.rows;
+    if (o.nextId) nextId = o.nextId;
+  } catch (e) {}
+}
+
+function addRow() {
+  rows.push({ id: nextId++, criterion: '', evidence: '', score: '3' });
+  renderMatrix(); renderPreview(); save();
+}
+function removeRow(id) {
+  rows = rows.filter(r => r.id !== id);
+  renderMatrix(); renderPreview(); save();
+}
+function updateRow(id, field, value) {
+  const r = rows.find(r => r.id === id);
+  if (r) r[field] = value;
+  renderPreview(); save();
+}
+
+function overallScore() {
+  const filled = rows.filter(r => r.criterion.trim());
+  if (!filled.length) return null;
+  return filled.reduce((sum, r) => sum + Number(r.score), 0) / filled.length;
+}
+function verdictOf(score) {
+  if (score === null) return null;
+  if (score >= 4) return 'go';
+  if (score >= 2.75) return 'conditional';
+  return 'nogo';
+}
+function verdictLabel(v) { return v === 'go' ? t('verdictGo') : v === 'conditional' ? t('verdictConditional') : t('verdictNogo'); }
+function verdictDesc(v) { return v === 'go' ? t('verdictGoDesc') : v === 'conditional' ? t('verdictConditionalDesc') : t('verdictNogoDesc'); }
+function verdictClass(v) { return v === 'go' ? 'verdict-go' : v === 'conditional' ? 'verdict-conditional' : 'verdict-nogo'; }
+
+function renderMatrix() {
+  const body = document.getElementById('matrixBody');
+  if (!rows.length) { body.innerHTML = `<tr><td colspan="4" style="color:var(--muted);font-style:italic;padding:14px 8px">${esc(t('noRows'))}</td></tr>`; return; }
+  const opts = n => [1,2,3,4,5].map(v => `<option value="${v}" ${String(v)===String(n)?'selected':''}>${v}</option>`).join('');
+  body.innerHTML = rows.map(r => `<tr>
+      <td><input type="text" value="${esc(r.criterion)}" placeholder="${esc(t('placeholderCriterion'))}" oninput="updateRow(${r.id},'criterion',this.value)"></td>
+      <td><input type="text" value="${esc(r.evidence)}" placeholder="${esc(t('placeholderEvidence'))}" oninput="updateRow(${r.id},'evidence',this.value)"></td>
+      <td><select onchange="updateRow(${r.id},'score',this.value)">${opts(r.score)}</select></td>
+      <td><button class="rm-btn" onclick="removeRow(${r.id})" title="remove">✕</button></td>
+    </tr>`).join('');
+}
+
+function renderPreview() {
+  const date = new Date().toISOString().slice(0, 10);
+  const filled = rows.filter(r => r.criterion.trim());
+  const score = overallScore();
+  const verdict = verdictOf(score);
+  let h = `<div class="meta"><strong>${esc(t('docFor'))}:</strong> ${esc(val('client')) || '—'} &nbsp;·&nbsp; <strong>${esc(t('docAssessor'))}:</strong> ${esc(val('assessor')) || '—'} &nbsp;·&nbsp; <strong>${esc(t('docDate'))}:</strong> ${date}</div>`;
+  if (verdict) {
+    h += `<div class="verdict-banner ${verdictClass(verdict)}"><div class="score">${score.toFixed(1)}</div><div><strong>${esc(t('recommendation'))}: ${esc(verdictLabel(verdict))}</strong><br>${esc(verdictDesc(verdict))}</div></div>`;
+  } else {
+    h += `<p><em>${esc(t('emptyNote'))}</em></p>`;
+  }
+  h += `<h3>${esc(t('criteriaTable'))}</h3>`;
+  if (filled.length) {
+    h += `<table><thead><tr><th>${esc(t('colCriterion'))}</th><th>${esc(t('colEvidence'))}</th><th>${esc(t('colScore'))}</th></tr></thead><tbody>`;
+    h += filled.map(r => `<tr><td>${esc(r.criterion)}</td><td>${esc(r.evidence)}</td><td><strong>${r.score}</strong></td></tr>`).join('');
+    h += '</tbody></table>';
+  } else {
+    h += `<p><em>${esc(t('noRows'))}</em></p>`;
+  }
+  document.getElementById('preview').innerHTML = h;
+}
+
+document.addEventListener('input', e => { if (e.target.matches('[data-eng]')) { renderPreview(); save(); } });
+document.addEventListener('change', e => { if (e.target.matches('[data-eng]')) { renderPreview(); save(); } });
+
+function resetAll() {
+  if (!confirm('Clear all fields? / Ryd alle felter? / Rensa alla fält?')) return;
+  fieldEls().forEach(el => { el.value = ''; });
+  rows = []; nextId = 1;
+  renderMatrix(); renderPreview(); save();
+}
+
+function slug() { return (val('client') || 'evaluation_godecision').replace(/\W+/g, '_'); }
+function docMarkdown() {
+  const date = new Date().toISOString().slice(0, 10);
+  const filled = rows.filter(r => r.criterion.trim());
+  const score = overallScore();
+  const verdict = verdictOf(score);
+  let m = `# ${t('docTitle')} — ${val('client') || '[client]'}\n\n`;
+  m += `**${t('docFor')}:** ${val('client') || '—'}  \n**${t('docAssessor')}:** ${val('assessor') || '—'}  \n**${t('docDate')}:** ${date}\n\n`;
+  if (verdict) {
+    m += `## ${t('overallScore')}: ${score.toFixed(1)} — ${t('recommendation')}: ${verdictLabel(verdict)}\n\n${verdictDesc(verdict)}\n\n`;
+  } else {
+    m += `${t('emptyNote')}\n\n`;
+  }
+  m += `## ${t('criteriaTable')}\n\n`;
+  if (filled.length) {
+    m += `| ${t('colCriterion')} | ${t('colEvidence')} | ${t('colScore')} |\n|---|---|---|\n`;
+    m += filled.map(r => `| ${r.criterion} | ${r.evidence} | ${r.score} |`).join('\n') + '\n';
+  } else {
+    m += `${t('noRows')}\n`;
+  }
+  return m;
+}
+function docHtml() {
+  return '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>' + esc(t('docTitle')) + ' — ' + esc(val('client') || 'client') + '</title>'
+    + '<style>body{font-family:Inter,Segoe UI,sans-serif;color:#1c1c28;max-width:880px;margin:40px auto;padding:0 22px;line-height:1.6}'
+    + 'h1,h3{color:#1B1474;font-family:Georgia,serif}table{width:100%;border-collapse:collapse;font-size:14px}th,td{border:1px solid #e4e4f0;padding:7px 10px;text-align:left}th{background:#EEEEFA;color:#1B1474}</style></head><body>'
+    + document.getElementById('preview').outerHTML.replace('id="preview"', '')
+    + '</body></html>';
+}
+function download(text, fname, mime) {
+  const blob = new Blob([text], { type: mime });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = fname; a.click();
+  URL.revokeObjectURL(a.href);
+}
+function exportDoc(fmt) {
+  if (fmt === 'md') download(docMarkdown(), 'evaluation_godecision_' + slug() + '.md', 'text/markdown');
+  else download(docHtml(), 'evaluation_godecision_' + slug() + '.html', 'text/html');
+}
+
+(function init() {
+  document.getElementById('langSelect').value = lang;
+  loadSaved();
+  applyI18n();
+  if (!rows.length) { rows.push({ id: nextId++, criterion: '', evidence: '', score: '3' }); }
+  renderMatrix();
+  renderPreview();
+})();
+</script>
+</body>
+</html>

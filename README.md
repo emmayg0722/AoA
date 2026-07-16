@@ -46,6 +46,10 @@ its own subfolder. New phases and assets follow the same structure.
     ├── tech-stack-selection-report/   # SOP + Architecture Builder import + selection report (EN/DA/SV)
     ├── security-architecture/         # SOP + intake (protection, encryption, access, audit, injection) (EN/DA/SV)
     └── nfr-spec/                      # SOP + repeatable requirements matrix + NFR spec doc (EN/DA/SV)
+└── Phase 4 - PoC & Pilot/
+    ├── poc-planning/                  # SOP + intake + feasibility report w/ Proceed/Iterate/Stop (EN/DA/SV)
+    ├── pilot-planning/                # SOP + intake + checkpoint timeline + pilot plan doc (EN/DA/SV)
+    └── evaluation-godecision/         # SOP + scorable matrix + live Go/Conditional/No-Go verdict (EN/DA/SV)
 ```
 
 ## Phase 1 — Discovery & Assessment
@@ -117,7 +121,25 @@ All five new Phase 3 tools follow the established pattern (SOP card, autosaved
 client intake, live document preview, HTML/Markdown export, English/Danish/
 Swedish language selector).
 
-Further phases (PoC/Pilot, Implementation, Governance, MLOps) follow the same
-folder pattern and will be added over time.
+## Phase 4 — PoC & Pilot
+
+- **PoC Planning & Feasibility Report** — SOP + intake scoped to a narrow,
+  timeboxed proof-of-concept question (in scope, explicitly out of scope,
+  success criteria, demo environment), auto-generating a technical feasibility
+  report with a Proceed to Pilot / Iterate / Stop recommendation.
+- **Pilot Planning & Results Analysis** — SOP + intake (pilot scope, objective,
+  integration touchpoints, rollback plan) plus a checkpoint-timeline builder,
+  auto-generating a pilot plan document for a controlled real-world deployment.
+- **Evaluation & Go/No-Go Decision** — SOP plus a scorable evaluation matrix
+  (criterion, evidence, 1-5 score) that computes a live overall score and a
+  Go / Conditional Go / No-Go recommendation from task-specific evidence,
+  auto-generating a decision report.
+
+All three new Phase 4 tools follow the same established pattern (SOP card,
+autosaved client intake, live document preview, HTML/Markdown export,
+English/Danish/Swedish language selector).
+
+Further phases (Implementation, Governance, MLOps) follow the same folder
+pattern and will be added over time.
 
 All assessment tools run fully client-side — no data leaves the browser.
