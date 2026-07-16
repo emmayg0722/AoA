@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Architecture Decision Records — Phase 3</title>
+<meta name="description" content="ADR SOP, a repeatable decision-record builder, and an auto-generated architecture decision records document.">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='16' fill='%231B1474'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #1B1474; --primary-dark: #120D52; --accent: #DCDDF6; --powder: #EEEEFA;
+    --ink: #1c1c28; --muted: #5b5b6b; --line: #e4e4f0;
+    --green: #1a8a5c; --amber: #d4790e; --red: #c0392b;
+    --font-heading: 'Fraunces', Georgia, serif;
+    --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: var(--font-body); color: var(--ink); background: #fafaff; line-height: 1.6; }
+  .hero { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: #fff; padding: 44px 24px 36px; }
+  .wrap { max-width: 1100px; margin: 0 auto; }
+  .crumb { font-size: 13px; color: var(--accent); margin-bottom: 10px; }
+  .crumb a { color: var(--accent); text-decoration: none; }
+  .hero-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; flex-wrap: wrap; }
+  .hero h1 { font-family: var(--font-heading); font-weight: 700; font-size: 34px; line-height: 1.15; }
+  .hero p { margin-top: 10px; font-size: 15.5px; color: #dcdcf2; max-width: 680px; }
+  select#langSelect { font-family: var(--font-body); font-size: 13px; font-weight: 600; border: 1.5px solid rgba(255,255,255,0.4); background: rgba(255,255,255,0.08); color: #fff; border-radius: 8px; padding: 7px 10px; }
+  select#langSelect option { color: var(--ink); }
+  main { max-width: 1100px; margin: 0 auto; padding: 28px 24px 80px; }
+  .note { background: var(--powder); border: 1px solid var(--accent); border-radius: 12px; padding: 14px 16px; font-size: 14px; color: var(--muted); margin-bottom: 26px; }
+  .note strong { color: var(--primary); }
+  .card { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 22px 24px; margin-bottom: 20px; }
+  .card > h2 { font-family: var(--font-heading); font-weight: 600; font-size: 21px; color: var(--primary); margin-bottom: 4px; }
+  .card .hint { font-size: 13.5px; color: var(--muted); margin-bottom: 14px; }
+  ol.sop { margin-left: 20px; }
+  ol.sop li { margin-bottom: 10px; font-size: 14px; }
+  label { display: block; font-size: 13px; font-weight: 600; color: var(--ink); margin: 10px 0 5px; }
+  input[type=text], textarea, select.field { width: 100%; font-family: var(--font-body); font-size: 14px; color: var(--ink); border: 1.5px solid var(--line); border-radius: 8px; padding: 9px 11px; background: #fff; }
+  textarea { resize: vertical; min-height: 55px; }
+  input:focus, textarea:focus, select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(27,20,116,0.12); }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; }
+  .btn { font-family: var(--font-body); font-size: 13.5px; font-weight: 600; padding: 9px 16px; border-radius: 8px; border: none; cursor: pointer; transition: all 0.15s; }
+  .btn-primary { background: var(--accent); color: var(--primary); }
+  .btn-primary:hover { background: #C3C5EC; }
+  .btn-secondary { background: #fff; color: var(--primary); border: 1.5px solid var(--accent); }
+  .btn-secondary:hover { background: var(--powder); }
+  .btn-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px; }
+  .adr-card { border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; margin-bottom: 14px; position: relative; }
+  .adr-card .adr-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .adr-id { font-family: var(--font-heading); font-weight: 700; color: var(--primary); font-size: 15px; }
+  .status-badge { font-size: 11px; font-weight: 700; padding: 2px 9px; border-radius: 10px; text-transform: uppercase; }
+  .status-proposed { background: var(--powder); color: var(--primary); }
+  .status-accepted { background: #d7f0e3; color: var(--green); }
+  .status-deprecated { background: #fbe3df; color: var(--red); }
+  .status-superseded { background: #fbe8cf; color: var(--amber); }
+  .preview { border: 1px dashed var(--line); border-radius: 10px; padding: 18px 20px; background: #fcfcff; font-size: 14px; }
+  .preview h3 { font-family: var(--font-heading); color: var(--primary); font-size: 16px; margin: 14px 0 6px; }
+  .preview h3:first-child { margin-top: 0; }
+  .preview p { margin: 6px 0; white-space: pre-wrap; }
+  .preview .meta { font-size: 13px; color: var(--muted); margin-bottom: 10px; }
+  .saved { font-size: 12.5px; color: var(--green); margin-left: 8px; }
+  .rm-btn { background: none; border: none; color: var(--red); cursor: pointer; font-size: 15px; }
+  @media (max-width: 680px) { .grid2 { grid-template-columns: 1fr; } .hero h1 { font-size: 27px; } }
+</style>
+</head>
+<body>
+  <header class="hero"><div class="wrap">
+    <div class="hero-top">
+      <div class="crumb"><a href="../">AI Architect Toolkit</a> · Phase 3 · Architecture Design</div>
+      <select id="langSelect" onchange="setLang(this.value)">
+        <option value="en">English</option>
+        <option value="da">Dansk</option>
+        <option value="sv">Svenska</option>
+      </select>
+    </div>
+    <h1 data-i18n="heroTitle"></h1>
+    <p data-i18n="heroDesc"></p>
+  </div></header>
+
+  <main>
+    <div class="note"><strong data-i18n="noteLabel"></strong> <span data-i18n="noteBody"></span></div>
+
+    <div class="card">
+      <h2 data-i18n="sopTitle"></h2>
+      <p class="hint" data-i18n="sopHint"></p>
+      <ol class="sop" id="sopList"></ol>
+    </div>
+
+    <div class="card">
+      <h2 data-i18n="clientTitle"></h2>
+      <div class="grid2">
+        <div><label data-i18n="lblClient"></label><input type="text" data-eng="client" placeholder="Acme Corp"></div>
+        <div><label data-i18n="lblAssessor"></label><input type="text" data-eng="assessor"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2 data-i18n="adrTitle"></h2>
+      <p class="hint" data-i18n="adrHint"></p>
+      <div id="adrList"></div>
+      <div class="btn-row"><button class="btn btn-secondary" onclick="addAdr()" data-i18n="btnAddAdr"></button></div>
+    </div>
+
+    <div class="card">
+      <h2 data-i18n="previewTitle"></h2>
+      <p class="hint" data-i18n="previewHint"></p>
+      <div class="preview" id="preview"></div>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="exportDoc('html')" data-i18n="btnExportHtml"></button>
+        <button class="btn btn-primary" onclick="exportDoc('md')" data-i18n="btnExportMd"></button>
+        <button class="btn btn-secondary" onclick="resetAll()" data-i18n="btnReset"></button>
+        <span class="saved" id="savedFlag"></span>
+      </div>
+    </div>
+  </main>
+
+<script>
+const KEY = 'aoa_adr_v1';
+
+const STRINGS = {
+  en: {
+    heroTitle: 'Architecture Decision Records',
+    heroDesc: 'SOP, a repeatable decision-record builder, and an auto-generated ADR log.',
+    noteLabel: 'How this works.',
+    noteBody: 'Add one ADR per significant decision; the document preview builds live, formatted as a standard ADR log. No API calls — everything autosaves locally.',
+    sopTitle: 'SOP — how this is usually done',
+    sopHint: 'The order an architect actually works this exercise in.',
+    sop: [
+      'Write one ADR per architecturally significant decision — not every decision, only ones that would be expensive to reverse or that a future architect would ask "why did we do it this way?" about.',
+      'State the context objectively — what forces (technical, business, organizational) made this decision necessary, without pre-justifying the answer.',
+      'State the decision in one clear sentence, then the consequences — both the benefits and the trade-offs accepted.',
+      'Mark status honestly: Proposed while under review, Accepted once ratified, Deprecated or Superseded (with a link to the replacing ADR) when it changes later.',
+      'Never delete an ADR — supersede it. The historical record of why past decisions were made is often more valuable than the current decision itself.',
+    ],
+    clientTitle: 'Client',
+    lblClient: 'Client / engagement',
+    lblAssessor: 'Assessor',
+    adrTitle: 'Decision records',
+    adrHint: 'Add one card per architectural decision.',
+    btnAddAdr: '+ Add decision record',
+    lblTitle: 'Title',
+    lblStatus: 'Status',
+    statusProposed: 'Proposed',
+    statusAccepted: 'Accepted',
+    statusDeprecated: 'Deprecated',
+    statusSuperseded: 'Superseded',
+    lblContext: 'Context',
+    lblDecision: 'Decision',
+    lblConsequences: 'Consequences',
+    previewTitle: 'ADR document',
+    previewHint: 'This is the actual deliverable — the ADR log, auto-generated and customized for this client.',
+    btnExportHtml: '🌐 Export HTML',
+    btnExportMd: '📄 Export Markdown',
+    btnReset: '🔄 Reset',
+    docTitle: 'Architecture Decision Records',
+    docFor: 'Prepared for',
+    docAssessor: 'Assessor',
+    docDate: 'Date',
+    noAdrs: 'No decision records added yet.',
+    placeholderTitle: 'e.g. Use LangGraph for orchestration',
+  },
+  da: {
+    heroTitle: 'Arkitekturbeslutningsregistre',
+    heroDesc: 'SOP, en gentagelig beslutningsregister-bygger, og en automatisk genereret ADR-log.',
+    noteLabel: 'Sådan virker det.',
+    noteBody: 'Tilføj en ADR pr. væsentlig beslutning; dokumentforhåndsvisningen opbygges live, formateret som en standard ADR-log. Ingen API-kald — alt gemmes automatisk lokalt.',
+    sopTitle: 'SOP — sådan gøres det normalt',
+    sopHint: 'Rækkefølgen en arkitekt reelt arbejder denne øvelse igennem.',
+    sop: [
+      'Skriv én ADR pr. arkitektonisk væsentlig beslutning — ikke alle beslutninger, kun dem der ville være dyre at fortryde, eller som en fremtidig arkitekt ville spørge "hvorfor gjorde vi det sådan?" om.',
+      'Angiv konteksten objektivt — hvilke kræfter (tekniske, forretningsmæssige, organisatoriske) gjorde denne beslutning nødvendig, uden at forhåndsretfærdiggøre svaret.',
+      'Angiv beslutningen i én klar sætning, derefter konsekvenserne — både fordelene og de accepterede afvejninger.',
+      'Markér status ærligt: Proposed under review, Accepted når ratificeret, Deprecated eller Superseded (med link til den erstattende ADR), når den ændres senere.',
+      'Slet aldrig en ADR — afløs den. Det historiske referat af, hvorfor tidligere beslutninger blev truffet, er ofte mere værdifuldt end den nuværende beslutning selv.',
+    ],
+    clientTitle: 'Kunde',
+    lblClient: 'Kunde / engagement',
+    lblAssessor: 'Vurderingsmand',
+    adrTitle: 'Beslutningsregistre',
+    adrHint: 'Tilføj et kort pr. arkitektonisk beslutning.',
+    btnAddAdr: '+ Tilføj beslutningsregister',
+    lblTitle: 'Titel',
+    lblStatus: 'Status',
+    statusProposed: 'Foreslået',
+    statusAccepted: 'Godkendt',
+    statusDeprecated: 'Udfaset',
+    statusSuperseded: 'Afløst',
+    lblContext: 'Kontekst',
+    lblDecision: 'Beslutning',
+    lblConsequences: 'Konsekvenser',
+    previewTitle: 'ADR-dokument',
+    previewHint: 'Dette er selve leverancen — ADR-loggen, automatisk genereret og tilpasset denne kunde.',
+    btnExportHtml: '🌐 Eksportér HTML',
+    btnExportMd: '📄 Eksportér Markdown',
+    btnReset: '🔄 Nulstil',
+    docTitle: 'Arkitekturbeslutningsregistre',
+    docFor: 'Udarbejdet for',
+    docAssessor: 'Vurderingsmand',
+    docDate: 'Dato',
+    noAdrs: 'Ingen beslutningsregistre tilføjet endnu.',
+    placeholderTitle: 'fx Brug LangGraph til orkestrering',
+  },
+  sv: {
+    heroTitle: 'Arkitekturbeslutsregister',
+    heroDesc: 'SOP, en upprepningsbar beslutsregisterbyggare, och en automatiskt genererad ADR-logg.',
+    noteLabel: 'Så här fungerar det.',
+    noteBody: 'Lägg till en ADR per betydande beslut; dokumentförhandsgranskningen byggs upp live, formaterad som en standard-ADR-logg. Inga API-anrop — allt sparas automatiskt lokalt.',
+    sopTitle: 'SOP — så här görs det vanligtvis',
+    sopHint: 'Ordningen en arkitekt faktiskt arbetar igenom denna övning.',
+    sop: [
+      'Skriv en ADR per arkitektoniskt betydande beslut — inte varje beslut, bara de som skulle vara dyra att ändra, eller som en framtida arkitekt skulle fråga "varför gjorde vi så här?" om.',
+      'Ange kontexten objektivt — vilka krafter (tekniska, affärsmässiga, organisatoriska) gjorde detta beslut nödvändigt, utan att förrättfärdiga svaret i förväg.',
+      'Ange beslutet i en tydlig mening, sedan konsekvenserna — både fördelarna och de accepterade avvägningarna.',
+      'Markera status ärligt: Proposed under granskning, Accepted när ratificerad, Deprecated eller Superseded (med länk till den ersättande ADR:n) när den ändras senare.',
+      'Ta aldrig bort en ADR — ersätt den. Den historiska redogörelsen för varför tidigare beslut fattades är ofta mer värdefull än det aktuella beslutet självt.',
+    ],
+    clientTitle: 'Kund',
+    lblClient: 'Kund / uppdrag',
+    lblAssessor: 'Bedömare',
+    adrTitle: 'Beslutsregister',
+    adrHint: 'Lägg till ett kort per arkitektoniskt beslut.',
+    btnAddAdr: '+ Lägg till beslutsregister',
+    lblTitle: 'Titel',
+    lblStatus: 'Status',
+    statusProposed: 'Föreslagen',
+    statusAccepted: 'Godkänd',
+    statusDeprecated: 'Utfasad',
+    statusSuperseded: 'Ersatt',
+    lblContext: 'Kontext',
+    lblDecision: 'Beslut',
+    lblConsequences: 'Konsekvenser',
+    previewTitle: 'ADR-dokument',
+    previewHint: 'Detta är själva leveransen — ADR-loggen, automatiskt genererad och anpassad för denna kund.',
+    btnExportHtml: '🌐 Exportera HTML',
+    btnExportMd: '📄 Exportera Markdown',
+    btnReset: '🔄 Återställ',
+    docTitle: 'Arkitekturbeslutsregister',
+    docFor: 'Framtagen för',
+    docAssessor: 'Bedömare',
+    docDate: 'Datum',
+    noAdrs: 'Inga beslutsregister tillagda än.',
+    placeholderTitle: 't.ex. Använd LangGraph för orkestrering',
+  },
+};
+
+let lang = localStorage.getItem('aoa_lang') || 'en';
+function t(key) { return (STRINGS[lang] && STRINGS[lang][key] !== undefined) ? STRINGS[lang][key] : (STRINGS.en[key] !== undefined ? STRINGS.en[key] : key); }
+function esc(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+let adrs = [];
+let nextId = 1;
+const STATUS_KEYS = { proposed: 'statusProposed', accepted: 'statusAccepted', deprecated: 'statusDeprecated', superseded: 'statusSuperseded' };
+
+function setLang(l) { lang = l; localStorage.setItem('aoa_lang', l); document.getElementById('langSelect').value = l; applyI18n(); renderAdrs(); renderPreview(); save(); }
+function applyI18n() {
+  document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.getAttribute('data-i18n')); });
+  document.title = t('heroTitle') + ' — Phase 3';
+  document.getElementById('sopList').innerHTML = t('sop').map(s => `<li>${esc(s)}</li>`).join('');
+}
+
+function fieldEls() { return Array.from(document.querySelectorAll('[data-eng]')); }
+function collectFields() { const o = {}; fieldEls().forEach(el => { o[el.getAttribute('data-eng')] = el.value; }); return o; }
+function restoreFields(o) { fieldEls().forEach(el => { const k = el.getAttribute('data-eng'); if (o[k] !== undefined) el.value = o[k]; }); }
+function val(k) { const el = document.querySelector(`[data-eng="${k}"]`); return el ? el.value : ''; }
+
+let savedTimer;
+function save() { try { localStorage.setItem(KEY, JSON.stringify({ fields: collectFields(), adrs, nextId, lang })); flashSaved(); } catch (e) {} }
+function flashSaved() { const f = document.getElementById('savedFlag'); f.textContent = '✓'; clearTimeout(savedTimer); savedTimer = setTimeout(() => { f.textContent = ''; }, 1200); }
+function loadSaved() {
+  try {
+    const o = JSON.parse(localStorage.getItem(KEY) || '{}');
+    if (o.fields) restoreFields(o.fields);
+    if (o.adrs) adrs = o.adrs;
+    if (o.nextId) nextId = o.nextId;
+  } catch (e) {}
+}
+
+function addAdr() { adrs.push({ id: nextId++, title: '', status: 'proposed', context: '', decision: '', consequences: '' }); renderAdrs(); renderPreview(); save(); }
+function removeAdr(id) { adrs = adrs.filter(a => a.id !== id); renderAdrs(); renderPreview(); save(); }
+function updateAdr(id, field, value) { const a = adrs.find(a => a.id === id); if (a) a[field] = value; renderPreview(); save(); if (field === 'status') renderAdrs(); }
+
+function renderAdrs() {
+  const list = document.getElementById('adrList');
+  if (!adrs.length) { list.innerHTML = `<p style="color:var(--muted);font-style:italic">${esc(t('noAdrs'))}</p>`; return; }
+  list.innerHTML = adrs.map((a, i) => {
+    const num = String(i + 1).padStart(3, '0');
+    return `<div class="adr-card">
+      <div class="adr-head">
+        <span class="adr-id">ADR-${num}</span>
+        <button class="rm-btn" onclick="removeAdr(${a.id})">✕</button>
+      </div>
+      <label>${esc(t('lblTitle'))}</label>
+      <input type="text" value="${esc(a.title)}" placeholder="${esc(t('placeholderTitle'))}" oninput="updateAdr(${a.id},'title',this.value)">
+      <label>${esc(t('lblStatus'))}</label>
+      <select onchange="updateAdr(${a.id},'status',this.value)">
+        ${Object.entries(STATUS_KEYS).map(([v, k]) => `<option value="${v}" ${a.status === v ? 'selected' : ''}>${esc(t(k))}</option>`).join('')}
+      </select>
+      <label>${esc(t('lblContext'))}</label>
+      <textarea oninput="updateAdr(${a.id},'context',this.value)">${esc(a.context)}</textarea>
+      <label>${esc(t('lblDecision'))}</label>
+      <textarea oninput="updateAdr(${a.id},'decision',this.value)">${esc(a.decision)}</textarea>
+      <label>${esc(t('lblConsequences'))}</label>
+      <textarea oninput="updateAdr(${a.id},'consequences',this.value)">${esc(a.consequences)}</textarea>
+    </div>`;
+  }).join('');
+}
+
+function renderPreview() {
+  const date = new Date().toISOString().slice(0, 10);
+  let h = `<div class="meta"><strong>${esc(t('docFor'))}:</strong> ${esc(val('client')) || '—'} &nbsp;·&nbsp; <strong>${esc(t('docAssessor'))}:</strong> ${esc(val('assessor')) || '—'} &nbsp;·&nbsp; <strong>${esc(t('docDate'))}:</strong> ${date}</div>`;
+  const filled = adrs.filter(a => a.title.trim());
+  if (!filled.length) { h += `<p><em>${esc(t('noAdrs'))}</em></p>`; }
+  else {
+    filled.forEach((a, i) => {
+      const num = String(i + 1).padStart(3, '0');
+      const statusLabel = t(STATUS_KEYS[a.status] || 'statusProposed');
+      h += `<h3>ADR-${num}: ${esc(a.title)} <span class="status-badge status-${a.status}">${esc(statusLabel)}</span></h3>`;
+      h += `<p><strong>${esc(t('lblContext'))}:</strong> ${esc(a.context) || '—'}</p>`;
+      h += `<p><strong>${esc(t('lblDecision'))}:</strong> ${esc(a.decision) || '—'}</p>`;
+      h += `<p><strong>${esc(t('lblConsequences'))}:</strong> ${esc(a.consequences) || '—'}</p>`;
+    });
+  }
+  document.getElementById('preview').innerHTML = h;
+}
+
+document.addEventListener('input', e => { if (e.target.matches('[data-eng]')) { renderPreview(); save(); } });
+document.addEventListener('change', e => { if (e.target.matches('[data-eng]')) { renderPreview(); save(); } });
+
+function resetAll() {
+  if (!confirm('Clear all fields? / Ryd alle felter? / Rensa alla fält?')) return;
+  fieldEls().forEach(el => { el.value = ''; });
+  adrs = []; nextId = 1;
+  renderAdrs(); renderPreview(); save();
+}
+
+function slug() { return (val('client') || 'adr').replace(/\W+/g, '_'); }
+function docMarkdown() {
+  const date = new Date().toISOString().slice(0, 10);
+  const filled = adrs.filter(a => a.title.trim());
+  let m = `# ${t('docTitle')} — ${val('client') || '[client]'}\n\n`;
+  m += `**${t('docFor')}:** ${val('client') || '—'}  \n**${t('docAssessor')}:** ${val('assessor') || '—'}  \n**${t('docDate')}:** ${date}\n\n`;
+  if (!filled.length) { m += `${t('noAdrs')}\n`; }
+  else {
+    filled.forEach((a, i) => {
+      const num = String(i + 1).padStart(3, '0');
+      const statusLabel = t(STATUS_KEYS[a.status] || 'statusProposed');
+      m += `## ADR-${num}: ${a.title} (${statusLabel})\n\n`;
+      m += `**${t('lblContext')}:** ${a.context || '—'}  \n`;
+      m += `**${t('lblDecision')}:** ${a.decision || '—'}  \n`;
+      m += `**${t('lblConsequences')}:** ${a.consequences || '—'}\n\n`;
+    });
+  }
+  return m;
+}
+function docHtml() {
+  return '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>' + esc(t('docTitle')) + ' — ' + esc(val('client') || 'client') + '</title>'
+    + '<style>body{font-family:Inter,Segoe UI,sans-serif;color:#1c1c28;max-width:880px;margin:40px auto;padding:0 22px;line-height:1.6}'
+    + 'h1,h3{color:#1B1474;font-family:Georgia,serif}.status-badge{font-size:11px;font-weight:700;padding:2px 9px;border-radius:10px;background:#EEEEFA;color:#1B1474;margin-left:8px}</style></head><body>'
+    + document.getElementById('preview').outerHTML.replace('id="preview"', '')
+    + '</body></html>';
+}
+function download(text, fname, mime) {
+  const blob = new Blob([text], { type: mime });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = fname; a.click();
+  URL.revokeObjectURL(a.href);
+}
+function exportDoc(fmt) {
+  if (fmt === 'md') download(docMarkdown(), 'adr_' + slug() + '.md', 'text/markdown');
+  else download(docHtml(), 'adr_' + slug() + '.html', 'text/html');
+}
+
+(function init() {
+  document.getElementById('langSelect').value = lang;
+  loadSaved();
+  applyI18n();
+  if (!adrs.length) { adrs.push({ id: nextId++, title: '', status: 'proposed', context: '', decision: '', consequences: '' }); }
+  renderAdrs();
+  renderPreview();
+})();
+</script>
+</body>
+</html>

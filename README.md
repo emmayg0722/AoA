@@ -37,9 +37,15 @@ its own subfolder. New phases and assets follow the same structure.
     ├── technology-roadmap/            # SOP + platform-strategy intake + milestone timeline (EN/DA/SV)
     └── organizational-roadmap/        # SOP + intake (CoE, talent, structure, partners) (EN/DA/SV)
 └── Phase 3 - Architecture Design/
-    └── Design Layers/                 # 18-layer agentic AI architecture reference
-        ├── README.md                  # Overview, reshaped stack diagrams, ERP example
-        └── layers/                    # One file per layer (01-core-intelligence.md ... 18-agent-types.md)
+    ├── Design Layers/                 # 18-layer agentic AI architecture reference
+    │   ├── README.md                  # Overview, reshaped stack diagrams, ERP example
+    │   ├── architecture-builder.html  # 14-layer comparison table + "lego" architecture selector
+    │   └── layers/                    # One file per layer (01-core-intelligence.md ... 18-agent-types.md)
+    ├── architecture-blueprint/        # SOP + intake + Architecture Builder import + blueprint doc (EN/DA/SV)
+    ├── architecture-decision-records/ # SOP + repeatable ADR card builder + decision-log doc (EN/DA/SV)
+    ├── tech-stack-selection-report/   # SOP + Architecture Builder import + selection report (EN/DA/SV)
+    ├── security-architecture/         # SOP + intake (protection, encryption, access, audit, injection) (EN/DA/SV)
+    └── nfr-spec/                      # SOP + repeatable requirements matrix + NFR spec doc (EN/DA/SV)
 ```
 
 ## Phase 1 — Discovery & Assessment
@@ -88,7 +94,28 @@ now used across the toolkit.
   tools/actions, RAG, memory, planning, human-in-the-loop, evaluation, observability,
   guardrails, security/governance, deployment, business integration, data, prompts,
   workflow, cost, and agent types), plus a worked ERP example and an architect's
-  checklist.
+  checklist. The companion **Architecture Builder** turns 14 of those layers into
+  a comparison table with a "pick one per layer" selector that assembles a
+  recommended stack for a specific client.
+- **Architecture Blueprint** — SOP + intake (exec summary, overall/data/AI-ML/
+  integration architecture, tech selections), with a one-click import of your
+  Architecture Builder picks, auto-generating an architecture blueprint document.
+- **Architecture Decision Records** — SOP plus a repeatable ADR card builder
+  (title, status, context, decision, consequences), auto-generating a numbered
+  decision-log document.
+- **Tech Stack Selection Report** — SOP, an optional import of your Architecture
+  Builder picks into a stack table, plus rationale/alternatives/risks intake,
+  auto-generating a selection report.
+- **Security Architecture** — SOP + intake covering data protection, encryption,
+  access control, auditability, and prompt-injection defenses, auto-generating a
+  security architecture document.
+- **Non-Functional Requirements Spec** — SOP plus a repeatable requirements
+  matrix (category, requirement, target, MoSCoW priority), auto-generating an
+  NFR specification document.
+
+All five new Phase 3 tools follow the established pattern (SOP card, autosaved
+client intake, live document preview, HTML/Markdown export, English/Danish/
+Swedish language selector).
 
 Further phases (PoC/Pilot, Implementation, Governance, MLOps) follow the same
 folder pattern and will be added over time.
