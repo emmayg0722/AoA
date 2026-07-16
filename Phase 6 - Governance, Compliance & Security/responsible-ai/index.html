@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Responsible AI &amp; Bias Audit — Phase 6</title>
+<meta name="description" content="Responsible AI SOP, client intake, a bias/fairness audit matrix, and an auto-generated bias audit report covering fairness, transparency, and privacy.">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='16' fill='%231B1474'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #1B1474; --primary-dark: #120D52; --accent: #DCDDF6; --powder: #EEEEFA;
+    --ink: #1c1c28; --muted: #5b5b6b; --line: #e4e4f0;
+    --green: #1a8a5c; --amber: #d4790e; --red: #c0392b;
+    --font-heading: 'Fraunces', Georgia, serif;
+    --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: var(--font-body); color: var(--ink); background: #fafaff; line-height: 1.6; }
+  .hero { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: #fff; padding: 44px 24px 36px; }
+  .wrap { max-width: 1100px; margin: 0 auto; }
+  .crumb { font-size: 13px; color: var(--accent); margin-bottom: 10px; }
+  .crumb a { color: var(--accent); text-decoration: none; }
+  .hero-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; flex-wrap: wrap; }
+  .hero h1 { font-family: var(--font-heading); font-weight: 700; font-size: 34px; line-height: 1.15; }
+  .hero p { margin-top: 10px; font-size: 15.5px; color: #dcdcf2; max-width: 680px; }
+  select#langSelect { font-family: var(--font-body); font-size: 13px; font-weight: 600; border: 1.5px solid rgba(255,255,255,0.4); background: rgba(255,255,255,0.08); color: #fff; border-radius: 8px; padding: 7px 10px; }
+  select#langSelect option { color: var(--ink); }
+  main { max-width: 1100px; margin: 0 auto; padding: 28px 24px 80px; }
+  .note { background: var(--powder); border: 1px solid var(--accent); border-radius: 12px; padding: 14px 16px; font-size: 14px; color: var(--muted); margin-bottom: 26px; }
+  .note strong { color: var(--primary); }
+  .card { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 22px 24px; margin-bottom: 20px; }
+  .card > h2 { font-family: var(--font-heading); font-weight: 600; font-size: 21px; color: var(--primary); margin-bottom: 4px; }
+  .card .hint { font-size: 13.5px; color: var(--muted); margin-bottom: 14px; }
+  ol.sop { margin-left: 20px; }
+  ol.sop li { margin-bottom: 10px; font-size: 14px; }
+  label { display: block; font-size: 13px; font-weight: 600; color: var(--ink); margin: 10px 0 5px; }
+  input[type=text], textarea, select.field { width: 100%; font-family: var(--font-body); font-size: 14px; color: var(--ink); border: 1.5px solid var(--line); border-radius: 8px; padding: 9px 11px; background: #fff; }
+  textarea { resize: vertical; min-height: 70px; }
+  input:focus, textarea:focus, select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(27,20,116,0.12); }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; }
+  .btn { font-family: var(--font-body); font-size: 13.5px; font-weight: 600; padding: 9px 16px; border-radius: 8px; border: none; cursor: pointer; transition: all 0.15s; }
+  .btn-primary { background: var(--accent); color: var(--primary); }
+  .btn-primary:hover { background: #C3C5EC; }
+  .btn-secondary { background: #fff; color: var(--primary); border: 1.5px solid var(--accent); }
+  .btn-secondary:hover { background: var(--powder); }
+  .btn-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px; }
+  table.matrix { width: 100%; border-collapse: collapse; font-size: 13.5px; margin-top: 10px; }
+  table.matrix th { text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); padding: 6px 8px; border-bottom: 2px solid var(--line); }
+  table.matrix td { padding: 6px 8px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+  table.matrix input[type=text] { padding: 6px 8px; font-size: 13px; }
+  table.matrix select { padding: 6px 6px; font-size: 13px; }
+  .rm-btn { background: none; border: none; color: var(--red); cursor: pointer; font-size: 15px; }
+  .status-badge { display: inline-block; font-size: 10.5px; font-weight: 700; padding: 2px 8px; border-radius: 10px; white-space: nowrap; }
+  .status-pass { background: #e7f5ee; color: var(--green); }
+  .status-concern { background: #fdf3e3; color: var(--amber); }
+  .status-fail { background: #fbeaea; color: var(--red); }
+  .status-pending { background: var(--powder); color: var(--muted); }
+  .preview { border: 1px dashed var(--line); border-radius: 10px; padding: 18px 20px; background: #fcfcff; font-size: 14px; }
+  .preview h3 { font-family: var(--font-heading); color: var(--primary); font-size: 16px; margin: 14px 0 6px; }
+  .preview h3:first-child { margin-top: 0; }
+  .preview p { margin: 6px 0; white-space: pre-wrap; }
+  .preview .meta { font-size: 13px; color: var(--muted); margin-bottom: 10px; }
+  .preview table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 8px 0; }
+  .preview th, .preview td { border: 1px solid var(--line); padding: 6px 9px; text-align: left; }
+  .preview th { background: var(--powder); color: var(--primary); }
+  .saved { font-size: 12.5px; color: var(--green); margin-left: 8px; }
+  @media (max-width: 720px) { .grid2 { grid-template-columns: 1fr; } .hero h1 { font-size: 27px; } table.matrix { font-size: 12px; } }
+</style>
+</head>
+<body>
+  <header class="hero"><div class="wrap">
+    <div class="hero-top">
+      <div class="crumb"><a href="../">AI Architect Toolkit</a> · Phase 6 · Governance, Compliance &amp; Security</div>
+      <select id="langSelect" onchange="setLang(this.value)">
+        <option value="en">English</option>
+        <option value="da">Dansk</option>
+        <option value="sv">Svenska</option>
+      </select>
+    </div>
+    <h1 data-i18n="heroTitle"></h1>
+    <p data-i18n="heroDesc"></p>
+  </div></header>
+
+  <main>
+    <div class="note"><strong data-i18n="noteLabel"></strong> <span data-i18n="noteBody"></span></div>
+
+    <div class="card">
+      <h2 data-i18n="sopTitle"></h2>
+      <p class="hint" data-i18n="sopHint"></p>
+      <ol class="sop" id="sopList"></ol>
+    </div>
+
+    <div class="card">
+      <h2 data-i18n="intakeTitle"></h2>
+      <div class="grid2">
+        <div><label data-i18n="lblClient"></label><input type="text" data-eng="client" placeholder="Acme Corp"></div>
+        <div><label data-i18n="lblAssessor"></label><input type="text" data-eng="assessor"></div>
+      </div>
+      <label data-i18n="lblTransparency"></label>
+      <textarea data-eng="transparency" placeholder="How are decisions explained to the people affected by them?"></textarea>
+      <label data-i18n="lblPrivacy"></label>
+      <textarea data-eng="privacy" placeholder="Differential privacy, federated learning, data minimization, retention limits"></textarea>
+    </div>
+
+    <div class="card">
+      <h2 data-i18n="matrixTitle"></h2>
+      <p class="hint" data-i18n="matrixHint"></p>
+      <table class="matrix">
+        <thead><tr><th data-i18n="colDimension"></th><th data-i18n="colMethod"></th><th data-i18n="colFinding"></th><th data-i18n="colStatus"></th><th></th></tr></thead>
+        <tbody id="matrixBody"></tbody>
+      </table>
+      <div class="btn-row"><button class="btn btn-secondary" onclick="addRow()" data-i18n="btnAddRow"></button></div>
+    </div>
+
+    <div class="card">
+      <h2 data-i18n="previewTitle"></h2>
+      <p class="hint" data-i18n="previewHint"></p>
+      <div class="preview" id="preview"></div>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="exportDoc('html')" data-i18n="btnExportHtml"></button>
+        <button class="btn btn-primary" onclick="exportDoc('md')" data-i18n="btnExportMd"></button>
+        <button class="btn btn-secondary" onclick="resetAll()" data-i18n="btnReset"></button>
+        <span class="saved" id="savedFlag"></span>
+      </div>
+    </div>
+  </main>
+
+<script>
+const KEY = 'aoa_responsible_ai_v1';
+const STATUS_KEYS = { pass: 'statusPass', concern: 'statusConcern', fail: 'statusFail', pending: 'statusPending' };
+
+const STRINGS = {
+  en: {
+    heroTitle: 'Responsible AI & Bias Audit',
+    heroDesc: 'SOP, client intake, a bias/fairness audit matrix, and an auto-generated bias audit report covering fairness, transparency, and privacy.',
+    noteLabel: 'How this works.',
+    noteBody: 'Fill in the intake fields and audit matrix below; the report preview builds live. No API calls — everything autosaves locally.',
+    sopTitle: 'SOP — how this is usually done',
+    sopHint: 'The order an architect actually works this exercise in.',
+    sop: [
+      'Identify which protected attributes or fairness dimensions are relevant to this use case (e.g. age, gender, geography, income proxy variables) before running any test — the dimensions to check depend entirely on the decision being made.',
+      'Run bias detection: compare outcome rates and error rates across groups on representative (not just training) data, and document the specific metric used for each dimension (e.g. demographic parity, equalized odds).',
+      'Where a bias finding surfaces, evaluate mitigation options (reweighting, threshold adjustment, feature review) and their trade-offs against overall performance — mitigation is a design decision, not an afterthought patch.',
+      'Design for transparency and explainability: what can be shown to an affected person about why a decision was made, at a level they can actually use.',
+      'Confirm privacy protections are in place (differential privacy, federated learning, data minimization, retention limits) — fairness and privacy are related but separate obligations, both need explicit coverage.',
+    ],
+    intakeTitle: 'Client & responsible AI intake',
+    lblClient: 'Client / engagement',
+    lblAssessor: 'Assessor',
+    lblTransparency: 'Transparency & explainability approach',
+    lblPrivacy: 'Privacy protection measures',
+    matrixTitle: 'Bias & fairness audit matrix',
+    matrixHint: 'Add each dimension assessed, the method used, and the finding.',
+    colDimension: 'Dimension',
+    colMethod: 'Assessment method',
+    colFinding: 'Finding',
+    colStatus: 'Status',
+    btnAddRow: '+ Add dimension',
+    statusPass: 'Pass',
+    statusConcern: 'Concern',
+    statusFail: 'Fail',
+    statusPending: 'Pending',
+    previewTitle: 'Bias audit & responsible AI report',
+    previewHint: 'This is the actual deliverable — auto-generated and customized for this client.',
+    btnExportHtml: '🌐 Export HTML',
+    btnExportMd: '📄 Export Markdown',
+    btnReset: '🔄 Reset',
+    docTitle: 'Bias Audit & Responsible AI Report',
+    docFor: 'Prepared for',
+    docAssessor: 'Assessor',
+    docDate: 'Date',
+    secTransparency: '1. Transparency & Explainability',
+    secPrivacy: '2. Privacy Protection',
+    secMatrix: '3. Bias & Fairness Audit',
+    noRows: 'No dimensions added yet.',
+    placeholderDimension: 'e.g. Gender',
+    placeholderMethod: 'e.g. Equalized odds on holdout set',
+    placeholderFinding: 'e.g. 3pt gap in false-positive rate',
+    emptyNote: '(not yet documented)',
+  },
+  da: {
+    heroTitle: 'Ansvarlig AI & Bias-audit',
+    heroDesc: 'SOP, kundeoptag, en bias-/fairness-auditmatrix, og en automatisk genereret bias-auditrapport, der dækker fairness, transparens og privatliv.',
+    noteLabel: 'Sådan virker det.',
+    noteBody: 'Udfyld optagsfelterne og auditmatrixen nedenfor; rapporten opbygges live. Ingen API-kald — alt gemmes automatisk lokalt.',
+    sopTitle: 'SOP — sådan gøres det normalt',
+    sopHint: 'Rækkefølgen en arkitekt reelt arbejder denne øvelse igennem.',
+    sop: [
+      'Identificér hvilke beskyttede attributter eller fairness-dimensioner der er relevante for denne use case (fx alder, køn, geografi, indkomstproxy-variable), før nogen test køres — dimensionerne, der skal tjekkes, afhænger helt af den beslutning, der træffes.',
+      'Kør biasdetektion: sammenlign udfaldsrater og fejlrater på tværs af grupper på repræsentative (ikke kun trænings-) data, og dokumentér den specifikke metrik brugt for hver dimension (fx demografisk paritet, equalized odds).',
+      'Hvor et biasfund dukker op, evaluér afhjælpningsmuligheder (reweighting, tærskeljustering, feature-gennemgang) og deres trade-offs mod samlet performance — afhjælpning er en designbeslutning, ikke en efterfølgende lap.',
+      'Design for transparens og forklarlighed: hvad kan vises til en berørt person om hvorfor en beslutning blev truffet, på et niveau de reelt kan bruge.',
+      'Bekræft at privatlivsbeskyttelser er på plads (differential privacy, federated learning, dataminimering, opbevaringsgrænser) — fairness og privatliv er beslægtede men separate forpligtelser, begge kræver eksplicit dækning.',
+    ],
+    intakeTitle: 'Kunde- og ansvarlig-AI-optag',
+    lblClient: 'Kunde / engagement',
+    lblAssessor: 'Vurderingsmand',
+    lblTransparency: 'Transparens- og forklarlighedstilgang',
+    lblPrivacy: 'Privatlivsbeskyttende foranstaltninger',
+    matrixTitle: 'Bias- & fairness-auditmatrix',
+    matrixHint: 'Tilføj hver vurderet dimension, den anvendte metode, og fundet.',
+    colDimension: 'Dimension',
+    colMethod: 'Vurderingsmetode',
+    colFinding: 'Fund',
+    colStatus: 'Status',
+    btnAddRow: '+ Tilføj dimension',
+    statusPass: 'Bestået',
+    statusConcern: 'Bekymring',
+    statusFail: 'Fejlet',
+    statusPending: 'Afventer',
+    previewTitle: 'Bias-audit & ansvarlig AI-rapport',
+    previewHint: 'Dette er selve leverancen — automatisk genereret og tilpasset denne kunde.',
+    btnExportHtml: '🌐 Eksportér HTML',
+    btnExportMd: '📄 Eksportér Markdown',
+    btnReset: '🔄 Nulstil',
+    docTitle: 'Bias-audit & Ansvarlig AI-rapport',
+    docFor: 'Udarbejdet for',
+    docAssessor: 'Vurderingsmand',
+    docDate: 'Dato',
+    secTransparency: '1. Transparens & forklarlighed',
+    secPrivacy: '2. Privatlivsbeskyttelse',
+    secMatrix: '3. Bias- & fairness-audit',
+    noRows: 'Ingen dimensioner tilføjet endnu.',
+    placeholderDimension: 'fx Køn',
+    placeholderMethod: 'fx Equalized odds på holdout-sæt',
+    placeholderFinding: 'fx 3-punkts gap i falsk-positiv-rate',
+    emptyNote: '(endnu ikke dokumenteret)',
+  },
+  sv: {
+    heroTitle: 'Ansvarsfull AI & Bias-audit',
+    heroDesc: 'SOP, kundintag, en bias-/fairness-auditmatris, och en automatiskt genererad bias-auditrapport som täcker fairness, transparens och integritet.',
+    noteLabel: 'Så här fungerar det.',
+    noteBody: 'Fyll i intagsfälten och auditmatrisen nedan; rapporten byggs upp live. Inga API-anrop — allt sparas automatiskt lokalt.',
+    sopTitle: 'SOP — så här görs det vanligtvis',
+    sopHint: 'Ordningen en arkitekt faktiskt arbetar igenom denna övning.',
+    sop: [
+      'Identifiera vilka skyddade attribut eller fairness-dimensioner som är relevanta för detta användningsfall (t.ex. ålder, kön, geografi, inkomstproxy-variabler) innan något test körs — dimensionerna att kontrollera beror helt på beslutet som fattas.',
+      'Kör biasdetektion: jämför utfallsfrekvenser och felfrekvenser mellan grupper på representativa (inte bara tränings-) data, och dokumentera det specifika måttet som används för varje dimension (t.ex. demografisk paritet, equalized odds).',
+      'Där ett biasfynd dyker upp, utvärdera åtgärdsalternativ (omviktning, tröskeljustering, feature-granskning) och deras avvägningar mot total prestanda — åtgärd är ett designbeslut, inte en efterhandslapp.',
+      'Designa för transparens och förklarbarhet: vad kan visas för en berörd person om varför ett beslut fattades, på en nivå de faktiskt kan använda.',
+      'Bekräfta att integritetsskydd finns på plats (differential privacy, federated learning, dataminimering, lagringsgränser) — fairness och integritet är besläktade men separata skyldigheter, båda behöver explicit täckning.',
+    ],
+    intakeTitle: 'Kund- och ansvarsfull-AI-intag',
+    lblClient: 'Kund / uppdrag',
+    lblAssessor: 'Bedömare',
+    lblTransparency: 'Transparens- och förklarbarhetsansats',
+    lblPrivacy: 'Integritetsskyddsåtgärder',
+    matrixTitle: 'Bias- & fairness-auditmatris',
+    matrixHint: 'Lägg till varje bedömd dimension, metoden som använts, och fyndet.',
+    colDimension: 'Dimension',
+    colMethod: 'Bedömningsmetod',
+    colFinding: 'Fynd',
+    colStatus: 'Status',
+    btnAddRow: '+ Lägg till dimension',
+    statusPass: 'Godkänd',
+    statusConcern: 'Oro',
+    statusFail: 'Underkänd',
+    statusPending: 'Väntar',
+    previewTitle: 'Bias-audit & ansvarsfull AI-rapport',
+    previewHint: 'Detta är själva leveransen — automatiskt genererad och anpassad för denna kund.',
+    btnExportHtml: '🌐 Exportera HTML',
+    btnExportMd: '📄 Exportera Markdown',
+    btnReset: '🔄 Återställ',
+    docTitle: 'Bias-audit & Ansvarsfull AI-rapport',
+    docFor: 'Framtagen för',
+    docAssessor: 'Bedömare',
+    docDate: 'Datum',
+    secTransparency: '1. Transparens & förklarbarhet',
+    secPrivacy: '2. Integritetsskydd',
+    secMatrix: '3. Bias- & fairness-audit',
+    noRows: 'Inga dimensioner tillagda än.',
+    placeholderDimension: 't.ex. Kön',
+    placeholderMethod: 't.ex. Equalized odds på holdout-set',
+    placeholderFinding: 't.ex. 3-poängs gap i falskt-positiv-frekvens',
+    emptyNote: '(ännu inte dokumenterat)',
+  },
+};
+
+let lang = localStorage.getItem('aoa_lang') || 'en';
+function t(key) { return (STRINGS[lang] && STRINGS[lang][key] !== undefined) ? STRINGS[lang][key] : (STRINGS.en[key] !== undefined ? STRINGS.en[key] : key); }
+function esc(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+let rows = []; // { id, dimension, method, finding, status }
+let nextId = 1;
+
+function setLang(l) {
+  lang = l;
+  localStorage.setItem('aoa_lang', l);
+  document.getElementById('langSelect').value = l;
+  applyI18n();
+  renderMatrix();
+  renderPreview();
+  save();
+}
+function applyI18n() {
+  document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.getAttribute('data-i18n')); });
+  document.title = t('heroTitle') + ' — Phase 6';
+  document.getElementById('sopList').innerHTML = t('sop').map(s => `<li>${esc(s)}</li>`).join('');
+}
+
+function fieldEls() { return Array.from(document.querySelectorAll('[data-eng]')); }
+function collectFields() { const o = {}; fieldEls().forEach(el => { o[el.getAttribute('data-eng')] = el.value; }); return o; }
+function restoreFields(o) { fieldEls().forEach(el => { const k = el.getAttribute('data-eng'); if (o[k] !== undefined) el.value = o[k]; }); }
+function val(k) { const el = document.querySelector(`[data-eng="${k}"]`); return el ? el.value : ''; }
+function orEmpty(v) { return v && v.trim() ? esc(v) : `<em>${esc(t('emptyNote'))}</em>`; }
+
+let savedTimer;
+function save() { try { localStorage.setItem(KEY, JSON.stringify({ fields: collectFields(), rows, nextId, lang })); flashSaved(); } catch (e) {} }
+function flashSaved() { const f = document.getElementById('savedFlag'); f.textContent = '✓'; clearTimeout(savedTimer); savedTimer = setTimeout(() => { f.textContent = ''; }, 1200); }
+function loadSaved() {
+  try {
+    const o = JSON.parse(localStorage.getItem(KEY) || '{}');
+    if (o.fields) restoreFields(o.fields);
+    if (o.rows) rows = o.rows;
+    if (o.nextId) nextId = o.nextId;
+  } catch (e) {}
+}
+
+function addRow() { rows.push({ id: nextId++, dimension: '', method: '', finding: '', status: 'pending' }); renderMatrix(); renderPreview(); save(); }
+function removeRow(id) { rows = rows.filter(r => r.id !== id); renderMatrix(); renderPreview(); save(); }
+function updateRow(id, field, value) { const r = rows.find(r => r.id === id); if (r) r[field] = value; renderPreview(); save(); if (field === 'status') renderMatrix(); }
+
+function renderMatrix() {
+  const body = document.getElementById('matrixBody');
+  if (!rows.length) { body.innerHTML = `<tr><td colspan="5" style="color:var(--muted);font-style:italic;padding:14px 8px">${esc(t('noRows'))}</td></tr>`; return; }
+  body.innerHTML = rows.map(r => `<tr>
+      <td><input type="text" value="${esc(r.dimension)}" placeholder="${esc(t('placeholderDimension'))}" oninput="updateRow(${r.id},'dimension',this.value)"></td>
+      <td><input type="text" value="${esc(r.method)}" placeholder="${esc(t('placeholderMethod'))}" oninput="updateRow(${r.id},'method',this.value)"></td>
+      <td><input type="text" value="${esc(r.finding)}" placeholder="${esc(t('placeholderFinding'))}" oninput="updateRow(${r.id},'finding',this.value)"></td>
+      <td><select onchange="updateRow(${r.id},'status',this.value)">
+        ${Object.entries(STATUS_KEYS).map(([v, k]) => `<option value="${v}" ${r.status === v ? 'selected' : ''}>${esc(t(k))}</option>`).join('')}
+      </select></td>
+      <td><button class="rm-btn" onclick="removeRow(${r.id})" title="remove">✕</button></td>
+    </tr>`).join('');
+}
+
+function renderPreview() {
+  const date = new Date().toISOString().slice(0, 10);
+  const filled = rows.filter(r => r.dimension.trim());
+  let h = `<div class="meta"><strong>${esc(t('docFor'))}:</strong> ${esc(val('client')) || '—'} &nbsp;·&nbsp; <strong>${esc(t('docAssessor'))}:</strong> ${esc(val('assessor')) || '—'} &nbsp;·&nbsp; <strong>${esc(t('docDate'))}:</strong> ${date}</div>`;
+  h += `<h3>${esc(t('secTransparency'))}</h3><p>${orEmpty(val('transparency'))}</p>`;
+  h += `<h3>${esc(t('secPrivacy'))}</h3><p>${orEmpty(val('privacy'))}</p>`;
+  h += `<h3>${esc(t('secMatrix'))}</h3>`;
+  if (filled.length) {
+    h += `<table><thead><tr><th>${esc(t('colDimension'))}</th><th>${esc(t('colMethod'))}</th><th>${esc(t('colFinding'))}</th><th>${esc(t('colStatus'))}</th></tr></thead><tbody>`;
+    h += filled.map(r => `<tr><td>${esc(r.dimension)}</td><td>${esc(r.method)}</td><td>${esc(r.finding)}</td><td><span class="status-badge status-${r.status}">${esc(t(STATUS_KEYS[r.status] || 'statusPending'))}</span></td></tr>`).join('');
+    h += '</tbody></table>';
+  } else {
+    h += `<p><em>${esc(t('noRows'))}</em></p>`;
+  }
+  document.getElementById('preview').innerHTML = h;
+}
+
+document.addEventListener('input', e => { if (e.target.matches('[data-eng]')) { renderPreview(); save(); } });
+document.addEventListener('change', e => { if (e.target.matches('[data-eng]')) { renderPreview(); save(); } });
+
+function resetAll() {
+  if (!confirm('Clear all fields? / Ryd alle felter? / Rensa alla fält?')) return;
+  fieldEls().forEach(el => { el.value = ''; });
+  rows = []; nextId = 1;
+  renderMatrix(); renderPreview(); save();
+}
+
+function slug() { return (val('client') || 'responsible_ai_audit').replace(/\W+/g, '_'); }
+function docMarkdown() {
+  const date = new Date().toISOString().slice(0, 10);
+  const filled = rows.filter(r => r.dimension.trim());
+  let m = `# ${t('docTitle')} — ${val('client') || '[client]'}\n\n`;
+  m += `**${t('docFor')}:** ${val('client') || '—'}  \n**${t('docAssessor')}:** ${val('assessor') || '—'}  \n**${t('docDate')}:** ${date}\n\n`;
+  m += `## ${t('secTransparency')}\n${val('transparency') || t('emptyNote')}\n\n`;
+  m += `## ${t('secPrivacy')}\n${val('privacy') || t('emptyNote')}\n\n`;
+  m += `## ${t('secMatrix')}\n\n`;
+  if (filled.length) {
+    m += `| ${t('colDimension')} | ${t('colMethod')} | ${t('colFinding')} | ${t('colStatus')} |\n|---|---|---|---|\n`;
+    m += filled.map(r => `| ${r.dimension} | ${r.method} | ${r.finding} | ${t(STATUS_KEYS[r.status] || 'statusPending')} |`).join('\n') + '\n';
+  } else {
+    m += `${t('noRows')}\n`;
+  }
+  return m;
+}
+function docHtml() {
+  return '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>' + esc(t('docTitle')) + ' — ' + esc(val('client') || 'client') + '</title>'
+    + '<style>body{font-family:Inter,Segoe UI,sans-serif;color:#1c1c28;max-width:880px;margin:40px auto;padding:0 22px;line-height:1.6}'
+    + 'h1,h3{color:#1B1474;font-family:Georgia,serif}table{width:100%;border-collapse:collapse;font-size:14px}th,td{border:1px solid #e4e4f0;padding:7px 10px;text-align:left}th{background:#EEEEFA;color:#1B1474}.status-badge{font-size:11px;font-weight:700;padding:2px 9px;border-radius:10px;background:#EEEEFA;color:#1B1474}</style></head><body>'
+    + document.getElementById('preview').outerHTML.replace('id="preview"', '')
+    + '</body></html>';
+}
+function download(text, fname, mime) {
+  const blob = new Blob([text], { type: mime });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = fname; a.click();
+  URL.revokeObjectURL(a.href);
+}
+function exportDoc(fmt) {
+  if (fmt === 'md') download(docMarkdown(), 'responsible_ai_audit_' + slug() + '.md', 'text/markdown');
+  else download(docHtml(), 'responsible_ai_audit_' + slug() + '.html', 'text/html');
+}
+
+(function init() {
+  document.getElementById('langSelect').value = lang;
+  loadSaved();
+  applyI18n();
+  if (!rows.length) { rows.push({ id: nextId++, dimension: '', method: '', finding: '', status: 'pending' }); }
+  renderMatrix();
+  renderPreview();
+})();
+</script>
+</body>
+</html>
