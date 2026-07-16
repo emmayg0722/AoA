@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tech Stack Selection Report — Phase 3</title>
+<meta name="description" content="Tech stack selection SOP, an import from Architecture Builder, and an auto-generated selection report with rationale, alternatives, and risks.">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='16' fill='%231B1474'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #1B1474; --primary-dark: #120D52; --accent: #DCDDF6; --powder: #EEEEFA;
+    --ink: #1c1c28; --muted: #5b5b6b; --line: #e4e4f0;
+    --green: #1a8a5c; --amber: #d4790e; --red: #c0392b;
+    --font-heading: 'Fraunces', Georgia, serif;
+    --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: var(--font-body); color: var(--ink); background: #fafaff; line-height: 1.6; }
+  .hero { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: #fff; padding: 44px 24px 36px; }
+  .wrap { max-width: 1100px; margin: 0 auto; }
+  .crumb { font-size: 13px; color: var(--accent); margin-bottom: 10px; }
+  .crumb a { color: var(--accent); text-decoration: none; }
+  .hero-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; flex-wrap: wrap; }
+  .hero h1 { font-family: var(--font-heading); font-weight: 700; font-size: 34px; line-height: 1.15; }
+  .hero p { margin-top: 10px; font-size: 15.5px; color: #dcdcf2; max-width: 680px; }
+  select#langSelect { font-family: var(--font-body); font-size: 13px; font-weight: 600; border: 1.5px solid rgba(255,255,255,0.4); background: rgba(255,255,255,0.08); color: #fff; border-radius: 8px; padding: 7px 10px; }
+  select#langSelect option { color: var(--ink); }
+  main { max-width: 1100px; margin: 0 auto; padding: 28px 24px 80px; }
+  .note { background: var(--powder); border: 1px solid var(--accent); border-radius: 12px; padding: 14px 16px; font-size: 14px; color: var(--muted); margin-bottom: 26px; }
+  .note strong { color: var(--primary); }
+  .card { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 22px 24px; margin-bottom: 20px; }
+  .card > h2 { font-family: var(--font-heading); font-weight: 600; font-size: 21px; color: var(--primary); margin-bottom: 4px; }
+  .card .hint { font-size: 13.5px; color: var(--muted); margin-bottom: 14px; }
+  ol.sop { margin-left: 20px; }
+  ol.sop li { margin-bottom: 10px; font-size: 14px; }
+  label { display: block; font-size: 13px; font-weight: 600; color: var(--ink); margin: 10px 0 5px; }
+  input[type=text], textarea { width: 100%; font-family: var(--font-body); font-size: 14px; color: var(--ink); border: 1.5px solid var(--line); border-radius: 8px; padding: 9px 11px; background: #fff; }
+  textarea { resize: vertical; min-height: 70px; }
+  input:focus, textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(27,20,116,0.12); }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; }
+  .btn { font-family: var(--font-body); font-size: 13.5px; font-weight: 600; padding: 9px 16px; border-radius: 8px; border: none; cursor: pointer; transition: all 0.15s; }
+  .btn-primary { background: var(--accent); color: var(--primary); }
+  .btn-primary:hover { background: #C3C5EC; }
+  .btn-secondary { background: #fff; color: var(--primary); border: 1.5px solid var(--accent); }
+  .btn-secondary:hover { background: var(--powder); }
+  .btn-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px; }
+  .import-box { background: var(--powder); border: 1px solid var(--accent); border-radius: 10px; padding: 14px 16px; margin-bottom: 16px; }
+  .import-status { font-size: 13px; color: var(--muted); margin-top: 8px; }
+  table.stack-table { width: 100%; border-collapse: collapse; font-size: 13.5px; margin-top: 10px; }
+  table.stack-table th { text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); padding: 6px 8px; border-bottom: 2px solid var(--line); }
+  table.stack-table td { padding: 6px 8px; border-bottom: 1px solid var(--line); }
+  .preview { border: 1px dashed var(--line); border-radius: 10px; padding: 18px 20px; background: #fcfcff; font-size: 14px; }
+  .preview h3 { font-family: var(--font-heading); color: var(--primary); font-size: 16px; margin: 14px 0 6px; }
+  .preview h3:first-child { margin-top: 0; }
+  .preview p { margin: 6px 0; white-space: pre-wrap; }
+  .preview table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 8px 0; }
+  .preview th, .preview td { border: 1px solid var(--line); padding: 6px 9px; text-align: left; }
+  .preview th { background: var(--powder); color: var(--primary); }
+  .preview .meta { font-size: 13px; color: var(--muted); margin-bottom: 10px; }
+  .saved { font-size: 12.5px; color: var(--green); margin-left: 8px; }
+  @media (max-width: 680px) { .grid2 { grid-template-columns: 1fr; } .hero h1 { font-size: 27px; } }
+</style>
+</head>
+<body>
+  <header class="hero"><div class="wrap">
+    <div class="hero-top">
+      <div class="crumb"><a href="../">AI Architect Toolkit</a> · Phase 3 · Architecture Design</div>
+      <select id="langSelect" onchange="setLang(this.value)">
+        <option value="en">English</option>
+        <option value="da">Dansk</option>
+        <option value="sv">Svenska</option>
+      </select>
+    </div>
+    <h1 data-i18n="heroTitle"></h1>
+    <p data-i18n="heroDesc"></p>
+  </div></header>
+
+  <main>
+    <div class="note"><strong data-i18n="noteLabel"></strong> <span data-i18n="noteBody"></span></div>
+
+    <div class="card">
+      <h2 data-i18n="sopTitle"></h2>
+      <p class="hint" data-i18n="sopHint"></p>
+      <ol class="sop" id="sopList"></ol>
+    </div>
+
+    <div class="card">
+      <h2 data-i18n="intakeTitle"></h2>
+      <div class="import-box">
+        <div data-i18n="importLabel"></div>
+        <div class="btn-row"><button class="btn btn-secondary" onclick="importFromBuilder()" data-i18n="btnImport"></button></div>
+        <div class="import-status" id="importStatus"></div>
+        <table class="stack-table" id="importedTable" style="display:none">
+          <thead><tr><th data-i18n="colLayer"></th><th data-i18n="colChoice"></th></tr></thead>
+          <tbody id="importedBody"></tbody>
+        </table>
+      </div>
+      <div class="grid2">
+        <div><label data-i18n="lblClient"></label><input type="text" data-eng="client" placeholder="Acme Corp"></div>
+        <div><label data-i18n="lblAssessor"></label><input type="text" data-eng="assessor"></div>
+      </div>
+      <label data-i18n="lblRationale"></label>
+      <textarea data-eng="rationale"></textarea>
+      <label data-i18n="lblAlternatives"></label>
+      <textarea data-eng="alternatives"></textarea>
+      <label data-i18n="lblRisks"></label>
+      <textarea data-eng="risks"></textarea>
+    </div>
+
+    <div class="card">
+      <h2 data-i18n="previewTitle"></h2>
+      <p class="hint" data-i18n="previewHint"></p>
+      <div class="preview" id="preview"></div>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="exportDoc('html')" data-i18n="btnExportHtml"></button>
+        <button class="btn btn-primary" onclick="exportDoc('md')" data-i18n="btnExportMd"></button>
+        <button class="btn btn-secondary" onclick="resetAll()" data-i18n="btnReset"></button>
+        <span class="saved" id="savedFlag"></span>
+      </div>
+    </div>
+  </main>
+
+<script>
+const KEY = 'aoa_tech_stack_report_v1';
+const BUILDER_KEY = 'dra_arch_builder_v1';
+
+const STRINGS = {
+  en: {
+    heroTitle: 'Tech Stack Selection Report',
+    heroDesc: 'SOP, an import from Architecture Builder, and an auto-generated selection report with rationale, alternatives, and risks.',
+    noteLabel: 'How this works.',
+    noteBody: 'Import your picked stack from Architecture Builder (same browser), then add rationale, alternatives considered, and risks. No API calls — everything autosaves locally.',
+    sopTitle: 'SOP — how this is usually done',
+    sopHint: 'The order an architect actually works this exercise in.',
+    sop: [
+      'Pull the picked stack from the Architecture Builder comparison exercise — this report explains and formalizes those picks, it does not re-derive them.',
+      'Write the rationale in business terms as well as technical terms — the report is read by both engineers and sponsors.',
+      'List the alternatives seriously considered and why they were not chosen — this is what prevents the same debate from resurfacing every quarter.',
+      'Document known risks per selection and their mitigations — vendor lock-in, maturity risk, skills-availability risk.',
+      'Circulate for sign-off before the selections become binding for Phase 4 PoC work.',
+    ],
+    intakeTitle: 'Client intake',
+    importLabel: 'If you already picked a stack in the Architecture Builder (same browser), import it here.',
+    btnImport: '⬇️ Import from Architecture Builder',
+    importNone: 'No Architecture Builder picks found in this browser yet.',
+    importDone: 'Imported the picked stack from Architecture Builder.',
+    colLayer: 'Layer',
+    colChoice: 'Choice',
+    lblClient: 'Client / engagement',
+    lblAssessor: 'Assessor',
+    lblRationale: 'Rationale',
+    lblAlternatives: 'Alternatives considered',
+    lblRisks: 'Risks & mitigations',
+    previewTitle: 'Tech stack selection report',
+    previewHint: 'This is the actual deliverable — auto-generated from your intake, customized for this client.',
+    btnExportHtml: '🌐 Export HTML',
+    btnExportMd: '📄 Export Markdown',
+    btnReset: '🔄 Reset',
+    docTitle: 'Technology Stack Selection Report',
+    docFor: 'Prepared for',
+    docAssessor: 'Assessor',
+    docDate: 'Date',
+    secStack: '1. Selected Stack',
+    secRationale: '2. Rationale',
+    secAlternatives: '3. Alternatives Considered',
+    secRisks: '4. Risks & Mitigations',
+    emptyNote: '(not yet documented)',
+    noStack: 'No stack imported yet — click Import above.',
+  },
+  da: {
+    heroTitle: 'Rapport om teknologivalg',
+    heroDesc: 'SOP, en import fra Architecture Builder, og en automatisk genereret valgrapport med begrundelse, alternativer og risici.',
+    noteLabel: 'Sådan virker det.',
+    noteBody: 'Importér din valgte stak fra Architecture Builder (samme browser), og tilføj derefter begrundelse, overvejede alternativer og risici. Ingen API-kald — alt gemmes automatisk lokalt.',
+    sopTitle: 'SOP — sådan gøres det normalt',
+    sopHint: 'Rækkefølgen en arkitekt reelt arbejder denne øvelse igennem.',
+    sop: [
+      'Hent den valgte stak fra Architecture Builder-sammenligningsøvelsen — denne rapport forklarer og formaliserer disse valg, den genudleder dem ikke.',
+      'Skriv begrundelsen i forretningsmæssige såvel som tekniske termer — rapporten læses af både ingeniører og sponsorer.',
+      'List de alternativer, der seriøst blev overvejet, og hvorfor de ikke blev valgt — dette forhindrer, at den samme diskussion dukker op igen hvert kvartal.',
+      'Dokumentér kendte risici pr. valg og deres afbødninger — leverandørlåsning, modenhedsrisiko, kompetence-tilgængelighedsrisiko.',
+      'Cirkulér til godkendelse, før valgene bliver bindende for Phase 4 PoC-arbejde.',
+    ],
+    intakeTitle: 'Kundeoptag',
+    importLabel: 'Hvis du allerede har valgt en stak i Architecture Builder (samme browser), kan du importere den her.',
+    btnImport: '⬇️ Importér fra Architecture Builder',
+    importNone: 'Ingen Architecture Builder-valg fundet i denne browser endnu.',
+    importDone: 'Importerede den valgte stak fra Architecture Builder.',
+    colLayer: 'Lag',
+    colChoice: 'Valg',
+    lblClient: 'Kunde / engagement',
+    lblAssessor: 'Vurderingsmand',
+    lblRationale: 'Begrundelse',
+    lblAlternatives: 'Overvejede alternativer',
+    lblRisks: 'Risici og afbødninger',
+    previewTitle: 'Rapport om teknologivalg',
+    previewHint: 'Dette er selve leverancen — automatisk genereret fra dit optag, tilpasset denne kunde.',
+    btnExportHtml: '🌐 Eksportér HTML',
+    btnExportMd: '📄 Eksportér Markdown',
+    btnReset: '🔄 Nulstil',
+    docTitle: 'Rapport om Teknologivalg',
+    docFor: 'Udarbejdet for',
+    docAssessor: 'Vurderingsmand',
+    docDate: 'Dato',
+    secStack: '1. Valgt stak',
+    secRationale: '2. Begrundelse',
+    secAlternatives: '3. Overvejede alternativer',
+    secRisks: '4. Risici og afbødninger',
+    emptyNote: '(endnu ikke dokumenteret)',
+    noStack: 'Ingen stak importeret endnu — klik Importér ovenfor.',
+  },
+  sv: {
+    heroTitle: 'Rapport om teknikval',
+    heroDesc: 'SOP, en import från Architecture Builder, och en automatiskt genererad valrapport med motivering, alternativ och risker.',
+    noteLabel: 'Så här fungerar det.',
+    noteBody: 'Importera din valda stack från Architecture Builder (samma webbläsare), lägg sedan till motivering, övervägda alternativ och risker. Inga API-anrop — allt sparas automatiskt lokalt.',
+    sopTitle: 'SOP — så här görs det vanligtvis',
+    sopHint: 'Ordningen en arkitekt faktiskt arbetar igenom denna övning.',
+    sop: [
+      'Hämta den valda stacken från Architecture Builder-jämförelseövningen — denna rapport förklarar och formaliserar dessa val, den härleder dem inte på nytt.',
+      'Skriv motiveringen i affärstermer såväl som tekniska termer — rapporten läses av både ingenjörer och sponsorer.',
+      'Lista de alternativ som seriöst övervägdes och varför de inte valdes — detta förhindrar att samma diskussion dyker upp igen varje kvartal.',
+      'Dokumentera kända risker per val och deras riskreducering — leverantörsinlåsning, mognadsrisk, kompetenstillgänglighetsrisk.',
+      'Cirkulera för godkännande innan valen blir bindande för Fas 4 PoC-arbete.',
+    ],
+    intakeTitle: 'Kundintag',
+    importLabel: 'Om du redan valt en stack i Architecture Builder (samma webbläsare) kan du importera den här.',
+    btnImport: '⬇️ Importera från Architecture Builder',
+    importNone: 'Inga Architecture Builder-val hittades i denna webbläsare än.',
+    importDone: 'Importerade den valda stacken från Architecture Builder.',
+    colLayer: 'Lager',
+    colChoice: 'Val',
+    lblClient: 'Kund / uppdrag',
+    lblAssessor: 'Bedömare',
+    lblRationale: 'Motivering',
+    lblAlternatives: 'Övervägda alternativ',
+    lblRisks: 'Risker och riskreducering',
+    previewTitle: 'Rapport om teknikval',
+    previewHint: 'Detta är själva leveransen — automatiskt genererad från ditt intag, anpassad för denna kund.',
+    btnExportHtml: '🌐 Exportera HTML',
+    btnExportMd: '📄 Exportera Markdown',
+    btnReset: '🔄 Återställ',
+    docTitle: 'Rapport om Teknikval',
+    docFor: 'Framtagen för',
+    docAssessor: 'Bedömare',
+    docDate: 'Datum',
+    secStack: '1. Vald stack',
+    secRationale: '2. Motivering',
+    secAlternatives: '3. Övervägda alternativ',
+    secRisks: '4. Risker och riskreducering',
+    emptyNote: '(ännu inte dokumenterat)',
+    noStack: 'Ingen stack importerad än — klicka Importera ovan.',
+  },
+};
+
+let lang = localStorage.getItem('aoa_lang') || 'en';
+function t(key) { return (STRINGS[lang] && STRINGS[lang][key] !== undefined) ? STRINGS[lang][key] : (STRINGS.en[key] !== undefined ? STRINGS.en[key] : key); }
+function esc(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+let stackRows = []; // [{layer, choice}]
+
+function setLang(l) { lang = l; localStorage.setItem('aoa_lang', l); document.getElementById('langSelect').value = l; applyI18n(); renderImportedTable(); renderPreview(); save(); }
+function applyI18n() {
+  document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.getAttribute('data-i18n')); });
+  document.title = t('heroTitle') + ' — Phase 3';
+  document.getElementById('sopList').innerHTML = t('sop').map(s => `<li>${esc(s)}</li>`).join('');
+}
+
+function fieldEls() { return Array.from(document.querySelectorAll('[data-eng]')); }
+function collect() { const o = {}; fieldEls().forEach(el => { o[el.getAttribute('data-eng')] = el.value; }); return o; }
+function restore(o) { fieldEls().forEach(el => { const k = el.getAttribute('data-eng'); if (o[k] !== undefined) el.value = o[k]; }); }
+let savedTimer;
+function save() { try { localStorage.setItem(KEY, JSON.stringify({ fields: collect(), stackRows, lang })); flashSaved(); } catch (e) {} }
+function flashSaved() { const f = document.getElementById('savedFlag'); f.textContent = '✓'; clearTimeout(savedTimer); savedTimer = setTimeout(() => { f.textContent = ''; }, 1200); }
+function loadSaved() {
+  try {
+    const o = JSON.parse(localStorage.getItem(KEY) || '{}');
+    if (o.fields) restore(o.fields);
+    if (o.stackRows) stackRows = o.stackRows;
+  } catch (e) {}
+}
+
+function val(k) { const el = document.querySelector(`[data-eng="${k}"]`); return el ? el.value : ''; }
+function orEmpty(v) { return v && v.trim() ? esc(v) : `<em>${esc(t('emptyNote'))}</em>`; }
+
+function importFromBuilder() {
+  const statusEl = document.getElementById('importStatus');
+  try {
+    const raw = localStorage.getItem(BUILDER_KEY);
+    if (!raw) { statusEl.textContent = t('importNone'); return; }
+    const data = JSON.parse(raw);
+    const fields = data.fields || {};
+    if (fields.client) document.querySelector('[data-eng="client"]').value = fields.client;
+    const picks = data.picks || {};
+    stackRows = Object.entries(picks).map(([layerId, idx]) => ({ layer: layerId, choice: 'option #' + (Number(idx) + 1) }));
+    statusEl.textContent = t('importDone');
+    renderImportedTable();
+    renderPreview();
+    save();
+  } catch (e) {
+    statusEl.textContent = t('importNone');
+  }
+}
+
+function renderImportedTable() {
+  const table = document.getElementById('importedTable');
+  const body = document.getElementById('importedBody');
+  if (!stackRows.length) { table.style.display = 'none'; return; }
+  table.style.display = 'table';
+  body.innerHTML = stackRows.map(r => `<tr><td>${esc(r.layer)}</td><td>${esc(r.choice)}</td></tr>`).join('');
+}
+
+function renderPreview() {
+  const date = new Date().toISOString().slice(0, 10);
+  let h = `<div class="meta"><strong>${esc(t('docFor'))}:</strong> ${esc(val('client')) || '—'} &nbsp;·&nbsp; <strong>${esc(t('docAssessor'))}:</strong> ${esc(val('assessor')) || '—'} &nbsp;·&nbsp; <strong>${esc(t('docDate'))}:</strong> ${date}</div>`;
+  h += `<h3>${esc(t('secStack'))}</h3>`;
+  if (stackRows.length) {
+    h += `<table><thead><tr><th>${esc(t('colLayer'))}</th><th>${esc(t('colChoice'))}</th></tr></thead><tbody>`;
+    h += stackRows.map(r => `<tr><td>${esc(r.layer)}</td><td>${esc(r.choice)}</td></tr>`).join('');
+    h += '</tbody></table>';
+  } else { h += `<p><em>${esc(t('noStack'))}</em></p>`; }
+  h += `<h3>${esc(t('secRationale'))}</h3><p>${orEmpty(val('rationale'))}</p>`;
+  h += `<h3>${esc(t('secAlternatives'))}</h3><p>${orEmpty(val('alternatives'))}</p>`;
+  h += `<h3>${esc(t('secRisks'))}</h3><p>${orEmpty(val('risks'))}</p>`;
+  document.getElementById('preview').innerHTML = h;
+}
+
+document.addEventListener('input', e => { if (e.target.matches('[data-eng]')) { renderPreview(); save(); } });
+document.addEventListener('change', e => { if (e.target.matches('[data-eng]')) { renderPreview(); save(); } });
+
+function resetAll() {
+  if (!confirm('Clear all fields? / Ryd alle felter? / Rensa alla fält?')) return;
+  fieldEls().forEach(el => { el.value = ''; });
+  stackRows = [];
+  document.getElementById('importStatus').textContent = '';
+  renderImportedTable(); renderPreview(); save();
+}
+
+function slug() { return (val('client') || 'tech_stack_report').replace(/\W+/g, '_'); }
+function docMarkdown() {
+  const date = new Date().toISOString().slice(0, 10);
+  let m = `# ${t('docTitle')} — ${val('client') || '[client]'}\n\n`;
+  m += `**${t('docFor')}:** ${val('client') || '—'}  \n**${t('docAssessor')}:** ${val('assessor') || '—'}  \n**${t('docDate')}:** ${date}\n\n`;
+  m += `## ${t('secStack')}\n\n`;
+  if (stackRows.length) {
+    m += `| ${t('colLayer')} | ${t('colChoice')} |\n|---|---|\n`;
+    m += stackRows.map(r => `| ${r.layer} | ${r.choice} |`).join('\n') + '\n\n';
+  } else { m += `${t('noStack')}\n\n`; }
+  m += `## ${t('secRationale')}\n${val('rationale') || t('emptyNote')}\n\n`;
+  m += `## ${t('secAlternatives')}\n${val('alternatives') || t('emptyNote')}\n\n`;
+  m += `## ${t('secRisks')}\n${val('risks') || t('emptyNote')}\n`;
+  return m;
+}
+function docHtml() {
+  return '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>' + esc(t('docTitle')) + ' — ' + esc(val('client') || 'client') + '</title>'
+    + '<style>body{font-family:Inter,Segoe UI,sans-serif;color:#1c1c28;max-width:880px;margin:40px auto;padding:0 22px;line-height:1.6}'
+    + 'h1,h3{color:#1B1474;font-family:Georgia,serif}table{width:100%;border-collapse:collapse;font-size:14px}th,td{border:1px solid #e4e4f0;padding:7px 10px;text-align:left}th{background:#EEEEFA;color:#1B1474}</style></head><body>'
+    + document.getElementById('preview').outerHTML.replace('id="preview"', '')
+    + '</body></html>';
+}
+function download(text, fname, mime) {
+  const blob = new Blob([text], { type: mime });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = fname; a.click();
+  URL.revokeObjectURL(a.href);
+}
+function exportDoc(fmt) {
+  if (fmt === 'md') download(docMarkdown(), 'tech_stack_report_' + slug() + '.md', 'text/markdown');
+  else download(docHtml(), 'tech_stack_report_' + slug() + '.html', 'text/html');
+}
+
+(function init() {
+  document.getElementById('langSelect').value = lang;
+  loadSaved();
+  applyI18n();
+  renderImportedTable();
+  renderPreview();
+})();
+</script>
+</body>
+</html>
