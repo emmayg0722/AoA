@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Compliance Gap Analysis — Phase 6</title>
+<meta name="description" content="Compliance assessment SOP, client intake, a scorable compliance gap-analysis matrix, and an auto-generated compliance gap analysis report.">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='16' fill='%231B1474'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #1B1474; --primary-dark: #120D52; --accent: #DCDDF6; --powder: #EEEEFA;
+    --ink: #1c1c28; --muted: #5b5b6b; --line: #e4e4f0;
+    --green: #1a8a5c; --amber: #d4790e; --red: #c0392b;
+    --font-heading: 'Fraunces', Georgia, serif;
+    --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: var(--font-body); color: var(--ink); background: #fafaff; line-height: 1.6; }
+  .hero { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: #fff; padding: 44px 24px 36px; }
+  .wrap { max-width: 1100px; margin: 0 auto; }
+  .crumb { font-size: 13px; color: var(--accent); margin-bottom: 10px; }
+  .crumb a { color: var(--accent); text-decoration: none; }
+  .hero-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; flex-wrap: wrap; }
+  .hero h1 { font-family: var(--font-heading); font-weight: 700; font-size: 34px; line-height: 1.15; }
+  .hero p { margin-top: 10px; font-size: 15.5px; color: #dcdcf2; max-width: 680px; }
+  select#langSelect { font-family: var(--font-body); font-size: 13px; font-weight: 600; border: 1.5px solid rgba(255,255,255,0.4); background: rgba(255,255,255,0.08); color: #fff; border-radius: 8px; padding: 7px 10px; }
+  select#langSelect option { color: var(--ink); }
+  main { max-width: 1100px; margin: 0 auto; padding: 28px 24px 80px; }
+  .note { background: var(--powder); border: 1px solid var(--accent); border-radius: 12px; padding: 14px 16px; font-size: 14px; color: var(--muted); margin-bottom: 16px; }
+  .note strong { color: var(--primary); }
+  .note.warn { background: #fdf3e3; border-color: #f0d9ab; margin-bottom: 26px; }
+  .note.warn strong { color: var(--amber); }
+  .card { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 22px 24px; margin-bottom: 20px; }
+  .card > h2 { font-family: var(--font-heading); font-weight: 600; font-size: 21px; color: var(--primary); margin-bottom: 4px; }
+  .card .hint { font-size: 13.5px; color: var(--muted); margin-bottom: 14px; }
+  ol.sop { margin-left: 20px; }
+  ol.sop li { margin-bottom: 10px; font-size: 14px; }
+  label { display: block; font-size: 13px; font-weight: 600; color: var(--ink); margin: 10px 0 5px; }
+  input[type=text], textarea, select.field { width: 100%; font-family: var(--font-body); font-size: 14px; color: var(--ink); border: 1.5px solid var(--line); border-radius: 8px; padding: 9px 11px; background: #fff; }
+  textarea { resize: vertical; min-height: 70px; }
+  input:focus, textarea:focus, select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(27,20,116,0.12); }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; }
+  .btn { font-family: var(--font-body); font-size: 13.5px; font-weight: 600; padding: 9px 16px; border-radius: 8px; border: none; cursor: pointer; transition: all 0.15s; }
+  .btn-primary { background: var(--accent); color: var(--primary); }
+  .btn-primary:hover { background: #C3C5EC; }
+  .btn-secondary { background: #fff; color: var(--primary); border: 1.5px solid var(--accent); }
+  .btn-secondary:hover { background: var(--powder); }
+  .btn-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px; }
+  table.matrix { width: 100%; border-collapse: collapse; font-size: 13.5px; margin-top: 10px; }
+  table.matrix th { text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); padding: 6px 8px; border-bottom: 2px solid var(--line); }
+  table.matrix td { padding: 6px 8px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+  table.matrix input[type=text] { padding: 6px 8px; font-size: 13px; }
+  table.matrix select { padding: 6px 6px; font-size: 13px; }
+  .rm-btn { background: none; border: none; color: var(--red); cursor: pointer; font-size: 15px; }
+  .status-badge { display: inline-block; font-size: 10.5px; font-weight: 700; padding: 2px 8px; border-radius: 10px; white-space: nowrap; }
+  .status-compliant { background: #e7f5ee; color: var(--green); }
+  .status-partial { background: #fdf3e3; color: var(--amber); }
+  .status-gap { background: #fbeaea; color: var(--red); }
+  .status-notassessed { background: var(--powder); color: var(--muted); }
+  .preview { border: 1px dashed var(--line); border-radius: 10px; padding: 18px 20px; background: #fcfcff; font-size: 14px; }
+  .preview h3 { font-family: var(--font-heading); color: var(--primary); font-size: 16px; margin: 14px 0 6px; }
+  .preview h3:first-child { margin-top: 0; }
+  .preview p { margin: 6px 0; white-space: pre-wrap; }
+  .preview .meta { font-size: 13px; color: var(--muted); margin-bottom: 10px; }
+  .preview table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 8px 0; }
+  .preview th, .preview td { border: 1px solid var(--line); padding: 6px 9px; text-align: left; }
+  .preview th { background: var(--powder); color: var(--primary); }
+  .saved { font-size: 12.5px; color: var(--green); margin-left: 8px; }
+  @media (max-width: 720px) { .grid2 { grid-template-columns: 1fr; } .hero h1 { font-size: 27px; } table.matrix { font-size: 12px; } }
+</style>
+</head>
+<body>
+  <header class="hero"><div class="wrap">
+    <div class="hero-top">
+      <div class="crumb"><a href="../">AI Architect Toolkit</a> · Phase 6 · Governance, Compliance &amp; Security</div>
+      <select id="langSelect" onchange="setLang(this.value)">
+        <option value="en">English</option>
+        <option value="da">Dansk</option>
+        <option value="sv">Svenska</option>
+      </select>
+    </div>
+    <h1 data-i18n="heroTitle"></h1>
+    <p data-i18n="heroDesc"></p>
+  </div></header>
+
+  <main>
+    <div class="note"><strong data-i18n="noteLabel"></strong> <span data-i18n="noteBody"></span></div>
+    <div class="note warn"><strong data-i18n="warnLabel"></strong> <span data-i18n="warnBody"></span></div>
+
+    <div class="card">
+      <h2 data-i18n="sopTitle"></h2>
+      <p class="hint" data-i18n="sopHint"></p>
+      <ol class="sop" id="sopList"></ol>
+    </div>
+
+    <div class="card">
+      <h2 data-i18n="clientTitle"></h2>
+      <div class="grid2">
+        <div><label data-i18n="lblClient"></label><input type="text" data-eng="client" placeholder="Acme Corp"></div>
+        <div><label data-i18n="lblAssessor"></label><input type="text" data-eng="assessor"></div>
+      </div>
+      <label data-i18n="lblRiskClass"></label>
+      <textarea data-eng="riskClass" placeholder="Which regulatory framework(s) apply, and what is this system's preliminary risk classification under each (architect's current understanding, not legal determination)"></textarea>
+    </div>
+
+    <div class="card">
+      <h2 data-i18n="matrixTitle"></h2>
+      <p class="hint" data-i18n="matrixHint"></p>
+      <table class="matrix">
+        <thead><tr><th data-i18n="colRequirement"></th><th data-i18n="colFramework"></th><th data-i18n="colStatus"></th><th data-i18n="colNotes"></th><th></th></tr></thead>
+        <tbody id="matrixBody"></tbody>
+      </table>
+      <div class="btn-row"><button class="btn btn-secondary" onclick="addRow()" data-i18n="btnAddRow"></button></div>
+    </div>
+
+    <div class="card">
+      <h2 data-i18n="previewTitle"></h2>
+      <p class="hint" data-i18n="previewHint"></p>
+      <div class="preview" id="preview"></div>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="exportDoc('html')" data-i18n="btnExportHtml"></button>
+        <button class="btn btn-primary" onclick="exportDoc('md')" data-i18n="btnExportMd"></button>
+        <button class="btn btn-secondary" onclick="resetAll()" data-i18n="btnReset"></button>
+        <span class="saved" id="savedFlag"></span>
+      </div>
+    </div>
+  </main>
+
+<script>
+const KEY = 'aoa_compliance_assessment_v1';
+const STATUS_KEYS = { compliant: 'statusCompliant', partial: 'statusPartial', gap: 'statusGap', notassessed: 'statusNotAssessed' };
+
+const STRINGS = {
+  en: {
+    heroTitle: 'Compliance Gap Analysis',
+    heroDesc: 'SOP, client intake, a scorable compliance gap-analysis matrix, and an auto-generated compliance gap analysis report.',
+    noteLabel: 'How this works.',
+    noteBody: 'Fill in the intake fields and gap-analysis matrix below; the report preview builds live. No API calls — everything autosaves locally.',
+    warnLabel: 'Regulatory content note.',
+    warnBody: 'AI regulation changes fast — the EU AI Act, NIST AI RMF, ISO/IEC 42001, and regional/state laws are all still evolving. This tool structures the assessment but does not track live legal changes. Treat every framework reference as the architect\'s current understanding at time of writing, and have qualified legal counsel verify applicability, obligations, and deadlines before any client-facing compliance claim — this is not legal advice.',
+    sopTitle: 'SOP — how this is usually done',
+    sopHint: 'The order an architect actually works this exercise in.',
+    sop: [
+      'Identify which regulatory frameworks actually apply — by jurisdiction, sector, and system risk tier (e.g. EU AI Act high-risk classification, sector-specific US state laws, China AI regulations) — with legal counsel, not by assumption.',
+      'For each applicable requirement, assess current state: compliant, partially compliant, a clear gap, or not yet assessed.',
+      'Prioritize gaps by severity and deadline pressure — a requirement with an imminent enforcement date outranks a lower-risk one with more runway.',
+      'Note the technical documentation, monitoring, or process changes each gap requires to close — this feeds directly into Phase 6 governance and risk-management work.',
+      'Package the assessment as a compliance gap analysis report and a remediation roadmap the client can act on and their counsel can review.',
+    ],
+    clientTitle: 'Client',
+    lblClient: 'Client / engagement',
+    lblAssessor: 'Assessor',
+    lblRiskClass: 'Applicable frameworks & preliminary risk classification',
+    matrixTitle: 'Compliance gap-analysis matrix',
+    matrixHint: 'Add each requirement being assessed, which framework it comes from, and its current status.',
+    colRequirement: 'Requirement',
+    colFramework: 'Framework',
+    colStatus: 'Status',
+    colNotes: 'Notes',
+    btnAddRow: '+ Add requirement',
+    statusCompliant: 'Compliant',
+    statusPartial: 'Partial',
+    statusGap: 'Gap',
+    statusNotAssessed: 'Not assessed',
+    previewTitle: 'Compliance gap analysis report',
+    previewHint: 'This is the actual deliverable — auto-generated and customized for this client.',
+    btnExportHtml: '🌐 Export HTML',
+    btnExportMd: '📄 Export Markdown',
+    btnReset: '🔄 Reset',
+    docTitle: 'Compliance Gap Analysis Report',
+    docFor: 'Prepared for',
+    docAssessor: 'Assessor',
+    docDate: 'Date',
+    secRiskClass: '1. Applicable Frameworks & Risk Classification',
+    secMatrix: '2. Gap Analysis',
+    noRows: 'No requirements added yet.',
+    placeholderRequirement: 'e.g. High-risk system technical documentation',
+    placeholderFramework: 'e.g. EU AI Act',
+    placeholderNotes: 'e.g. Draft exists, needs legal review',
+    emptyNote: '(not yet documented)',
+  },
+  da: {
+    heroTitle: 'Compliance-gapanalyse',
+    heroDesc: 'SOP, kundeoptag, en scorbar compliance-gapanalysematrix, og en automatisk genereret compliance-gapanalyserapport.',
+    noteLabel: 'Sådan virker det.',
+    noteBody: 'Udfyld optagsfelterne og gapanalysematrixen nedenfor; rapporten opbygges live. Ingen API-kald — alt gemmes automatisk lokalt.',
+    warnLabel: 'Bemærkning om lovgivningsindhold.',
+    warnBody: 'AI-lovgivning ændrer sig hurtigt — EU AI Act, NIST AI RMF, ISO/IEC 42001, og regionale/statslige love er alle stadig under udvikling. Dette værktøj strukturerer vurderingen, men følger ikke live lovændringer. Betragt enhver rammereference som arkitektens aktuelle forståelse på skrivetidspunktet, og lad kvalificeret juridisk rådgivning verificere anvendelighed, forpligtelser og frister, før noget kundevendt compliance-udsagn fremsættes — dette er ikke juridisk rådgivning.',
+    sopTitle: 'SOP — sådan gøres det normalt',
+    sopHint: 'Rækkefølgen en arkitekt reelt arbejder denne øvelse igennem.',
+    sop: [
+      'Identificér hvilke lovgivningsrammer der reelt gælder — efter jurisdiktion, sektor, og systemrisikoniveau (fx EU AI Act høj-risiko-klassificering, sektorspecifikke amerikanske statslove, kinesiske AI-regler) — sammen med juridisk rådgivning, ikke ud fra antagelser.',
+      'Vurdér for hvert gældende krav den aktuelle tilstand: compliant, delvist compliant, en klar gap, eller endnu ikke vurderet.',
+      'Prioritér gaps efter alvorlighed og fristpres — et krav med en nært forestående håndhævelsesdato rangerer over et lavere-risiko-krav med mere tid.',
+      'Notér de tekniske dokumentations-, overvågnings- eller procesændringer, hver gap kræver for at lukkes — dette fodrer direkte ind i Fase 6-governance- og risikostyringsarbejdet.',
+      'Pak vurderingen som en compliance-gapanalyserapport og en afhjælpningsroadmap, kunden kan handle på, og deres jurister kan gennemgå.',
+    ],
+    clientTitle: 'Kunde',
+    lblClient: 'Kunde / engagement',
+    lblAssessor: 'Vurderingsmand',
+    lblRiskClass: 'Gældende rammer & foreløbig risikoklassificering',
+    matrixTitle: 'Compliance-gapanalysematrix',
+    matrixHint: 'Tilføj hvert krav, der vurderes, hvilken ramme det kommer fra, og dets aktuelle status.',
+    colRequirement: 'Krav',
+    colFramework: 'Ramme',
+    colStatus: 'Status',
+    colNotes: 'Noter',
+    btnAddRow: '+ Tilføj krav',
+    statusCompliant: 'Compliant',
+    statusPartial: 'Delvis',
+    statusGap: 'Gap',
+    statusNotAssessed: 'Ikke vurderet',
+    previewTitle: 'Compliance-gapanalyserapport',
+    previewHint: 'Dette er selve leverancen — automatisk genereret og tilpasset denne kunde.',
+    btnExportHtml: '🌐 Eksportér HTML',
+    btnExportMd: '📄 Eksportér Markdown',
+    btnReset: '🔄 Nulstil',
+    docTitle: 'Compliance-gapanalyserapport',
+    docFor: 'Udarbejdet for',
+    docAssessor: 'Vurderingsmand',
+    docDate: 'Dato',
+    secRiskClass: '1. Gældende rammer & risikoklassificering',
+    secMatrix: '2. Gapanalyse',
+    noRows: 'Ingen krav tilføjet endnu.',
+    placeholderRequirement: 'fx Teknisk dokumentation for højrisikosystem',
+    placeholderFramework: 'fx EU AI Act',
+    placeholderNotes: 'fx Udkast findes, kræver juridisk gennemgang',
+    emptyNote: '(endnu ikke dokumenteret)',
+  },
+  sv: {
+    heroTitle: 'Compliance-gapanalys',
+    heroDesc: 'SOP, kundintag, en poängsatt compliance-gapanalysmatris, och en automatiskt genererad compliance-gapanalysrapport.',
+    noteLabel: 'Så här fungerar det.',
+    noteBody: 'Fyll i intagsfälten och gapanalysmatrisen nedan; rapporten byggs upp live. Inga API-anrop — allt sparas automatiskt lokalt.',
+    warnLabel: 'Anmärkning om regelverksinnehåll.',
+    warnBody: 'AI-reglering förändras snabbt — EU AI Act, NIST AI RMF, ISO/IEC 42001, och regionala/delstatliga lagar är alla fortfarande under utveckling. Detta verktyg strukturerar bedömningen men följer inte levande lagändringar. Betrakta varje ramverksreferens som arkitektens aktuella förståelse vid skrivandet, och låt kvalificerad juridisk rådgivning verifiera tillämplighet, skyldigheter och deadlines innan något kundriktat compliance-påstående görs — detta är inte juridisk rådgivning.',
+    sopTitle: 'SOP — så här görs det vanligtvis',
+    sopHint: 'Ordningen en arkitekt faktiskt arbetar igenom denna övning.',
+    sop: [
+      'Identifiera vilka regelverk som faktiskt gäller — efter jurisdiktion, sektor, och systemets risknivå (t.ex. EU AI Act högrisk-klassificering, sektorspecifika amerikanska delstatslagar, kinesiska AI-regler) — tillsammans med juridisk rådgivning, inte utifrån antaganden.',
+      'Bedöm för varje tillämpligt krav det aktuella läget: uppfyllt, delvis uppfyllt, en tydlig brist, eller ännu inte bedömt.',
+      'Prioritera brister efter allvarlighetsgrad och deadline-press — ett krav med ett nära förestående efterlevnadsdatum rankas högre än ett lägre-risk-krav med mer tid kvar.',
+      'Notera de tekniska dokumentations-, övervaknings- eller processförändringar varje brist kräver för att stängas — detta matar direkt in i Fas 6-styrnings- och riskhanteringsarbetet.',
+      'Paketera bedömningen som en compliance-gapanalysrapport och en åtgärdsplan kunden kan agera på och deras jurister kan granska.',
+    ],
+    clientTitle: 'Kund',
+    lblClient: 'Kund / uppdrag',
+    lblAssessor: 'Bedömare',
+    lblRiskClass: 'Tillämpliga ramverk & preliminär riskklassificering',
+    matrixTitle: 'Compliance-gapanalysmatris',
+    matrixHint: 'Lägg till varje krav som bedöms, vilket ramverk det kommer från, och dess aktuella status.',
+    colRequirement: 'Krav',
+    colFramework: 'Ramverk',
+    colStatus: 'Status',
+    colNotes: 'Anteckningar',
+    btnAddRow: '+ Lägg till krav',
+    statusCompliant: 'Uppfyllt',
+    statusPartial: 'Delvis',
+    statusGap: 'Brist',
+    statusNotAssessed: 'Ej bedömt',
+    previewTitle: 'Compliance-gapanalysrapport',
+    previewHint: 'Detta är själva leveransen — automatiskt genererad och anpassad för denna kund.',
+    btnExportHtml: '🌐 Exportera HTML',
+    btnExportMd: '📄 Exportera Markdown',
+    btnReset: '🔄 Återställ',
+    docTitle: 'Compliance-gapanalysrapport',
+    docFor: 'Framtagen för',
+    docAssessor: 'Bedömare',
+    docDate: 'Datum',
+    secRiskClass: '1. Tillämpliga ramverk & riskklassificering',
+    secMatrix: '2. Gapanalys',
+    noRows: 'Inga krav tillagda än.',
+    placeholderRequirement: 't.ex. Teknisk dokumentation för högriskssystem',
+    placeholderFramework: 't.ex. EU AI Act',
+    placeholderNotes: 't.ex. Utkast finns, behöver juridisk granskning',
+    emptyNote: '(ännu inte dokumenterat)',
+  },
+};
+
+let lang = localStorage.getItem('aoa_lang') || 'en';
+function t(key) { return (STRINGS[lang] && STRINGS[lang][key] !== undefined) ? STRINGS[lang][key] : (STRINGS.en[key] !== undefined ? STRINGS.en[key] : key); }
+function esc(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+let rows = []; // { id, requirement, framework, status, notes }
+let nextId = 1;
+
+function setLang(l) {
+  lang = l;
+  localStorage.setItem('aoa_lang', l);
+  document.getElementById('langSelect').value = l;
+  applyI18n();
+  renderMatrix();
+  renderPreview();
+  save();
+}
+function applyI18n() {
+  document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.getAttribute('data-i18n')); });
+  document.title = t('heroTitle') + ' — Phase 6';
+  document.getElementById('sopList').innerHTML = t('sop').map(s => `<li>${esc(s)}</li>`).join('');
+}
+
+function fieldEls() { return Array.from(document.querySelectorAll('[data-eng]')); }
+function collectFields() { const o = {}; fieldEls().forEach(el => { o[el.getAttribute('data-eng')] = el.value; }); return o; }
+function restoreFields(o) { fieldEls().forEach(el => { const k = el.getAttribute('data-eng'); if (o[k] !== undefined) el.value = o[k]; }); }
+function val(k) { const el = document.querySelector(`[data-eng="${k}"]`); return el ? el.value : ''; }
+function orEmpty(v) { return v && v.trim() ? esc(v) : `<em>${esc(t('emptyNote'))}</em>`; }
+
+let savedTimer;
+function save() { try { localStorage.setItem(KEY, JSON.stringify({ fields: collectFields(), rows, nextId, lang })); flashSaved(); } catch (e) {} }
+function flashSaved() { const f = document.getElementById('savedFlag'); f.textContent = '✓'; clearTimeout(savedTimer); savedTimer = setTimeout(() => { f.textContent = ''; }, 1200); }
+function loadSaved() {
+  try {
+    const o = JSON.parse(localStorage.getItem(KEY) || '{}');
+    if (o.fields) restoreFields(o.fields);
+    if (o.rows) rows = o.rows;
+    if (o.nextId) nextId = o.nextId;
+  } catch (e) {}
+}
+
+function addRow() { rows.push({ id: nextId++, requirement: '', framework: '', status: 'notassessed', notes: '' }); renderMatrix(); renderPreview(); save(); }
+function removeRow(id) { rows = rows.filter(r => r.id !== id); renderMatrix(); renderPreview(); save(); }
+function updateRow(id, field, value) { const r = rows.find(r => r.id === id); if (r) r[field] = value; renderPreview(); save(); if (field === 'status') renderMatrix(); }
+
+function renderMatrix() {
+  const body = document.getElementById('matrixBody');
+  if (!rows.length) { body.innerHTML = `<tr><td colspan="5" style="color:var(--muted);font-style:italic;padding:14px 8px">${esc(t('noRows'))}</td></tr>`; return; }
+  body.innerHTML = rows.map(r => `<tr>
+      <td><input type="text" value="${esc(r.requirement)}" placeholder="${esc(t('placeholderRequirement'))}" oninput="updateRow(${r.id},'requirement',this.value)"></td>
+      <td><input type="text" value="${esc(r.framework)}" placeholder="${esc(t('placeholderFramework'))}" oninput="updateRow(${r.id},'framework',this.value)"></td>
+      <td><select onchange="updateRow(${r.id},'status',this.value)">
+        ${Object.entries(STATUS_KEYS).map(([v, k]) => `<option value="${v}" ${r.status === v ? 'selected' : ''}>${esc(t(k))}</option>`).join('')}
+      </select></td>
+      <td><input type="text" value="${esc(r.notes)}" placeholder="${esc(t('placeholderNotes'))}" oninput="updateRow(${r.id},'notes',this.value)"></td>
+      <td><button class="rm-btn" onclick="removeRow(${r.id})" title="remove">✕</button></td>
+    </tr>`).join('');
+}
+
+function renderPreview() {
+  const date = new Date().toISOString().slice(0, 10);
+  const filled = rows.filter(r => r.requirement.trim());
+  let h = `<div class="meta"><strong>${esc(t('docFor'))}:</strong> ${esc(val('client')) || '—'} &nbsp;·&nbsp; <strong>${esc(t('docAssessor'))}:</strong> ${esc(val('assessor')) || '—'} &nbsp;·&nbsp; <strong>${esc(t('docDate'))}:</strong> ${date}</div>`;
+  h += `<h3>${esc(t('secRiskClass'))}</h3><p>${orEmpty(val('riskClass'))}</p>`;
+  h += `<h3>${esc(t('secMatrix'))}</h3>`;
+  if (filled.length) {
+    h += `<table><thead><tr><th>${esc(t('colRequirement'))}</th><th>${esc(t('colFramework'))}</th><th>${esc(t('colStatus'))}</th><th>${esc(t('colNotes'))}</th></tr></thead><tbody>`;
+    h += filled.map(r => `<tr><td>${esc(r.requirement)}</td><td>${esc(r.framework)}</td><td><span class="status-badge status-${r.status}">${esc(t(STATUS_KEYS[r.status] || 'statusNotAssessed'))}</span></td><td>${esc(r.notes) || '—'}</td></tr>`).join('');
+    h += '</tbody></table>';
+  } else {
+    h += `<p><em>${esc(t('noRows'))}</em></p>`;
+  }
+  document.getElementById('preview').innerHTML = h;
+}
+
+document.addEventListener('input', e => { if (e.target.matches('[data-eng]')) { renderPreview(); save(); } });
+document.addEventListener('change', e => { if (e.target.matches('[data-eng]')) { renderPreview(); save(); } });
+
+function resetAll() {
+  if (!confirm('Clear all fields? / Ryd alle felter? / Rensa alla fält?')) return;
+  fieldEls().forEach(el => { el.value = ''; });
+  rows = []; nextId = 1;
+  renderMatrix(); renderPreview(); save();
+}
+
+function slug() { return (val('client') || 'compliance_gap_analysis').replace(/\W+/g, '_'); }
+function docMarkdown() {
+  const date = new Date().toISOString().slice(0, 10);
+  const filled = rows.filter(r => r.requirement.trim());
+  let m = `# ${t('docTitle')} — ${val('client') || '[client]'}\n\n`;
+  m += `**${t('docFor')}:** ${val('client') || '—'}  \n**${t('docAssessor')}:** ${val('assessor') || '—'}  \n**${t('docDate')}:** ${date}\n\n`;
+  m += `## ${t('secRiskClass')}\n${val('riskClass') || t('emptyNote')}\n\n`;
+  m += `## ${t('secMatrix')}\n\n`;
+  if (filled.length) {
+    m += `| ${t('colRequirement')} | ${t('colFramework')} | ${t('colStatus')} | ${t('colNotes')} |\n|---|---|---|---|\n`;
+    m += filled.map(r => `| ${r.requirement} | ${r.framework} | ${t(STATUS_KEYS[r.status] || 'statusNotAssessed')} | ${r.notes || '—'} |`).join('\n') + '\n';
+  } else {
+    m += `${t('noRows')}\n`;
+  }
+  return m;
+}
+function docHtml() {
+  return '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>' + esc(t('docTitle')) + ' — ' + esc(val('client') || 'client') + '</title>'
+    + '<style>body{font-family:Inter,Segoe UI,sans-serif;color:#1c1c28;max-width:880px;margin:40px auto;padding:0 22px;line-height:1.6}'
+    + 'h1,h3{color:#1B1474;font-family:Georgia,serif}table{width:100%;border-collapse:collapse;font-size:14px}th,td{border:1px solid #e4e4f0;padding:7px 10px;text-align:left}th{background:#EEEEFA;color:#1B1474}.status-badge{font-size:11px;font-weight:700;padding:2px 9px;border-radius:10px;background:#EEEEFA;color:#1B1474}</style></head><body>'
+    + document.getElementById('preview').outerHTML.replace('id="preview"', '')
+    + '</body></html>';
+}
+function download(text, fname, mime) {
+  const blob = new Blob([text], { type: mime });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = fname; a.click();
+  URL.revokeObjectURL(a.href);
+}
+function exportDoc(fmt) {
+  if (fmt === 'md') download(docMarkdown(), 'compliance_gap_analysis_' + slug() + '.md', 'text/markdown');
+  else download(docHtml(), 'compliance_gap_analysis_' + slug() + '.html', 'text/html');
+}
+
+(function init() {
+  document.getElementById('langSelect').value = lang;
+  loadSaved();
+  applyI18n();
+  if (!rows.length) { rows.push({ id: nextId++, requirement: '', framework: '', status: 'notassessed', notes: '' }); }
+  renderMatrix();
+  renderPreview();
+})();
+</script>
+</body>
+</html>

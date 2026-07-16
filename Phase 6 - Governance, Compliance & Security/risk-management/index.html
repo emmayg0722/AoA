@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Risk Register — Phase 6</title>
+<meta name="description" content="AI risk management SOP, client intake, a scored risk register (likelihood x impact), and an auto-generated risk assessment report.">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='16' fill='%231B1474'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #1B1474; --primary-dark: #120D52; --accent: #DCDDF6; --powder: #EEEEFA;
+    --ink: #1c1c28; --muted: #5b5b6b; --line: #e4e4f0;
+    --green: #1a8a5c; --amber: #d4790e; --red: #c0392b;
+    --font-heading: 'Fraunces', Georgia, serif;
+    --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: var(--font-body); color: var(--ink); background: #fafaff; line-height: 1.6; }
+  .hero { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: #fff; padding: 44px 24px 36px; }
+  .wrap { max-width: 1150px; margin: 0 auto; }
+  .crumb { font-size: 13px; color: var(--accent); margin-bottom: 10px; }
+  .crumb a { color: var(--accent); text-decoration: none; }
+  .hero-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; flex-wrap: wrap; }
+  .hero h1 { font-family: var(--font-heading); font-weight: 700; font-size: 34px; line-height: 1.15; }
+  .hero p { margin-top: 10px; font-size: 15.5px; color: #dcdcf2; max-width: 680px; }
+  select#langSelect { font-family: var(--font-body); font-size: 13px; font-weight: 600; border: 1.5px solid rgba(255,255,255,0.4); background: rgba(255,255,255,0.08); color: #fff; border-radius: 8px; padding: 7px 10px; }
+  select#langSelect option { color: var(--ink); }
+  main { max-width: 1150px; margin: 0 auto; padding: 28px 24px 80px; }
+  .note { background: var(--powder); border: 1px solid var(--accent); border-radius: 12px; padding: 14px 16px; font-size: 14px; color: var(--muted); margin-bottom: 26px; }
+  .note strong { color: var(--primary); }
+  .card { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 22px 24px; margin-bottom: 20px; }
+  .card > h2 { font-family: var(--font-heading); font-weight: 600; font-size: 21px; color: var(--primary); margin-bottom: 4px; }
+  .card .hint { font-size: 13.5px; color: var(--muted); margin-bottom: 14px; }
+  ol.sop { margin-left: 20px; }
+  ol.sop li { margin-bottom: 10px; font-size: 14px; }
+  label { display: block; font-size: 13px; font-weight: 600; color: var(--ink); margin: 10px 0 5px; }
+  input[type=text], textarea, select.field { width: 100%; font-family: var(--font-body); font-size: 14px; color: var(--ink); border: 1.5px solid var(--line); border-radius: 8px; padding: 9px 11px; background: #fff; }
+  textarea { resize: vertical; min-height: 70px; }
+  input:focus, textarea:focus, select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(27,20,116,0.12); }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; }
+  .btn { font-family: var(--font-body); font-size: 13.5px; font-weight: 600; padding: 9px 16px; border-radius: 8px; border: none; cursor: pointer; transition: all 0.15s; }
+  .btn-primary { background: var(--accent); color: var(--primary); }
+  .btn-primary:hover { background: #C3C5EC; }
+  .btn-secondary { background: #fff; color: var(--primary); border: 1.5px solid var(--accent); }
+  .btn-secondary:hover { background: var(--powder); }
+  .btn-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px; }
+  table.matrix { width: 100%; border-collapse: collapse; font-size: 13.5px; margin-top: 10px; }
+  table.matrix th { text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); padding: 6px 8px; border-bottom: 2px solid var(--line); }
+  table.matrix td { padding: 6px 8px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+  table.matrix input[type=text] { padding: 6px 8px; font-size: 13px; }
+  table.matrix select { padding: 6px 6px; font-size: 13px; }
+  .score-cell { font-weight: 700; color: var(--primary); text-align: center; }
+  .rm-btn { background: none; border: none; color: var(--red); cursor: pointer; font-size: 15px; }
+  .sev-badge { display: inline-block; font-size: 10.5px; font-weight: 700; padding: 2px 8px; border-radius: 10px; white-space: nowrap; }
+  .sev-low { background: var(--powder); color: var(--muted); }
+  .sev-medium { background: #fdf3e3; color: var(--amber); }
+  .sev-high { background: #fbe3d6; color: #b5501a; }
+  .sev-critical { background: #fbeaea; color: var(--red); }
+  .preview { border: 1px dashed var(--line); border-radius: 10px; padding: 18px 20px; background: #fcfcff; font-size: 14px; }
+  .preview h3 { font-family: var(--font-heading); color: var(--primary); font-size: 16px; margin: 14px 0 6px; }
+  .preview h3:first-child { margin-top: 0; }
+  .preview p { margin: 6px 0; white-space: pre-wrap; }
+  .preview .meta { font-size: 13px; color: var(--muted); margin-bottom: 10px; }
+  .preview table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 8px 0; }
+  .preview th, .preview td { border: 1px solid var(--line); padding: 6px 9px; text-align: left; }
+  .preview th { background: var(--powder); color: var(--primary); }
+  .saved { font-size: 12.5px; color: var(--green); margin-left: 8px; }
+  @media (max-width: 720px) { .grid2 { grid-template-columns: 1fr; } .hero h1 { font-size: 27px; } table.matrix { font-size: 12px; } }
+</style>
+</head>
+<body>
+  <header class="hero"><div class="wrap">
+    <div class="hero-top">
+      <div class="crumb"><a href="../">AI Architect Toolkit</a> · Phase 6 · Governance, Compliance &amp; Security</div>
+      <select id="langSelect" onchange="setLang(this.value)">
+        <option value="en">English</option>
+        <option value="da">Dansk</option>
+        <option value="sv">Svenska</option>
+      </select>
+    </div>
+    <h1 data-i18n="heroTitle"></h1>
+    <p data-i18n="heroDesc"></p>
+  </div></header>
+
+  <main>
+    <div class="note"><strong data-i18n="noteLabel"></strong> <span data-i18n="noteBody"></span></div>
+
+    <div class="card">
+      <h2 data-i18n="sopTitle"></h2>
+      <p class="hint" data-i18n="sopHint"></p>
+      <ol class="sop" id="sopList"></ol>
+    </div>
+
+    <div class="card">
+      <h2 data-i18n="clientTitle"></h2>
+      <div class="grid2">
+        <div><label data-i18n="lblClient"></label><input type="text" data-eng="client" placeholder="Acme Corp"></div>
+        <div><label data-i18n="lblAssessor"></label><input type="text" data-eng="assessor"></div>
+      </div>
+      <label data-i18n="lblAuditTrail"></label>
+      <textarea data-eng="auditTrail" placeholder="What gets logged, for how long, and how is it made tamper-evident?"></textarea>
+    </div>
+
+    <div class="card">
+      <h2 data-i18n="matrixTitle"></h2>
+      <p class="hint" data-i18n="matrixHint"></p>
+      <table class="matrix">
+        <thead><tr>
+          <th data-i18n="colRisk"></th><th data-i18n="colLikelihood"></th><th data-i18n="colImpact"></th>
+          <th data-i18n="colScore"></th><th data-i18n="colMitigation"></th><th data-i18n="colOwner"></th><th></th>
+        </tr></thead>
+        <tbody id="matrixBody"></tbody>
+      </table>
+      <div class="btn-row">
+        <button class="btn btn-secondary" onclick="addRow()" data-i18n="btnAddRow"></button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2 data-i18n="previewTitle"></h2>
+      <p class="hint" data-i18n="previewHint"></p>
+      <div class="preview" id="preview"></div>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="exportDoc('html')" data-i18n="btnExportHtml"></button>
+        <button class="btn btn-primary" onclick="exportDoc('md')" data-i18n="btnExportMd"></button>
+        <button class="btn btn-secondary" onclick="resetAll()" data-i18n="btnReset"></button>
+        <span class="saved" id="savedFlag"></span>
+      </div>
+    </div>
+  </main>
+
+<script>
+const KEY = 'aoa_risk_management_v1';
+
+const STRINGS = {
+  en: {
+    heroTitle: 'AI Risk Register',
+    heroDesc: 'SOP, client intake, a scored risk register (likelihood × impact), and an auto-generated risk assessment report.',
+    noteLabel: 'How this works.',
+    noteBody: 'Add each risk and score its likelihood and impact 1-5; severity computes live. No API calls — everything autosaves locally.',
+    sopTitle: 'SOP — how this is usually done',
+    sopHint: 'The order an architect actually works this exercise in.',
+    sop: [
+      'Build the AI risk register from every upstream artifact this engagement has already produced: data readiness gaps, compliance gaps, bias audit findings, security architecture threats, and known model limitations.',
+      'Score each risk on likelihood (1-5) and impact (1-5); the product is the risk score — this keeps prioritization consistent and defensible instead of a gut-feel ranking.',
+      'Assign an owner to every risk above a "low" severity threshold — an unowned risk does not get mitigated.',
+      'Design the real-time risk assessment mechanism: what monitoring signal would tell you a registered risk has materialized, not just that something in general went wrong.',
+      'Maintain a persistent, tamper-evident audit trail so full-lifecycle compliance can be proven after the fact, not reconstructed from memory during an incident review.',
+    ],
+    clientTitle: 'Client',
+    lblClient: 'Client / engagement',
+    lblAssessor: 'Assessor',
+    lblAuditTrail: 'Audit trail design',
+    matrixTitle: 'Risk register',
+    matrixHint: 'Add each risk and score likelihood and impact 1 (low) to 5 (high). Severity = likelihood × impact.',
+    colRisk: 'Risk',
+    colLikelihood: 'Likelihood',
+    colImpact: 'Impact',
+    colScore: 'Score',
+    colMitigation: 'Mitigation',
+    colOwner: 'Owner',
+    btnAddRow: '+ Add risk',
+    sevLow: 'Low',
+    sevMedium: 'Medium',
+    sevHigh: 'High',
+    sevCritical: 'Critical',
+    previewTitle: 'AI risk assessment report',
+    previewHint: 'This is the actual deliverable — the scored risk register, auto-generated and customized for this client.',
+    btnExportHtml: '🌐 Export HTML',
+    btnExportMd: '📄 Export Markdown',
+    btnReset: '🔄 Reset',
+    docTitle: 'AI Risk Assessment Report',
+    docFor: 'Prepared for',
+    docAssessor: 'Assessor',
+    docDate: 'Date',
+    secAuditTrail: '1. Audit Trail Design',
+    secRegister: '2. Risk Register',
+    noRows: 'No risks added yet.',
+    placeholderRisk: 'e.g. Model drift on seasonal claims patterns',
+    placeholderMitigation: 'e.g. Monthly drift monitoring + quarterly retrain',
+    placeholderOwner: 'e.g. ML lead',
+    emptyNote: '(not yet documented)',
+  },
+  da: {
+    heroTitle: 'AI-risikoregister',
+    heroDesc: 'SOP, kundeoptag, et scoret risikoregister (sandsynlighed × konsekvens), og en automatisk genereret risikovurderingsrapport.',
+    noteLabel: 'Sådan virker det.',
+    noteBody: 'Tilføj hver risiko og score dens sandsynlighed og konsekvens 1-5; alvorlighed beregnes live. Ingen API-kald — alt gemmes automatisk lokalt.',
+    sopTitle: 'SOP — sådan gøres det normalt',
+    sopHint: 'Rækkefølgen en arkitekt reelt arbejder denne øvelse igennem.',
+    sop: [
+      'Byg AI-risikoregisteret ud fra hvert upstream-artefakt, dette engagement allerede har produceret: datamodenheds-gaps, compliance-gaps, bias-auditfund, sikkerhedsarkitekturtrusler, og kendte modelbegrænsninger.',
+      'Score hver risiko på sandsynlighed (1-5) og konsekvens (1-5); produktet er risikoscoren — det holder prioritering konsistent og forsvarlig fremfor en mavefornemmelses-rangering.',
+      'Tildel en ejer til enhver risiko over en "lav"-alvorlighedstærskel — en risiko uden ejer bliver ikke afhjulpet.',
+      'Design den realtids-risikovurderingsmekanisme: hvilket overvågningssignal ville fortælle dig, at en registreret risiko er materialiseret, ikke bare at noget generelt gik galt.',
+      'Vedligehold en vedvarende, manipulationssikker audit trail, så fuld livscyklus-compliance kan bevises bagefter, ikke rekonstrueres fra hukommelsen under en hændelsesgennemgang.',
+    ],
+    clientTitle: 'Kunde',
+    lblClient: 'Kunde / engagement',
+    lblAssessor: 'Vurderingsmand',
+    lblAuditTrail: 'Audit trail-design',
+    matrixTitle: 'Risikoregister',
+    matrixHint: 'Tilføj hver risiko og score sandsynlighed og konsekvens 1 (lav) til 5 (høj). Alvorlighed = sandsynlighed × konsekvens.',
+    colRisk: 'Risiko',
+    colLikelihood: 'Sandsynlighed',
+    colImpact: 'Konsekvens',
+    colScore: 'Score',
+    colMitigation: 'Afhjælpning',
+    colOwner: 'Ejer',
+    btnAddRow: '+ Tilføj risiko',
+    sevLow: 'Lav',
+    sevMedium: 'Middel',
+    sevHigh: 'Høj',
+    sevCritical: 'Kritisk',
+    previewTitle: 'AI-risikovurderingsrapport',
+    previewHint: 'Dette er selve leverancen — det scorede risikoregister, automatisk genereret og tilpasset denne kunde.',
+    btnExportHtml: '🌐 Eksportér HTML',
+    btnExportMd: '📄 Eksportér Markdown',
+    btnReset: '🔄 Nulstil',
+    docTitle: 'AI-risikovurderingsrapport',
+    docFor: 'Udarbejdet for',
+    docAssessor: 'Vurderingsmand',
+    docDate: 'Dato',
+    secAuditTrail: '1. Audit trail-design',
+    secRegister: '2. Risikoregister',
+    noRows: 'Ingen risici tilføjet endnu.',
+    placeholderRisk: 'fx Modeldrift på sæsonbetonede skadesmønstre',
+    placeholderMitigation: 'fx Månedlig driftovervågning + kvartalsvis gentræning',
+    placeholderOwner: 'fx ML-lead',
+    emptyNote: '(endnu ikke dokumenteret)',
+  },
+  sv: {
+    heroTitle: 'AI-riskregister',
+    heroDesc: 'SOP, kundintag, ett poängsatt riskregister (sannolikhet × påverkan), och en automatiskt genererad riskbedömningsrapport.',
+    noteLabel: 'Så här fungerar det.',
+    noteBody: 'Lägg till varje risk och poängsätt dess sannolikhet och påverkan 1-5; allvarlighetsgrad beräknas live. Inga API-anrop — allt sparas automatiskt lokalt.',
+    sopTitle: 'SOP — så här görs det vanligtvis',
+    sopHint: 'Ordningen en arkitekt faktiskt arbetar igenom denna övning.',
+    sop: [
+      'Bygg AI-riskregistret utifrån varje uppströms-artefakt detta uppdrag redan har producerat: databeredskapsluckor, compliance-luckor, bias-auditfynd, säkerhetsarkitekturhot, och kända modellbegränsningar.',
+      'Poängsätt varje risk på sannolikhet (1-5) och påverkan (1-5); produkten är riskpoängen — det håller prioriteringen konsekvent och försvarbar istället för en magkänslerangordning.',
+      'Tilldela en ägare till varje risk över en "låg"-allvarlighetströskel — en risk utan ägare åtgärdas inte.',
+      'Designa realtids-riskbedömningsmekanismen: vilken övervakningssignal skulle tala om för dig att en registrerad risk har materialiserats, inte bara att något generellt gick fel.',
+      'Underhåll ett bestående, manipuleringssäkert audit trail så att fullständig livscykel-compliance kan bevisas i efterhand, inte rekonstrueras ur minnet under en incidentgenomgång.',
+    ],
+    clientTitle: 'Kund',
+    lblClient: 'Kund / uppdrag',
+    lblAssessor: 'Bedömare',
+    lblAuditTrail: 'Audit trail-design',
+    matrixTitle: 'Riskregister',
+    matrixHint: 'Lägg till varje risk och poängsätt sannolikhet och påverkan 1 (låg) till 5 (hög). Allvarlighetsgrad = sannolikhet × påverkan.',
+    colRisk: 'Risk',
+    colLikelihood: 'Sannolikhet',
+    colImpact: 'Påverkan',
+    colScore: 'Poäng',
+    colMitigation: 'Åtgärd',
+    colOwner: 'Ägare',
+    btnAddRow: '+ Lägg till risk',
+    sevLow: 'Låg',
+    sevMedium: 'Medel',
+    sevHigh: 'Hög',
+    sevCritical: 'Kritisk',
+    previewTitle: 'AI-riskbedömningsrapport',
+    previewHint: 'Detta är själva leveransen — det poängsatta riskregistret, automatiskt genererat och anpassat för denna kund.',
+    btnExportHtml: '🌐 Exportera HTML',
+    btnExportMd: '📄 Exportera Markdown',
+    btnReset: '🔄 Återställ',
+    docTitle: 'AI-riskbedömningsrapport',
+    docFor: 'Framtagen för',
+    docAssessor: 'Bedömare',
+    docDate: 'Datum',
+    secAuditTrail: '1. Audit trail-design',
+    secRegister: '2. Riskregister',
+    noRows: 'Inga risker tillagda än.',
+    placeholderRisk: 't.ex. Modelldrift på säsongsbetonade skademönster',
+    placeholderMitigation: 't.ex. Månatlig driftövervakning + kvartalsvis omträning',
+    placeholderOwner: 't.ex. ML-lead',
+    emptyNote: '(ännu inte dokumenterat)',
+  },
+};
+
+let lang = localStorage.getItem('aoa_lang') || 'en';
+function t(key) { return (STRINGS[lang] && STRINGS[lang][key] !== undefined) ? STRINGS[lang][key] : (STRINGS.en[key] !== undefined ? STRINGS.en[key] : key); }
+function esc(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+let rows = []; // { id, risk, likelihood, impact, mitigation, owner }
+let nextId = 1;
+
+function setLang(l) {
+  lang = l;
+  localStorage.setItem('aoa_lang', l);
+  document.getElementById('langSelect').value = l;
+  applyI18n();
+  renderMatrix();
+  renderPreview();
+  save();
+}
+function applyI18n() {
+  document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.getAttribute('data-i18n')); });
+  document.title = t('heroTitle') + ' — Phase 6';
+  document.getElementById('sopList').innerHTML = t('sop').map(s => `<li>${esc(s)}</li>`).join('');
+}
+
+function fieldEls() { return Array.from(document.querySelectorAll('[data-eng]')); }
+function collectFields() { const o = {}; fieldEls().forEach(el => { o[el.getAttribute('data-eng')] = el.value; }); return o; }
+function restoreFields(o) { fieldEls().forEach(el => { const k = el.getAttribute('data-eng'); if (o[k] !== undefined) el.value = o[k]; }); }
+function val(k) { const el = document.querySelector(`[data-eng="${k}"]`); return el ? el.value : ''; }
+function orEmpty(v) { return v && v.trim() ? esc(v) : `<em>${esc(t('emptyNote'))}</em>`; }
+
+let savedTimer;
+function save() { try { localStorage.setItem(KEY, JSON.stringify({ fields: collectFields(), rows, nextId, lang })); flashSaved(); } catch (e) {} }
+function flashSaved() { const f = document.getElementById('savedFlag'); f.textContent = '✓'; clearTimeout(savedTimer); savedTimer = setTimeout(() => { f.textContent = ''; }, 1200); }
+function loadSaved() {
+  try {
+    const o = JSON.parse(localStorage.getItem(KEY) || '{}');
+    if (o.fields) restoreFields(o.fields);
+    if (o.rows) rows = o.rows;
+    if (o.nextId) nextId = o.nextId;
+  } catch (e) {}
+}
+
+function addRow() {
+  rows.push({ id: nextId++, risk: '', likelihood: '3', impact: '3', mitigation: '', owner: '' });
+  renderMatrix(); renderPreview(); save();
+}
+function removeRow(id) {
+  rows = rows.filter(r => r.id !== id);
+  renderMatrix(); renderPreview(); save();
+}
+function updateRow(id, field, value) {
+  const r = rows.find(r => r.id === id);
+  if (r) r[field] = value;
+  renderPreview(); save();
+  if (field === 'likelihood' || field === 'impact') renderMatrix();
+}
+function scoreOf(r) { return Number(r.likelihood) * Number(r.impact); }
+function severityOf(score) {
+  if (score >= 15) return 'critical';
+  if (score >= 8) return 'high';
+  if (score >= 4) return 'medium';
+  return 'low';
+}
+function severityLabel(s) { return s === 'critical' ? t('sevCritical') : s === 'high' ? t('sevHigh') : s === 'medium' ? t('sevMedium') : t('sevLow'); }
+
+function renderMatrix() {
+  const body = document.getElementById('matrixBody');
+  if (!rows.length) { body.innerHTML = `<tr><td colspan="7" style="color:var(--muted);font-style:italic;padding:14px 8px">${esc(t('noRows'))}</td></tr>`; return; }
+  const opts = n => [1,2,3,4,5].map(v => `<option value="${v}" ${String(v)===String(n)?'selected':''}>${v}</option>`).join('');
+  body.innerHTML = rows.map(r => {
+    const score = scoreOf(r);
+    const sev = severityOf(score);
+    return `<tr>
+      <td><input type="text" value="${esc(r.risk)}" placeholder="${esc(t('placeholderRisk'))}" oninput="updateRow(${r.id},'risk',this.value)"></td>
+      <td><select onchange="updateRow(${r.id},'likelihood',this.value)">${opts(r.likelihood)}</select></td>
+      <td><select onchange="updateRow(${r.id},'impact',this.value)">${opts(r.impact)}</select></td>
+      <td class="score-cell">${score} <span class="sev-badge sev-${sev}">${esc(severityLabel(sev))}</span></td>
+      <td><input type="text" value="${esc(r.mitigation)}" placeholder="${esc(t('placeholderMitigation'))}" oninput="updateRow(${r.id},'mitigation',this.value)"></td>
+      <td><input type="text" value="${esc(r.owner)}" placeholder="${esc(t('placeholderOwner'))}" oninput="updateRow(${r.id},'owner',this.value)"></td>
+      <td><button class="rm-btn" onclick="removeRow(${r.id})" title="remove">✕</button></td>
+    </tr>`;
+  }).join('');
+}
+
+function renderPreview() {
+  const date = new Date().toISOString().slice(0, 10);
+  const sorted = [...rows].filter(r => r.risk.trim()).sort((a, b) => scoreOf(b) - scoreOf(a));
+  let h = `<div class="meta"><strong>${esc(t('docFor'))}:</strong> ${esc(val('client')) || '—'} &nbsp;·&nbsp; <strong>${esc(t('docAssessor'))}:</strong> ${esc(val('assessor')) || '—'} &nbsp;·&nbsp; <strong>${esc(t('docDate'))}:</strong> ${date}</div>`;
+  h += `<h3>${esc(t('secAuditTrail'))}</h3><p>${orEmpty(val('auditTrail'))}</p>`;
+  h += `<h3>${esc(t('secRegister'))}</h3>`;
+  if (sorted.length) {
+    h += `<table><thead><tr><th>${esc(t('colRisk'))}</th><th>${esc(t('colLikelihood'))}</th><th>${esc(t('colImpact'))}</th><th>${esc(t('colScore'))}</th><th>${esc(t('colMitigation'))}</th><th>${esc(t('colOwner'))}</th></tr></thead><tbody>`;
+    h += sorted.map(r => {
+      const score = scoreOf(r);
+      const sev = severityOf(score);
+      return `<tr><td>${esc(r.risk)}</td><td>${r.likelihood}</td><td>${r.impact}</td><td><strong>${score}</strong> <span class="sev-badge sev-${sev}">${esc(severityLabel(sev))}</span></td><td>${esc(r.mitigation) || '—'}</td><td>${esc(r.owner) || '—'}</td></tr>`;
+    }).join('');
+    h += '</tbody></table>';
+  } else {
+    h += `<p><em>${esc(t('noRows'))}</em></p>`;
+  }
+  document.getElementById('preview').innerHTML = h;
+}
+
+document.addEventListener('input', e => { if (e.target.matches('[data-eng]')) { renderPreview(); save(); } });
+document.addEventListener('change', e => { if (e.target.matches('[data-eng]')) { renderPreview(); save(); } });
+
+function resetAll() {
+  if (!confirm('Clear all fields? / Ryd alle felter? / Rensa alla fält?')) return;
+  fieldEls().forEach(el => { el.value = ''; });
+  rows = []; nextId = 1;
+  renderMatrix(); renderPreview(); save();
+}
+
+function slug() { return (val('client') || 'ai_risk_register').replace(/\W+/g, '_'); }
+function docMarkdown() {
+  const date = new Date().toISOString().slice(0, 10);
+  const sorted = [...rows].filter(r => r.risk.trim()).sort((a, b) => scoreOf(b) - scoreOf(a));
+  let m = `# ${t('docTitle')} — ${val('client') || '[client]'}\n\n`;
+  m += `**${t('docFor')}:** ${val('client') || '—'}  \n**${t('docAssessor')}:** ${val('assessor') || '—'}  \n**${t('docDate')}:** ${date}\n\n`;
+  m += `## ${t('secAuditTrail')}\n${val('auditTrail') || t('emptyNote')}\n\n`;
+  m += `## ${t('secRegister')}\n\n`;
+  if (sorted.length) {
+    m += `| ${t('colRisk')} | ${t('colLikelihood')} | ${t('colImpact')} | ${t('colScore')} | ${t('colMitigation')} | ${t('colOwner')} |\n|---|---|---|---|---|---|\n`;
+    m += sorted.map(r => {
+      const score = scoreOf(r);
+      const sev = severityLabel(severityOf(score));
+      return `| ${r.risk} | ${r.likelihood} | ${r.impact} | **${score}** (${sev}) | ${r.mitigation || '—'} | ${r.owner || '—'} |`;
+    }).join('\n') + '\n';
+  } else {
+    m += `${t('noRows')}\n`;
+  }
+  return m;
+}
+function docHtml() {
+  return '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>' + esc(t('docTitle')) + ' — ' + esc(val('client') || 'client') + '</title>'
+    + '<style>body{font-family:Inter,Segoe UI,sans-serif;color:#1c1c28;max-width:880px;margin:40px auto;padding:0 22px;line-height:1.6}'
+    + 'h1,h3{color:#1B1474;font-family:Georgia,serif}table{width:100%;border-collapse:collapse;font-size:14px}th,td{border:1px solid #e4e4f0;padding:7px 10px;text-align:left}th{background:#EEEEFA;color:#1B1474}.sev-badge{font-size:11px;font-weight:700;padding:2px 9px;border-radius:10px;background:#EEEEFA;color:#1B1474}</style></head><body>'
+    + document.getElementById('preview').outerHTML.replace('id="preview"', '')
+    + '</body></html>';
+}
+function download(text, fname, mime) {
+  const blob = new Blob([text], { type: mime });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = fname; a.click();
+  URL.revokeObjectURL(a.href);
+}
+function exportDoc(fmt) {
+  if (fmt === 'md') download(docMarkdown(), 'ai_risk_register_' + slug() + '.md', 'text/markdown');
+  else download(docHtml(), 'ai_risk_register_' + slug() + '.html', 'text/html');
+}
+
+(function init() {
+  document.getElementById('langSelect').value = lang;
+  loadSaved();
+  applyI18n();
+  if (!rows.length) { rows.push({ id: nextId++, risk: '', likelihood: '3', impact: '3', mitigation: '', owner: '' }); }
+  renderMatrix();
+  renderPreview();
+})();
+</script>
+</body>
+</html>

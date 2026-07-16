@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Governance Framework — Phase 6</title>
+<meta name="description" content="AI governance framework SOP, client intake, and an auto-generated AI governance framework document (committee, usage policy, model lifecycle, human-in-the-loop checkpoints).">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='16' fill='%231B1474'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #1B1474; --primary-dark: #120D52; --accent: #DCDDF6; --powder: #EEEEFA;
+    --ink: #1c1c28; --muted: #5b5b6b; --line: #e4e4f0;
+    --green: #1a8a5c; --amber: #d4790e; --red: #c0392b;
+    --font-heading: 'Fraunces', Georgia, serif;
+    --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: var(--font-body); color: var(--ink); background: #fafaff; line-height: 1.6; }
+  .hero { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: #fff; padding: 44px 24px 36px; }
+  .wrap { max-width: 1000px; margin: 0 auto; }
+  .crumb { font-size: 13px; color: var(--accent); margin-bottom: 10px; }
+  .crumb a { color: var(--accent); text-decoration: none; }
+  .hero-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; flex-wrap: wrap; }
+  .hero h1 { font-family: var(--font-heading); font-weight: 700; font-size: 34px; line-height: 1.15; }
+  .hero p { margin-top: 10px; font-size: 15.5px; color: #dcdcf2; max-width: 680px; }
+  select#langSelect { font-family: var(--font-body); font-size: 13px; font-weight: 600; border: 1.5px solid rgba(255,255,255,0.4); background: rgba(255,255,255,0.08); color: #fff; border-radius: 8px; padding: 7px 10px; }
+  select#langSelect option { color: var(--ink); }
+  main { max-width: 1000px; margin: 0 auto; padding: 28px 24px 80px; }
+  .note { background: var(--powder); border: 1px solid var(--accent); border-radius: 12px; padding: 14px 16px; font-size: 14px; color: var(--muted); margin-bottom: 16px; }
+  .note strong { color: var(--primary); }
+  .note.warn { background: #fdf3e3; border-color: #f0d9ab; margin-bottom: 26px; }
+  .note.warn strong { color: var(--amber); }
+  .card { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 22px 24px; margin-bottom: 20px; }
+  .card > h2 { font-family: var(--font-heading); font-weight: 600; font-size: 21px; color: var(--primary); margin-bottom: 4px; }
+  .card .hint { font-size: 13.5px; color: var(--muted); margin-bottom: 14px; }
+  ol.sop { margin-left: 20px; }
+  ol.sop li { margin-bottom: 10px; font-size: 14px; }
+  label { display: block; font-size: 13px; font-weight: 600; color: var(--ink); margin: 10px 0 5px; }
+  input[type=text], textarea { width: 100%; font-family: var(--font-body); font-size: 14px; color: var(--ink); border: 1.5px solid var(--line); border-radius: 8px; padding: 9px 11px; background: #fff; }
+  textarea { resize: vertical; min-height: 70px; }
+  input:focus, textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(27,20,116,0.12); }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; }
+  .btn { font-family: var(--font-body); font-size: 13.5px; font-weight: 600; padding: 9px 16px; border-radius: 8px; border: none; cursor: pointer; transition: all 0.15s; }
+  .btn-primary { background: var(--accent); color: var(--primary); }
+  .btn-primary:hover { background: #C3C5EC; }
+  .btn-secondary { background: #fff; color: var(--primary); border: 1.5px solid var(--accent); }
+  .btn-secondary:hover { background: var(--powder); }
+  .btn-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px; }
+  .preview { border: 1px dashed var(--line); border-radius: 10px; padding: 18px 20px; background: #fcfcff; font-size: 14px; }
+  .preview h3 { font-family: var(--font-heading); color: var(--primary); font-size: 16px; margin: 14px 0 6px; }
+  .preview h3:first-child { margin-top: 0; }
+  .preview p { margin: 6px 0; white-space: pre-wrap; }
+  .preview .meta { font-size: 13px; color: var(--muted); margin-bottom: 10px; }
+  .saved { font-size: 12.5px; color: var(--green); margin-left: 8px; }
+  @media (max-width: 680px) { .grid2 { grid-template-columns: 1fr; } .hero h1 { font-size: 27px; } }
+</style>
+</head>
+<body>
+  <header class="hero"><div class="wrap">
+    <div class="hero-top">
+      <div class="crumb"><a href="../">AI Architect Toolkit</a> · Phase 6 · Governance, Compliance &amp; Security</div>
+      <select id="langSelect" onchange="setLang(this.value)">
+        <option value="en">English</option>
+        <option value="da">Dansk</option>
+        <option value="sv">Svenska</option>
+      </select>
+    </div>
+    <h1 data-i18n="heroTitle"></h1>
+    <p data-i18n="heroDesc"></p>
+  </div></header>
+
+  <main>
+    <div class="note"><strong data-i18n="noteLabel"></strong> <span data-i18n="noteBody"></span></div>
+    <div class="note warn"><strong data-i18n="warnLabel"></strong> <span data-i18n="warnBody"></span></div>
+
+    <div class="card">
+      <h2 data-i18n="sopTitle"></h2>
+      <p class="hint" data-i18n="sopHint"></p>
+      <ol class="sop" id="sopList"></ol>
+    </div>
+
+    <div class="card">
+      <h2 data-i18n="intakeTitle"></h2>
+      <div class="grid2">
+        <div><label data-i18n="lblClient"></label><input type="text" data-eng="client" placeholder="Acme Corp"></div>
+        <div><label data-i18n="lblAssessor"></label><input type="text" data-eng="assessor"></div>
+      </div>
+      <label data-i18n="lblCommittee"></label>
+      <textarea data-eng="committee" placeholder="Who sits on the AI governance body, how often it meets, what it approves"></textarea>
+      <label data-i18n="lblUsagePolicy"></label>
+      <textarea data-eng="usagePolicy"></textarea>
+      <label data-i18n="lblLifecycle"></label>
+      <textarea data-eng="lifecycle" placeholder="Model versioning, retraining triggers, retirement criteria"></textarea>
+      <label data-i18n="lblHitl"></label>
+      <textarea data-eng="hitl" placeholder="Where must a human review/approve before an AI decision takes effect?"></textarea>
+    </div>
+
+    <div class="card">
+      <h2 data-i18n="previewTitle"></h2>
+      <p class="hint" data-i18n="previewHint"></p>
+      <div class="preview" id="preview"></div>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="exportDoc('html')" data-i18n="btnExportHtml"></button>
+        <button class="btn btn-primary" onclick="exportDoc('md')" data-i18n="btnExportMd"></button>
+        <button class="btn btn-secondary" onclick="resetAll()" data-i18n="btnReset"></button>
+        <span class="saved" id="savedFlag"></span>
+      </div>
+    </div>
+  </main>
+
+<script>
+const KEY = 'aoa_ai_governance_v1';
+
+const STRINGS = {
+  en: {
+    heroTitle: 'AI Governance Framework',
+    heroDesc: 'SOP, client intake, and an auto-generated AI governance framework document — committee structure, usage policy, model lifecycle management, and human-in-the-loop checkpoints.',
+    noteLabel: 'How this works.',
+    noteBody: 'Fill in the intake fields below; the document preview builds live. No API calls — everything autosaves locally in your browser.',
+    warnLabel: 'Regulatory content note.',
+    warnBody: 'This tool structures governance content but does not track live regulatory changes. Treat any framework/law references as your current understanding at time of writing, and verify against qualified legal counsel before client use — this is not legal advice.',
+    sopTitle: 'SOP — how this is usually done',
+    sopHint: 'The order an architect actually works this exercise in.',
+    sop: [
+      'Stand up (or formalize) an AI governance committee with real authority — it should be able to say no to a deployment, not just rubber-stamp one.',
+      'Write the AI usage policy in plain language: what use cases are pre-approved, which require committee review, and which are prohibited outright.',
+      'Define model lifecycle management: how a model gets approved for production, what triggers retraining or retirement, and who owns each stage.',
+      'Design human-in-the-loop checkpoints for every use case where an AI decision has material consequences for a person — name the specific decision points, not a generic "human oversight" statement.',
+      'Document all of the above as the AI governance framework — the artifact the committee, legal, and delivery teams all operate from.',
+    ],
+    intakeTitle: 'Client & governance intake',
+    lblClient: 'Client / engagement',
+    lblAssessor: 'Assessor',
+    lblCommittee: 'Governance committee structure',
+    lblUsagePolicy: 'AI usage policy',
+    lblLifecycle: 'Model lifecycle management',
+    lblHitl: 'Human-in-the-loop checkpoints',
+    previewTitle: 'AI governance framework document',
+    previewHint: 'This is the actual deliverable — auto-generated and customized for this client.',
+    btnExportHtml: '🌐 Export HTML',
+    btnExportMd: '📄 Export Markdown',
+    btnReset: '🔄 Reset',
+    docTitle: 'AI Governance Framework',
+    docFor: 'Prepared for',
+    docAssessor: 'Assessor',
+    docDate: 'Date',
+    secCommittee: '1. Governance Committee',
+    secPolicy: '2. AI Usage Policy',
+    secLifecycle: '3. Model Lifecycle Management',
+    secHitl: '4. Human-in-the-Loop Checkpoints',
+    emptyNote: '(not yet documented)',
+  },
+  da: {
+    heroTitle: 'AI-governanceramme',
+    heroDesc: 'SOP, kundeoptag, og et automatisk genereret AI-governancerammedokument — udvalgsstruktur, brugspolitik, modellivscyklusstyring, og human-in-the-loop-tjekpunkter.',
+    noteLabel: 'Sådan virker det.',
+    noteBody: 'Udfyld optagsfelterne nedenfor; dokumentforhåndsvisningen opbygges live. Ingen API-kald — alt gemmes automatisk lokalt i din browser.',
+    warnLabel: 'Bemærkning om lovgivningsindhold.',
+    warnBody: 'Dette værktøj strukturerer governance-indhold, men følger ikke live lovgivningsændringer. Betragt enhver reference til rammer/lovgivning som din aktuelle forståelse på skrivetidspunktet, og verificér hos kvalificeret juridisk rådgivning før brug hos kunde — dette er ikke juridisk rådgivning.',
+    sopTitle: 'SOP — sådan gøres det normalt',
+    sopHint: 'Rækkefølgen en arkitekt reelt arbejder denne øvelse igennem.',
+    sop: [
+      'Etablér (eller formalisér) et AI-governanceudvalg med reel autoritet — det skal kunne sige nej til en udrulning, ikke bare give den et gummistempel.',
+      'Skriv AI-brugspolitikken i almindeligt sprog: hvilke use cases er forhåndsgodkendt, hvilke kræver udvalgsgennemgang, og hvilke er direkte forbudt.',
+      'Definér modellivscyklusstyring: hvordan en model godkendes til produktion, hvad udløser gentræning eller udfasning, og hvem ejer hvert trin.',
+      'Design human-in-the-loop-tjekpunkter for enhver use case, hvor en AI-beslutning har væsentlige konsekvenser for en person — navngiv de specifikke beslutningspunkter, ikke en generisk "menneskeligt tilsyn"-erklæring.',
+      'Dokumentér alt ovenstående som AI-governancerammen — det artefakt, udvalg, juridisk og leveranceteams alle arbejder ud fra.',
+    ],
+    intakeTitle: 'Kunde- og governanceoptag',
+    lblClient: 'Kunde / engagement',
+    lblAssessor: 'Vurderingsmand',
+    lblCommittee: 'Governanceudvalgets struktur',
+    lblUsagePolicy: 'AI-brugspolitik',
+    lblLifecycle: 'Modellivscyklusstyring',
+    lblHitl: 'Human-in-the-loop-tjekpunkter',
+    previewTitle: 'AI-governancerammedokument',
+    previewHint: 'Dette er selve leverancen — automatisk genereret og tilpasset denne kunde.',
+    btnExportHtml: '🌐 Eksportér HTML',
+    btnExportMd: '📄 Eksportér Markdown',
+    btnReset: '🔄 Nulstil',
+    docTitle: 'AI-governanceramme',
+    docFor: 'Udarbejdet for',
+    docAssessor: 'Vurderingsmand',
+    docDate: 'Dato',
+    secCommittee: '1. Governanceudvalg',
+    secPolicy: '2. AI-brugspolitik',
+    secLifecycle: '3. Modellivscyklusstyring',
+    secHitl: '4. Human-in-the-loop-tjekpunkter',
+    emptyNote: '(endnu ikke dokumenteret)',
+  },
+  sv: {
+    heroTitle: 'AI-styrningsramverk',
+    heroDesc: 'SOP, kundintag, och ett automatiskt genererat AI-styrningsramverksdokument — kommittéstruktur, användningspolicy, modelllivscykelhantering, och human-in-the-loop-kontrollpunkter.',
+    noteLabel: 'Så här fungerar det.',
+    noteBody: 'Fyll i intagsfälten nedan; dokumentförhandsgranskningen byggs upp live. Inga API-anrop — allt sparas automatiskt lokalt i din webbläsare.',
+    warnLabel: 'Anmärkning om regelverksinnehåll.',
+    warnBody: 'Detta verktyg strukturerar styrningsinnehåll men följer inte levande regelverksändringar. Betrakta alla referenser till ramverk/lagar som din aktuella förståelse vid skrivandet, och verifiera mot kvalificerad juridisk rådgivning innan användning hos kund — detta är inte juridisk rådgivning.',
+    sopTitle: 'SOP — så här görs det vanligtvis',
+    sopHint: 'Ordningen en arkitekt faktiskt arbetar igenom denna övning.',
+    sop: [
+      'Etablera (eller formalisera) en AI-styrningskommitté med verklig auktoritet — den ska kunna säga nej till en utrullning, inte bara godkänna den per automatik.',
+      'Skriv AI-användningspolicyn på vanligt språk: vilka användningsfall är förgodkända, vilka kräver kommittégranskning, och vilka är direkt förbjudna.',
+      'Definiera modelllivscykelhantering: hur en modell godkänns för produktion, vad utlöser omträning eller avveckling, och vem äger varje steg.',
+      'Designa human-in-the-loop-kontrollpunkter för varje användningsfall där ett AI-beslut har väsentliga konsekvenser för en person — namnge de specifika beslutspunkterna, inte ett generiskt "mänsklig tillsyn"-uttalande.',
+      'Dokumentera allt ovanstående som AI-styrningsramverket — artefakten som kommittén, juridik och leveransteam alla arbetar utifrån.',
+    ],
+    intakeTitle: 'Kund- och styrningsintag',
+    lblClient: 'Kund / uppdrag',
+    lblAssessor: 'Bedömare',
+    lblCommittee: 'Styrningskommitténs struktur',
+    lblUsagePolicy: 'AI-användningspolicy',
+    lblLifecycle: 'Modelllivscykelhantering',
+    lblHitl: 'Human-in-the-loop-kontrollpunkter',
+    previewTitle: 'AI-styrningsramverksdokument',
+    previewHint: 'Detta är själva leveransen — automatiskt genererad och anpassad för denna kund.',
+    btnExportHtml: '🌐 Exportera HTML',
+    btnExportMd: '📄 Exportera Markdown',
+    btnReset: '🔄 Återställ',
+    docTitle: 'AI-styrningsramverk',
+    docFor: 'Framtagen för',
+    docAssessor: 'Bedömare',
+    docDate: 'Datum',
+    secCommittee: '1. Styrningskommitté',
+    secPolicy: '2. AI-användningspolicy',
+    secLifecycle: '3. Modelllivscykelhantering',
+    secHitl: '4. Human-in-the-loop-kontrollpunkter',
+    emptyNote: '(ännu inte dokumenterat)',
+  },
+};
+
+let lang = localStorage.getItem('aoa_lang') || 'en';
+function t(key) { return (STRINGS[lang] && STRINGS[lang][key] !== undefined) ? STRINGS[lang][key] : (STRINGS.en[key] !== undefined ? STRINGS.en[key] : key); }
+function esc(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function setLang(l) { lang = l; localStorage.setItem('aoa_lang', l); document.getElementById('langSelect').value = l; applyI18n(); renderPreview(); save(); }
+function applyI18n() {
+  document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.getAttribute('data-i18n')); });
+  document.title = t('heroTitle') + ' — Phase 6';
+  document.getElementById('sopList').innerHTML = t('sop').map(s => `<li>${esc(s)}</li>`).join('');
+}
+
+function fieldEls() { return Array.from(document.querySelectorAll('[data-eng]')); }
+function collect() { const o = {}; fieldEls().forEach(el => { o[el.getAttribute('data-eng')] = el.value; }); return o; }
+function restore(o) { fieldEls().forEach(el => { const k = el.getAttribute('data-eng'); if (o[k] !== undefined) el.value = o[k]; }); }
+let savedTimer;
+function save() { try { localStorage.setItem(KEY, JSON.stringify({ fields: collect(), lang })); flashSaved(); } catch (e) {} }
+function flashSaved() { const f = document.getElementById('savedFlag'); f.textContent = '✓'; clearTimeout(savedTimer); savedTimer = setTimeout(() => { f.textContent = ''; }, 1200); }
+function loadSaved() { try { const o = JSON.parse(localStorage.getItem(KEY) || '{}'); if (o.fields) restore(o.fields); } catch (e) {} }
+
+function val(k) { const el = document.querySelector(`[data-eng="${k}"]`); return el ? el.value : ''; }
+function orEmpty(v) { return v && v.trim() ? esc(v) : `<em>${esc(t('emptyNote'))}</em>`; }
+
+function renderPreview() {
+  const date = new Date().toISOString().slice(0, 10);
+  let h = `<div class="meta"><strong>${esc(t('docFor'))}:</strong> ${esc(val('client')) || '—'} &nbsp;·&nbsp; <strong>${esc(t('docAssessor'))}:</strong> ${esc(val('assessor')) || '—'} &nbsp;·&nbsp; <strong>${esc(t('docDate'))}:</strong> ${date}</div>`;
+  h += `<h3>${esc(t('secCommittee'))}</h3><p>${orEmpty(val('committee'))}</p>`;
+  h += `<h3>${esc(t('secPolicy'))}</h3><p>${orEmpty(val('usagePolicy'))}</p>`;
+  h += `<h3>${esc(t('secLifecycle'))}</h3><p>${orEmpty(val('lifecycle'))}</p>`;
+  h += `<h3>${esc(t('secHitl'))}</h3><p>${orEmpty(val('hitl'))}</p>`;
+  document.getElementById('preview').innerHTML = h;
+}
+
+document.addEventListener('input', e => { if (e.target.matches('[data-eng]')) { renderPreview(); save(); } });
+document.addEventListener('change', e => { if (e.target.matches('[data-eng]')) { renderPreview(); save(); } });
+
+function resetAll() {
+  if (!confirm('Clear all fields? / Ryd alle felter? / Rensa alla fält?')) return;
+  fieldEls().forEach(el => { el.value = ''; });
+  renderPreview();
+  save();
+}
+
+function slug() { return (val('client') || 'ai_governance_framework').replace(/\W+/g, '_'); }
+function docMarkdown() {
+  const date = new Date().toISOString().slice(0, 10);
+  let m = `# ${t('docTitle')} — ${val('client') || '[client]'}\n\n`;
+  m += `**${t('docFor')}:** ${val('client') || '—'}  \n**${t('docAssessor')}:** ${val('assessor') || '—'}  \n**${t('docDate')}:** ${date}\n\n`;
+  m += `## ${t('secCommittee')}\n${val('committee') || t('emptyNote')}\n\n`;
+  m += `## ${t('secPolicy')}\n${val('usagePolicy') || t('emptyNote')}\n\n`;
+  m += `## ${t('secLifecycle')}\n${val('lifecycle') || t('emptyNote')}\n\n`;
+  m += `## ${t('secHitl')}\n${val('hitl') || t('emptyNote')}\n`;
+  return m;
+}
+function docHtml() {
+  return '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>' + esc(t('docTitle')) + ' — ' + esc(val('client') || 'client') + '</title>'
+    + '<style>body{font-family:Inter,Segoe UI,sans-serif;color:#1c1c28;max-width:880px;margin:40px auto;padding:0 22px;line-height:1.6}'
+    + 'h1,h3{color:#1B1474;font-family:Georgia,serif}</style></head><body>'
+    + document.getElementById('preview').outerHTML.replace('id="preview"', '')
+    + '</body></html>';
+}
+function download(text, fname, mime) {
+  const blob = new Blob([text], { type: mime });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = fname; a.click();
+  URL.revokeObjectURL(a.href);
+}
+function exportDoc(fmt) {
+  if (fmt === 'md') download(docMarkdown(), 'ai_governance_framework_' + slug() + '.md', 'text/markdown');
+  else download(docHtml(), 'ai_governance_framework_' + slug() + '.html', 'text/html');
+}
+
+(function init() {
+  document.getElementById('langSelect').value = lang;
+  loadSaved();
+  applyI18n();
+  renderPreview();
+})();
+</script>
+</body>
+</html>

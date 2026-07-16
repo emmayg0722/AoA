@@ -56,6 +56,11 @@ its own subfolder. New phases and assets follow the same structure.
     ├── quality-assurance/             # SOP + intake + test-coverage tracker (EN/DA/SV)
     ├── deployment-golive/             # SOP + intake + rollout-wave tracker + rollback plan (EN/DA/SV)
     └── technical-documentation/       # SOP + documentation-inventory tracker (EN/DA/SV)
+└── Phase 6 - Governance, Compliance & Security/
+    ├── ai-governance-framework/       # SOP + intake (committee, policy, lifecycle, HITL) (EN/DA/SV)
+    ├── compliance-assessment/         # SOP + scorable gap-analysis matrix + legal disclaimer (EN/DA/SV)
+    ├── responsible-ai/                # SOP + intake + bias/fairness audit matrix (EN/DA/SV)
+    └── risk-management/               # SOP + scored risk register (likelihood x impact) (EN/DA/SV)
 ```
 
 ## Phase 1 — Discovery & Assessment
@@ -168,7 +173,29 @@ All five new Phase 5 tools follow the same established pattern (SOP card,
 autosaved client intake, live document preview, HTML/Markdown export,
 English/Danish/Swedish language selector).
 
-Further phases (Governance, MLOps) follow the same folder pattern and will
-be added over time.
+## Phase 6 — Governance, Compliance & Security
+
+- **AI Governance Framework** — SOP + intake (governance committee structure,
+  AI usage policy, model lifecycle management, human-in-the-loop checkpoints),
+  auto-generating an AI governance framework document.
+- **Compliance Gap Analysis** — SOP + intake plus a scorable gap-analysis
+  matrix (requirement, framework, status, notes), auto-generating a
+  compliance gap analysis report. Carries an explicit disclaimer: AI
+  regulation (EU AI Act, NIST AI RMF, ISO/IEC 42001, regional laws) is still
+  evolving, this tool structures the assessment but is not legal advice, and
+  applicability/obligations should be verified with qualified counsel.
+- **Responsible AI & Bias Audit** — SOP + intake (transparency/explainability,
+  privacy protection) plus a bias/fairness audit matrix (dimension, method,
+  finding, status), auto-generating a bias audit report.
+- **AI Risk Register** — SOP plus a scored risk register (likelihood × impact
+  computed live into a Low/Medium/High/Critical severity, mitigation, owner),
+  auto-generating a risk assessment report.
+
+All four new Phase 6 tools follow the same established pattern (SOP card,
+autosaved client intake, live document preview, HTML/Markdown export,
+English/Danish/Swedish language selector).
+
+Phase 7 (MLOps & Operations) follows the same folder pattern and will be
+added over time.
 
 All assessment tools run fully client-side — no data leaves the browser.
