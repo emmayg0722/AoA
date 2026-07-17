@@ -51,6 +51,9 @@
     border-radius: 50%;
   }
   .wrap { max-width: 960px; margin: 0 auto; position: relative; z-index: 1; }
+  .hero-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; flex-wrap: wrap; }
+  select#langSelect { font-family: var(--font-body); font-size: 13px; font-weight: 600; border: 1.5px solid rgba(255,255,255,0.4); background: rgba(255,255,255,0.08); color: #fff; border-radius: 8px; padding: 7px 10px; }
+  select#langSelect option { color: var(--ink); }
   .eyebrow {
     display: inline-block;
     font-size: 13px;
@@ -182,261 +185,593 @@
 <body>
   <header class="hero">
     <div class="wrap">
-      <span class="eyebrow">AI Architecture · Consulting Toolkit</span>
-      <h1>Practical tools for AI-architecture engagements, organized by delivery phase.</h1>
-      <p>An evolving set of assessments and accelerators that mirror how an AI architect actually moves a client from discovery to production.</p>
+      <div class="hero-top">
+        <span class="eyebrow" data-i18n="heroEyebrow"></span>
+        <select id="langSelect" onchange="setLang(this.value)">
+          <option value="en">English</option>
+          <option value="da">Dansk</option>
+          <option value="sv">Svenska</option>
+        </select>
+      </div>
+      <h1 data-i18n="heroTitle"></h1>
+      <p data-i18n="heroDesc"></p>
     </div>
   </header>
 
   <main>
     <div class="phase-head">
-      <h2>Discovery &amp; Assessment</h2>
-      <span class="phase-tag">Phase 1</span>
+      <h2 data-i18n="p1Title"></h2>
+      <span class="phase-tag" data-i18n="tagP1"></span>
     </div>
-    <p class="phase-sub">Understand the client's starting point: where they sit on the AI maturity curve, and whether their data is actually ready for the use cases they have in mind.</p>
+    <p class="phase-sub" data-i18n="p1Sub"></p>
 
     <div class="cards">
       <a class="card" href="Phase%201%20-%20Discovery%20%26%20Assessment/ai-maturity-assessment/">
         <div class="icon">📊</div>
-        <h3>AI Maturity Assessment</h3>
-        <p>Score an organization across six dimensions — strategy, data, technology, governance, talent, and operations — with instant results, gap analysis, and a downloadable report.</p>
-        <span class="go">Open assessment →</span>
+        <h3 data-i18n="c_aiMaturity_t"></h3>
+        <p data-i18n="c_aiMaturity_d"></p>
+        <span class="go" data-i18n="c_aiMaturity_c"></span>
       </a>
 
       <a class="card" href="Phase%201%20-%20Discovery%20%26%20Assessment/data-readiness-assessment-5c/console.html">
         <div class="icon">🧪</div>
-        <h3>Data Readiness Assessment (5C)</h3>
-        <p>A console that walks the four-step assessment — interviews, document review, a browser-local data spot-check, and a validation plan — and assembles the Context / Clarity / Coverage / Credibility / Capacity scorecard. Driven by the DRA-5C agent.</p>
-        <span class="go">Open console →</span>
+        <h3 data-i18n="c_dra5c_t"></h3>
+        <p data-i18n="c_dra5c_d"></p>
+        <span class="go" data-i18n="c_dra5c_c"></span>
       </a>
 
       <a class="card" href="Phase%201%20-%20Discovery%20%26%20Assessment/infrastructure-audit/">
         <div class="icon">🖥️</div>
-        <h3>Infrastructure Audit</h3>
-        <p>SOP, client intake, and an auto-generated current-state document — cloud capability, integration feasibility, and security posture, scored against a specific AI use case. EN / DA / SV.</p>
-        <span class="go">Open audit →</span>
+        <h3 data-i18n="c_infra_t"></h3>
+        <p data-i18n="c_infra_d"></p>
+        <span class="go" data-i18n="c_infra_c"></span>
       </a>
 
       <a class="card" href="Phase%201%20-%20Discovery%20%26%20Assessment/organizational-readiness/">
         <div class="icon">👥</div>
-        <h3>Organizational Readiness Assessment</h3>
-        <p>SOP, client intake, and an auto-generated readiness document — team capability, culture, process maturity, and stakeholders. EN / DA / SV.</p>
-        <span class="go">Open assessment →</span>
+        <h3 data-i18n="c_org_t"></h3>
+        <p data-i18n="c_org_d"></p>
+        <span class="go" data-i18n="c_org_c"></span>
       </a>
 
       <a class="card" href="Phase%201%20-%20Discovery%20%26%20Assessment/use-case-prioritization/">
         <div class="icon">🎯</div>
-        <h3>Use Case Identification &amp; Prioritization</h3>
-        <p>SOP and a scorable ROI / feasibility / impact matrix that ranks candidate AI use cases and flags quick wins, with an auto-generated priority document. EN / DA / SV.</p>
-        <span class="go">Open matrix →</span>
+        <h3 data-i18n="c_ucp_t"></h3>
+        <p data-i18n="c_ucp_d"></p>
+        <span class="go" data-i18n="c_ucp_c"></span>
       </a>
     </div>
 
     <div class="phase-head" style="margin-top:44px">
-      <h2>Strategy &amp; Roadmap</h2>
-      <span class="phase-tag">Phase 2</span>
+      <h2 data-i18n="p2Title"></h2>
+      <span class="phase-tag" data-i18n="tagP2"></span>
     </div>
-    <p class="phase-sub">Turn the discovery findings into an AI strategy the board will actually approve: vision, business case, technology roadmap, and organizational change plan.</p>
+    <p class="phase-sub" data-i18n="p2Sub"></p>
 
     <div class="cards">
       <a class="card" href="Phase%202%20-%20Strategy%20%26%20Roadmap/ai-strategy-planning/">
         <div class="icon">🧭</div>
-        <h3>AI Strategy Planning</h3>
-        <p>SOP, client intake, a 3-5 year milestone roadmap builder, and an auto-generated AI strategy document. EN / DA / SV.</p>
-        <span class="go">Open planning →</span>
+        <h3 data-i18n="c_strat_t"></h3>
+        <p data-i18n="c_strat_d"></p>
+        <span class="go" data-i18n="c_strat_c"></span>
       </a>
 
       <a class="card" href="Phase%202%20-%20Strategy%20%26%20Roadmap/business-case-development/">
         <div class="icon">💰</div>
-        <h3>Business Case Development</h3>
-        <p>SOP, client intake, and a live payback / net-benefit / ROI% model that computes as you type, feeding an auto-generated business case document. EN / DA / SV.</p>
-        <span class="go">Open business case →</span>
+        <h3 data-i18n="c_biz_t"></h3>
+        <p data-i18n="c_biz_d"></p>
+        <span class="go" data-i18n="c_biz_c"></span>
       </a>
 
       <a class="card" href="Phase%202%20-%20Strategy%20%26%20Roadmap/technology-roadmap/">
         <div class="icon">🛠️</div>
-        <h3>Technology Roadmap</h3>
-        <p>SOP, platform-strategy intake, and a milestone timeline builder that generates a technology roadmap document — the real target Phase 3 architecture work designs against. EN / DA / SV.</p>
-        <span class="go">Open roadmap →</span>
+        <h3 data-i18n="c_techrm_t"></h3>
+        <p data-i18n="c_techrm_d"></p>
+        <span class="go" data-i18n="c_techrm_c"></span>
       </a>
 
       <a class="card" href="Phase%202%20-%20Strategy%20%26%20Roadmap/organizational-roadmap/">
         <div class="icon">🏛️</div>
-        <h3>Organizational Roadmap</h3>
-        <p>SOP and client intake covering AI CoE design, talent plan, structure changes, and partner ecosystem, auto-generating an organizational change roadmap. EN / DA / SV.</p>
-        <span class="go">Open roadmap →</span>
+        <h3 data-i18n="c_orgrm_t"></h3>
+        <p data-i18n="c_orgrm_d"></p>
+        <span class="go" data-i18n="c_orgrm_c"></span>
       </a>
     </div>
 
     <div class="phase-head" style="margin-top:44px">
-      <h2>Architecture Design</h2>
-      <span class="phase-tag">Phase 3</span>
+      <h2 data-i18n="p3Title"></h2>
+      <span class="phase-tag" data-i18n="tagP3"></span>
     </div>
-    <p class="phase-sub">Move from a generic tool list to a capability-stack view: how an agent understands, decides, acts, remembers, verifies, and improves inside a business system.</p>
+    <p class="phase-sub" data-i18n="p3Sub"></p>
 
     <div class="cards">
       <a class="card" href="Phase%203%20-%20Architecture%20Design/Design%20Layers/architecture-builder.html">
         <div class="icon">🧱</div>
-        <h3>Design Layers — Architecture Builder</h3>
-        <p>One comparison table across 14 layers of real options (upside, downside, best fit) — pick one per layer like building blocks and assemble a recommended architecture for a specific client. Backed by an 18-layer reference.</p>
-        <span class="go">Open builder →</span>
+        <h3 data-i18n="c_archb_t"></h3>
+        <p data-i18n="c_archb_d"></p>
+        <span class="go" data-i18n="c_archb_c"></span>
       </a>
 
       <a class="card" href="Phase%203%20-%20Architecture%20Design/architecture-blueprint/">
         <div class="icon">📐</div>
-        <h3>Architecture Blueprint</h3>
-        <p>SOP, client intake, an optional one-click import of your Architecture Builder picks, and an auto-generated architecture blueprint document. EN / DA / SV.</p>
-        <span class="go">Open blueprint →</span>
+        <h3 data-i18n="c_bp_t"></h3>
+        <p data-i18n="c_bp_d"></p>
+        <span class="go" data-i18n="c_bp_c"></span>
       </a>
 
       <a class="card" href="Phase%203%20-%20Architecture%20Design/architecture-decision-records/">
         <div class="icon">🗂️</div>
-        <h3>Architecture Decision Records</h3>
-        <p>SOP plus a repeatable ADR card builder (title, status, context, decision, consequences) that auto-generates a numbered decision-log document. EN / DA / SV.</p>
-        <span class="go">Open ADR log →</span>
+        <h3 data-i18n="c_adr_t"></h3>
+        <p data-i18n="c_adr_d"></p>
+        <span class="go" data-i18n="c_adr_c"></span>
       </a>
 
       <a class="card" href="Phase%203%20-%20Architecture%20Design/tech-stack-selection-report/">
         <div class="icon">🧩</div>
-        <h3>Tech Stack Selection Report</h3>
-        <p>SOP, an optional import of your Architecture Builder picks into a stack table, plus rationale/alternatives/risks intake, auto-generating a selection report. EN / DA / SV.</p>
-        <span class="go">Open report →</span>
+        <h3 data-i18n="c_ts_t"></h3>
+        <p data-i18n="c_ts_d"></p>
+        <span class="go" data-i18n="c_ts_c"></span>
       </a>
 
       <a class="card" href="Phase%203%20-%20Architecture%20Design/security-architecture/">
         <div class="icon">🛡️</div>
-        <h3>Security Architecture</h3>
-        <p>SOP and client intake covering data protection, encryption, access control, auditability, and prompt-injection defenses, auto-generating a security architecture document. EN / DA / SV.</p>
-        <span class="go">Open document →</span>
+        <h3 data-i18n="c_sec_t"></h3>
+        <p data-i18n="c_sec_d"></p>
+        <span class="go" data-i18n="c_sec_c"></span>
       </a>
 
       <a class="card" href="Phase%203%20-%20Architecture%20Design/nfr-spec/">
         <div class="icon">📊</div>
-        <h3>Non-Functional Requirements Spec</h3>
-        <p>SOP plus a repeatable requirements matrix (category, requirement, target, MoSCoW priority) auto-generating an NFR specification document. EN / DA / SV.</p>
-        <span class="go">Open spec →</span>
+        <h3 data-i18n="c_nfr_t"></h3>
+        <p data-i18n="c_nfr_d"></p>
+        <span class="go" data-i18n="c_nfr_c"></span>
       </a>
     </div>
 
     <div class="phase-head" style="margin-top:44px">
-      <h2>PoC &amp; Pilot</h2>
-      <span class="phase-tag">Phase 4</span>
+      <h2 data-i18n="p4Title"></h2>
+      <span class="phase-tag" data-i18n="tagP4"></span>
     </div>
-    <p class="phase-sub">Prove the narrow technical question fast, then test the solution in a real business setting before committing to production.</p>
+    <p class="phase-sub" data-i18n="p4Sub"></p>
 
     <div class="cards">
       <a class="card" href="Phase%204%20-%20PoC%20%26%20Pilot/poc-planning/">
         <div class="icon">🧪</div>
-        <h3>PoC Planning &amp; Feasibility Report</h3>
-        <p>SOP and client intake scoped to a narrow, timeboxed proof-of-concept question, auto-generating a technical feasibility report with a Proceed/Iterate/Stop recommendation. EN / DA / SV.</p>
-        <span class="go">Open planner →</span>
+        <h3 data-i18n="c_poc_t"></h3>
+        <p data-i18n="c_poc_d"></p>
+        <span class="go" data-i18n="c_poc_c"></span>
       </a>
 
       <a class="card" href="Phase%204%20-%20PoC%20%26%20Pilot/pilot-planning/">
         <div class="icon">🚦</div>
-        <h3>Pilot Planning &amp; Results Analysis</h3>
-        <p>SOP, client intake, and a checkpoint-timeline builder for a controlled real-world deployment, auto-generating a pilot plan document. EN / DA / SV.</p>
-        <span class="go">Open planner →</span>
+        <h3 data-i18n="c_pilot_t"></h3>
+        <p data-i18n="c_pilot_d"></p>
+        <span class="go" data-i18n="c_pilot_c"></span>
       </a>
 
       <a class="card" href="Phase%204%20-%20PoC%20%26%20Pilot/evaluation-godecision/">
         <div class="icon">⚖️</div>
-        <h3>Evaluation &amp; Go/No-Go Decision</h3>
-        <p>SOP plus a scorable evaluation matrix that computes a live Go / Conditional Go / No-Go recommendation from task-specific evidence. EN / DA / SV.</p>
-        <span class="go">Open evaluation →</span>
+        <h3 data-i18n="c_eval_t"></h3>
+        <p data-i18n="c_eval_d"></p>
+        <span class="go" data-i18n="c_eval_c"></span>
       </a>
     </div>
 
     <div class="phase-head" style="margin-top:44px">
-      <h2>Implementation &amp; Delivery</h2>
-      <span class="phase-tag">Phase 5</span>
+      <h2 data-i18n="p5Title"></h2>
+      <span class="phase-tag" data-i18n="tagP5"></span>
     </div>
-    <p class="phase-sub">Build, integrate, test, and ship the production AI solution — with the documentation and runbooks the client's own team will run on afterward.</p>
+    <p class="phase-sub" data-i18n="p5Sub"></p>
 
     <div class="cards">
       <a class="card" href="Phase%205%20-%20Implementation%20%26%20Delivery/implementation-management/">
         <div class="icon">📋</div>
-        <h3>Implementation Management Plan</h3>
-        <p>SOP, client intake, and a sprint/milestone tracker, auto-generating an implementation management plan with a running technical decision log. EN / DA / SV.</p>
-        <span class="go">Open plan →</span>
+        <h3 data-i18n="c_impl_t"></h3>
+        <p data-i18n="c_impl_d"></p>
+        <span class="go" data-i18n="c_impl_c"></span>
       </a>
 
       <a class="card" href="Phase%205%20-%20Implementation%20%26%20Delivery/system-integration/">
         <div class="icon">🔌</div>
-        <h3>System Integration Plan</h3>
-        <p>SOP, client intake, and an integration-points tracker (system, method, data flow, status), auto-generating a system integration plan. EN / DA / SV.</p>
-        <span class="go">Open plan →</span>
+        <h3 data-i18n="c_sysint_t"></h3>
+        <p data-i18n="c_sysint_d"></p>
+        <span class="go" data-i18n="c_sysint_c"></span>
       </a>
 
       <a class="card" href="Phase%205%20-%20Implementation%20%26%20Delivery/quality-assurance/">
         <div class="icon">✅</div>
-        <h3>Quality Assurance Test Plan</h3>
-        <p>SOP, client intake, and a test-coverage tracker across model performance, integration, load, and security testing, auto-generating a QA test plan. EN / DA / SV.</p>
-        <span class="go">Open plan →</span>
+        <h3 data-i18n="c_qa_t"></h3>
+        <p data-i18n="c_qa_d"></p>
+        <span class="go" data-i18n="c_qa_c"></span>
       </a>
 
       <a class="card" href="Phase%205%20-%20Implementation%20%26%20Delivery/deployment-golive/">
         <div class="icon">🚀</div>
-        <h3>Deployment &amp; Go-Live Plan</h3>
-        <p>SOP, client intake (deployment strategy, rollback plan, hypercare), and a rollout-wave tracker, auto-generating a go-live runbook. EN / DA / SV.</p>
-        <span class="go">Open runbook →</span>
+        <h3 data-i18n="c_deploy_t"></h3>
+        <p data-i18n="c_deploy_d"></p>
+        <span class="go" data-i18n="c_deploy_c"></span>
       </a>
 
       <a class="card" href="Phase%205%20-%20Implementation%20%26%20Delivery/technical-documentation/">
         <div class="icon">📚</div>
-        <h3>Technical Documentation Index</h3>
-        <p>SOP and a documentation-inventory tracker (API docs, deployment manual, runbook, test report), auto-generating a documentation index. EN / DA / SV.</p>
-        <span class="go">Open index →</span>
+        <h3 data-i18n="c_techdoc_t"></h3>
+        <p data-i18n="c_techdoc_d"></p>
+        <span class="go" data-i18n="c_techdoc_c"></span>
       </a>
     </div>
 
     <div class="phase-head" style="margin-top:44px">
-      <h2>Governance, Compliance &amp; Security</h2>
-      <span class="phase-tag">Phase 6</span>
+      <h2 data-i18n="p6Title"></h2>
+      <span class="phase-tag" data-i18n="tagP6"></span>
     </div>
-    <p class="phase-sub">Prove the AI solution is governed, fair, compliant, and risk-managed end to end — the artifacts that hold up under a regulator's or auditor's questions.</p>
+    <p class="phase-sub" data-i18n="p6Sub"></p>
 
     <div class="cards">
       <a class="card" href="Phase%206%20-%20Governance%2C%20Compliance%20%26%20Security/ai-governance-framework/">
         <div class="icon">🏛️</div>
-        <h3>AI Governance Framework</h3>
-        <p>SOP and client intake (committee structure, usage policy, model lifecycle, human-in-the-loop checkpoints), auto-generating an AI governance framework document. EN / DA / SV.</p>
-        <span class="go">Open framework →</span>
+        <h3 data-i18n="c_gov_t"></h3>
+        <p data-i18n="c_gov_d"></p>
+        <span class="go" data-i18n="c_gov_c"></span>
       </a>
 
       <a class="card" href="Phase%206%20-%20Governance%2C%20Compliance%20%26%20Security/compliance-assessment/">
         <div class="icon">📜</div>
-        <h3>Compliance Gap Analysis</h3>
-        <p>SOP plus a scorable compliance gap-analysis matrix (requirement, framework, status), auto-generating a gap analysis report. Framed as current understanding — verify with counsel. EN / DA / SV.</p>
-        <span class="go">Open analysis →</span>
+        <h3 data-i18n="c_comp_t"></h3>
+        <p data-i18n="c_comp_d"></p>
+        <span class="go" data-i18n="c_comp_c"></span>
       </a>
 
       <a class="card" href="Phase%206%20-%20Governance%2C%20Compliance%20%26%20Security/responsible-ai/">
         <div class="icon">⚖️</div>
-        <h3>Responsible AI &amp; Bias Audit</h3>
-        <p>SOP, client intake (transparency, privacy), and a bias/fairness audit matrix, auto-generating a bias audit report. EN / DA / SV.</p>
-        <span class="go">Open audit →</span>
+        <h3 data-i18n="c_resp_t"></h3>
+        <p data-i18n="c_resp_d"></p>
+        <span class="go" data-i18n="c_resp_c"></span>
       </a>
 
       <a class="card" href="Phase%206%20-%20Governance%2C%20Compliance%20%26%20Security/risk-management/">
         <div class="icon">🧭</div>
-        <h3>AI Risk Register</h3>
-        <p>SOP plus a scored risk register (likelihood × impact, severity, mitigation, owner), auto-generating a risk assessment report. EN / DA / SV.</p>
-        <span class="go">Open register →</span>
+        <h3 data-i18n="c_risk_t"></h3>
+        <p data-i18n="c_risk_d"></p>
+        <span class="go" data-i18n="c_risk_c"></span>
       </a>
     </div>
 
     <div class="future">
-      <h2>Further phases</h2>
-      <p>The toolkit follows the full AI-architect delivery lifecycle. These phases are scaffolded and will be filled in over time.</p>
+      <h2 data-i18n="futureTitle"></h2>
+      <p data-i18n="futureDesc"></p>
       <div class="pills">
-        <span class="pill">Phase 7 · MLOps &amp; Operations</span>
+        <span class="pill" data-i18n="pillPhase7"></span>
       </div>
     </div>
   </main>
 
-  <footer>
-    Built as an independent AI-architecture consulting portfolio. All assessment tools run fully client-side — no data leaves your browser.
-  </footer>
+  <footer data-i18n="footerText"></footer>
+
+<script>
+const STRINGS = {
+  en: {
+    heroEyebrow: 'AI Architecture · Consulting Toolkit',
+    heroTitle: 'Practical tools for AI-architecture engagements, organized by delivery phase.',
+    heroDesc: 'An evolving set of assessments and accelerators that mirror how an AI architect actually moves a client from discovery to production.',
+    tagP1: 'Phase 1', tagP2: 'Phase 2', tagP3: 'Phase 3', tagP4: 'Phase 4', tagP5: 'Phase 5', tagP6: 'Phase 6',
+    p1Title: 'Discovery & Assessment',
+    p1Sub: "Understand the client's starting point: where they sit on the AI maturity curve, and whether their data is actually ready for the use cases they have in mind.",
+    c_aiMaturity_t: 'AI Maturity Assessment',
+    c_aiMaturity_d: 'Score an organization across six dimensions — strategy, data, technology, governance, talent, and operations — with instant results, gap analysis, and a downloadable report.',
+    c_aiMaturity_c: 'Open assessment →',
+    c_dra5c_t: 'Data Readiness Assessment (5C)',
+    c_dra5c_d: 'A console that walks the four-step assessment — interviews, document review, a browser-local data spot-check, and a validation plan — and assembles the Context / Clarity / Coverage / Credibility / Capacity scorecard. Driven by the DRA-5C agent.',
+    c_dra5c_c: 'Open console →',
+    c_infra_t: 'Infrastructure Audit',
+    c_infra_d: 'SOP, client intake, and an auto-generated current-state document — cloud capability, integration feasibility, and security posture, scored against a specific AI use case. EN / DA / SV.',
+    c_infra_c: 'Open audit →',
+    c_org_t: 'Organizational Readiness Assessment',
+    c_org_d: 'SOP, client intake, and an auto-generated readiness document — team capability, culture, process maturity, and stakeholders. EN / DA / SV.',
+    c_org_c: 'Open assessment →',
+    c_ucp_t: 'Use Case Identification & Prioritization',
+    c_ucp_d: 'SOP and a scorable ROI / feasibility / impact matrix that ranks candidate AI use cases and flags quick wins, with an auto-generated priority document. EN / DA / SV.',
+    c_ucp_c: 'Open matrix →',
+    p2Title: 'Strategy & Roadmap',
+    p2Sub: 'Turn the discovery findings into an AI strategy the board will actually approve: vision, business case, technology roadmap, and organizational change plan.',
+    c_strat_t: 'AI Strategy Planning',
+    c_strat_d: 'SOP, client intake, a 3-5 year milestone roadmap builder, and an auto-generated AI strategy document. EN / DA / SV.',
+    c_strat_c: 'Open planning →',
+    c_biz_t: 'Business Case Development',
+    c_biz_d: 'SOP, client intake, and a live payback / net-benefit / ROI% model that computes as you type, feeding an auto-generated business case document. EN / DA / SV.',
+    c_biz_c: 'Open business case →',
+    c_techrm_t: 'Technology Roadmap',
+    c_techrm_d: 'SOP, platform-strategy intake, and a milestone timeline builder that generates a technology roadmap document — the real target Phase 3 architecture work designs against. EN / DA / SV.',
+    c_techrm_c: 'Open roadmap →',
+    c_orgrm_t: 'Organizational Roadmap',
+    c_orgrm_d: 'SOP and client intake covering AI CoE design, talent plan, structure changes, and partner ecosystem, auto-generating an organizational change roadmap. EN / DA / SV.',
+    c_orgrm_c: 'Open roadmap →',
+    p3Title: 'Architecture Design',
+    p3Sub: 'Move from a generic tool list to a capability-stack view: how an agent understands, decides, acts, remembers, verifies, and improves inside a business system.',
+    c_archb_t: 'Design Layers — Architecture Builder',
+    c_archb_d: 'One comparison table across 14 layers of real options (upside, downside, best fit) — pick one per layer like building blocks and assemble a recommended architecture for a specific client. Backed by an 18-layer reference.',
+    c_archb_c: 'Open builder →',
+    c_bp_t: 'Architecture Blueprint',
+    c_bp_d: 'SOP, client intake, an optional one-click import of your Architecture Builder picks, and an auto-generated architecture blueprint document. EN / DA / SV.',
+    c_bp_c: 'Open blueprint →',
+    c_adr_t: 'Architecture Decision Records',
+    c_adr_d: 'SOP plus a repeatable ADR card builder (title, status, context, decision, consequences) that auto-generates a numbered decision-log document. EN / DA / SV.',
+    c_adr_c: 'Open ADR log →',
+    c_ts_t: 'Tech Stack Selection Report',
+    c_ts_d: 'SOP, an optional import of your Architecture Builder picks into a stack table, plus rationale/alternatives/risks intake, auto-generating a selection report. EN / DA / SV.',
+    c_ts_c: 'Open report →',
+    c_sec_t: 'Security Architecture',
+    c_sec_d: 'SOP and client intake covering data protection, encryption, access control, auditability, and prompt-injection defenses, auto-generating a security architecture document. EN / DA / SV.',
+    c_sec_c: 'Open document →',
+    c_nfr_t: 'Non-Functional Requirements Spec',
+    c_nfr_d: 'SOP plus a repeatable requirements matrix (category, requirement, target, MoSCoW priority) auto-generating an NFR specification document. EN / DA / SV.',
+    c_nfr_c: 'Open spec →',
+    p4Title: 'PoC & Pilot',
+    p4Sub: 'Prove the narrow technical question fast, then test the solution in a real business setting before committing to production.',
+    c_poc_t: 'PoC Planning & Feasibility Report',
+    c_poc_d: 'SOP and client intake scoped to a narrow, timeboxed proof-of-concept question, auto-generating a technical feasibility report with a Proceed/Iterate/Stop recommendation. EN / DA / SV.',
+    c_poc_c: 'Open planner →',
+    c_pilot_t: 'Pilot Planning & Results Analysis',
+    c_pilot_d: 'SOP, client intake, and a checkpoint-timeline builder for a controlled real-world deployment, auto-generating a pilot plan document. EN / DA / SV.',
+    c_pilot_c: 'Open planner →',
+    c_eval_t: 'Evaluation & Go/No-Go Decision',
+    c_eval_d: 'SOP plus a scorable evaluation matrix that computes a live Go / Conditional Go / No-Go recommendation from task-specific evidence. EN / DA / SV.',
+    c_eval_c: 'Open evaluation →',
+    p5Title: 'Implementation & Delivery',
+    p5Sub: "Build, integrate, test, and ship the production AI solution — with the documentation and runbooks the client's own team will run on afterward.",
+    c_impl_t: 'Implementation Management Plan',
+    c_impl_d: 'SOP, client intake, and a sprint/milestone tracker, auto-generating an implementation management plan with a running technical decision log. EN / DA / SV.',
+    c_impl_c: 'Open plan →',
+    c_sysint_t: 'System Integration Plan',
+    c_sysint_d: 'SOP, client intake, and an integration-points tracker (system, method, data flow, status), auto-generating a system integration plan. EN / DA / SV.',
+    c_sysint_c: 'Open plan →',
+    c_qa_t: 'Quality Assurance Test Plan',
+    c_qa_d: 'SOP, client intake, and a test-coverage tracker across model performance, integration, load, and security testing, auto-generating a QA test plan. EN / DA / SV.',
+    c_qa_c: 'Open plan →',
+    c_deploy_t: 'Deployment & Go-Live Plan',
+    c_deploy_d: 'SOP, client intake (deployment strategy, rollback plan, hypercare), and a rollout-wave tracker, auto-generating a go-live runbook. EN / DA / SV.',
+    c_deploy_c: 'Open runbook →',
+    c_techdoc_t: 'Technical Documentation Index',
+    c_techdoc_d: 'SOP and a documentation-inventory tracker (API docs, deployment manual, runbook, test report), auto-generating a documentation index. EN / DA / SV.',
+    c_techdoc_c: 'Open index →',
+    p6Title: 'Governance, Compliance & Security',
+    p6Sub: "Prove the AI solution is governed, fair, compliant, and risk-managed end to end — the artifacts that hold up under a regulator's or auditor's questions.",
+    c_gov_t: 'AI Governance Framework',
+    c_gov_d: 'SOP and client intake (committee structure, usage policy, model lifecycle, human-in-the-loop checkpoints), auto-generating an AI governance framework document. EN / DA / SV.',
+    c_gov_c: 'Open framework →',
+    c_comp_t: 'Compliance Gap Analysis',
+    c_comp_d: 'SOP plus a scorable compliance gap-analysis matrix (requirement, framework, status), auto-generating a gap analysis report. Framed as current understanding — verify with counsel. EN / DA / SV.',
+    c_comp_c: 'Open analysis →',
+    c_resp_t: 'Responsible AI & Bias Audit',
+    c_resp_d: 'SOP, client intake (transparency, privacy), and a bias/fairness audit matrix, auto-generating a bias audit report. EN / DA / SV.',
+    c_resp_c: 'Open audit →',
+    c_risk_t: 'AI Risk Register',
+    c_risk_d: 'SOP plus a scored risk register (likelihood × impact, severity, mitigation, owner), auto-generating a risk assessment report. EN / DA / SV.',
+    c_risk_c: 'Open register →',
+    futureTitle: 'Further phases',
+    futureDesc: 'The toolkit follows the full AI-architect delivery lifecycle. These phases are scaffolded and will be filled in over time.',
+    pillPhase7: 'Phase 7 · MLOps & Operations',
+    footerText: 'Built as an independent AI-architecture consulting portfolio. All assessment tools run fully client-side — no data leaves your browser.',
+  },
+  da: {
+    heroEyebrow: 'AI-arkitektur · Konsulentværktøjer',
+    heroTitle: 'Praktiske værktøjer til AI-arkitektur-engagementer, organiseret efter leveringsfase.',
+    heroDesc: 'Et voksende sæt af vurderinger og accelleratorer, der afspejler hvordan en AI-arkitekt reelt flytter en kunde fra discovery til produktion.',
+    tagP1: 'Fase 1', tagP2: 'Fase 2', tagP3: 'Fase 3', tagP4: 'Fase 4', tagP5: 'Fase 5', tagP6: 'Fase 6',
+    p1Title: 'Discovery & Vurdering',
+    p1Sub: 'Forstå kundens udgangspunkt: hvor de befinder sig på AI-modenhedskurven, og om deres data reelt er klar til de use cases, de har i tankerne.',
+    c_aiMaturity_t: 'AI-modenhedsvurdering',
+    c_aiMaturity_d: 'Score en organisation på tværs af seks dimensioner — strategi, data, teknologi, governance, talent og drift — med øjeblikkelige resultater, gapanalyse og en downloadbar rapport.',
+    c_aiMaturity_c: 'Åbn vurdering →',
+    c_dra5c_t: 'Data Readiness-vurdering (5C)',
+    c_dra5c_d: 'En konsol, der guider den firetrins vurdering — interviews, dokumentgennemgang, et browser-lokalt data-stikprøvetjek, og en valideringsplan — og samler Context / Clarity / Coverage / Credibility / Capacity-scorecardet. Drevet af DRA-5C-agenten.',
+    c_dra5c_c: 'Åbn konsol →',
+    c_infra_t: 'Infrastrukturaudit',
+    c_infra_d: 'SOP, kundeoptag, og et automatisk genereret nutidsstatus-dokument — cloud-kapabilitet, integrationsgennemførlighed, og sikkerhedsposition, scoret mod en specifik AI-use case. EN / DA / SV.',
+    c_infra_c: 'Åbn audit →',
+    c_org_t: 'Organisatorisk Parathedsvurdering',
+    c_org_d: 'SOP, kundeoptag, og et automatisk genereret parathedsdokument — teamkapabilitet, kultur, procesmodenhed og interessenter. EN / DA / SV.',
+    c_org_c: 'Åbn vurdering →',
+    c_ucp_t: 'Identifikation og Prioritering af Use Cases',
+    c_ucp_d: 'SOP og en scorbar ROI-/gennemførlighed-/effekt-matrix, der rangerer kandidat-AI-use cases og markerer quick wins, med et automatisk genereret prioritetsdokument. EN / DA / SV.',
+    c_ucp_c: 'Åbn matrix →',
+    p2Title: 'Strategi & Roadmap',
+    p2Sub: 'Omsæt discovery-fundene til en AI-strategi, bestyrelsen reelt vil godkende: vision, business case, teknologiroadmap, og organisatorisk forandringsplan.',
+    c_strat_t: 'AI-strategiplanlægning',
+    c_strat_d: 'SOP, kundeoptag, en 3-5-årig milepælsroadmap-builder, og et automatisk genereret AI-strategidokument. EN / DA / SV.',
+    c_strat_c: 'Åbn planlægning →',
+    c_biz_t: 'Business Case-udvikling',
+    c_biz_d: 'SOP, kundeoptag, og en live tilbagebetalings-/nettogevinst-/ROI%-model, der beregnes mens du skriver, og fodrer et automatisk genereret business case-dokument. EN / DA / SV.',
+    c_biz_c: 'Åbn business case →',
+    c_techrm_t: 'Teknologiroadmap',
+    c_techrm_d: 'SOP, platformsstrategi-optag, og en milepælstidslinje-builder, der genererer et teknologiroadmap-dokument — det reelle mål Fase 3-arkitekturarbejdet designer imod. EN / DA / SV.',
+    c_techrm_c: 'Åbn roadmap →',
+    c_orgrm_t: 'Organisatorisk Roadmap',
+    c_orgrm_d: 'SOP og kundeoptag, der dækker AI CoE-design, talentplan, strukturændringer og partnerøkosystem, og automatisk genererer en organisatorisk forandringsroadmap. EN / DA / SV.',
+    c_orgrm_c: 'Åbn roadmap →',
+    p3Title: 'Arkitekturdesign',
+    p3Sub: 'Bevæg dig fra en generisk værktøjsliste til et kapabilitetsstack-syn: hvordan en agent forstår, beslutter, handler, husker, verificerer og forbedrer sig inde i et forretningssystem.',
+    c_archb_t: 'Design Layers — Architecture Builder',
+    c_archb_d: 'Én sammenligningstabel på tværs af 14 lag af reelle valgmuligheder (fordele, ulemper, bedst egnet) — vælg én pr. lag som byggeklodser og saml en anbefalet arkitektur til en specifik kunde. Understøttet af en 18-lags reference.',
+    c_archb_c: 'Åbn builder →',
+    c_bp_t: 'Arkitekturblueprint',
+    c_bp_d: 'SOP, kundeoptag, en valgfri ét-klik-import af dine Architecture Builder-valg, og et automatisk genereret arkitekturblueprint-dokument. EN / DA / SV.',
+    c_bp_c: 'Åbn blueprint →',
+    c_adr_t: 'Architecture Decision Records',
+    c_adr_d: 'SOP plus en gentagelig ADR-kort-builder (titel, status, kontekst, beslutning, konsekvenser), der automatisk genererer et nummereret beslutningslog-dokument. EN / DA / SV.',
+    c_adr_c: 'Åbn ADR-log →',
+    c_ts_t: 'Tech Stack-valgrapport',
+    c_ts_d: 'SOP, en valgfri import af dine Architecture Builder-valg til en stack-tabel, plus begrundelse/alternativer/risici-optag, der automatisk genererer en valgrapport. EN / DA / SV.',
+    c_ts_c: 'Åbn rapport →',
+    c_sec_t: 'Sikkerhedsarkitektur',
+    c_sec_d: 'SOP og kundeoptag, der dækker databeskyttelse, kryptering, adgangskontrol, auditerbarhed, og prompt injection-forsvar, og automatisk genererer et sikkerhedsarkitekturdokument. EN / DA / SV.',
+    c_sec_c: 'Åbn dokument →',
+    c_nfr_t: 'Ikke-funktionelle krav-specifikation',
+    c_nfr_d: 'SOP plus en gentagelig kravsmatrix (kategori, krav, mål, MoSCoW-prioritet), der automatisk genererer et NFR-specifikationsdokument. EN / DA / SV.',
+    c_nfr_c: 'Åbn spec →',
+    p4Title: 'PoC & Pilot',
+    p4Sub: 'Bevis det smalle tekniske spørgsmål hurtigt, test derefter løsningen i en reel forretningssammenhæng, før der forpligtes til produktion.',
+    c_poc_t: 'PoC-planlægning & Feasibility-rapport',
+    c_poc_d: 'SOP og kundeoptag afgrænset til et smalt, tidsboxet proof-of-concept-spørgsmål, der automatisk genererer en teknisk feasibility-rapport med en Fortsæt/Iterér/Stop-anbefaling. EN / DA / SV.',
+    c_poc_c: 'Åbn planlægger →',
+    c_pilot_t: 'Pilotplanlægning & Resultatanalyse',
+    c_pilot_d: 'SOP, kundeoptag, og en checkpoint-tidslinje-builder til en kontrolleret, virkelighedsnær udrulning, der automatisk genererer et pilotplandokument. EN / DA / SV.',
+    c_pilot_c: 'Åbn planlægger →',
+    c_eval_t: 'Evaluering & Go/No-Go-beslutning',
+    c_eval_d: 'SOP plus en scorbar evalueringsmatrix, der beregner en live Go / Betinget Go / No-Go-anbefaling ud fra opgavespecifik evidens. EN / DA / SV.',
+    c_eval_c: 'Åbn evaluering →',
+    p5Title: 'Implementering & Levering',
+    p5Sub: 'Byg, integrér, test, og udgiv produktions-AI-løsningen — med den dokumentation og de runbooks, kundens eget team skal drive den videre efter.',
+    c_impl_t: 'Implementeringsstyringsplan',
+    c_impl_d: 'SOP, kundeoptag, og en sprint-/milepælstracker, der automatisk genererer en implementeringsstyringsplan med en løbende teknisk beslutningslog. EN / DA / SV.',
+    c_impl_c: 'Åbn plan →',
+    c_sysint_t: 'Systemintegrationsplan',
+    c_sysint_d: 'SOP, kundeoptag, og en integrationspunkt-tracker (system, metode, dataflow, status), der automatisk genererer en systemintegrationsplan. EN / DA / SV.',
+    c_sysint_c: 'Åbn plan →',
+    c_qa_t: 'Kvalitetssikringstestplan',
+    c_qa_d: 'SOP, kundeoptag, og en testdækningstracker på tværs af model-performance, integration, belastning og sikkerhedstestning, der automatisk genererer en QA-testplan. EN / DA / SV.',
+    c_qa_c: 'Åbn plan →',
+    c_deploy_t: 'Deployment- & Go-Live-plan',
+    c_deploy_d: 'SOP, kundeoptag (deploymentstrategi, rollback-plan, hypercare), og en rollout-bølge-tracker, der automatisk genererer en go-live-runbook. EN / DA / SV.',
+    c_deploy_c: 'Åbn runbook →',
+    c_techdoc_t: 'Teknisk Dokumentationsindeks',
+    c_techdoc_d: 'SOP og en dokumentations-inventar-tracker (API-dokumentation, deploymentmanual, runbook, testrapport), der automatisk genererer et dokumentationsindeks. EN / DA / SV.',
+    c_techdoc_c: 'Åbn indeks →',
+    p6Title: 'Governance, Compliance & Sikkerhed',
+    p6Sub: 'Bevis at AI-løsningen er governet, retfærdig, compliant, og risikostyret ende til ende — de artefakter, der holder til en regulators eller revisors spørgsmål.',
+    c_gov_t: 'AI-governanceramme',
+    c_gov_d: 'SOP og kundeoptag (udvalgsstruktur, brugspolitik, modellivscyklus, human-in-the-loop-tjekpunkter), der automatisk genererer et AI-governancerammedokument. EN / DA / SV.',
+    c_gov_c: 'Åbn ramme →',
+    c_comp_t: 'Compliance-gapanalyse',
+    c_comp_d: 'SOP plus en scorbar compliance-gapanalysematrix (krav, ramme, status), der automatisk genererer en gapanalyserapport. Fremstillet som aktuel forståelse — verificér hos juridisk rådgivning. EN / DA / SV.',
+    c_comp_c: 'Åbn analyse →',
+    c_resp_t: 'Ansvarlig AI & Bias-audit',
+    c_resp_d: 'SOP, kundeoptag (transparens, privatliv), og en bias-/fairness-auditmatrix, der automatisk genererer en bias-auditrapport. EN / DA / SV.',
+    c_resp_c: 'Åbn audit →',
+    c_risk_t: 'AI-risikoregister',
+    c_risk_d: 'SOP plus et scoret risikoregister (sandsynlighed × konsekvens, alvorlighed, afhjælpning, ejer), der automatisk genererer en risikovurderingsrapport. EN / DA / SV.',
+    c_risk_c: 'Åbn register →',
+    futureTitle: 'Kommende faser',
+    futureDesc: 'Værktøjssættet følger hele AI-arkitektens leveringslivscyklus. Disse faser er skitseret og vil blive udfyldt over tid.',
+    pillPhase7: 'Fase 7 · MLOps & Drift',
+    footerText: 'Bygget som en uafhængig AI-arkitektur-konsulentportefølje. Alle vurderingsværktøjer kører fuldt klient-side — ingen data forlader din browser.',
+  },
+  sv: {
+    heroEyebrow: 'AI-arkitektur · Konsultverktyg',
+    heroTitle: 'Praktiska verktyg för AI-arkitekturuppdrag, organiserade efter leveransfas.',
+    heroDesc: 'En växande uppsättning bedömningar och acceleratorer som speglar hur en AI-arkitekt faktiskt flyttar en kund från discovery till produktion.',
+    tagP1: 'Fas 1', tagP2: 'Fas 2', tagP3: 'Fas 3', tagP4: 'Fas 4', tagP5: 'Fas 5', tagP6: 'Fas 6',
+    p1Title: 'Discovery & Bedömning',
+    p1Sub: 'Förstå kundens utgångsläge: var de befinner sig på AI-mognadskurvan, och om deras data faktiskt är redo för de användningsfall de har i åtanke.',
+    c_aiMaturity_t: 'AI-mognadsbedömning',
+    c_aiMaturity_d: 'Poängsätt en organisation över sex dimensioner — strategi, data, teknik, styrning, talang och drift — med omedelbara resultat, gapanalys, och en nedladdningsbar rapport.',
+    c_aiMaturity_c: 'Öppna bedömning →',
+    c_dra5c_t: 'Data Readiness-bedömning (5C)',
+    c_dra5c_d: 'En konsol som guidar den fyrastegsbedömningen — intervjuer, dokumentgranskning, en webbläsarlokal datastickprovskontroll, och en valideringsplan — och sammanställer Context / Clarity / Coverage / Credibility / Capacity-scorecardet. Drivet av DRA-5C-agenten.',
+    c_dra5c_c: 'Öppna konsol →',
+    c_infra_t: 'Infrastrukturaudit',
+    c_infra_d: 'SOP, kundintag, och ett automatiskt genererat nulägesdokument — molnförmåga, integrationsgenomförbarhet, och säkerhetsläge, poängsatt mot ett specifikt AI-användningsfall. EN / DA / SV.',
+    c_infra_c: 'Öppna audit →',
+    c_org_t: 'Organisatorisk Beredskapsbedömning',
+    c_org_d: 'SOP, kundintag, och ett automatiskt genererat beredskapsdokument — teamförmåga, kultur, processmognad och intressenter. EN / DA / SV.',
+    c_org_c: 'Öppna bedömning →',
+    c_ucp_t: 'Identifiering och Prioritering av Användningsfall',
+    c_ucp_d: 'SOP och en poängsatt ROI-/genomförbarhet-/effekt-matris som rankar kandidat-AI-användningsfall och flaggar quick wins, med ett automatiskt genererat prioritetsdokument. EN / DA / SV.',
+    c_ucp_c: 'Öppna matris →',
+    p2Title: 'Strategi & Färdplan',
+    p2Sub: 'Omvandla discovery-fynden till en AI-strategi styrelsen faktiskt godkänner: vision, business case, teknikfärdplan, och organisatorisk förändringsplan.',
+    c_strat_t: 'AI-strategiplanering',
+    c_strat_d: 'SOP, kundintag, en 3-5-årig milstolpe-färdplan-byggare, och ett automatiskt genererat AI-strategidokument. EN / DA / SV.',
+    c_strat_c: 'Öppna planering →',
+    c_biz_t: 'Business Case-utveckling',
+    c_biz_d: 'SOP, kundintag, och en live återbetalnings-/nettovinst-/ROI%-modell som beräknas medan du skriver, och matar ett automatiskt genererat business case-dokument. EN / DA / SV.',
+    c_biz_c: 'Öppna business case →',
+    c_techrm_t: 'Teknikfärdplan',
+    c_techrm_d: 'SOP, plattformsstrategi-intag, och en milstolpe-tidslinje-byggare, som genererar ett teknikfärdplansdokument — det verkliga mål Fas 3-arkitekturarbetet designas mot. EN / DA / SV.',
+    c_techrm_c: 'Öppna färdplan →',
+    c_orgrm_t: 'Organisatorisk Färdplan',
+    c_orgrm_d: 'SOP och kundintag som täcker AI CoE-design, talangplan, strukturförändringar och partnerekosystem, och automatiskt genererar en organisatorisk förändringsfärdplan. EN / DA / SV.',
+    c_orgrm_c: 'Öppna färdplan →',
+    p3Title: 'Arkitekturdesign',
+    p3Sub: 'Rör dig från en generisk verktygslista till en förmågestack-vy: hur en agent förstår, beslutar, agerar, minns, verifierar och förbättrar sig inuti ett affärssystem.',
+    c_archb_t: 'Design Layers — Architecture Builder',
+    c_archb_d: 'En jämförelsetabell över 14 lager av verkliga alternativ (fördelar, nackdelar, bäst lämpad) — välj ett per lager som byggklossar och sätt ihop en rekommenderad arkitektur för en specifik kund. Backad av en 18-lagersreferens.',
+    c_archb_c: 'Öppna byggare →',
+    c_bp_t: 'Arkitekturblueprint',
+    c_bp_d: 'SOP, kundintag, en valfri ett-klicks-import av dina Architecture Builder-val, och ett automatiskt genererat arkitekturblueprint-dokument. EN / DA / SV.',
+    c_bp_c: 'Öppna blueprint →',
+    c_adr_t: 'Architecture Decision Records',
+    c_adr_d: 'SOP plus en upprepningsbar ADR-kort-byggare (titel, status, kontext, beslut, konsekvenser), som automatiskt genererar ett numrerat beslutslogg-dokument. EN / DA / SV.',
+    c_adr_c: 'Öppna ADR-logg →',
+    c_ts_t: 'Tech Stack-valrapport',
+    c_ts_d: 'SOP, en valfri import av dina Architecture Builder-val till en stack-tabell, plus motivering/alternativ/risker-intag, som automatiskt genererar en valrapport. EN / DA / SV.',
+    c_ts_c: 'Öppna rapport →',
+    c_sec_t: 'Säkerhetsarkitektur',
+    c_sec_d: 'SOP och kundintag som täcker dataskydd, kryptering, åtkomstkontroll, granskningsbarhet, och prompt injection-försvar, och automatiskt genererar ett säkerhetsarkitekturdokument. EN / DA / SV.',
+    c_sec_c: 'Öppna dokument →',
+    c_nfr_t: 'Icke-funktionella krav-specifikation',
+    c_nfr_d: 'SOP plus en upprepningsbar kravmatris (kategori, krav, mål, MoSCoW-prioritet), som automatiskt genererar ett NFR-specifikationsdokument. EN / DA / SV.',
+    c_nfr_c: 'Öppna spec →',
+    p4Title: 'PoC & Pilot',
+    p4Sub: 'Bevisa den smala tekniska frågan snabbt, testa sedan lösningen i en verklig affärsmiljö innan ni förbinder er till produktion.',
+    c_poc_t: 'PoC-planering & Feasibility-rapport',
+    c_poc_d: 'SOP och kundintag avgränsad till en smal, tidsboxad proof-of-concept-fråga, som automatiskt genererar en teknisk feasibility-rapport med en Fortsätt/Iterera/Stopp-rekommendation. EN / DA / SV.',
+    c_poc_c: 'Öppna planerare →',
+    c_pilot_t: 'Pilotplanering & Resultatanalys',
+    c_pilot_d: 'SOP, kundintag, och en checkpoint-tidslinje-byggare för en kontrollerad, verklighetsnära utrullning, som automatiskt genererar ett pilotplansdokument. EN / DA / SV.',
+    c_pilot_c: 'Öppna planerare →',
+    c_eval_t: 'Utvärdering & Go/No-Go-beslut',
+    c_eval_d: 'SOP plus en poängsatt utvärderingsmatris som beräknar en live Go / Villkorad Go / No-Go-rekommendation utifrån uppgiftsspecifik evidens. EN / DA / SV.',
+    c_eval_c: 'Öppna utvärdering →',
+    p5Title: 'Implementering & Leverans',
+    p5Sub: 'Bygg, integrera, testa, och släpp produktions-AI-lösningen — med den dokumentation och de runbooks kundens eget team ska driva den vidare på.',
+    c_impl_t: 'Implementeringsstyrningsplan',
+    c_impl_d: 'SOP, kundintag, och en sprint-/milstolpespårare, som automatiskt genererar en implementeringsstyrningsplan med en löpande teknisk beslutslogg. EN / DA / SV.',
+    c_impl_c: 'Öppna plan →',
+    c_sysint_t: 'Systemintegrationsplan',
+    c_sysint_d: 'SOP, kundintag, och en integrationspunkts-spårare (system, metod, dataflöde, status), som automatiskt genererar en systemintegrationsplan. EN / DA / SV.',
+    c_sysint_c: 'Öppna plan →',
+    c_qa_t: 'Kvalitetssäkringstestplan',
+    c_qa_d: 'SOP, kundintag, och en testtäckningsspårare över modellprestanda, integration, last och säkerhetstestning, som automatiskt genererar en QA-testplan. EN / DA / SV.',
+    c_qa_c: 'Öppna plan →',
+    c_deploy_t: 'Deployment- & Go-Live-plan',
+    c_deploy_d: 'SOP, kundintag (deploymentstrategi, rollback-plan, hypercare), och en rollout-vågs-spårare, som automatiskt genererar en go-live-runbook. EN / DA / SV.',
+    c_deploy_c: 'Öppna runbook →',
+    c_techdoc_t: 'Tekniskt Dokumentationsindex',
+    c_techdoc_d: 'SOP och en dokumentationsinventarie-spårare (API-dokumentation, deploymentmanual, runbook, testrapport), som automatiskt genererar ett dokumentationsindex. EN / DA / SV.',
+    c_techdoc_c: 'Öppna index →',
+    p6Title: 'Styrning, Compliance & Säkerhet',
+    p6Sub: 'Bevisa att AI-lösningen är styrd, rättvis, compliant, och riskhanterad från början till slut — artefakterna som håller för en tillsynsmyndighets eller revisors frågor.',
+    c_gov_t: 'AI-styrningsramverk',
+    c_gov_d: 'SOP och kundintag (kommittéstruktur, användningspolicy, modelllivscykel, human-in-the-loop-kontrollpunkter), som automatiskt genererar ett AI-styrningsramverksdokument. EN / DA / SV.',
+    c_gov_c: 'Öppna ramverk →',
+    c_comp_t: 'Compliance-gapanalys',
+    c_comp_d: 'SOP plus en poängsatt compliance-gapanalysmatris (krav, ramverk, status), som automatiskt genererar en gapanalysrapport. Framställd som aktuell förståelse — verifiera med juridisk rådgivning. EN / DA / SV.',
+    c_comp_c: 'Öppna analys →',
+    c_resp_t: 'Ansvarsfull AI & Bias-audit',
+    c_resp_d: 'SOP, kundintag (transparens, integritet), och en bias-/fairness-auditmatris, som automatiskt genererar en bias-auditrapport. EN / DA / SV.',
+    c_resp_c: 'Öppna audit →',
+    c_risk_t: 'AI-riskregister',
+    c_risk_d: 'SOP plus ett poängsatt riskregister (sannolikhet × påverkan, allvarlighetsgrad, åtgärd, ägare), som automatiskt genererar en riskbedömningsrapport. EN / DA / SV.',
+    c_risk_c: 'Öppna register →',
+    futureTitle: 'Kommande faser',
+    futureDesc: 'Verktygssamlingen följer AI-arkitektens hela leveranslivscykel. Dessa faser är skisserade och kommer fyllas i över tid.',
+    pillPhase7: 'Fas 7 · MLOps & Drift',
+    footerText: 'Byggd som en oberoende AI-arkitektur-konsultportfölj. Alla bedömningsverktyg körs helt klient-sidan — ingen data lämnar din webbläsare.',
+  },
+};
+
+let lang = localStorage.getItem('aoa_lang') || 'en';
+function t(key) { return (STRINGS[lang] && STRINGS[lang][key] !== undefined) ? STRINGS[lang][key] : (STRINGS.en[key] !== undefined ? STRINGS.en[key] : key); }
+function setLang(l) { lang = l; localStorage.setItem('aoa_lang', l); document.getElementById('langSelect').value = l; applyI18n(); }
+function applyI18n() {
+  document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.getAttribute('data-i18n')); });
+  document.documentElement.lang = lang;
+}
+
+(function init() {
+  document.getElementById('langSelect').value = lang;
+  applyI18n();
+})();
+</script>
 </body>
 </html>

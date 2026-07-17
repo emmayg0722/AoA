@@ -23,6 +23,9 @@
   .wrap { max-width: 920px; margin: 0 auto; }
   .crumb { font-size: 13px; color: var(--accent); margin-bottom: 10px; }
   .crumb a { color: var(--accent); text-decoration: none; }
+  .hero-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; flex-wrap: wrap; }
+  select#langSelect { font-family: var(--font-body); font-size: 13px; font-weight: 600; border: 1.5px solid rgba(255,255,255,0.4); background: rgba(255,255,255,0.08); color: #fff; border-radius: 8px; padding: 7px 10px; }
+  select#langSelect option { color: var(--ink); }
   .hero h1 { font-family: var(--font-heading); font-weight: 700; font-size: 34px; line-height: 1.15; }
   .hero p { margin-top: 10px; font-size: 15.5px; color: #dcdcf2; max-width: 660px; }
   main { max-width: 920px; margin: 0 auto; padding: 28px 24px 80px; }
@@ -72,149 +75,156 @@
 </head>
 <body>
   <header class="hero"><div class="wrap">
-    <div class="crumb"><a href="../../">AI Architect Toolkit</a> · Phase 1 · Data Readiness Assessment (5C)</div>
-    <h1>DRA-5C Console</h1>
-    <p>A workspace that walks the four-step data-readiness assessment end to end and assembles the 5C scorecard report.</p>
+    <div class="hero-top">
+      <div class="crumb"><a href="../../">AI Architect Toolkit</a> · Phase 1 · Data Readiness Assessment (5C)</div>
+      <select id="langSelect" onchange="setLang(this.value)">
+        <option value="en">English</option>
+        <option value="da">Dansk</option>
+        <option value="sv">Svenska</option>
+      </select>
+    </div>
+    <h1 data-i18n="heroTitle"></h1>
+    <p data-i18n="heroDesc"></p>
   </div></header>
 
   <main>
     <div class="note">
-      <strong>How this works.</strong> Generation is done by the <code>dra-5c</code> agent, not this page — each step gives you a prompt to paste into the agent (or any Claude), and you paste the result back here. This page makes <strong>no API calls</strong>; your work <strong>autosaves locally</strong> in your browser and can be exported as a file.
+      <strong data-i18n="noteLabel"></strong> <span data-i18n="noteBody"></span>
     </div>
 
     <!-- Setup -->
     <div class="card">
-      <h2><span class="step-no">Setup</span> Engagement &amp; use case <span class="saved" id="savedFlag"></span></h2>
-      <p class="hint">Filled once and woven into every prompt. Readiness is always judged against a specific use case.</p>
+      <h2><span class="step-no" data-i18n="stepSetup"></span> <span data-i18n="setupTitle"></span> <span class="saved" id="savedFlag"></span></h2>
+      <p class="hint" data-i18n="setupHint"></p>
       <div class="grid2">
-        <div><label>Client / engagement</label><input type="text" data-eng="client" placeholder="Acme Corp"></div>
-        <div><label>Assessor</label><input type="text" data-eng="assessor" placeholder="Your name"></div>
+        <div><label data-i18n="lblClient"></label><input type="text" data-eng="client" placeholder="Acme Corp"></div>
+        <div><label data-i18n="lblAssessor"></label><input type="text" data-eng="assessor" placeholder="Your name"></div>
       </div>
-      <label>Target AI use case (one line)</label>
+      <label data-i18n="lblUseCase"></label>
       <input type="text" data-eng="useCase" placeholder="Real-time credit-risk scoring at loan application">
-      <label>What it predicts / decides</label>
+      <label data-i18n="lblPredicts"></label>
       <input type="text" data-eng="predicts" placeholder="Approve/deny + risk band, returned synchronously at submit">
       <div class="grid2">
-        <div><label>Latency requirement</label><input type="text" data-eng="latency" placeholder="&lt; 200 ms p99"></div>
-        <div><label>Volume / velocity</label><input type="text" data-eng="volume" placeholder="~50k applications/day, bursty"></div>
-        <div><label>History needed</label><input type="text" data-eng="history" placeholder="3+ years labelled outcomes"></div>
-        <div><label>Key data entities / fields</label><input type="text" data-eng="entities" placeholder="applicant, bureau pull, transactions, prior loans"></div>
+        <div><label data-i18n="lblLatency"></label><input type="text" data-eng="latency" placeholder="&lt; 200 ms p99"></div>
+        <div><label data-i18n="lblVolume"></label><input type="text" data-eng="volume" placeholder="~50k applications/day, bursty"></div>
+        <div><label data-i18n="lblHistory"></label><input type="text" data-eng="history" placeholder="3+ years labelled outcomes"></div>
+        <div><label data-i18n="lblEntities"></label><input type="text" data-eng="entities" placeholder="applicant, bureau pull, transactions, prior loans"></div>
       </div>
     </div>
 
     <!-- Step A -->
     <div class="card">
-      <h2><span class="step-no">Step A</span> Context &amp; Clarity — interview guide</h2>
-      <p class="hint">Generate a tailored interview guide + questionnaire. Run it through the agent, then paste the Markdown back.</p>
+      <h2><span class="step-no" data-i18n="stepA"></span> <span data-i18n="stepATitle"></span></h2>
+      <p class="hint" data-i18n="stepAHint"></p>
 
       <div class="copilot-box">
-        <div class="copilot-head">🤖 Optional — gather evidence from the client's M365 Copilot</div>
-        <p class="hint">Run these in the client's own Copilot (it already has their data), then paste the findings below. They'll be folded into the Step A prompt as source evidence.</p>
+        <div class="copilot-head" data-i18n="copilotHeadA"></div>
+        <p class="hint" data-i18n="copilotHintA"></p>
         <div class="btn-row">
-          <button class="btn btn-secondary" onclick="genCopilot('A')">🤖 Generate M365 Copilot prompts</button>
+          <button class="btn btn-secondary" onclick="genCopilot('A')" data-i18n="btnGenCopilot"></button>
         </div>
         <div class="prompt-box" id="pbc_A"><pre class="prompt" id="ptc_A"></pre>
-          <div class="btn-row"><button class="btn btn-secondary" onclick="copyCopilot('A')">📋 Copy Copilot prompts</button></div></div>
-        <label>Copilot findings (optional)</label>
+          <div class="btn-row"><button class="btn btn-secondary" onclick="copyCopilot('A')" data-i18n="btnCopyCopilot"></button></div></div>
+        <label data-i18n="lblCopilotFindings"></label>
         <textarea data-eng="copA" placeholder="Paste the summaries + citations Copilot returned…"></textarea>
       </div>
 
       <div class="btn-row">
-        <button class="btn btn-primary" onclick="genPrompt('A')">⚙️ Generate Step A prompt</button>
+        <button class="btn btn-primary" onclick="genPrompt('A')" data-i18n="btnGenA"></button>
       </div>
       <div class="prompt-box" id="pb_A"><pre class="prompt" id="pt_A"></pre>
-        <div class="btn-row"><button class="btn btn-secondary" onclick="copyPrompt('A')">📋 Copy prompt</button></div></div>
-      <label>Paste agent output (Markdown)</label>
+        <div class="btn-row"><button class="btn btn-secondary" onclick="copyPrompt('A')" data-i18n="btnCopyPrompt"></button></div></div>
+      <label data-i18n="lblPasteOutput"></label>
       <textarea data-eng="outA" data-prev="A" placeholder="Paste the interview guide the agent produced…"></textarea>
       <div class="preview" id="prev_A"></div>
     </div>
 
     <!-- Step B -->
     <div class="card">
-      <h2><span class="step-no">Step B</span> Document &amp; metadata review checklist</h2>
-      <p class="hint">List the artifacts to request from the client, each tied to a C with "good vs. red flag" notes.</p>
+      <h2><span class="step-no" data-i18n="stepB"></span> <span data-i18n="stepBTitle"></span></h2>
+      <p class="hint" data-i18n="stepBHint"></p>
 
       <div class="copilot-box">
-        <div class="copilot-head">🤖 Optional — locate documents via the client's M365 Copilot</div>
-        <p class="hint">Have Copilot find the actual artifacts (data dictionary, schema, policies, SLA/quality reports) in their tenant, then paste what it found below.</p>
+        <div class="copilot-head" data-i18n="copilotHeadB"></div>
+        <p class="hint" data-i18n="copilotHintB"></p>
         <div class="btn-row">
-          <button class="btn btn-secondary" onclick="genCopilot('B')">🤖 Generate M365 Copilot prompts</button>
+          <button class="btn btn-secondary" onclick="genCopilot('B')" data-i18n="btnGenCopilot"></button>
         </div>
         <div class="prompt-box" id="pbc_B"><pre class="prompt" id="ptc_B"></pre>
-          <div class="btn-row"><button class="btn btn-secondary" onclick="copyCopilot('B')">📋 Copy Copilot prompts</button></div></div>
-        <label>Copilot findings (optional)</label>
+          <div class="btn-row"><button class="btn btn-secondary" onclick="copyCopilot('B')" data-i18n="btnCopyCopilot"></button></div></div>
+        <label data-i18n="lblCopilotFindings"></label>
         <textarea data-eng="copB" placeholder="Paste the documents + locations + citations Copilot returned…"></textarea>
       </div>
 
       <div class="btn-row">
-        <button class="btn btn-primary" onclick="genPrompt('B')">⚙️ Generate Step B prompt</button>
+        <button class="btn btn-primary" onclick="genPrompt('B')" data-i18n="btnGenB"></button>
       </div>
       <div class="prompt-box" id="pb_B"><pre class="prompt" id="pt_B"></pre>
-        <div class="btn-row"><button class="btn btn-secondary" onclick="copyPrompt('B')">📋 Copy prompt</button></div></div>
-      <label>Paste agent output (Markdown)</label>
+        <div class="btn-row"><button class="btn btn-secondary" onclick="copyPrompt('B')" data-i18n="btnCopyPrompt"></button></div></div>
+      <label data-i18n="lblPasteOutput"></label>
       <textarea data-eng="outB" data-prev="B" placeholder="Paste the document-review checklist…"></textarea>
       <div class="preview" id="prev_B"></div>
     </div>
 
     <!-- Step C -->
     <div class="card">
-      <h2><span class="step-no">Step C</span> Coverage &amp; Credibility — data spot-check</h2>
-      <p class="hint">Profile a real sample locally, paste its aggregate summary here, then generate the interpretation prompt. Raw data never leaves your browser.</p>
-      <div class="btn-row"><a class="pill-link" href="profiler.html" target="_blank" rel="noopener">🧪 Open data profiler ↗</a></div>
-      <label>Profiler aggregate summary</label>
+      <h2><span class="step-no" data-i18n="stepC"></span> <span data-i18n="stepCTitle"></span></h2>
+      <p class="hint" data-i18n="stepCHint"></p>
+      <div class="btn-row"><a class="pill-link" href="profiler.html" target="_blank" rel="noopener" data-i18n="btnOpenProfiler"></a></div>
+      <label data-i18n="lblProfilerSummary"></label>
       <textarea data-eng="cSummary" placeholder="Paste the 'aggregate summary' block from the profiler here…"></textarea>
       <div class="btn-row">
-        <button class="btn btn-primary" onclick="genPrompt('C')">⚙️ Generate Step C prompt</button>
+        <button class="btn btn-primary" onclick="genPrompt('C')" data-i18n="btnGenC"></button>
       </div>
       <div class="prompt-box" id="pb_C"><pre class="prompt" id="pt_C"></pre>
-        <div class="btn-row"><button class="btn btn-secondary" onclick="copyPrompt('C')">📋 Copy prompt</button></div></div>
-      <label>Paste agent output (Markdown)</label>
+        <div class="btn-row"><button class="btn btn-secondary" onclick="copyPrompt('C')" data-i18n="btnCopyPrompt"></button></div></div>
+      <label data-i18n="lblPasteOutput"></label>
       <textarea data-eng="outC" data-prev="C" placeholder="Paste the Coverage/Credibility interpretation + sub-scores…"></textarea>
       <div class="preview" id="prev_C"></div>
     </div>
 
     <!-- Step D -->
     <div class="card">
-      <h2><span class="step-no">Step D</span> Capacity &amp; validation plan + scorecard</h2>
-      <p class="hint">Synthesize A–C into a technical validation plan and the final 5C scorecard.</p>
+      <h2><span class="step-no" data-i18n="stepD"></span> <span data-i18n="stepDTitle"></span></h2>
+      <p class="hint" data-i18n="stepDHint"></p>
       <div class="btn-row">
-        <button class="btn btn-primary" onclick="genPrompt('D')">⚙️ Generate Step D prompt</button>
+        <button class="btn btn-primary" onclick="genPrompt('D')" data-i18n="btnGenD"></button>
       </div>
       <div class="prompt-box" id="pb_D"><pre class="prompt" id="pt_D"></pre>
-        <div class="btn-row"><button class="btn btn-secondary" onclick="copyPrompt('D')">📋 Copy prompt</button></div></div>
-      <label>Paste agent output (Markdown)</label>
+        <div class="btn-row"><button class="btn btn-secondary" onclick="copyPrompt('D')" data-i18n="btnCopyPrompt"></button></div></div>
+      <label data-i18n="lblPasteOutput"></label>
       <textarea data-eng="outD" data-prev="D" placeholder="Paste the validation plan + scorecard…"></textarea>
       <div class="preview" id="prev_D"></div>
 
-      <label style="margin-top:18px">Final 5C scores (for the report header)</label>
+      <label style="margin-top:18px" data-i18n="lblFinalScores"></label>
       <div class="sc-grid">
-        <div class="h">Dimension</div><div class="h">Score</div><div class="h">One-line note</div>
-        <div class="c">Context</div><div><select data-eng="sc_context"></select></div><div><input type="text" data-eng="note_context" placeholder="evidence / gap"></div>
-        <div class="c">Clarity</div><div><select data-eng="sc_clarity"></select></div><div><input type="text" data-eng="note_clarity" placeholder="evidence / gap"></div>
-        <div class="c">Coverage</div><div><select data-eng="sc_coverage"></select></div><div><input type="text" data-eng="note_coverage" placeholder="evidence / gap"></div>
-        <div class="c">Credibility</div><div><select data-eng="sc_credibility"></select></div><div><input type="text" data-eng="note_credibility" placeholder="evidence / gap"></div>
-        <div class="c">Capacity</div><div><select data-eng="sc_capacity"></select></div><div><input type="text" data-eng="note_capacity" placeholder="evidence / gap"></div>
+        <div class="h" data-i18n="colDimension"></div><div class="h" data-i18n="colScore"></div><div class="h" data-i18n="colNote"></div>
+        <div class="c" data-i18n="cContext"></div><div><select data-eng="sc_context"></select></div><div><input type="text" data-eng="note_context" placeholder="evidence / gap"></div>
+        <div class="c" data-i18n="cClarity"></div><div><select data-eng="sc_clarity"></select></div><div><input type="text" data-eng="note_clarity" placeholder="evidence / gap"></div>
+        <div class="c" data-i18n="cCoverage"></div><div><select data-eng="sc_coverage"></select></div><div><input type="text" data-eng="note_coverage" placeholder="evidence / gap"></div>
+        <div class="c" data-i18n="cCredibility"></div><div><select data-eng="sc_credibility"></select></div><div><input type="text" data-eng="note_credibility" placeholder="evidence / gap"></div>
+        <div class="c" data-i18n="cCapacity"></div><div><select data-eng="sc_capacity"></select></div><div><input type="text" data-eng="note_capacity" placeholder="evidence / gap"></div>
       </div>
       <div class="grid2">
-        <div><label>Overall verdict</label><select data-eng="verdict">
-          <option value="">—</option><option>Ready</option><option>Conditional</option><option>Not ready</option></select></div>
-        <div><label>Recommended next action</label><input type="text" data-eng="nextAction" placeholder="Proceed to PoC / remediate X first"></div>
+        <div><label data-i18n="lblVerdict"></label><select data-eng="verdict">
+          <option value="">—</option><option value="Ready" data-i18n-opt="verdictReady"></option><option value="Conditional" data-i18n-opt="verdictConditional"></option><option value="Not ready" data-i18n-opt="verdictNotReady"></option></select></div>
+        <div><label data-i18n="lblNextAction"></label><input type="text" data-eng="nextAction" placeholder="Proceed to PoC / remediate X first"></div>
       </div>
-      <label>Top gaps</label>
+      <label data-i18n="lblGaps"></label>
       <input type="text" data-eng="gaps" placeholder="1) … 2) … 3) …">
     </div>
 
     <!-- Report -->
     <div class="card">
-      <h2>Assemble &amp; export</h2>
-      <p class="hint">Combine setup, all four steps, and the scorecard into one deliverable. Or save/restore the whole engagement as a file.</p>
+      <h2 data-i18n="assembleTitle"></h2>
+      <p class="hint" data-i18n="assembleHint"></p>
       <div class="toolbar">
-        <button class="btn btn-primary" onclick="exportReport('html')">🌐 Export HTML report</button>
-        <button class="btn btn-primary" onclick="exportReport('md')">📄 Export Markdown</button>
-        <button class="btn btn-secondary" onclick="exportEngagement()">💾 Save engagement (.json)</button>
-        <button class="btn btn-secondary" onclick="document.getElementById('importFile').click()">📥 Load engagement</button>
-        <button class="btn btn-secondary" onclick="loadSampleEngagement()">🧪 Load sample engagement</button>
-        <button class="btn btn-secondary" onclick="resetEngagement()">🗑️ Reset</button>
+        <button class="btn btn-primary" onclick="exportReport('html')" data-i18n="btnExportHtml"></button>
+        <button class="btn btn-primary" onclick="exportReport('md')" data-i18n="btnExportMd"></button>
+        <button class="btn btn-secondary" onclick="exportEngagement()" data-i18n="btnSaveEngagement"></button>
+        <button class="btn btn-secondary" onclick="document.getElementById('importFile').click()" data-i18n="btnLoadEngagement"></button>
+        <button class="btn btn-secondary" onclick="loadSampleEngagement()" data-i18n="btnLoadSample"></button>
+        <button class="btn btn-secondary" onclick="resetEngagement()" data-i18n="btnResetEngagement"></button>
         <input type="file" id="importFile" accept=".json" style="display:none">
       </div>
       <div id="sampleError" style="display:none;color:var(--red);font-size:12.5px;margin-top:8px"></div>
@@ -227,6 +237,184 @@
 // ════════════════════════════════════════════════════════════════
 const KEY = 'dra5c_engagement_v1';
 const FIELDS = () => Array.from(document.querySelectorAll('[data-eng]'));
+
+// ── i18n: UI chrome only. The agent prompts (PROMPTS/COPILOT) are English —
+// they're pasted into Claude/M365 Copilot, where English is the reliable
+// default regardless of the console's display language. ──────────────
+const STRINGS = {
+  en: {
+    heroTitle: 'DRA-5C Console',
+    heroDesc: 'A workspace that walks the four-step data-readiness assessment end to end and assembles the 5C scorecard report.',
+    noteLabel: 'How this works.',
+    noteBody: 'Generation is done by the dra-5c agent, not this page — each step gives you a prompt to paste into the agent (or any Claude), and you paste the result back here. This page makes no API calls; your work autosaves locally in your browser and can be exported as a file.',
+    stepSetup: 'Setup', setupTitle: 'Engagement & use case',
+    setupHint: 'Filled once and woven into every prompt. Readiness is always judged against a specific use case.',
+    lblClient: 'Client / engagement', lblAssessor: 'Assessor',
+    lblUseCase: 'Target AI use case (one line)', lblPredicts: 'What it predicts / decides',
+    lblLatency: 'Latency requirement', lblVolume: 'Volume / velocity',
+    lblHistory: 'History needed', lblEntities: 'Key data entities / fields',
+    stepA: 'Step A', stepATitle: 'Context & Clarity — interview guide',
+    stepAHint: 'Generate a tailored interview guide + questionnaire. Run it through the agent, then paste the Markdown back.',
+    copilotHeadA: "🤖 Optional — gather evidence from the client's M365 Copilot",
+    copilotHintA: "Run these in the client's own Copilot (it already has their data), then paste the findings below. They'll be folded into the Step A prompt as source evidence.",
+    stepB: 'Step B', stepBTitle: 'Document & metadata review checklist',
+    stepBHint: 'List the artifacts to request from the client, each tied to a C with "good vs. red flag" notes.',
+    copilotHeadB: "🤖 Optional — locate documents via the client's M365 Copilot",
+    copilotHintB: 'Have Copilot find the actual artifacts (data dictionary, schema, policies, SLA/quality reports) in their tenant, then paste what it found below.',
+    btnGenCopilot: '🤖 Generate M365 Copilot prompts', btnCopyCopilot: '📋 Copy Copilot prompts',
+    lblCopilotFindings: 'Copilot findings (optional)',
+    btnGenA: '⚙️ Generate Step A prompt', btnGenB: '⚙️ Generate Step B prompt',
+    btnGenC: '⚙️ Generate Step C prompt', btnGenD: '⚙️ Generate Step D prompt',
+    btnCopyPrompt: '📋 Copy prompt', lblPasteOutput: 'Paste agent output (Markdown)',
+    stepC: 'Step C', stepCTitle: 'Coverage & Credibility — data spot-check',
+    stepCHint: 'Profile a real sample locally, paste its aggregate summary here, then generate the interpretation prompt. Raw data never leaves your browser.',
+    btnOpenProfiler: '🧪 Open data profiler ↗', lblProfilerSummary: 'Profiler aggregate summary',
+    stepD: 'Step D', stepDTitle: 'Capacity & validation plan + scorecard',
+    stepDHint: 'Synthesize A–C into a technical validation plan and the final 5C scorecard.',
+    lblFinalScores: 'Final 5C scores (for the report header)',
+    colDimension: 'Dimension', colScore: 'Score', colNote: 'One-line note',
+    cContext: 'Context', cClarity: 'Clarity', cCoverage: 'Coverage', cCredibility: 'Credibility', cCapacity: 'Capacity',
+    lblVerdict: 'Overall verdict', verdictReady: 'Ready', verdictConditional: 'Conditional', verdictNotReady: 'Not ready',
+    lblNextAction: 'Recommended next action', lblGaps: 'Top gaps',
+    assembleTitle: 'Assemble & export',
+    assembleHint: 'Combine setup, all four steps, and the scorecard into one deliverable. Or save/restore the whole engagement as a file.',
+    btnExportHtml: '🌐 Export HTML report', btnExportMd: '📄 Export Markdown',
+    btnSaveEngagement: '💾 Save engagement (.json)', btnLoadEngagement: '📥 Load engagement',
+    btnLoadSample: '🧪 Load sample engagement', btnResetEngagement: '🗑️ Reset',
+    savedFlag: '✓ saved locally', copiedFlag: '✅ Copied!',
+    resetConfirm: 'Clear all fields for this engagement? (Export first if you want to keep it.)',
+    invalidFile: 'Invalid engagement file.',
+    sampleLoadError: (msg) => `Could not load the sample engagement (${msg}). This can happen if the page was opened directly from disk rather than served over http(s) — try Phase 1 - Discovery & Assessment/sample-data/data-readiness-assessment-5c/sample-engagement.json instead.`,
+    nothingPasted: '— nothing pasted yet —',
+    docTitleReport: 'Data Readiness Assessment (5C)',
+    secScorecard: '5C Scorecard', secStepA: 'Step A — Context & Clarity: Interview Guide',
+    secStepB: 'Step B — Document & Metadata Review', secStepC: 'Step C — Coverage & Credibility',
+    secStepD: 'Step D — Capacity & Technical Validation',
+    notCompleted: '(not completed)', profilerSummaryLabel: 'Profiler aggregate summary',
+    docDate: 'Date', docPredicts: 'Predicts/decides', docLatency: 'Latency', docVolume: 'Volume', docHistory: 'History',
+    tblC: 'C', tblScore: 'Score', tblNote: 'Note',
+    scOverallVerdict: 'Overall verdict', scTopGaps: 'Top gaps', scNextAction: 'Recommended next action',
+  },
+  da: {
+    heroTitle: 'DRA-5C-konsol',
+    heroDesc: 'En arbejdsflade, der guider den firetrins data-readiness-vurdering ende til ende og samler 5C-scorecard-rapporten.',
+    noteLabel: 'Sådan virker det.',
+    noteBody: 'Generering udføres af dra-5c-agenten, ikke denne side — hvert trin giver dig en prompt til at indsætte i agenten (eller enhver Claude), og du indsætter resultatet tilbage her. Denne side foretager ingen API-kald; dit arbejde gemmes automatisk lokalt i din browser og kan eksporteres som fil.',
+    stepSetup: 'Opsætning', setupTitle: 'Engagement & use case',
+    setupHint: 'Udfyldes én gang og væves ind i hver prompt. Parathed vurderes altid mod en specifik use case.',
+    lblClient: 'Kunde / engagement', lblAssessor: 'Vurderingsmand',
+    lblUseCase: 'Mål-AI-use case (én linje)', lblPredicts: 'Hvad den forudsiger / beslutter',
+    lblLatency: 'Latenskrav', lblVolume: 'Volumen / hastighed',
+    lblHistory: 'Historik nødvendig', lblEntities: 'Vigtige dataenheder / felter',
+    stepA: 'Trin A', stepATitle: 'Context & Clarity — interviewguide',
+    stepAHint: 'Generér en skræddersyet interviewguide + spørgeskema. Kør den gennem agenten, og indsæt Markdown tilbage.',
+    copilotHeadA: "🤖 Valgfrit — indsaml evidens fra kundens M365 Copilot",
+    copilotHintA: 'Kør disse i kundens egen Copilot (den har allerede deres data), og indsæt fundene nedenfor. De foldes ind i Trin A-prompten som kildeevidens.',
+    stepB: 'Trin B', stepBTitle: 'Dokument- & metadata-gennemgangscheckliste',
+    stepBHint: 'List de artefakter, der skal anmodes om fra kunden, hver knyttet til en C med "godt vs. rødt flag"-noter.',
+    copilotHeadB: "🤖 Valgfrit — find dokumenter via kundens M365 Copilot",
+    copilotHintB: 'Lad Copilot finde de faktiske artefakter (data dictionary, skema, politikker, SLA/kvalitetsrapporter) i deres tenant, og indsæt derefter det fundne nedenfor.',
+    btnGenCopilot: '🤖 Generér M365 Copilot-prompts', btnCopyCopilot: '📋 Kopiér Copilot-prompts',
+    lblCopilotFindings: 'Copilot-fund (valgfrit)',
+    btnGenA: '⚙️ Generér Trin A-prompt', btnGenB: '⚙️ Generér Trin B-prompt',
+    btnGenC: '⚙️ Generér Trin C-prompt', btnGenD: '⚙️ Generér Trin D-prompt',
+    btnCopyPrompt: '📋 Kopiér prompt', lblPasteOutput: 'Indsæt agent-output (Markdown)',
+    stepC: 'Trin C', stepCTitle: 'Coverage & Credibility — data-stikprøvetjek',
+    stepCHint: 'Profilér en reel stikprøve lokalt, indsæt dens aggregerede opsummering her, og generér derefter fortolkningsprompten. Rådata forlader aldrig din browser.',
+    btnOpenProfiler: '🧪 Åbn dataprofiler ↗', lblProfilerSummary: 'Profilerens aggregerede opsummering',
+    stepD: 'Trin D', stepDTitle: 'Capacity & valideringsplan + scorecard',
+    stepDHint: 'Syntetisér A–C til en teknisk valideringsplan og det endelige 5C-scorecard.',
+    lblFinalScores: 'Endelige 5C-scores (til rapportens header)',
+    colDimension: 'Dimension', colScore: 'Score', colNote: 'Enkeltlinje-note',
+    cContext: 'Context', cClarity: 'Clarity', cCoverage: 'Coverage', cCredibility: 'Credibility', cCapacity: 'Capacity',
+    lblVerdict: 'Samlet vurdering', verdictReady: 'Klar', verdictConditional: 'Betinget', verdictNotReady: 'Ikke klar',
+    lblNextAction: 'Anbefalet næste skridt', lblGaps: 'Top gaps',
+    assembleTitle: 'Saml & eksportér',
+    assembleHint: 'Kombinér opsætning, alle fire trin, og scorecardet til én leverance. Eller gem/genskab hele engagementet som fil.',
+    btnExportHtml: '🌐 Eksportér HTML-rapport', btnExportMd: '📄 Eksportér Markdown',
+    btnSaveEngagement: '💾 Gem engagement (.json)', btnLoadEngagement: '📥 Indlæs engagement',
+    btnLoadSample: '🧪 Indlæs eksempel-engagement', btnResetEngagement: '🗑️ Nulstil',
+    savedFlag: '✓ gemt lokalt', copiedFlag: '✅ Kopieret!',
+    resetConfirm: 'Ryd alle felter for dette engagement? (Eksportér først, hvis du vil beholde det.)',
+    invalidFile: 'Ugyldig engagement-fil.',
+    sampleLoadError: (msg) => `Kunne ikke indlæse eksempel-engagementet (${msg}). Dette kan ske, hvis siden blev åbnet direkte fra disk i stedet for serveret over http(s) — prøv Phase 1 - Discovery & Assessment/sample-data/data-readiness-assessment-5c/sample-engagement.json i stedet.`,
+    nothingPasted: '— intet indsat endnu —',
+    docTitleReport: 'Data Readiness Assessment (5C)',
+    secScorecard: '5C-scorecard', secStepA: 'Trin A — Context & Clarity: Interviewguide',
+    secStepB: 'Trin B — Dokument- & metadata-gennemgang', secStepC: 'Trin C — Coverage & Credibility',
+    secStepD: 'Trin D — Capacity & Teknisk Validering',
+    notCompleted: '(ikke fuldført)', profilerSummaryLabel: 'Profilerens aggregerede opsummering',
+    docDate: 'Dato', docPredicts: 'Forudsiger/beslutter', docLatency: 'Latens', docVolume: 'Volumen', docHistory: 'Historik',
+    tblC: 'C', tblScore: 'Score', tblNote: 'Note',
+    scOverallVerdict: 'Samlet vurdering', scTopGaps: 'Top gaps', scNextAction: 'Anbefalet næste skridt',
+  },
+  sv: {
+    heroTitle: 'DRA-5C-konsol',
+    heroDesc: 'En arbetsyta som guidar den fyrastegs data-readiness-bedömningen från början till slut och sammanställer 5C-scorecard-rapporten.',
+    noteLabel: 'Så här fungerar det.',
+    noteBody: 'Generering utförs av dra-5c-agenten, inte denna sida — varje steg ger dig en prompt att klistra in i agenten (eller vilken Claude som helst), och du klistrar in resultatet tillbaka här. Denna sida gör inga API-anrop; ditt arbete sparas automatiskt lokalt i din webbläsare och kan exporteras som fil.',
+    stepSetup: 'Inställning', setupTitle: 'Uppdrag & användningsfall',
+    setupHint: 'Fylls i en gång och vävs in i varje prompt. Beredskap bedöms alltid mot ett specifikt användningsfall.',
+    lblClient: 'Kund / uppdrag', lblAssessor: 'Bedömare',
+    lblUseCase: 'Mål-AI-användningsfall (en rad)', lblPredicts: 'Vad det förutsäger / beslutar',
+    lblLatency: 'Latenskrav', lblVolume: 'Volym / hastighet',
+    lblHistory: 'Historik som behövs', lblEntities: 'Viktiga dataentiteter / fält',
+    stepA: 'Steg A', stepATitle: 'Context & Clarity — intervjuguide',
+    stepAHint: 'Generera en skräddarsydd intervjuguide + frågeformulär. Kör den genom agenten, och klistra in Markdown tillbaka.',
+    copilotHeadA: "🤖 Valfritt — samla evidens från kundens M365 Copilot",
+    copilotHintA: 'Kör dessa i kundens egen Copilot (den har redan deras data), och klistra in fynden nedan. De vävs in i Steg A-prompten som källevidens.',
+    stepB: 'Steg B', stepBTitle: 'Checklista för dokument- & metadatagranskning',
+    stepBHint: 'Lista de artefakter som ska begäras från kunden, var och en kopplad till en C med "bra vs. rött flagg"-anteckningar.',
+    copilotHeadB: "🤖 Valfritt — hitta dokument via kundens M365 Copilot",
+    copilotHintB: 'Låt Copilot hitta de faktiska artefakterna (data dictionary, schema, policyer, SLA/kvalitetsrapporter) i deras tenant, och klistra sedan in det som hittades nedan.',
+    btnGenCopilot: '🤖 Generera M365 Copilot-prompter', btnCopyCopilot: '📋 Kopiera Copilot-prompter',
+    lblCopilotFindings: 'Copilot-fynd (valfritt)',
+    btnGenA: '⚙️ Generera Steg A-prompt', btnGenB: '⚙️ Generera Steg B-prompt',
+    btnGenC: '⚙️ Generera Steg C-prompt', btnGenD: '⚙️ Generera Steg D-prompt',
+    btnCopyPrompt: '📋 Kopiera prompt', lblPasteOutput: 'Klistra in agent-output (Markdown)',
+    stepC: 'Steg C', stepCTitle: 'Coverage & Credibility — datastickprovskontroll',
+    stepCHint: 'Profilera ett verkligt stickprov lokalt, klistra in dess sammanfattning här, och generera sedan tolkningsprompten. Rådata lämnar aldrig din webbläsare.',
+    btnOpenProfiler: '🧪 Öppna dataprofilerare ↗', lblProfilerSummary: 'Profilerarens sammanfattning',
+    stepD: 'Steg D', stepDTitle: 'Capacity & valideringsplan + scorecard',
+    stepDHint: 'Syntetisera A–C till en teknisk valideringsplan och det slutliga 5C-scorecardet.',
+    lblFinalScores: 'Slutliga 5C-poäng (för rapportens header)',
+    colDimension: 'Dimension', colScore: 'Poäng', colNote: 'Enradig anteckning',
+    cContext: 'Context', cClarity: 'Clarity', cCoverage: 'Coverage', cCredibility: 'Credibility', cCapacity: 'Capacity',
+    lblVerdict: 'Total bedömning', verdictReady: 'Redo', verdictConditional: 'Villkorad', verdictNotReady: 'Inte redo',
+    lblNextAction: 'Rekommenderat nästa steg', lblGaps: 'Största bristerna',
+    assembleTitle: 'Sätt ihop & exportera',
+    assembleHint: 'Kombinera inställning, alla fyra steg, och scorecardet till en leverans. Eller spara/återställ hela uppdraget som fil.',
+    btnExportHtml: '🌐 Exportera HTML-rapport', btnExportMd: '📄 Exportera Markdown',
+    btnSaveEngagement: '💾 Spara uppdrag (.json)', btnLoadEngagement: '📥 Läs in uppdrag',
+    btnLoadSample: '🧪 Läs in exempeluppdrag', btnResetEngagement: '🗑️ Återställ',
+    savedFlag: '✓ sparat lokalt', copiedFlag: '✅ Kopierat!',
+    resetConfirm: 'Rensa alla fält för detta uppdrag? (Exportera först om du vill behålla det.)',
+    invalidFile: 'Ogiltig uppdragsfil.',
+    sampleLoadError: (msg) => `Kunde inte läsa in exempeluppdraget (${msg}). Detta kan hända om sidan öppnades direkt från disk istället för att serveras över http(s) — prova Phase 1 - Discovery & Assessment/sample-data/data-readiness-assessment-5c/sample-engagement.json istället.`,
+    nothingPasted: '— inget inklistrat än —',
+    docTitleReport: 'Data Readiness Assessment (5C)',
+    secScorecard: '5C-scorecard', secStepA: 'Steg A — Context & Clarity: Intervjuguide',
+    secStepB: 'Steg B — Dokument- & metadatagranskning', secStepC: 'Steg C — Coverage & Credibility',
+    secStepD: 'Steg D — Capacity & Teknisk Validering',
+    notCompleted: '(ej slutfört)', profilerSummaryLabel: 'Profilerarens sammanfattning',
+    docDate: 'Datum', docPredicts: 'Förutsäger/beslutar', docLatency: 'Latens', docVolume: 'Volym', docHistory: 'Historik',
+    tblC: 'C', tblScore: 'Poäng', tblNote: 'Anteckning',
+    scOverallVerdict: 'Total bedömning', scTopGaps: 'Största bristerna', scNextAction: 'Rekommenderat nästa steg',
+  },
+};
+let lang = localStorage.getItem('aoa_lang') || 'en';
+function t(key) { const v = (STRINGS[lang] && STRINGS[lang][key] !== undefined) ? STRINGS[lang][key] : STRINGS.en[key]; return v; }
+function setLang(l) {
+  lang = l;
+  localStorage.setItem('aoa_lang', l);
+  document.getElementById('langSelect').value = l;
+  applyI18n();
+}
+function applyI18n() {
+  document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.getAttribute('data-i18n')); });
+  document.querySelectorAll('[data-i18n-opt]').forEach(el => { el.textContent = t(el.getAttribute('data-i18n-opt')); });
+  document.title = t('heroTitle');
+}
 
 // inject 1–5 score options
 document.querySelectorAll('select[data-eng^="sc_"]').forEach(sel => {
@@ -253,7 +441,7 @@ function restore(o) {
 let savedTimer;
 function flashSaved() {
   const f = document.getElementById('savedFlag');
-  f.textContent = '✓ saved locally';
+  f.textContent = t('savedFlag');
   clearTimeout(savedTimer);
   savedTimer = setTimeout(() => { f.textContent = ''; }, 1200);
 }
@@ -337,7 +525,7 @@ function copyPrompt(step) {
   const txt = document.getElementById('pt_' + step).textContent;
   navigator.clipboard.writeText(txt).then(() => {
     const btn = event.target; const o = btn.textContent;
-    btn.textContent = '✅ Copied!'; setTimeout(() => { btn.textContent = o; }, 1800);
+    btn.textContent = t('copiedFlag'); setTimeout(() => { btn.textContent = o; }, 1800);
   }).catch(() => alert('Copy failed — select the text manually.'));
 }
 
@@ -384,7 +572,7 @@ function copyCopilot(step) {
   const txt = document.getElementById('ptc_' + step).textContent;
   navigator.clipboard.writeText(txt).then(() => {
     const btn = event.target; const o = btn.textContent;
-    btn.textContent = '✅ Copied!'; setTimeout(() => { btn.textContent = o; }, 1800);
+    btn.textContent = t('copiedFlag'); setTimeout(() => { btn.textContent = o; }, 1800);
   }).catch(() => alert('Copy failed — select the text manually.'));
 }
 
@@ -393,7 +581,7 @@ function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').re
 function inlineMd(s) { return esc(s).replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/`(.+?)`/g,'<code>$1</code>'); }
 function splitRow(line) { return line.trim().replace(/^\|/,'').replace(/\|$/,'').split('|').map(c => c.trim()); }
 function mdToHtml(md) {
-  if (!md || !md.trim()) return '<p class="empty">— nothing pasted yet —</p>';
+  if (!md || !md.trim()) return '<p class="empty">' + esc(t('nothingPasted')) + '</p>';
   const L = md.replace(/\r/g,'').split('\n');
   let html = '', i = 0;
   while (i < L.length) {
@@ -431,29 +619,29 @@ function renderPreview(step) {
 
 // ── Report assembly ──────────────────────────────────────────────
 function scorecardMd() {
-  const Cs = [['Context','context'],['Clarity','clarity'],['Coverage','coverage'],['Credibility','credibility'],['Capacity','capacity']];
-  let m = '\n| C | Score | Note |\n|---|:--:|---|\n';
+  const Cs = [[t('cContext'),'context'],[t('cClarity'),'clarity'],[t('cCoverage'),'coverage'],[t('cCredibility'),'credibility'],[t('cCapacity'),'capacity']];
+  let m = `\n| ${t('tblC')} | ${t('tblScore')} | ${t('tblNote')} |\n|---|:--:|---|\n`;
   Cs.forEach(([lab,k]) => { m += '| '+lab+' | '+(val('sc_'+k)||'—')+' | '+(val('note_'+k)||'')+' |\n'; });
-  m += '\n**Overall verdict:** ' + (val('verdict')||'—') + '  \n';
-  m += '**Top gaps:** ' + (val('gaps')||'—') + '  \n';
-  m += '**Recommended next action:** ' + (val('nextAction')||'—') + '\n';
+  m += `\n**${t('scOverallVerdict')}:** ` + (val('verdict')||'—') + '  \n';
+  m += `**${t('scTopGaps')}:** ` + (val('gaps')||'—') + '  \n';
+  m += `**${t('scNextAction')}:** ` + (val('nextAction')||'—') + '\n';
   return m;
 }
 function reportMarkdown() {
   const date = new Date().toISOString().slice(0,10);
-  let m = '# Data Readiness Assessment (5C) — ' + (val('client')||'[client]') + '\n\n';
-  m += '**Use case:** ' + (val('useCase')||'—') + '  \n';
-  m += '**Assessor:** ' + (val('assessor')||'—') + ' · **Date:** ' + date + '\n\n';
-  m += '**Predicts/decides:** ' + (val('predicts')||'—') + '  \n';
-  m += '**Latency:** ' + (val('latency')||'—') + ' · **Volume:** ' + (val('volume')||'—')
-     + ' · **History:** ' + (val('history')||'—') + '\n\n';
-  m += '## 5C Scorecard\n' + scorecardMd() + '\n';
-  m += '## Step A — Context & Clarity: Interview Guide\n\n' + (val('outA')||'(not completed)') + '\n\n';
-  m += '## Step B — Document & Metadata Review\n\n' + (val('outB')||'(not completed)') + '\n\n';
-  m += '## Step C — Coverage & Credibility\n\n';
-  if (val('cSummary')) m += '**Profiler aggregate summary:**\n\n```\n' + val('cSummary') + '\n```\n\n';
-  m += (val('outC')||'(not completed)') + '\n\n';
-  m += '## Step D — Capacity & Technical Validation\n\n' + (val('outD')||'(not completed)') + '\n';
+  let m = `# ${t('docTitleReport')} — ` + (val('client')||'[client]') + '\n\n';
+  m += `**${t('lblUseCase')}:** ` + (val('useCase')||'—') + '  \n';
+  m += `**${t('lblAssessor')}:** ` + (val('assessor')||'—') + ` · **${t('docDate')}:** ` + date + '\n\n';
+  m += `**${t('docPredicts')}:** ` + (val('predicts')||'—') + '  \n';
+  m += `**${t('docLatency')}:** ` + (val('latency')||'—') + ` · **${t('docVolume')}:** ` + (val('volume')||'—')
+     + ` · **${t('docHistory')}:** ` + (val('history')||'—') + '\n\n';
+  m += `## ${t('secScorecard')}\n` + scorecardMd() + '\n';
+  m += `## ${t('secStepA')}\n\n` + (val('outA')||t('notCompleted')) + '\n\n';
+  m += `## ${t('secStepB')}\n\n` + (val('outB')||t('notCompleted')) + '\n\n';
+  m += `## ${t('secStepC')}\n\n`;
+  if (val('cSummary')) m += `**${t('profilerSummaryLabel')}:**\n\n\`\`\`\n` + val('cSummary') + '\n```\n\n';
+  m += (val('outC')||t('notCompleted')) + '\n\n';
+  m += `## ${t('secStepD')}\n\n` + (val('outD')||t('notCompleted')) + '\n';
   return m;
 }
 function reportHtml() {
@@ -486,12 +674,12 @@ function loadSampleEngagement() {
     .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
     .then(o => { restore(o); save(); })
     .catch(err => {
-      errEl.textContent = 'Could not load the sample engagement (' + err.message + '). This can happen if the page was opened directly from disk rather than served over http(s) — try Phase 1 - Discovery & Assessment/sample-data/data-readiness-assessment-5c/sample-engagement.json instead.';
+      errEl.textContent = t('sampleLoadError')(err.message);
       errEl.style.display = 'block';
     });
 }
 function resetEngagement() {
-  if (!confirm('Clear all fields for this engagement? (Export first if you want to keep it.)')) return;
+  if (!confirm(t('resetConfirm'))) return;
   FIELDS().forEach(el => { el.value = ''; });
   ['A','B','C','D'].forEach(renderPreview);
   save();
@@ -499,13 +687,15 @@ function resetEngagement() {
 document.getElementById('importFile').addEventListener('change', e => {
   const file = e.target.files[0]; if (!file) return;
   const r = new FileReader();
-  r.onload = () => { try { restore(JSON.parse(r.result)); save(); } catch (err) { alert('Invalid engagement file.'); } };
+  r.onload = () => { try { restore(JSON.parse(r.result)); save(); } catch (err) { alert(t('invalidFile')); } };
   r.readAsText(file);
   e.target.value = '';
 });
 
 // ── Boot ─────────────────────────────────────────────────────────
 (function init() {
+  document.getElementById('langSelect').value = lang;
+  applyI18n();
   try { const o = JSON.parse(localStorage.getItem(KEY) || '{}'); restore(o); } catch (e) {}
   ['A','B','C','D'].forEach(renderPreview);
 })();

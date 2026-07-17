@@ -198,4 +198,19 @@ English/Danish/Swedish language selector).
 Phase 7 (MLOps & Operations) follows the same folder pattern and will be
 added over time.
 
+## Site-wide language selector
+
+Every tool in the toolkit — the 24 new Phase 1–6 tools above plus the 5 tools
+that predate them (this hub, AI Maturity Assessment, DRA-5C console and
+profiler, and the Design Layers Architecture Builder) — has an
+English/Danish/Swedish language selector in the top-right of its header. The
+choice is stored once (`localStorage` key `aoa_lang`) and applies across the
+whole site as you move between tools.
+
+For content-heavy reference material — the Architecture Builder's 14-layer
+comparison table, the AI Maturity Assessment's 24-question bank and generated
+report body, and the DRA-5C console's agent/Copilot prompt templates — only
+the surrounding UI chrome is translated; the underlying content stays English,
+the same scoping already used for the Design Layers markdown reference files.
+
 All assessment tools run fully client-side — no data leaves the browser.

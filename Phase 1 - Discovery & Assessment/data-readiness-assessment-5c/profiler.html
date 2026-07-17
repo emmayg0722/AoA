@@ -31,6 +31,9 @@
     color: #fff; padding: 48px 24px 40px;
   }
   .wrap { max-width: 1000px; margin: 0 auto; }
+  .hero-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; flex-wrap: wrap; }
+  select#langSelect { font-family: var(--font-body); font-size: 13px; font-weight: 600; border: 1.5px solid rgba(255,255,255,0.4); background: rgba(255,255,255,0.08); color: #fff; border-radius: 8px; padding: 7px 10px; }
+  select#langSelect option { color: var(--ink); }
   .hero .crumb { font-size: 13px; color: var(--accent); margin-bottom: 12px; }
   .hero .crumb a { color: var(--accent); text-decoration: none; }
   .hero h1 { font-family: var(--font-heading); font-weight: 700; font-size: 36px; line-height: 1.15; }
@@ -99,28 +102,35 @@
 <body>
   <header class="hero">
     <div class="wrap">
-      <div class="crumb"><a href="../../">AI Architect Toolkit</a> · Phase 1 · Data Readiness Assessment (5C)</div>
-      <h1>Data Readiness Profiler</h1>
-      <p>Drop in a representative data sample and get the Coverage &amp; Credibility evidence for a 5C assessment — fill rate, duplicates, type consistency, distributions, and freshness — computed entirely on your machine.</p>
+      <div class="hero-top">
+        <div class="crumb"><a href="../../">AI Architect Toolkit</a> · Phase 1 · Data Readiness Assessment (5C)</div>
+        <select id="langSelect" onchange="setLang(this.value)">
+          <option value="en">English</option>
+          <option value="da">Dansk</option>
+          <option value="sv">Svenska</option>
+        </select>
+      </div>
+      <h1 data-i18n="heroTitle"></h1>
+      <p data-i18n="heroDesc"></p>
     </div>
   </header>
 
   <main>
     <div class="privacy">
       <span class="lock">🔒</span>
-      <span><strong>Your data never leaves your browser.</strong> This page makes no network calls with your file — parsing and all statistics run locally in JavaScript. Only the <em>aggregate summary</em> (counts and rates, never raw rows) is meant to be copied back into the DRA-5C agent.</span>
+      <span><strong data-i18n="privacyStrong"></strong> <span data-i18n="privacyBody"></span></span>
     </div>
 
     <label class="dropzone" id="dropzone" for="fileInput">
       <div class="big">📂</div>
-      <h2>Drop a CSV or JSON file here</h2>
-      <p>or click to choose a file</p>
-      <div class="hint">Use a representative sample (e.g. a few thousand rows). Everything is processed locally.</div>
+      <h2 data-i18n="dropTitle"></h2>
+      <p data-i18n="dropSub"></p>
+      <div class="hint" data-i18n="dropHint"></div>
     </label>
     <input type="file" id="fileInput" accept=".csv,.tsv,.json,text/csv,application/json">
 
     <div class="download-row" style="margin-top:16px">
-      <button class="btn btn-secondary" onclick="loadSample()">🧪 Load sample data</button>
+      <button class="btn btn-secondary" onclick="loadSample()" data-i18n="btnLoadSample"></button>
     </div>
     <div id="sampleError" class="footnote" style="display:none;color:var(--red);margin-top:8px"></div>
 
@@ -131,6 +141,136 @@
 // ════════════════════════════════════════════════════════════════
 // Data Readiness Profiler — 100% client-side. No network calls.
 // ════════════════════════════════════════════════════════════════
+
+const STRINGS = {
+  en: {
+    heroTitle: 'Data Readiness Profiler',
+    heroDesc: 'Drop in a representative data sample and get the Coverage & Credibility evidence for a 5C assessment — fill rate, duplicates, type consistency, distributions, and freshness — computed entirely on your machine.',
+    privacyStrong: 'Your data never leaves your browser.',
+    privacyBody: 'This page makes no network calls with your file — parsing and all statistics run locally in JavaScript. Only the aggregate summary (counts and rates, never raw rows) is meant to be copied back into the DRA-5C agent.',
+    dropTitle: 'Drop a CSV or JSON file here', dropSub: 'or click to choose a file',
+    dropHint: 'Use a representative sample (e.g. a few thousand rows). Everything is processed locally.',
+    btnLoadSample: '🧪 Load sample data',
+    sampleLoadError: (msg) => `Could not load the sample file (${msg}). This can happen if the page was opened directly from disk rather than served over http(s) — try the file at Phase 1 - Discovery & Assessment/sample-data/data-readiness-assessment-5c/sample-transactions.csv instead.`,
+    noTabularData: 'Could not find tabular rows in that file.',
+    parseFailed: (msg) => `Failed to parse file: ${msg}`,
+    copyFailed: 'Copy failed — select the text manually.',
+    cardRows: 'Rows', cardColumns: 'Columns', cardOverallFill: 'Overall fill', cardDupRows: 'Dup. rows',
+    freshnessTitle: 'Freshness',
+    freshnessNote: (oldest, newest, span, age) => `Date range across detected date columns: <strong>${oldest}</strong> → <strong>${newest}</strong> (span ${span} days). Most recent record is <strong>${age} days</strong> old.`,
+    perColumnTitle: 'Per-column profile',
+    colColumn: 'Column', colType: 'Type', colFill: 'Fill', colTypeConsist: 'Type consist.', colDistinct: 'Distinct', colRangeNotes: 'Range / notes',
+    uniqueKey: 'unique — key candidate',
+    lowCardinality: (n) => `low cardinality (${n} values)`,
+    aggTitle: 'Aggregate summary for the DRA-5C agent',
+    btnCopySummary: '📋 Copy summary', copiedFlag: '✅ Copied!',
+    aggFootnote: 'Aggregates only — no raw rows. Paste this into the agent at Step C (Coverage & Credibility).',
+    downloadTitle: 'Download',
+    btnDownloadMd: '📄 Markdown report', btnDownloadHtml: '🌐 HTML report', btnAnother: '🔄 Profile another file',
+    mdSummaryTitle: 'Data Readiness Profiler — Aggregate Summary',
+    mdFile: 'File', mdRowsCols: (r, c) => `Rows: ${r} | Columns: ${c}`,
+    mdOverallFill: 'Overall fill rate', mdDupRate: (p, n) => `Full-row duplicate rate: ${p} (${n} rows)`,
+    mdDateSpan: (a, b, age) => `Date span: ${a} to ${b} (most recent record ${age} days old)`,
+    mdColHeaders: '| Column | Type | Fill % | Type consistency | Distinct | Notes |',
+    mdUniqueKeyNote: 'unique key candidate',
+    mdLowCardNote: (n) => `low cardinality (${n})`,
+    mdGenerated: (ts) => `_Generated locally in browser at ${ts} — no raw data included._`,
+    reportDocTitle: 'Data Readiness Report',
+    reportFileGenerated: (f, ts) => `File: ${f} · generated locally ${ts}`,
+    reportSummaryLine: (r, c, fill, dup, n) => `Rows: <strong>${r}</strong> · Columns: <strong>${c}</strong> · Overall fill: <strong>${fill}</strong> · Duplicate rows: <strong>${dup}</strong> (${n})`,
+    reportFreshness: (a, b, age) => `Date span: <strong>${a}</strong> to <strong>${b}</strong>; most recent record ${age} days old.`,
+    reportFooter: 'Generated by the Data Readiness Profiler — aggregates only, no raw data. All processing was done locally in the browser.',
+  },
+  da: {
+    heroTitle: 'Data Readiness-profiler',
+    heroDesc: 'Læg en repræsentativ datastikprøve i og få Coverage & Credibility-evidensen til en 5C-vurdering — udfyldningsgrad, dubletter, typekonsistens, fordelinger, og friskhed — beregnet fuldt ud på din maskine.',
+    privacyStrong: 'Dine data forlader aldrig din browser.',
+    privacyBody: 'Denne side foretager ingen netværkskald med din fil — parsing og al statistik kører lokalt i JavaScript. Kun den aggregerede opsummering (tællinger og rater, aldrig rådata) er beregnet til at blive kopieret tilbage til DRA-5C-agenten.',
+    dropTitle: 'Slip en CSV- eller JSON-fil her', dropSub: 'eller klik for at vælge en fil',
+    dropHint: 'Brug en repræsentativ stikprøve (fx et par tusind rækker). Alt behandles lokalt.',
+    btnLoadSample: '🧪 Indlæs eksempeldata',
+    sampleLoadError: (msg) => `Kunne ikke indlæse eksempelfilen (${msg}). Dette kan ske, hvis siden blev åbnet direkte fra disk i stedet for serveret over http(s) — prøv filen på Phase 1 - Discovery & Assessment/sample-data/data-readiness-assessment-5c/sample-transactions.csv i stedet.`,
+    noTabularData: 'Kunne ikke finde tabelrækker i den fil.',
+    parseFailed: (msg) => `Kunne ikke parse fil: ${msg}`,
+    copyFailed: 'Kopiering mislykkedes — markér teksten manuelt.',
+    cardRows: 'Rækker', cardColumns: 'Kolonner', cardOverallFill: 'Samlet udfyldning', cardDupRows: 'Dublet-rækker',
+    freshnessTitle: 'Friskhed',
+    freshnessNote: (oldest, newest, span, age) => `Datointerval på tværs af fundne datokolonner: <strong>${oldest}</strong> → <strong>${newest}</strong> (spænd ${span} dage). Nyeste post er <strong>${age} dage</strong> gammel.`,
+    perColumnTitle: 'Kolonneprofil',
+    colColumn: 'Kolonne', colType: 'Type', colFill: 'Udfyldning', colTypeConsist: 'Typekonsist.', colDistinct: 'Distinkte', colRangeNotes: 'Interval / noter',
+    uniqueKey: 'unik — nøglekandidat',
+    lowCardinality: (n) => `lav kardinalitet (${n} værdier)`,
+    aggTitle: 'Aggregeret opsummering til DRA-5C-agenten',
+    btnCopySummary: '📋 Kopiér opsummering', copiedFlag: '✅ Kopieret!',
+    aggFootnote: 'Kun aggregater — ingen rådata. Indsæt dette i agenten ved Trin C (Coverage & Credibility).',
+    downloadTitle: 'Download',
+    btnDownloadMd: '📄 Markdown-rapport', btnDownloadHtml: '🌐 HTML-rapport', btnAnother: '🔄 Profilér en anden fil',
+    mdSummaryTitle: 'Data Readiness-profiler — aggregeret opsummering',
+    mdFile: 'Fil', mdRowsCols: (r, c) => `Rækker: ${r} | Kolonner: ${c}`,
+    mdOverallFill: 'Samlet udfyldningsgrad', mdDupRate: (p, n) => `Fuld-række-dubletrate: ${p} (${n} rækker)`,
+    mdDateSpan: (a, b, age) => `Datointerval: ${a} til ${b} (nyeste post ${age} dage gammel)`,
+    mdColHeaders: '| Kolonne | Type | Udfyldning % | Typekonsistens | Distinkte | Noter |',
+    mdUniqueKeyNote: 'unik nøglekandidat',
+    mdLowCardNote: (n) => `lav kardinalitet (${n})`,
+    mdGenerated: (ts) => `_Genereret lokalt i browseren kl. ${ts} — ingen rådata inkluderet._`,
+    reportDocTitle: 'Data Readiness-rapport',
+    reportFileGenerated: (f, ts) => `Fil: ${f} · genereret lokalt ${ts}`,
+    reportSummaryLine: (r, c, fill, dup, n) => `Rækker: <strong>${r}</strong> · Kolonner: <strong>${c}</strong> · Samlet udfyldning: <strong>${fill}</strong> · Dublet-rækker: <strong>${dup}</strong> (${n})`,
+    reportFreshness: (a, b, age) => `Datointerval: <strong>${a}</strong> til <strong>${b}</strong>; nyeste post ${age} dage gammel.`,
+    reportFooter: 'Genereret af Data Readiness-profileren — kun aggregater, ingen rådata. Al behandling foregik lokalt i browseren.',
+  },
+  sv: {
+    heroTitle: 'Data Readiness-profilerare',
+    heroDesc: 'Lägg in ett representativt datastickprov och få Coverage & Credibility-evidensen för en 5C-bedömning — fyllnadsgrad, dubbletter, typkonsistens, fördelningar, och färskhet — beräknat helt på din maskin.',
+    privacyStrong: 'Din data lämnar aldrig din webbläsare.',
+    privacyBody: 'Denna sida gör inga nätverksanrop med din fil — parsning och all statistik körs lokalt i JavaScript. Endast sammanfattningen (antal och andelar, aldrig rådata) är avsedd att klistras in tillbaka i DRA-5C-agenten.',
+    dropTitle: 'Släpp en CSV- eller JSON-fil här', dropSub: 'eller klicka för att välja en fil',
+    dropHint: 'Använd ett representativt stickprov (t.ex. några tusen rader). Allt bearbetas lokalt.',
+    btnLoadSample: '🧪 Läs in exempeldata',
+    sampleLoadError: (msg) => `Kunde inte läsa in exempelfilen (${msg}). Detta kan hända om sidan öppnades direkt från disk istället för att serveras över http(s) — prova filen på Phase 1 - Discovery & Assessment/sample-data/data-readiness-assessment-5c/sample-transactions.csv istället.`,
+    noTabularData: 'Kunde inte hitta tabellrader i den filen.',
+    parseFailed: (msg) => `Det gick inte att tolka filen: ${msg}`,
+    copyFailed: 'Kopiering misslyckades — markera texten manuellt.',
+    cardRows: 'Rader', cardColumns: 'Kolumner', cardOverallFill: 'Total fyllnad', cardDupRows: 'Dubblettrader',
+    freshnessTitle: 'Färskhet',
+    freshnessNote: (oldest, newest, span, age) => `Datumintervall över hittade datumkolumner: <strong>${oldest}</strong> → <strong>${newest}</strong> (spann ${span} dagar). Senaste posten är <strong>${age} dagar</strong> gammal.`,
+    perColumnTitle: 'Kolumnprofil',
+    colColumn: 'Kolumn', colType: 'Typ', colFill: 'Fyllnad', colTypeConsist: 'Typkonsist.', colDistinct: 'Unika', colRangeNotes: 'Intervall / anteckningar',
+    uniqueKey: 'unik — nyckelkandidat',
+    lowCardinality: (n) => `låg kardinalitet (${n} värden)`,
+    aggTitle: 'Sammanfattning för DRA-5C-agenten',
+    btnCopySummary: '📋 Kopiera sammanfattning', copiedFlag: '✅ Kopierat!',
+    aggFootnote: 'Endast sammanfattningar — ingen rådata. Klistra in detta i agenten vid Steg C (Coverage & Credibility).',
+    downloadTitle: 'Ladda ner',
+    btnDownloadMd: '📄 Markdown-rapport', btnDownloadHtml: '🌐 HTML-rapport', btnAnother: '🔄 Profilera en annan fil',
+    mdSummaryTitle: 'Data Readiness-profilerare — sammanfattning',
+    mdFile: 'Fil', mdRowsCols: (r, c) => `Rader: ${r} | Kolumner: ${c}`,
+    mdOverallFill: 'Total fyllnadsgrad', mdDupRate: (p, n) => `Fullrads-dubblettfrekvens: ${p} (${n} rader)`,
+    mdDateSpan: (a, b, age) => `Datumintervall: ${a} till ${b} (senaste posten ${age} dagar gammal)`,
+    mdColHeaders: '| Kolumn | Typ | Fyllnad % | Typkonsistens | Unika | Anteckningar |',
+    mdUniqueKeyNote: 'unik nyckelkandidat',
+    mdLowCardNote: (n) => `låg kardinalitet (${n})`,
+    mdGenerated: (ts) => `_Genererad lokalt i webbläsaren kl. ${ts} — ingen rådata inkluderad._`,
+    reportDocTitle: 'Data Readiness-rapport',
+    reportFileGenerated: (f, ts) => `Fil: ${f} · genererad lokalt ${ts}`,
+    reportSummaryLine: (r, c, fill, dup, n) => `Rader: <strong>${r}</strong> · Kolumner: <strong>${c}</strong> · Total fyllnad: <strong>${fill}</strong> · Dubblettrader: <strong>${dup}</strong> (${n})`,
+    reportFreshness: (a, b, age) => `Datumintervall: <strong>${a}</strong> till <strong>${b}</strong>; senaste posten ${age} dagar gammal.`,
+    reportFooter: 'Genererad av Data Readiness-profileraren — endast sammanfattningar, ingen rådata. All bearbetning skedde lokalt i webbläsaren.',
+  },
+};
+let lang = localStorage.getItem('aoa_lang') || 'en';
+function t(key) { const v = (STRINGS[lang] && STRINGS[lang][key] !== undefined) ? STRINGS[lang][key] : STRINGS.en[key]; return v; }
+function setLang(l) {
+  lang = l;
+  localStorage.setItem('aoa_lang', l);
+  document.getElementById('langSelect').value = l;
+  applyI18n();
+  if (lastReport) render(lastReport);
+}
+function applyI18n() {
+  document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.getAttribute('data-i18n')); });
+  document.title = t('heroTitle');
+}
 
 const dz = document.getElementById('dropzone');
 const fileInput = document.getElementById('fileInput');
@@ -158,7 +298,7 @@ function processText(filename, text) {
     ({ cols, rows } = parseCSV(text, delim));
   }
   if (!cols.length || !rows.length) {
-    alert('Could not find tabular rows in that file.');
+    alert(t('noTabularData'));
     return;
   }
   const report = analyze(filename, cols, rows);
@@ -173,7 +313,7 @@ function loadSample() {
     .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.text(); })
     .then(text => processText('sample-transactions.csv', text))
     .catch(err => {
-      errEl.textContent = 'Could not load the sample file (' + err.message + '). This can happen if the page was opened directly from disk rather than served over http(s) — try the file at Phase 1 - Discovery & Assessment/sample-data/data-readiness-assessment-5c/sample-transactions.csv instead.';
+      errEl.textContent = t('sampleLoadError')(err.message);
       errEl.style.display = 'block';
     });
 }
@@ -184,7 +324,7 @@ function handleFile(file) {
     try {
       processText(file.name, reader.result);
     } catch (err) {
-      alert('Failed to parse file: ' + err.message);
+      alert(t('parseFailed')(err.message));
     }
   };
   reader.readAsText(file);
@@ -359,28 +499,27 @@ function render(r) {
   let h = '';
 
   h += '<div class="summary-cards">';
-  h += scard('Rows', r.rowCount.toLocaleString());
-  h += scard('Columns', String(r.colCount));
-  h += scard('Overall fill', '<span class="' + (r.overallFill >= 0.95 ? 'flag-good' : r.overallFill >= 0.8 ? 'flag-warn' : 'flag-bad') + '">' + pct(r.overallFill) + '</span>');
-  h += scard('Dup. rows', '<span class="' + dupCls + '">' + pct(r.dupRate) + '</span> <small>(' + r.dupRows.toLocaleString() + ')</small>');
+  h += scard(t('cardRows'), r.rowCount.toLocaleString());
+  h += scard(t('cardColumns'), String(r.colCount));
+  h += scard(t('cardOverallFill'), '<span class="' + (r.overallFill >= 0.95 ? 'flag-good' : r.overallFill >= 0.8 ? 'flag-warn' : 'flag-bad') + '">' + pct(r.overallFill) + '</span>');
+  h += scard(t('cardDupRows'), '<span class="' + dupCls + '">' + pct(r.dupRate) + '</span> <small>(' + r.dupRows.toLocaleString() + ')</small>');
   h += '</div>';
 
   if (r.freshness) {
-    h += '<div class="card"><h2>Freshness</h2>';
-    h += '<p class="meta-note">Date range across detected date columns: <strong>' + fmtDate(r.freshness.oldest) + '</strong> → <strong>' + fmtDate(r.freshness.newest) + '</strong> '
-      + '(span ' + r.freshness.spanDays.toLocaleString() + ' days). Most recent record is <strong>' + r.freshness.ageDays.toLocaleString() + ' days</strong> old.</p></div>';
+    h += '<div class="card"><h2>' + esc(t('freshnessTitle')) + '</h2>';
+    h += '<p class="meta-note">' + t('freshnessNote')(fmtDate(r.freshness.oldest), fmtDate(r.freshness.newest), r.freshness.spanDays.toLocaleString(), r.freshness.ageDays.toLocaleString()) + '</p></div>';
   }
 
   // per-column table
-  h += '<div class="card"><h2>Per-column profile</h2><table><thead><tr>'
-    + '<th>Column</th><th>Type</th><th>Fill</th><th>Type consist.</th><th>Distinct</th><th>Range / notes</th>'
+  h += '<div class="card"><h2>' + esc(t('perColumnTitle')) + '</h2><table><thead><tr>'
+    + '<th>' + esc(t('colColumn')) + '</th><th>' + esc(t('colType')) + '</th><th>' + esc(t('colFill')) + '</th><th>' + esc(t('colTypeConsist')) + '</th><th>' + esc(t('colDistinct')) + '</th><th>' + esc(t('colRangeNotes')) + '</th>'
     + '</tr></thead><tbody>';
   for (const c of r.columns) {
     let range = '';
     if (c.min !== undefined) range = 'min ' + fmtNum(c.min) + ' · max ' + fmtNum(c.max) + ' · avg ' + fmtNum(c.mean);
     else if (c.dateMin) range = fmtDate(c.dateMin) + ' → ' + fmtDate(c.dateMax);
-    else if (c.isUniqueKey) range = '<span class="flag-good">unique — key candidate</span>';
-    else range = c.distinct <= 12 ? 'low cardinality (' + c.distinct + ' values)' : '';
+    else if (c.isUniqueKey) range = '<span class="flag-good">' + esc(t('uniqueKey')) + '</span>';
+    else range = c.distinct <= 12 ? esc(t('lowCardinality')(c.distinct)) : '';
 
     h += '<tr>'
       + '<td><strong>' + esc(c.name) + '</strong></td>'
@@ -396,16 +535,16 @@ function render(r) {
 
   // aggregate summary for agent
   const md = buildSummaryMarkdown(r);
-  h += '<div class="card"><div class="agg-head"><h2>Aggregate summary for the DRA-5C agent</h2>'
-    + '<button class="btn btn-primary" onclick="copyAgg()">📋 Copy summary</button></div>'
-    + '<p class="footnote">Aggregates only — no raw rows. Paste this into the agent at <strong>Step C (Coverage &amp; Credibility)</strong>.</p>'
+  h += '<div class="card"><div class="agg-head"><h2>' + esc(t('aggTitle')) + '</h2>'
+    + '<button class="btn btn-primary" onclick="copyAgg()">' + esc(t('btnCopySummary')) + '</button></div>'
+    + '<p class="footnote">' + esc(t('aggFootnote')) + '</p>'
     + '<pre class="agg" id="aggBlock">' + esc(md) + '</pre></div>';
 
   // downloads
-  h += '<div class="card"><h2>Download</h2><div class="download-row">'
-    + '<button class="btn btn-primary" onclick="downloadReport(\'md\')">📄 Markdown report</button>'
-    + '<button class="btn btn-primary" onclick="downloadReport(\'html\')">🌐 HTML report</button>'
-    + '<button class="btn btn-secondary" onclick="location.reload()">🔄 Profile another file</button>'
+  h += '<div class="card"><h2>' + esc(t('downloadTitle')) + '</h2><div class="download-row">'
+    + '<button class="btn btn-primary" onclick="downloadReport(\'md\')">' + esc(t('btnDownloadMd')) + '</button>'
+    + '<button class="btn btn-primary" onclick="downloadReport(\'html\')">' + esc(t('btnDownloadHtml')) + '</button>'
+    + '<button class="btn btn-secondary" onclick="location.reload()">' + esc(t('btnAnother')) + '</button>'
     + '</div></div>';
 
   resultsEl.innerHTML = h;
@@ -421,27 +560,26 @@ function esc(s) {
 }
 
 function buildSummaryMarkdown(r) {
-  let m = '## Data Readiness Profiler — Aggregate Summary\n';
-  m += '- File: ' + r.filename + '\n';
-  m += '- Rows: ' + r.rowCount.toLocaleString() + ' | Columns: ' + r.colCount + '\n';
-  m += '- Overall fill rate: ' + pct(r.overallFill) + '\n';
-  m += '- Full-row duplicate rate: ' + pct(r.dupRate) + ' (' + r.dupRows.toLocaleString() + ' rows)\n';
+  let m = '## ' + t('mdSummaryTitle') + '\n';
+  m += '- ' + t('mdFile') + ': ' + r.filename + '\n';
+  m += '- ' + t('mdRowsCols')(r.rowCount.toLocaleString(), r.colCount) + '\n';
+  m += '- ' + t('mdOverallFill') + ': ' + pct(r.overallFill) + '\n';
+  m += '- ' + t('mdDupRate')(pct(r.dupRate), r.dupRows.toLocaleString()) + '\n';
   if (r.freshness) {
-    m += '- Date span: ' + fmtDate(r.freshness.oldest) + ' to ' + fmtDate(r.freshness.newest)
-      + ' (most recent record ' + r.freshness.ageDays.toLocaleString() + ' days old)\n';
+    m += '- ' + t('mdDateSpan')(fmtDate(r.freshness.oldest), fmtDate(r.freshness.newest), r.freshness.ageDays.toLocaleString()) + '\n';
   }
-  m += '\n| Column | Type | Fill % | Type consistency | Distinct | Notes |\n';
+  m += '\n' + t('mdColHeaders') + '\n';
   m += '|---|---|---|---|---|---|\n';
   for (const c of r.columns) {
     let note = '';
-    if (c.isUniqueKey) note = 'unique key candidate';
+    if (c.isUniqueKey) note = t('mdUniqueKeyNote');
     else if (c.min !== undefined) note = 'min ' + fmtNum(c.min) + ', max ' + fmtNum(c.max);
     else if (c.dateMin) note = fmtDate(c.dateMin) + '..' + fmtDate(c.dateMax);
-    else if (c.distinct <= 12) note = 'low cardinality (' + c.distinct + ')';
+    else if (c.distinct <= 12) note = t('mdLowCardNote')(c.distinct);
     m += '| ' + c.name + ' | ' + c.type + ' | ' + pct(c.fillRate) + ' | ' + pct(c.typeConsistency)
       + ' | ' + c.distinct.toLocaleString() + ' | ' + note + ' |\n';
   }
-  m += '\n_Generated locally in browser at ' + r.generatedAt + ' — no raw data included._\n';
+  m += '\n' + t('mdGenerated')(r.generatedAt) + '\n';
   return m;
 }
 
@@ -450,9 +588,9 @@ function copyAgg() {
   navigator.clipboard.writeText(text).then(() => {
     const btn = event.target;
     const o = btn.textContent;
-    btn.textContent = '✅ Copied!';
+    btn.textContent = t('copiedFlag');
     setTimeout(() => { btn.textContent = o; }, 2000);
-  }).catch(() => alert('Copy failed — select the text manually.'));
+  }).catch(() => alert(t('copyFailed')));
 }
 
 function downloadReport(fmt) {
@@ -477,30 +615,34 @@ function downloadReport(fmt) {
 function buildHtmlReport(r) {
   let rowsHtml = '';
   for (const c of r.columns) {
-    let note = c.isUniqueKey ? 'unique key candidate'
+    let note = c.isUniqueKey ? t('mdUniqueKeyNote')
       : c.min !== undefined ? 'min ' + fmtNum(c.min) + ', max ' + fmtNum(c.max)
       : c.dateMin ? fmtDate(c.dateMin) + '..' + fmtDate(c.dateMax)
-      : c.distinct <= 12 ? 'low cardinality (' + c.distinct + ')' : '';
+      : c.distinct <= 12 ? t('mdLowCardNote')(c.distinct) : '';
     rowsHtml += '<tr><td>' + esc(c.name) + '</td><td>' + c.type + '</td><td>' + pct(c.fillRate)
       + '</td><td>' + pct(c.typeConsistency) + '</td><td>' + c.distinct.toLocaleString() + '</td><td>' + esc(note) + '</td></tr>';
   }
   const fresh = r.freshness
-    ? '<p>Date span: <strong>' + fmtDate(r.freshness.oldest) + '</strong> to <strong>' + fmtDate(r.freshness.newest)
-      + '</strong>; most recent record ' + r.freshness.ageDays.toLocaleString() + ' days old.</p>' : '';
-  return '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Data Readiness Report — ' + esc(r.filename) + '</title>'
+    ? '<p>' + t('reportFreshness')(fmtDate(r.freshness.oldest), fmtDate(r.freshness.newest), r.freshness.ageDays.toLocaleString()) + '</p>' : '';
+  return '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>' + esc(t('reportDocTitle')) + ' — ' + esc(r.filename) + '</title>'
     + '<style>body{font-family:Inter,Segoe UI,sans-serif;color:#1c1c28;max-width:900px;margin:40px auto;padding:0 20px;line-height:1.6}'
     + 'h1{color:#1B1474}table{width:100%;border-collapse:collapse;font-size:14px}th,td{text-align:left;padding:8px;border-bottom:1px solid #e4e4f0}'
     + 'th{background:#EEEEFA;color:#1B1474}.k{color:#5b5b6b}</style></head><body>'
-    + '<h1>Data Readiness Report</h1>'
-    + '<p class="k">File: ' + esc(r.filename) + ' · generated locally ' + r.generatedAt + '</p>'
-    + '<p>Rows: <strong>' + r.rowCount.toLocaleString() + '</strong> · Columns: <strong>' + r.colCount + '</strong> · '
-    + 'Overall fill: <strong>' + pct(r.overallFill) + '</strong> · Duplicate rows: <strong>' + pct(r.dupRate) + '</strong> (' + r.dupRows.toLocaleString() + ')</p>'
+    + '<h1>' + esc(t('reportDocTitle')) + '</h1>'
+    + '<p class="k">' + t('reportFileGenerated')(esc(r.filename), r.generatedAt) + '</p>'
+    + '<p>' + t('reportSummaryLine')(r.rowCount.toLocaleString(), r.colCount, pct(r.overallFill), pct(r.dupRate), r.dupRows.toLocaleString()) + '</p>'
     + fresh
-    + '<h2>Per-column profile</h2><table><thead><tr><th>Column</th><th>Type</th><th>Fill %</th><th>Type consistency</th><th>Distinct</th><th>Notes</th></tr></thead><tbody>'
+    + '<h2>' + esc(t('perColumnTitle')) + '</h2><table><thead><tr><th>' + esc(t('colColumn')) + '</th><th>' + esc(t('colType')) + '</th><th>' + esc(t('colFill')) + ' %</th><th>' + esc(t('colTypeConsist')) + '</th><th>' + esc(t('colDistinct')) + '</th><th>' + esc(t('colRangeNotes')) + '</th></tr></thead><tbody>'
     + rowsHtml + '</tbody></table>'
-    + '<p class="k" style="margin-top:24px">Generated by the Data Readiness Profiler — aggregates only, no raw data. All processing was done locally in the browser.</p>'
+    + '<p class="k" style="margin-top:24px">' + esc(t('reportFooter')) + '</p>'
     + '</body></html>';
 }
+
+// ── Boot ─────────────────────────────────────────────────────────
+(function init() {
+  document.getElementById('langSelect').value = lang;
+  applyI18n();
+})();
 </script>
 </body>
 </html>
