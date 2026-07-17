@@ -23,6 +23,9 @@
   .wrap { max-width: 1180px; margin: 0 auto; }
   .crumb { font-size: 13px; color: var(--accent); margin-bottom: 10px; }
   .crumb a { color: var(--accent); text-decoration: none; }
+  .hero-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; flex-wrap: wrap; }
+  select#langSelect { font-family: var(--font-body); font-size: 13px; font-weight: 600; border: 1.5px solid rgba(255,255,255,0.4); background: rgba(255,255,255,0.08); color: #fff; border-radius: 8px; padding: 7px 10px; }
+  select#langSelect option { color: var(--ink); }
   .hero h1 { font-family: var(--font-heading); font-weight: 700; font-size: 34px; line-height: 1.15; }
   .hero p { margin-top: 10px; font-size: 15.5px; color: #dcdcf2; max-width: 720px; }
   main { max-width: 1180px; margin: 0 auto; padding: 28px 24px 80px; }
@@ -86,65 +89,73 @@
 </head>
 <body>
   <header class="hero"><div class="wrap">
-    <div class="crumb"><a href="../../">AI Architect Toolkit</a> · Phase 3 · <a href="README.md">Design Layers</a></div>
-    <h1>Architecture Builder</h1>
-    <p>One comparison table, every layer's real options with upside/downside — pick one per layer like building blocks, and assemble a recommended architecture for a specific client.</p>
+    <div class="hero-top">
+      <div class="crumb"><a href="../../">AI Architect Toolkit</a> · Phase 3 · <a href="README.md">Design Layers</a></div>
+      <select id="langSelect" onchange="setLang(this.value)">
+        <option value="en">English</option>
+        <option value="da">Dansk</option>
+        <option value="sv">Svenska</option>
+      </select>
+    </div>
+    <h1 data-i18n="heroTitle"></h1>
+    <p data-i18n="heroDesc"></p>
   </div></header>
 
   <main>
     <div class="note">
-      <strong>How this works.</strong> Fill in the client's constraints, then pick one option per layer in the table below — picking a row places that "brick." Your architecture assembles live in the summary panel as you go. No API calls; everything <strong>autosaves locally</strong> in your browser and can be exported as a file.
+      <strong data-i18n="noteLabel"></strong> <span data-i18n="noteBody"></span>
     </div>
 
     <div class="card">
-      <h2>Client &amp; constraints</h2>
-      <p class="hint">Constraints highlight recommended options in the table below (★) — reusing the same "Need → Better Fit" guidance already in the Design Layers reference, not a new heuristic.</p>
+      <h2 data-i18n="clientTitle"></h2>
+      <p class="hint" data-i18n="clientHint"></p>
       <div class="grid2">
-        <div><label>Client / engagement</label><input type="text" data-eng="client" placeholder="Acme Corp"></div>
-        <div><label>Target use case (one line)</label><input type="text" data-eng="useCase" placeholder="ERP knowledge agent for D365 consultants"></div>
+        <div><label data-i18n="lblClient"></label><input type="text" data-eng="client" placeholder="Acme Corp"></div>
+        <div><label data-i18n="lblUseCase"></label><input type="text" data-eng="useCase" placeholder="ERP knowledge agent for D365 consultants"></div>
       </div>
-      <label>Constraints</label>
+      <label data-i18n="lblConstraints"></label>
       <div class="constraints">
-        <label><input type="checkbox" data-eng="c_microsoft"> Microsoft-heavy enterprise</label>
-        <label><input type="checkbox" data-eng="c_compliance"> Compliance / regulated</label>
-        <label><input type="checkbox" data-eng="c_lowcode"> Low-code / business-user-facing</label>
-        <label><input type="checkbox" data-eng="c_cost"> Cost-sensitive</label>
-        <label><input type="checkbox" data-eng="c_production"> Production-grade (not a pilot)</label>
+        <label><input type="checkbox" data-eng="c_microsoft"> <span data-i18n="ctMicrosoft"></span></label>
+        <label><input type="checkbox" data-eng="c_compliance"> <span data-i18n="ctCompliance"></span></label>
+        <label><input type="checkbox" data-eng="c_lowcode"> <span data-i18n="ctLowcode"></span></label>
+        <label><input type="checkbox" data-eng="c_cost"> <span data-i18n="ctCost"></span></label>
+        <label><input type="checkbox" data-eng="c_production"> <span data-i18n="ctProduction"></span></label>
       </div>
     </div>
 
     <div class="card">
       <div class="toolbar-row">
-        <h2 style="margin-bottom:0">Comparison &amp; selection</h2>
+        <h2 style="margin-bottom:0" data-i18n="compareTitle"></h2>
         <span class="saved" id="savedFlag"></span>
       </div>
-      <p class="hint">One table, every layer. Pick one option per layer — that's the "lego" part. ★ marks options matching your checked constraints.</p>
+      <p class="hint" data-i18n="compareHint"></p>
+      <p class="hint" data-i18n="dataLangNote" style="margin-top:-6px"></p>
       <div class="toolbar-row">
-        <div><label style="margin:0 8px 0 0;display:inline">Filter</label>
-          <select id="layerFilter" onchange="renderTable()"><option value="">All layers</option></select>
+        <div><label style="margin:0 8px 0 0;display:inline" data-i18n="lblFilter"></label>
+          <select id="layerFilter" onchange="renderTable()"><option value="" data-i18n-opt="allLayers"></option></select>
         </div>
       </div>
       <table class="compare" id="compareTable">
-        <thead><tr><th>Pick</th><th>Option</th><th>Upside</th><th>Downside</th><th>Best fit</th></tr></thead>
+        <thead><tr><th data-i18n="colPick"></th><th data-i18n="colOption"></th><th data-i18n="colUpside"></th><th data-i18n="colDownside"></th><th data-i18n="colBestFit"></th></tr></thead>
         <tbody id="compareBody"></tbody>
       </table>
     </div>
 
     <div class="card">
-      <h2>Your architecture stack</h2>
-      <p class="hint">Assembled live from your picks, in layer order.</p>
+      <h2 data-i18n="stackTitle"></h2>
+      <p class="hint" data-i18n="stackHint"></p>
       <div class="progress" id="progressLine"></div>
       <ul class="summary-list" id="summaryList"></ul>
       <div class="btn-row">
-        <button class="btn btn-primary" onclick="exportPlan('html')">🌐 Export architecture plan (HTML)</button>
-        <button class="btn btn-primary" onclick="exportPlan('md')">📄 Export architecture plan (Markdown)</button>
-        <button class="btn btn-secondary" onclick="resetAll()">🔄 Reset</button>
+        <button class="btn btn-primary" onclick="exportPlan('html')" data-i18n="btnExportHtml"></button>
+        <button class="btn btn-primary" onclick="exportPlan('md')" data-i18n="btnExportMd"></button>
+        <button class="btn btn-secondary" onclick="resetAll()" data-i18n="btnReset"></button>
       </div>
     </div>
 
     <div class="card">
-      <h2>Architecture principles (not a pick-one)</h2>
-      <p class="hint">These layers aren't competing products you choose between — they're disciplines that apply regardless of your other picks. See each Design Layers file for the full reference.</p>
+      <h2 data-i18n="principlesTitle"></h2>
+      <p class="hint" data-i18n="principlesHint"></p>
       <div class="principles-grid" id="principlesGrid"></div>
     </div>
   </main>
@@ -154,6 +165,158 @@
 // Architecture Builder — fully client-side. No network calls.
 // ════════════════════════════════════════════════════════════════
 const KEY = 'dra_arch_builder_v1';
+
+// ── i18n: UI chrome only. The 14-layer comparison data (upside/downside/
+// best-fit prose across ~70 rows) stays English-only — same scoping
+// decision as the Design Layers markdown reference files. ──────────
+const STRINGS = {
+  en: {
+    heroTitle: 'Architecture Builder',
+    heroDesc: "One comparison table, every layer's real options with upside/downside — pick one per layer like building blocks, and assemble a recommended architecture for a specific client.",
+    noteLabel: 'How this works.',
+    noteBody: 'Fill in the client\'s constraints, then pick one option per layer in the table below — picking a row places that "brick." Your architecture assembles live in the summary panel as you go. No API calls; everything autosaves locally in your browser and can be exported as a file.',
+    clientTitle: 'Client & constraints',
+    clientHint: 'Constraints highlight recommended options in the table below (★) — reusing the same "Need → Better Fit" guidance already in the Design Layers reference, not a new heuristic.',
+    lblClient: 'Client / engagement',
+    lblUseCase: 'Target use case (one line)',
+    lblConstraints: 'Constraints',
+    ctMicrosoft: 'Microsoft-heavy enterprise',
+    ctCompliance: 'Compliance / regulated',
+    ctLowcode: 'Low-code / business-user-facing',
+    ctCost: 'Cost-sensitive',
+    ctProduction: 'Production-grade (not a pilot)',
+    compareTitle: 'Comparison & selection',
+    compareHint: 'One table, every layer. Pick one option per layer — that\'s the "lego" part. ★ marks options matching your checked constraints.',
+    dataLangNote: 'Layer/option names, upside, downside, and best-fit content below are reference-grade technical comparisons and stay in English regardless of the language selected above.',
+    lblFilter: 'Filter',
+    allLayers: 'All layers',
+    colPick: 'Pick', colOption: 'Option', colUpside: 'Upside', colDownside: 'Downside', colBestFit: 'Best fit',
+    stackTitle: 'Your architecture stack',
+    stackHint: 'Assembled live from your picks, in layer order.',
+    btnExportHtml: '🌐 Export architecture plan (HTML)',
+    btnExportMd: '📄 Export architecture plan (Markdown)',
+    btnReset: '🔄 Reset',
+    principlesTitle: 'Architecture principles (not a pick-one)',
+    principlesHint: "These layers aren't competing products you choose between — they're disciplines that apply regardless of your other picks. See each Design Layers file for the full reference.",
+    savedFlag: '✓ saved locally',
+    recBadge: '★ recommended',
+    layerLabel: 'Layer',
+    viewLayer: 'view layer →',
+    readLayer: 'Read the full layer →',
+    notChosen: '— not yet chosen —',
+    notDecided: '_not yet decided_',
+    progressLine: (n, total) => `${n} of ${total} layers chosen`,
+    resetConfirm: 'Clear all picks and client info? (Export first if you want to keep it.)',
+    docTitle: 'Architecture Plan',
+    docUseCase: 'Use case', docDate: 'Date', docConstraints: 'Constraints', docNoneSpecified: 'none specified',
+    secChosen: 'Chosen stack', colWhy: 'Why',
+    secPrinciples: 'Architecture principles to apply regardless of stack',
+    fullRef: 'Full layer-by-layer reference',
+  },
+  da: {
+    heroTitle: 'Architecture Builder',
+    heroDesc: 'Én sammenligningstabel, hvert lags reelle valgmuligheder med fordele/ulemper — vælg én pr. lag som byggeklodser, og saml en anbefalet arkitektur til en specifik kunde.',
+    noteLabel: 'Sådan virker det.',
+    noteBody: 'Udfyld kundens begrænsninger, og vælg derefter én mulighed pr. lag i tabellen nedenfor — at vælge en række placerer den "byggeklods." Din arkitektur samles live i oversigtspanelet undervejs. Ingen API-kald; alt gemmes automatisk lokalt i din browser og kan eksporteres som fil.',
+    clientTitle: 'Kunde & begrænsninger',
+    clientHint: 'Begrænsninger fremhæver anbefalede muligheder i tabellen nedenfor (★) — genbruger den samme "Behov → Bedre pasform"-vejledning, der allerede findes i Design Layers-referencen, ikke en ny heuristik.',
+    lblClient: 'Kunde / engagement',
+    lblUseCase: 'Mål-use case (én linje)',
+    lblConstraints: 'Begrænsninger',
+    ctMicrosoft: 'Microsoft-tung virksomhed',
+    ctCompliance: 'Compliance / reguleret',
+    ctLowcode: 'Low-code / forretningsbrugervendt',
+    ctCost: 'Omkostningsfølsom',
+    ctProduction: 'Produktionsklar (ikke en pilot)',
+    compareTitle: 'Sammenligning & valg',
+    compareHint: 'Én tabel, alle lag. Vælg én mulighed pr. lag — det er "lego"-delen. ★ markerer muligheder, der matcher dine markerede begrænsninger.',
+    dataLangNote: 'Lag-/valgnavne, fordele, ulemper, og bedst-egnet-indhold nedenfor er referenceteknisk sammenligningsindhold og forbliver på engelsk uanset det valgte sprog ovenfor.',
+    lblFilter: 'Filter',
+    allLayers: 'Alle lag',
+    colPick: 'Vælg', colOption: 'Mulighed', colUpside: 'Fordel', colDownside: 'Ulempe', colBestFit: 'Bedst egnet',
+    stackTitle: 'Din arkitekturstak',
+    stackHint: 'Samlet live ud fra dine valg, i lagrækkefølge.',
+    btnExportHtml: '🌐 Eksportér arkitekturplan (HTML)',
+    btnExportMd: '📄 Eksportér arkitekturplan (Markdown)',
+    btnReset: '🔄 Nulstil',
+    principlesTitle: 'Arkitekturprincipper (ikke et vælg-én)',
+    principlesHint: 'Disse lag er ikke konkurrerende produkter, du vælger imellem — de er discipliner, der gælder uanset dine andre valg. Se hver Design Layers-fil for den fulde reference.',
+    savedFlag: '✓ gemt lokalt',
+    recBadge: '★ anbefalet',
+    layerLabel: 'Lag',
+    viewLayer: 'se lag →',
+    readLayer: 'Læs hele laget →',
+    notChosen: '— endnu ikke valgt —',
+    notDecided: '_endnu ikke besluttet_',
+    progressLine: (n, total) => `${n} af ${total} lag valgt`,
+    resetConfirm: 'Ryd alle valg og kundeinfo? (Eksportér først, hvis du vil beholde det.)',
+    docTitle: 'Arkitekturplan',
+    docUseCase: 'Use case', docDate: 'Dato', docConstraints: 'Begrænsninger', docNoneSpecified: 'ingen angivet',
+    secChosen: 'Valgt stak', colWhy: 'Hvorfor',
+    secPrinciples: 'Arkitekturprincipper, der gælder uanset stak',
+    fullRef: 'Fuld lag-for-lag-reference',
+  },
+  sv: {
+    heroTitle: 'Architecture Builder',
+    heroDesc: 'En jämförelsetabell, varje lagers verkliga alternativ med fördelar/nackdelar — välj ett per lager som byggklossar, och sätt ihop en rekommenderad arkitektur för en specifik kund.',
+    noteLabel: 'Så här fungerar det.',
+    noteBody: 'Fyll i kundens begränsningar, välj sedan ett alternativ per lager i tabellen nedan — att välja en rad placerar den "byggklossen." Din arkitektur sätts ihop live i sammanfattningspanelen medan du går. Inga API-anrop; allt sparas automatiskt lokalt i din webbläsare och kan exporteras som fil.',
+    clientTitle: 'Kund & begränsningar',
+    clientHint: 'Begränsningar markerar rekommenderade alternativ i tabellen nedan (★) — återanvänder samma "Behov → Bättre passform"-vägledning som redan finns i Design Layers-referensen, ingen ny heuristik.',
+    lblClient: 'Kund / uppdrag',
+    lblUseCase: 'Mål-användningsfall (en rad)',
+    lblConstraints: 'Begränsningar',
+    ctMicrosoft: 'Microsoft-tung verksamhet',
+    ctCompliance: 'Compliance / reglerad',
+    ctLowcode: 'Low-code / verksamhetsanvändarvänd',
+    ctCost: 'Kostnadskänslig',
+    ctProduction: 'Produktionsklar (inte en pilot)',
+    compareTitle: 'Jämförelse & val',
+    compareHint: 'En tabell, alla lager. Välj ett alternativ per lager — det är "lego"-delen. ★ markerar alternativ som matchar dina markerade begränsningar.',
+    dataLangNote: 'Lager-/alternativnamn, fördelar, nackdelar, och bäst-lämpad-innehåll nedan är referenstekniskt jämförelseinnehåll och förblir på engelska oavsett valt språk ovan.',
+    lblFilter: 'Filter',
+    allLayers: 'Alla lager',
+    colPick: 'Välj', colOption: 'Alternativ', colUpside: 'Fördel', colDownside: 'Nackdel', colBestFit: 'Bäst lämpad',
+    stackTitle: 'Din arkitekturstack',
+    stackHint: 'Sammansatt live utifrån dina val, i lagerordning.',
+    btnExportHtml: '🌐 Exportera arkitekturplan (HTML)',
+    btnExportMd: '📄 Exportera arkitekturplan (Markdown)',
+    btnReset: '🔄 Återställ',
+    principlesTitle: 'Arkitekturprinciper (inte ett välj-ett)',
+    principlesHint: 'Dessa lager är inte konkurrerande produkter du väljer mellan — de är discipliner som gäller oavsett dina andra val. Se varje Design Layers-fil för den fullständiga referensen.',
+    savedFlag: '✓ sparat lokalt',
+    recBadge: '★ rekommenderad',
+    layerLabel: 'Lager',
+    viewLayer: 'visa lager →',
+    readLayer: 'Läs hela lagret →',
+    notChosen: '— inte valt än —',
+    notDecided: '_inte beslutat än_',
+    progressLine: (n, total) => `${n} av ${total} lager valda`,
+    resetConfirm: 'Rensa alla val och kundinfo? (Exportera först om du vill behålla det.)',
+    docTitle: 'Arkitekturplan',
+    docUseCase: 'Användningsfall', docDate: 'Datum', docConstraints: 'Begränsningar', docNoneSpecified: 'inga angivna',
+    secChosen: 'Vald stack', colWhy: 'Varför',
+    secPrinciples: 'Arkitekturprinciper som gäller oavsett stack',
+    fullRef: 'Fullständig lager-för-lager-referens',
+  },
+};
+let lang = localStorage.getItem('aoa_lang') || 'en';
+function t(key) { const v = (STRINGS[lang] && STRINGS[lang][key] !== undefined) ? STRINGS[lang][key] : STRINGS.en[key]; return v; }
+function setLang(l) {
+  lang = l;
+  localStorage.setItem('aoa_lang', l);
+  document.getElementById('langSelect').value = l;
+  applyI18n();
+  initFilter();
+  renderTable();
+  renderSummary();
+  renderPrinciples();
+}
+function applyI18n() {
+  document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.getAttribute('data-i18n')); });
+  document.querySelectorAll('[data-i18n-opt]').forEach(el => { el.textContent = t(el.getAttribute('data-i18n-opt')); });
+  document.title = t('heroTitle') + ' — Design Layers';
+}
 
 // ── Data: 14 selectable comparison groups ──────────────────────
 const LAYER_OPTIONS = [
@@ -294,7 +457,7 @@ function save() {
 let savedTimer;
 function flashSaved() {
   const f = document.getElementById('savedFlag');
-  f.textContent = '✓ saved locally';
+  f.textContent = t('savedFlag');
   clearTimeout(savedTimer);
   savedTimer = setTimeout(() => { f.textContent = ''; }, 1200);
 }
@@ -309,12 +472,16 @@ function restore() {
 // ── Rendering: filter dropdown ──────────────────────────────────
 function initFilter() {
   const sel = document.getElementById('layerFilter');
+  const current = sel.value;
+  sel.querySelectorAll('option[data-layer-id]').forEach(o => o.remove());
   LAYER_OPTIONS.forEach(g => {
     const opt = document.createElement('option');
     opt.value = g.id;
-    opt.textContent = 'Layer ' + g.layerNum + ' · ' + g.title;
+    opt.setAttribute('data-layer-id', '1');
+    opt.textContent = t('layerLabel') + ' ' + g.layerNum + ' · ' + g.title;
     sel.appendChild(opt);
   });
+  sel.value = current;
 }
 
 // ── Rendering: comparison table ─────────────────────────────────
@@ -327,13 +494,13 @@ function renderTable() {
   let h = '';
   LAYER_OPTIONS.forEach(group => {
     if (filter && group.id !== filter) return;
-    h += `<tr class="layer-head"><td colspan="5"><span class="lnum">Layer ${group.layerNum}</span>${esc(group.title)} <a class="layer-link" href="layers/${group.file}" style="color:#DCDDF6;margin-left:8px">view layer →</a></td></tr>`;
+    h += `<tr class="layer-head"><td colspan="5"><span class="lnum">${esc(t('layerLabel'))} ${group.layerNum}</span>${esc(group.title)} <a class="layer-link" href="layers/${group.file}" style="color:#DCDDF6;margin-left:8px">${esc(t('viewLayer'))}</a></td></tr>`;
     group.options.forEach((opt, idx) => {
       const isPicked = picks[group.id] === idx;
-      const isRecommended = tags.length && opt.tags.some(t => tags.includes(t));
+      const isRecommended = tags.length && opt.tags.some(tg => tags.includes(tg));
       h += `<tr class="opt-row${isPicked ? ' picked' : ''}${isRecommended ? ' recommended' : ''}">`
         + `<td class="pick-cell"><input type="radio" name="pick_${group.id}" ${isPicked ? 'checked' : ''} onchange="choose('${group.id}', ${idx})"></td>`
-        + `<td class="name-cell">${esc(opt.name)}${isRecommended ? '<span class="rec-badge">★ recommended</span>' : ''}</td>`
+        + `<td class="name-cell">${esc(opt.name)}${isRecommended ? `<span class="rec-badge">${esc(t('recBadge'))}</span>` : ''}</td>`
         + `<td>${esc(opt.upside)}</td>`
         + `<td>${esc(opt.downside)}</td>`
         + `<td>${esc(opt.bestFor)}</td>`
@@ -359,19 +526,19 @@ function renderSummary() {
     const idx = picks[group.id];
     const has = idx !== undefined;
     if (has) chosen++;
-    const label = `Layer ${group.layerNum} · ${group.title}`;
-    const choiceText = has ? group.options[idx].name : '— not yet chosen —';
+    const label = `${t('layerLabel')} ${group.layerNum} · ${group.title}`;
+    const choiceText = has ? group.options[idx].name : t('notChosen');
     h += `<li><span class="slabel">${esc(label)}</span><span class="schoice${has ? '' : ' empty'}">${esc(choiceText)}</span></li>`;
   });
   list.innerHTML = h;
-  document.getElementById('progressLine').textContent = `${chosen} of ${LAYER_OPTIONS.length} layers chosen`;
+  document.getElementById('progressLine').textContent = t('progressLine')(chosen, LAYER_OPTIONS.length);
 }
 
 // ── Rendering: principles ─────────────────────────────────────────
 function renderPrinciples() {
   const grid = document.getElementById('principlesGrid');
   grid.innerHTML = PRINCIPLE_LAYERS.map(p =>
-    `<div class="principle-card"><h4>${esc(p.title)}</h4><p>${esc(p.note)}</p><a href="layers/${p.file}">Read the full layer →</a></div>`
+    `<div class="principle-card"><h4>${esc(p.title)}</h4><p>${esc(p.note)}</p><a href="layers/${p.file}">${esc(t('readLayer'))}</a></div>`
   ).join('');
 }
 
@@ -384,7 +551,7 @@ document.addEventListener('change', e => {
 });
 
 function resetAll() {
-  if (!confirm('Clear all picks and client info? (Export first if you want to keep it.)')) return;
+  if (!confirm(t('resetConfirm'))) return;
   picks = {};
   fieldEls().forEach(el => { if (el.type === 'checkbox') el.checked = false; else el.value = ''; });
   renderTable();
@@ -399,20 +566,20 @@ function slug() { return (val('client') || 'architecture').replace(/\W+/g, '_');
 function planMarkdown() {
   const date = new Date().toISOString().slice(0, 10);
   const tags = activeConstraintTags();
-  let m = `# Architecture Plan — ${val('client') || '[client]'}\n\n`;
-  m += `**Use case:** ${val('useCase') || '—'}  \n`;
-  m += `**Date:** ${date}  \n`;
-  m += `**Constraints:** ${tags.length ? tags.join(', ') : 'none specified'}\n\n`;
-  m += `## Chosen stack\n\n| Layer | Choice | Why |\n|---|---|---|\n`;
+  let m = `# ${t('docTitle')} — ${val('client') || '[client]'}\n\n`;
+  m += `**${t('docUseCase')}:** ${val('useCase') || '—'}  \n`;
+  m += `**${t('docDate')}:** ${date}  \n`;
+  m += `**${t('docConstraints')}:** ${tags.length ? tags.join(', ') : t('docNoneSpecified')}\n\n`;
+  m += `## ${t('secChosen')}\n\n| ${t('layerLabel')} | ${t('colOption')} | ${t('colWhy')} |\n|---|---|---|\n`;
   LAYER_OPTIONS.forEach(group => {
     const idx = picks[group.id];
-    if (idx === undefined) { m += `| Layer ${group.layerNum} · ${group.title} | _not yet decided_ | |\n`; return; }
+    if (idx === undefined) { m += `| ${t('layerLabel')} ${group.layerNum} · ${group.title} | ${t('notDecided')} | |\n`; return; }
     const opt = group.options[idx];
-    m += `| Layer ${group.layerNum} · ${group.title} | **${opt.name}** | ${opt.bestFor} |\n`;
+    m += `| ${t('layerLabel')} ${group.layerNum} · ${group.title} | **${opt.name}** | ${opt.bestFor} |\n`;
   });
-  m += `\n## Architecture principles to apply regardless of stack\n\n`;
+  m += `\n## ${t('secPrinciples')}\n\n`;
   PRINCIPLE_LAYERS.forEach(p => { m += `- **${p.title}:** ${p.note}\n`; });
-  m += `\nFull layer-by-layer reference: [Design Layers](README.md)\n`;
+  m += `\n${t('fullRef')}: [Design Layers](README.md)\n`;
   return m;
 }
 
@@ -421,20 +588,20 @@ function planHtml() {
   let rows = '';
   LAYER_OPTIONS.forEach(group => {
     const idx = picks[group.id];
-    if (idx === undefined) { rows += `<tr><td>Layer ${group.layerNum} · ${esc(group.title)}</td><td><em>not yet decided</em></td><td></td></tr>`; return; }
+    if (idx === undefined) { rows += `<tr><td>${esc(t('layerLabel'))} ${group.layerNum} · ${esc(group.title)}</td><td><em>${esc(t('notDecided').replace(/_/g, ''))}</em></td><td></td></tr>`; return; }
     const opt = group.options[idx];
-    rows += `<tr><td>Layer ${group.layerNum} · ${esc(group.title)}</td><td><strong>${esc(opt.name)}</strong></td><td>${esc(opt.bestFor)}</td></tr>`;
+    rows += `<tr><td>${esc(t('layerLabel'))} ${group.layerNum} · ${esc(group.title)}</td><td><strong>${esc(opt.name)}</strong></td><td>${esc(opt.bestFor)}</td></tr>`;
   });
   const principles = PRINCIPLE_LAYERS.map(p => `<li><strong>${esc(p.title)}:</strong> ${esc(p.note)}</li>`).join('');
-  return '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Architecture Plan — ' + esc(val('client') || 'client') + '</title>'
+  return '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>' + esc(t('docTitle')) + ' — ' + esc(val('client') || 'client') + '</title>'
     + '<style>body{font-family:Inter,Segoe UI,sans-serif;color:#1c1c28;max-width:880px;margin:40px auto;padding:0 22px;line-height:1.6}'
     + 'h1,h2{color:#1B1474;font-family:Georgia,serif}table{width:100%;border-collapse:collapse;font-size:14px;margin:12px 0}'
     + 'th,td{border:1px solid #e4e4f0;padding:8px 10px;text-align:left;vertical-align:top}th{background:#EEEEFA;color:#1B1474}</style></head><body>'
-    + '<h1>Architecture Plan — ' + esc(val('client') || '[client]') + '</h1>'
-    + '<p><strong>Use case:</strong> ' + esc(val('useCase') || '—') + '<br><strong>Constraints:</strong> ' + esc(tags.length ? tags.join(', ') : 'none specified') + '</p>'
-    + '<h2>Chosen stack</h2><table><thead><tr><th>Layer</th><th>Choice</th><th>Why</th></tr></thead><tbody>' + rows + '</tbody></table>'
-    + '<h2>Architecture principles to apply regardless of stack</h2><ul>' + principles + '</ul>'
-    + '<p><a href="README.md">Full Design Layers reference</a></p>'
+    + '<h1>' + esc(t('docTitle')) + ' — ' + esc(val('client') || '[client]') + '</h1>'
+    + '<p><strong>' + esc(t('docUseCase')) + ':</strong> ' + esc(val('useCase') || '—') + '<br><strong>' + esc(t('docConstraints')) + ':</strong> ' + esc(tags.length ? tags.join(', ') : t('docNoneSpecified')) + '</p>'
+    + '<h2>' + esc(t('secChosen')) + '</h2><table><thead><tr><th>' + esc(t('layerLabel')) + '</th><th>' + esc(t('colOption')) + '</th><th>' + esc(t('colWhy')) + '</th></tr></thead><tbody>' + rows + '</tbody></table>'
+    + '<h2>' + esc(t('secPrinciples')) + '</h2><ul>' + principles + '</ul>'
+    + '<p><a href="README.md">' + esc(t('fullRef')) + '</a></p>'
     + '</body></html>';
 }
 
@@ -451,6 +618,8 @@ function exportPlan(fmt) {
 
 // ── Boot ─────────────────────────────────────────────────────────
 (function init() {
+  document.getElementById('langSelect').value = lang;
+  applyI18n();
   initFilter();
   restore();
   renderTable();

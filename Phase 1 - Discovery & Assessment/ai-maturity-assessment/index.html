@@ -52,9 +52,14 @@
     text-align: center;
     padding: 2.5rem 1rem 2rem;
     border-bottom: 4px solid var(--accent);
+    position: relative;
   }
   .header h1 { font-family: var(--font-heading); font-size: 2.2rem; margin-bottom: 0.3rem; font-weight: 700; }
   .header p { opacity: 0.9; font-size: 1rem; }
+  .lang-row { position: absolute; top: 1rem; right: 1rem; }
+  select#langSelect { font-family: var(--font-body); font-size: 13px; font-weight: 600; border: 1.5px solid rgba(255,255,255,0.4); background: rgba(255,255,255,0.08); color: #fff; border-radius: 8px; padding: 7px 10px; }
+  select#langSelect option { color: var(--text); }
+  .lang-scope-note { font-size: 0.85rem; color: var(--text-light); background: var(--powder); border: 1px solid var(--accent); border-radius: var(--radius); padding: 0.7rem 0.9rem; margin-bottom: 1rem; }
 
   /* Progress bar */
   .progress-wrap {
@@ -288,23 +293,31 @@
 <body>
 
 <div class="header">
-  <h1>AI Maturity Assessment</h1>
-  <p>For Enterprise Consulting</p>
+  <div class="lang-row">
+    <select id="langSelect" onchange="setLang(this.value)">
+      <option value="en">English</option>
+      <option value="da">Dansk</option>
+      <option value="sv">Svenska</option>
+    </select>
+  </div>
+  <h1 data-i18n="headerTitle"></h1>
+  <p data-i18n="headerSubtitle"></p>
 </div>
 <div class="progress-wrap"><div class="progress-bar" id="progressBar" style="width:0%"></div></div>
 
 <!-- ═══════════════════ PAGE: SETUP ═══════════════════ -->
 <div class="page active" id="pageSetup">
   <div class="container">
+    <div class="lang-scope-note" data-i18n="langScopeNote"></div>
     <div class="card">
-      <h2>Assessment Info</h2>
+      <h2 data-i18n="setupInfoTitle"></h2>
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
         <label class="field">
-          <span>Company Name</span>
+          <span data-i18n="lblCompany"></span>
           <input type="text" id="inputCompany" placeholder="e.g. Acme Corp">
         </label>
         <label class="field">
-          <span>Industry</span>
+          <span data-i18n="lblIndustry"></span>
           <select id="inputIndustry">
             <option>Technology</option><option>Financial Services</option>
             <option>Healthcare</option><option>Manufacturing</option>
@@ -314,38 +327,37 @@
           </select>
         </label>
         <label class="field">
-          <span>Assessor</span>
+          <span data-i18n="lblAssessor"></span>
           <input type="text" id="inputAssessor" placeholder="e.g. AI Architect">
         </label>
         <label class="field">
-          <span>Assessment Mode</span>
+          <span data-i18n="lblMode"></span>
           <select id="inputMode">
-            <option value="core">Core (~21 questions, 10 min)</option>
-            <option value="comprehensive">Comprehensive (~33 questions, 20 min)</option>
+            <option value="core" data-i18n-opt="modeCore"></option>
+            <option value="comprehensive" data-i18n-opt="modeComprehensive"></option>
           </select>
         </label>
       </div>
       <label class="field">
-        <span>Target Maturity Level</span>
+        <span data-i18n="lblTarget"></span>
         <select id="inputTarget">
-          <option value="3">Level 3 — Operationalizing</option>
-          <option value="4" selected>Level 4 — Scaling [Recommended]</option>
-          <option value="5">Level 5 — Transforming</option>
+          <option value="3" data-i18n-opt="targetL3"></option>
+          <option value="4" selected data-i18n-opt="targetL4"></option>
+          <option value="5" data-i18n-opt="targetL5"></option>
         </select>
       </label>
     </div>
 
     <div class="card">
-      <h2>Assessment Dimensions</h2>
+      <h2 data-i18n="dimensionsTitle"></h2>
       <div class="dim-grid" id="dimGrid"></div>
     </div>
 
     <div style="text-align:center; margin:1.5rem 0;">
-      <button class="btn btn-primary" onclick="startAssessment()" style="padding:0.9rem 3rem; font-size:1.1rem;">
-        ▶ Start Assessment
+      <button class="btn btn-primary" onclick="startAssessment()" style="padding:0.9rem 3rem; font-size:1.1rem;" data-i18n="btnStart">
       </button>
       <div style="margin-top:1rem;">
-        <button class="btn btn-secondary" onclick="loadSampleResults()">🧪 View sample results</button>
+        <button class="btn btn-secondary" onclick="loadSampleResults()" data-i18n="btnSample"></button>
       </div>
       <div id="sampleError" style="display:none;color:#c0392b;font-size:0.85rem;margin-top:0.5rem;"></div>
     </div>
@@ -366,6 +378,88 @@
 </div>
 
 <script>
+// ═══════════════════════════════════════════════════════════════════
+// i18n: UI chrome only. The 24-question assessment bank, dimension/level
+// descriptions, gap analysis, and recommendations are content-heavy and
+// stay English-only — same scoping decision as the Design Layers/
+// Architecture Builder reference content elsewhere in this toolkit.
+// ═══════════════════════════════════════════════════════════════════
+const STRINGS = {
+  en: {
+    headerTitle: 'AI Maturity Assessment', headerSubtitle: 'For Enterprise Consulting',
+    langScopeNote: 'The UI is available in English, Danish, and Swedish. The assessment questions, answer options, and generated report content stay in English regardless of the language selected above.',
+    setupInfoTitle: 'Assessment Info',
+    lblCompany: 'Company Name', lblIndustry: 'Industry', lblAssessor: 'Assessor', lblMode: 'Assessment Mode',
+    modeCore: 'Core (~21 questions, 10 min)', modeComprehensive: 'Comprehensive (~33 questions, 20 min)',
+    lblTarget: 'Target Maturity Level',
+    targetL3: 'Level 3 — Operationalizing', targetL4: 'Level 4 — Scaling [Recommended]', targetL5: 'Level 5 — Transforming',
+    dimensionsTitle: 'Assessment Dimensions', weightLabel: 'Weight',
+    btnStart: '▶ Start Assessment', btnSample: '🧪 View sample results',
+    sampleLoadError: (msg) => `Could not load the sample results (${msg}). This can happen if the page was opened directly from disk rather than served over http(s).`,
+    btnPrevious: '◀ Previous', btnNext: 'Next ▶', btnViewResults: '📊 View Results',
+    secDimensionScores: 'Dimension Scores', secMaturityRadar: 'Maturity Radar', secGapAnalysis: 'Gap Analysis',
+    secRecommendations: 'Recommendations', secDownload: 'Download',
+    btnDownloadMd: '📄 Download Markdown Report', btnDownloadHtml: '🌐 Download HTML Report', btnShare: '🔗 Share Results',
+    legendCurrentScore: 'Current Score', legendTargetLevel: 'Target Level',
+    linkCopied: 'Link copied!', copyFailed: 'Could not copy the link — copy it manually from the address bar.',
+    btnNewAssessment: '🔄 New Assessment',
+  },
+  da: {
+    headerTitle: 'AI-modenhedsvurdering', headerSubtitle: 'Til virksomhedskonsulentbrug',
+    langScopeNote: 'Brugerfladen er tilgængelig på engelsk, dansk og svensk. Selve vurderingsspørgsmålene, svarmulighederne og det genererede rapportindhold forbliver på engelsk uanset det valgte sprog ovenfor.',
+    setupInfoTitle: 'Vurderingsinfo',
+    lblCompany: 'Virksomhedsnavn', lblIndustry: 'Branche', lblAssessor: 'Vurderingsmand', lblMode: 'Vurderingstilstand',
+    modeCore: 'Kerne (~21 spørgsmål, 10 min)', modeComprehensive: 'Omfattende (~33 spørgsmål, 20 min)',
+    lblTarget: 'Mål-modenhedsniveau',
+    targetL3: 'Niveau 3 — Operationalisering', targetL4: 'Niveau 4 — Skalering [Anbefalet]', targetL5: 'Niveau 5 — Transformation',
+    dimensionsTitle: 'Vurderingsdimensioner', weightLabel: 'Vægt',
+    btnStart: '▶ Start vurdering', btnSample: '🧪 Se eksempelresultater',
+    sampleLoadError: (msg) => `Kunne ikke indlæse eksempelresultaterne (${msg}). Dette kan ske, hvis siden blev åbnet direkte fra disk i stedet for serveret over http(s).`,
+    btnPrevious: '◀ Forrige', btnNext: 'Næste ▶', btnViewResults: '📊 Se resultater',
+    secDimensionScores: 'Dimensionsscores', secMaturityRadar: 'Modenhedsradar', secGapAnalysis: 'Gapanalyse',
+    secRecommendations: 'Anbefalinger', secDownload: 'Download',
+    btnDownloadMd: '📄 Download Markdown-rapport', btnDownloadHtml: '🌐 Download HTML-rapport', btnShare: '🔗 Del resultater',
+    legendCurrentScore: 'Nuværende score', legendTargetLevel: 'Målniveau',
+    linkCopied: 'Link kopieret!', copyFailed: 'Kunne ikke kopiere linket — kopiér det manuelt fra adresselinjen.',
+    btnNewAssessment: '🔄 Ny vurdering',
+  },
+  sv: {
+    headerTitle: 'AI-mognadsbedömning', headerSubtitle: 'För företagskonsultation',
+    langScopeNote: 'Användargränssnittet finns på engelska, danska och svenska. Själva bedömningsfrågorna, svarsalternativen och det genererade rapportinnehållet förblir på engelska oavsett valt språk ovan.',
+    setupInfoTitle: 'Bedömningsinfo',
+    lblCompany: 'Företagsnamn', lblIndustry: 'Bransch', lblAssessor: 'Bedömare', lblMode: 'Bedömningsläge',
+    modeCore: 'Kärna (~21 frågor, 10 min)', modeComprehensive: 'Omfattande (~33 frågor, 20 min)',
+    lblTarget: 'Mål-mognadsnivå',
+    targetL3: 'Nivå 3 — Operationalisering', targetL4: 'Nivå 4 — Skalning [Rekommenderad]', targetL5: 'Nivå 5 — Transformation',
+    dimensionsTitle: 'Bedömningsdimensioner', weightLabel: 'Vikt',
+    btnStart: '▶ Starta bedömning', btnSample: '🧪 Visa exempelresultat',
+    sampleLoadError: (msg) => `Kunde inte läsa in exempelresultaten (${msg}). Detta kan hända om sidan öppnades direkt från disk istället för att serveras över http(s).`,
+    btnPrevious: '◀ Föregående', btnNext: 'Nästa ▶', btnViewResults: '📊 Visa resultat',
+    secDimensionScores: 'Dimensionspoäng', secMaturityRadar: 'Mognadsradar', secGapAnalysis: 'Gapanalys',
+    secRecommendations: 'Rekommendationer', secDownload: 'Ladda ner',
+    btnDownloadMd: '📄 Ladda ner Markdown-rapport', btnDownloadHtml: '🌐 Ladda ner HTML-rapport', btnShare: '🔗 Dela resultat',
+    legendCurrentScore: 'Aktuell poäng', legendTargetLevel: 'Målnivå',
+    linkCopied: 'Länk kopierad!', copyFailed: 'Det gick inte att kopiera länken — kopiera den manuellt från adressfältet.',
+    btnNewAssessment: '🔄 Ny bedömning',
+  },
+};
+let lang = localStorage.getItem('aoa_lang') || 'en';
+function t(key) { const v = (STRINGS[lang] && STRINGS[lang][key] !== undefined) ? STRINGS[lang][key] : STRINGS.en[key]; return v; }
+function setLang(l) {
+  lang = l;
+  localStorage.setItem('aoa_lang', l);
+  document.getElementById('langSelect').value = l;
+  applyI18n();
+  renderDimGrid();
+  if (document.getElementById('pageAssess').classList.contains('active')) renderDimension();
+  if (document.getElementById('pageResults').classList.contains('active')) showResults();
+}
+function applyI18n() {
+  document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.getAttribute('data-i18n')); });
+  document.querySelectorAll('[data-i18n-opt]').forEach(el => { el.textContent = t(el.getAttribute('data-i18n-opt')); });
+  document.title = t('headerTitle');
+}
+
 // ═══════════════════════════════════════════════════════════════════
 // DATA MODEL
 // ═══════════════════════════════════════════════════════════════════
@@ -807,11 +901,18 @@ let currentDimIdx = 0;
 // INIT
 // ═══════════════════════════════════════════════════════════════════
 
-function init() {
+function renderDimGrid() {
   const grid = document.getElementById('dimGrid');
+  grid.innerHTML = '';
   DIMENSIONS.forEach(d => {
-    grid.innerHTML += `<div class="dim-item"><strong>${d.en}</strong> — Weight: ${(d.weight*100).toFixed(0)}%<small>${d.desc}</small></div>`;
+    grid.innerHTML += `<div class="dim-item"><strong>${d.en}</strong> — ${t('weightLabel')}: ${(d.weight*100).toFixed(0)}%<small>${d.desc}</small></div>`;
   });
+}
+
+function init() {
+  document.getElementById('langSelect').value = lang;
+  applyI18n();
+  renderDimGrid();
   loadFromShareLink();
 }
 
@@ -844,7 +945,7 @@ function loadSampleResults() {
     .then(payload => restorePayload(payload))
     .catch(err => {
       if (errEl) {
-        errEl.textContent = 'Could not load the sample results (' + err.message + '). This can happen if the page was opened directly from disk rather than served over http(s).';
+        errEl.textContent = t('sampleLoadError')(err.message);
         errEl.style.display = 'block';
       }
     });
@@ -948,14 +1049,14 @@ function renderDimension() {
   // Nav buttons
   let navHtml = '';
   if (currentDimIdx > 0) {
-    navHtml += `<button class="btn btn-secondary" onclick="currentDimIdx--;renderDimension();">&#9664; Previous</button>`;
+    navHtml += `<button class="btn btn-secondary" onclick="currentDimIdx--;renderDimension();">${t('btnPrevious')}</button>`;
   } else {
     navHtml += `<div></div>`;
   }
   if (currentDimIdx < dimGroups.length - 1) {
-    navHtml += `<button class="btn btn-primary" onclick="currentDimIdx++;renderDimension();">Next &#9654;</button>`;
+    navHtml += `<button class="btn btn-primary" onclick="currentDimIdx++;renderDimension();">${t('btnNext')}</button>`;
   } else {
-    navHtml += `<button class="btn btn-primary" onclick="showResults();">&#128202; View Results</button>`;
+    navHtml += `<button class="btn btn-primary" onclick="showResults();">${t('btnViewResults')}</button>`;
   }
   nav.innerHTML = navHtml;
 
@@ -1045,7 +1146,7 @@ function showResults() {
   `;
 
   // Dimension bars
-  html += `<div class="card"><h2>Dimension Scores</h2>`;
+  html += `<div class="card"><h2>${t('secDimensionScores')}</h2>`;
   result.dims.forEach(ds => {
     const pct = (ds.raw / 5 * 100).toFixed(0);
     const color = LEVEL_COLORS[ds.level];
@@ -1065,12 +1166,12 @@ function showResults() {
   html += `</div>`;
 
   // Radar chart
-  html += `<div class="card"><h2>Maturity Radar</h2>
+  html += `<div class="card"><h2>${t('secMaturityRadar')}</h2>
     <div class="chart-container"><canvas id="radar" width="400" height="460"></canvas></div>
   </div>`;
 
   // Gap analysis table
-  html += `<div class="card"><h2>Gap Analysis</h2>
+  html += `<div class="card"><h2>${t('secGapAnalysis')}</h2>
     <p style="margin-bottom:1rem;">Target: <strong>Level ${target} — ${LEVELS[target].en}</strong></p>`;
   if (gaps.length) {
     html += `<table class="gap-table"><thead><tr>
@@ -1092,7 +1193,7 @@ function showResults() {
   html += `</div>`;
 
   // Recommendations
-  html += `<div class="card"><h2>Recommendations</h2>`;
+  html += `<div class="card"><h2>${t('secRecommendations')}</h2>`;
   const priorityLabels = { High: '🔴 High Priority (Months 1-3)', Medium: '🟡 Medium Priority (Months 4-9)', Low: '🟢 Low Priority (Months 10-18)' };
   ['High', 'Medium', 'Low'].forEach(p => {
     const pGaps = gaps.filter(g => g.priority === p);
@@ -1111,12 +1212,12 @@ function showResults() {
   html += `</div>`;
 
   // Downloads
-  html += `<div class="card"><h2>Download</h2>
+  html += `<div class="card"><h2>${t('secDownload')}</h2>
     <div class="download-row">
-      <button class="btn btn-primary" onclick="downloadMarkdown()">📄 Download Markdown Report</button>
-      <button class="btn btn-primary" onclick="downloadHTML()">🌐 Download HTML Report</button>
-      <button id="shareBtn" class="btn btn-secondary" onclick="shareResults()">🔗 Share Results</button>
-      <button class="btn btn-secondary" onclick="resetAssessment()">🔄 New Assessment</button>
+      <button class="btn btn-primary" onclick="downloadMarkdown()">${t('btnDownloadMd')}</button>
+      <button class="btn btn-primary" onclick="downloadHTML()">${t('btnDownloadHtml')}</button>
+      <button id="shareBtn" class="btn btn-secondary" onclick="shareResults()">${t('btnShare')}</button>
+      <button class="btn btn-secondary" onclick="resetAssessment()">${t('btnNewAssessment')}</button>
     </div>
   </div>`;
 
@@ -1233,7 +1334,7 @@ function drawRadar(dims, target) {
   ctx.fillStyle = '#222222';
   ctx.font = '11px sans-serif';
   ctx.textAlign = 'left';
-  ctx.fillText('Current Score', 26, legendY);
+  ctx.fillText(t('legendCurrentScore'), 26, legendY);
 
   ctx.strokeStyle = '#9A97C9';
   ctx.setLineDash([5, 5]);
@@ -1242,7 +1343,7 @@ function drawRadar(dims, target) {
   ctx.lineTo(190, legendY - 4);
   ctx.stroke();
   ctx.setLineDash([]);
-  ctx.fillText('Target Level', 195, legendY);
+  ctx.fillText(t('legendTargetLevel'), 195, legendY);
 }
 
 // ═══════════════════════════════════════════════════════════════════
@@ -1264,10 +1365,10 @@ function shareResults() {
   const original = btn.textContent;
 
   navigator.clipboard.writeText(url).then(() => {
-    btn.textContent = '✅ Link Copied!';
+    btn.textContent = '✅ ' + t('linkCopied');
     setTimeout(() => { btn.textContent = original; }, 2000);
   }).catch(() => {
-    btn.textContent = '⚠️ Copy Failed';
+    btn.textContent = '⚠️ ' + t('copyFailed');
     setTimeout(() => { btn.textContent = original; }, 2000);
   });
 }
