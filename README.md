@@ -198,6 +198,22 @@ English/Danish/Swedish language selector).
 Phase 7 (MLOps & Operations) follows the same folder pattern and will be
 added over time.
 
+## Scored rubrics, pre-seeded content & charts
+
+- **Scored rubrics**: Infrastructure Audit, Organizational Readiness, and
+  Security Architecture now score each dimension 1–5 next to its evidence
+  notes, computing a live overall score and Ready / Conditional / Not-ready
+  verdict that flows into the generated document and exports.
+- **Pre-seeded starter content**: Compliance Gap Analysis starts with 11
+  requirement rows spanning EU AI Act, NIST AI RMF, and ISO/IEC 42001
+  (starting points under the existing verify-with-counsel disclaimer); QA
+  starts with the 5 standard test types with suggested scopes; NFR Spec
+  scaffolds one row per category; the Risk Register has an "Add common AI
+  risks" button with 8 pre-scored risks and mitigations.
+- **Charts** (canvas, no libraries): Use Case Prioritization draws a
+  quick-win 2×2 matrix (feasibility × value, quick wins highlighted); the
+  Risk Register draws a likelihood × impact heatmap colored by severity.
+
 ## Agent drafting (all 24 deliverable tools)
 
 Every deliverable tool has an **"Agent drafting"** card: one click generates a

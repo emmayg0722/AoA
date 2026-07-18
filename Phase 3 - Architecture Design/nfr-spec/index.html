@@ -529,7 +529,10 @@ docHtml = function () {
   loadSaved();
   prefillEngagement();
   applyI18n();
-  if (!rows.length) { rows.push({ id: nextId++, category: CATEGORIES[0], requirement: '', target: '', priority: 'should' }); }
+  if (!rows.length) {
+    // One starter row per category so the matrix scaffolds the full spec.
+    CATEGORIES.forEach(cat => rows.push({ id: nextId++, category: cat, requirement: '', target: '', priority: 'should' }));
+  }
   renderMatrix();
   renderPreview();
 })();

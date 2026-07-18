@@ -560,7 +560,16 @@ docHtml = function () {
   loadSaved();
   prefillEngagement();
   applyI18n();
-  if (!rows.length) { rows.push({ id: nextId++, testType: '', scope: '', status: 'notstarted' }); }
+  if (!rows.length) {
+    // Standard test-type starter set -- edit scopes to fit the engagement.
+    [
+      ['Model performance', 'Accuracy/quality on held-out and adversarial data vs. success criteria'],
+      ['Integration', 'Contract tests for every system touchpoint in the integration plan'],
+      ['Load & performance', 'Latency and throughput at realistic and peak concurrent load'],
+      ['Security', 'Prompt injection, data exfiltration, access-control bypass attempts'],
+      ['User acceptance', 'Real users complete representative tasks against acceptance criteria'],
+    ].forEach(([tt, sc]) => rows.push({ id: nextId++, testType: tt, scope: sc, status: 'notstarted' }));
+  }
   renderMatrix();
   renderPreview();
 })();
