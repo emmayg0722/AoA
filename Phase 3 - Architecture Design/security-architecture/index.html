@@ -52,6 +52,14 @@
   .preview h3:first-child { margin-top: 0; }
   .preview p { margin: 6px 0; white-space: pre-wrap; }
   .preview .meta { font-size: 13px; color: var(--muted); margin-bottom: 10px; }
+  .rubric-grid { display: grid; grid-template-columns: 1.6fr 0.6fr; gap: 8px 14px; align-items: center; margin-top: 6px; }
+  .rubric-grid .rh { font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); }
+  .rubric-grid select.rub { width: 100%; font-family: var(--font-body); font-size: 14px; color: var(--ink); border: 1.5px solid var(--line); border-radius: 8px; padding: 7px 9px; background: #fff; }
+  .verdict-banner { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 10px; margin-top: 14px; font-size: 14px; }
+  .verdict-banner .vscore { font-family: var(--font-heading); font-size: 24px; font-weight: 700; }
+  .verdict-ready { background: #e7f5ee; color: var(--green); }
+  .verdict-conditional { background: #fdf3e3; color: var(--amber); }
+  .verdict-notready { background: #fbeaea; color: var(--red); }
   .prompt-box { display: none; margin-top: 12px; }
   pre.prompt { background: #f5f5fc; border: 1px solid var(--line); border-radius: 10px; padding: 14px; font-size: 12.5px; line-height: 1.5; white-space: pre-wrap; word-break: break-word; color: #2a2a3a; max-height: 320px; overflow: auto; }
   .preview h2 { font-family: var(--font-heading); color: var(--primary); font-size: 18px; margin: 16px 0 6px; }
@@ -106,6 +114,20 @@
       <textarea data-eng="auditNotes"></textarea>
       <label data-i18n="lblInjectionNotes"></label>
       <textarea data-eng="injectionNotes"></textarea>
+    </div>
+
+    <div class="card">
+      <h2 data-i18n="rubricTitle"></h2>
+      <p class="hint" data-i18n="rubricHint"></p>
+      <div class="rubric-grid">
+        <div class="rh" data-i18n="rubricColDim"></div><div class="rh" data-i18n="rubricColScore"></div>
+        <div data-i18n="lblProtectionNotes"></div><div><select class="rub" data-eng="score_protection"><option value="">—</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
+        <div data-i18n="lblEncryptionNotes"></div><div><select class="rub" data-eng="score_encryption"><option value="">—</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
+        <div data-i18n="lblAccessNotes"></div><div><select class="rub" data-eng="score_access"><option value="">—</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
+        <div data-i18n="lblAuditNotes"></div><div><select class="rub" data-eng="score_audit"><option value="">—</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
+        <div data-i18n="lblInjectionNotes"></div><div><select class="rub" data-eng="score_injection"><option value="">—</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
+      </div>
+      <div class="verdict-banner" id="rubricBanner" style="display:none"><div class="vscore" id="rubricScoreEl"></div><div id="rubricVerdictEl"></div></div>
     </div>
 
     <div class="card">
@@ -250,6 +272,38 @@ const STRINGS = {
     emptyNote: '(ännu inte dokumenterat)',
   },
 };
+
+// ── Rubric chrome strings (merged into STRINGS) ──────────────────
+(function () {
+  const D = {
+    en: {
+      rubricTitle: 'Scored assessment',
+      rubricHint: 'Score each dimension 1 (weak) to 5 (strong), using the evidence you noted above. The overall score and verdict compute live and are included in the generated document.',
+      rubricColDim: 'Dimension', rubricColScore: 'Score', rubricOverall: 'Overall readiness',
+      rubricVerdict_ready: 'Ready \u2014 strong foundation',
+      rubricVerdict_conditional: 'Conditional \u2014 address the gaps first',
+      rubricVerdict_notready: 'Not ready \u2014 significant gaps',
+    },
+    da: {
+      rubricTitle: 'Scoret vurdering',
+      rubricHint: 'Score hver dimension 1 (svag) til 5 (st\u00e6rk) ud fra den evidens, du noterede ovenfor. Samlet score og vurdering beregnes live og indg\u00e5r i det genererede dokument.',
+      rubricColDim: 'Dimension', rubricColScore: 'Score', rubricOverall: 'Samlet parathed',
+      rubricVerdict_ready: 'Klar \u2014 st\u00e6rkt fundament',
+      rubricVerdict_conditional: 'Betinget \u2014 luk hullerne f\u00f8rst',
+      rubricVerdict_notready: 'Ikke klar \u2014 v\u00e6sentlige huller',
+    },
+    sv: {
+      rubricTitle: 'Po\u00e4ngsatt bed\u00f6mning',
+      rubricHint: 'Po\u00e4ngs\u00e4tt varje dimension 1 (svag) till 5 (stark) utifr\u00e5n den evidens du noterade ovan. Total po\u00e4ng och bed\u00f6mning ber\u00e4knas live och ing\u00e5r i det genererade dokumentet.',
+      rubricColDim: 'Dimension', rubricColScore: 'Po\u00e4ng', rubricOverall: 'Total beredskap',
+      rubricVerdict_ready: 'Redo \u2014 stark grund',
+      rubricVerdict_conditional: 'Villkorad \u2014 \u00e5tg\u00e4rda bristerna f\u00f6rst',
+      rubricVerdict_notready: 'Inte redo \u2014 betydande brister',
+    },
+  };
+  Object.keys(D).forEach(l => { if (STRINGS[l]) Object.assign(STRINGS[l], D[l]); });
+})();
+
 
 // ── Agent-drafting chrome strings (merged into STRINGS) ──────────
 (function () {
@@ -475,6 +529,54 @@ docHtml = function () {
     + 'code{background:#ececf6;padding:1px 5px;border-radius:4px}pre{background:#f5f5fc;border:1px solid #e4e4f0;border-radius:8px;padding:12px;overflow:auto;font-size:12.5px}</style></head><body>'
     + mdToHtml(d) + '</body></html>';
 };
+
+// ── Scored rubric: per-dimension 1-5 scores -> live overall verdict ──
+const RUBRIC_KEYS = ['score_protection', 'score_encryption', 'score_access', 'score_audit', 'score_injection'];
+const RUBRIC_LABELS = { score_protection: 'lblProtectionNotes', score_encryption: 'lblEncryptionNotes', score_access: 'lblAccessNotes', score_audit: 'lblAuditNotes', score_injection: 'lblInjectionNotes' };
+const RUBRIC_COLORS = { ready: ['#e7f5ee', '#1a8a5c'], conditional: ['#fdf3e3', '#d4790e'], notready: ['#fbeaea', '#c0392b'] };
+function rubricAvg() {
+  const vals = RUBRIC_KEYS.map(k => Number(val(k))).filter(n => n >= 1);
+  if (!vals.length) return null;
+  return vals.reduce((a, b) => a + b, 0) / vals.length;
+}
+function rubricVerdict(s) { return s >= 4 ? 'ready' : s >= 2.75 ? 'conditional' : 'notready'; }
+function renderRubric() {
+  const s = rubricAvg();
+  const b = document.getElementById('rubricBanner');
+  if (s === null) { b.style.display = 'none'; return; }
+  const v = rubricVerdict(s);
+  b.className = 'verdict-banner verdict-' + v;
+  b.style.display = 'flex';
+  document.getElementById('rubricScoreEl').textContent = s.toFixed(1);
+  document.getElementById('rubricVerdictEl').textContent = t('rubricVerdict_' + v);
+}
+const _rubricRenderPreview = renderPreview;
+renderPreview = function () {
+  _rubricRenderPreview();
+  const s = rubricAvg();
+  const d = val('draftDoc');
+  if (s !== null && !(d && d.trim())) {
+    const v = rubricVerdict(s);
+    const c = RUBRIC_COLORS[v];
+    const pv = document.getElementById('preview');
+    pv.innerHTML = '<div style="display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:10px;margin:0 0 12px;background:' + c[0] + ';color:' + c[1] + '">'
+      + '<div style="font-family:Georgia,serif;font-size:24px;font-weight:700">' + s.toFixed(1) + '</div>'
+      + '<div><strong>' + esc(t('rubricOverall')) + ': ' + esc(t('rubricVerdict_' + v)) + '</strong></div></div>' + pv.innerHTML;
+  }
+  renderRubric();
+};
+const _rubricDocMarkdown = docMarkdown;
+docMarkdown = function () {
+  const m = _rubricDocMarkdown();
+  const s = rubricAvg();
+  const d = val('draftDoc');
+  if (s === null || (d && d.trim())) return m;
+  let block = '\n## ' + t('rubricTitle') + '\n\n| ' + t('rubricColDim') + ' | ' + t('rubricColScore') + ' |\n|---|---|\n';
+  RUBRIC_KEYS.forEach(k => { block += '| ' + t(RUBRIC_LABELS[k]) + ' | ' + (val(k) || '\u2014') + ' |\n'; });
+  block += '\n**' + t('rubricOverall') + ':** ' + s.toFixed(1) + ' \u2014 ' + t('rubricVerdict_' + rubricVerdict(s)) + '\n';
+  return m + block;
+};
+document.addEventListener('change', e => { if (e.target.matches && e.target.matches('select.rub')) renderRubric(); });
 
 (function init() {
   document.getElementById('langSelect').value = lang;

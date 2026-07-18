@@ -123,6 +123,12 @@
     </div>
 
     <div class="card">
+      <h2 data-i18n="chartTitle"></h2>
+      <p class="hint" data-i18n="chartHint"></p>
+      <div style="overflow-x:auto"><canvas id="ucChart" width="540" height="400"></canvas></div>
+    </div>
+
+    <div class="card">
       <h2 data-i18n="draftTitle"></h2>
       <p class="hint" data-i18n="draftHint"></p>
       <div class="btn-row"><button class="btn btn-primary" onclick="genDraftPrompt()" data-i18n="btnGenDraft"></button></div>
@@ -279,6 +285,17 @@ const STRINGS = {
     placeholderPain: 't.ex. 40% av ärenden felroutade, 2 dagars fördröjning',
   },
 };
+
+// ── Quick-win chart strings (merged into STRINGS) ────────────────
+(function () {
+  const D = {
+    en: { chartTitle: 'Quick-win matrix', chartHint: 'Feasibility against value \u2014 the top-right quadrant is where quick wins live. Points turn green at a quick-win score (\u2265 4).', chartValueAxis: 'Value \u2014 (ROI + Impact) / 2' },
+    da: { chartTitle: 'Quick-win-matrix', chartHint: 'Gennemf\u00f8rlighed mod v\u00e6rdi \u2014 \u00f8verste h\u00f8jre kvadrant er der, hvor quick wins bor. Punkter bliver gr\u00f8nne ved quick-win-score (\u2265 4).', chartValueAxis: 'V\u00e6rdi \u2014 (ROI + Effekt) / 2' },
+    sv: { chartTitle: 'Quick-win-matris', chartHint: 'Genomf\u00f6rbarhet mot v\u00e4rde \u2014 \u00f6vre h\u00f6gra kvadranten \u00e4r d\u00e4r quick wins bor. Punkter blir gr\u00f6na vid quick-win-po\u00e4ng (\u2265 4).', chartValueAxis: 'V\u00e4rde \u2014 (ROI + Effekt) / 2' },
+  };
+  Object.keys(D).forEach(l => { if (STRINGS[l]) Object.assign(STRINGS[l], D[l]); });
+})();
+
 
 // ── Agent-drafting chrome strings (merged into STRINGS) ──────────
 (function () {
@@ -572,6 +589,52 @@ docHtml = function () {
     + 'code{background:#ececf6;padding:1px 5px;border-radius:4px}pre{background:#f5f5fc;border:1px solid #e4e4f0;border-radius:8px;padding:12px;overflow:auto;font-size:12.5px}</style></head><body>'
     + mdToHtml(d) + '</body></html>';
 };
+
+// ── Quick-win 2x2 scatter (canvas, no libraries) ─────────────────
+function drawUcChart() {
+  const cv = document.getElementById('ucChart');
+  if (!cv) return;
+  const ctx = cv.getContext('2d');
+  const W = cv.width, H = cv.height;
+  const mL = 56, mR = 16, mT = 16, mB = 46;
+  const pw = W - mL - mR, ph = H - mT - mB;
+  const sx = v => mL + ((v - 1) / 4) * pw;
+  const sy = v => mT + ph - ((v - 1) / 4) * ph;
+  ctx.clearRect(0, 0, W, H);
+  // quick-win quadrant (top-right of midpoint 3)
+  ctx.fillStyle = '#EEEEFA';
+  ctx.fillRect(sx(3), mT, pw - (sx(3) - mL), sy(3) - mT);
+  ctx.strokeStyle = '#e4e4f0'; ctx.lineWidth = 1;
+  for (let v = 1; v <= 5; v++) {
+    ctx.beginPath(); ctx.moveTo(sx(v), mT); ctx.lineTo(sx(v), mT + ph); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(mL, sy(v)); ctx.lineTo(mL + pw, sy(v)); ctx.stroke();
+    ctx.fillStyle = '#5b5b6b'; ctx.font = '11px Inter, sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText(String(v), sx(v), mT + ph + 16);
+    ctx.textAlign = 'right';
+    ctx.fillText(String(v), mL - 8, sy(v) + 4);
+  }
+  ctx.strokeStyle = '#b9b8de';
+  ctx.beginPath(); ctx.moveTo(sx(3), mT); ctx.lineTo(sx(3), mT + ph); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(mL, sy(3)); ctx.lineTo(mL + pw, sy(3)); ctx.stroke();
+  ctx.fillStyle = '#1B1474'; ctx.font = '600 11px Inter, sans-serif'; ctx.textAlign = 'right';
+  ctx.fillText(t('quickWins'), mL + pw - 6, mT + 16);
+  ctx.fillStyle = '#5b5b6b'; ctx.font = '12px Inter, sans-serif'; ctx.textAlign = 'center';
+  ctx.fillText(t('colFeasibility'), mL + pw / 2, H - 10);
+  ctx.save(); ctx.translate(14, mT + ph / 2); ctx.rotate(-Math.PI / 2);
+  ctx.fillText(t('chartValueAxis'), 0, 0); ctx.restore();
+  rows.filter(r => r.name && r.name.trim()).forEach(r => {
+    const x = sx(Number(r.feas));
+    const y = sy((Number(r.roi) + Number(r.impact)) / 2);
+    ctx.beginPath(); ctx.arc(x, y, 6, 0, Math.PI * 2);
+    ctx.fillStyle = isQuickWin(r) ? '#1a8a5c' : '#1B1474';
+    ctx.fill();
+    ctx.fillStyle = '#1c1c28'; ctx.font = '11px Inter, sans-serif'; ctx.textAlign = 'left';
+    const label = r.name.length > 18 ? r.name.slice(0, 17) + '\u2026' : r.name;
+    ctx.fillText(label, x + 9, y + 4);
+  });
+}
+const _ucChartRenderPreview = renderPreview;
+renderPreview = function () { _ucChartRenderPreview(); drawUcChart(); };
 
 (function init() {
   document.getElementById('langSelect').value = lang;

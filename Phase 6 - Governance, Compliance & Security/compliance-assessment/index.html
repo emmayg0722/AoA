@@ -576,7 +576,24 @@ docHtml = function () {
   loadSaved();
   prefillEngagement();
   applyI18n();
-  if (!rows.length) { rows.push({ id: nextId++, requirement: '', framework: '', status: 'notassessed', notes: '' }); }
+  if (!rows.length) {
+    // Starter requirement set spanning the major frameworks. These are
+    // starting points reflecting current understanding, not legal advice --
+    // verify applicability and completeness with qualified counsel.
+    [
+      ['Determine system risk classification (prohibited / high-risk / limited / minimal)', 'EU AI Act'],
+      ['Technical documentation prepared and maintained (Annex IV)', 'EU AI Act'],
+      ['Automatic logging and record-keeping across the system lifecycle', 'EU AI Act'],
+      ['Human oversight measures designed and documented', 'EU AI Act'],
+      ['Transparency: users informed of AI interaction; AI-generated content marked', 'EU AI Act'],
+      ['Accuracy, robustness and cybersecurity testing evidence', 'EU AI Act'],
+      ['Govern: AI policies, roles and accountability established', 'NIST AI RMF'],
+      ['Map: context, intended use and risks identified', 'NIST AI RMF'],
+      ['Measure: risks analyzed and tracked with defined metrics', 'NIST AI RMF'],
+      ['Manage: risk responses prioritized, implemented and monitored', 'NIST AI RMF'],
+      ['AI management system scope, leadership and continual improvement', 'ISO/IEC 42001'],
+    ].forEach(([req, fw]) => rows.push({ id: nextId++, requirement: req, framework: fw, status: 'notassessed', notes: '' }));
+  }
   renderMatrix();
   renderPreview();
 })();

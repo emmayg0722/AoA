@@ -127,7 +127,14 @@
       </table>
       <div class="btn-row">
         <button class="btn btn-secondary" onclick="addRow()" data-i18n="btnAddRow"></button>
+        <button class="btn btn-secondary" onclick="addCommonRisks()" data-i18n="btnAddCommon"></button>
       </div>
+    </div>
+
+    <div class="card">
+      <h2 data-i18n="heatTitle"></h2>
+      <p class="hint" data-i18n="heatHint"></p>
+      <div style="overflow-x:auto"><canvas id="riskHeat" width="540" height="400"></canvas></div>
     </div>
 
     <div class="card">
@@ -302,6 +309,27 @@ const STRINGS = {
     emptyNote: '(ännu inte dokumenterat)',
   },
 };
+
+// ── Common-risks button strings (merged into STRINGS) ────────────
+(function () {
+  const D = {
+    en: { btnAddCommon: '\u2795 Add common AI risks' },
+    da: { btnAddCommon: '\u2795 Tilf\u00f8j almindelige AI-risici' },
+    sv: { btnAddCommon: '\u2795 L\u00e4gg till vanliga AI-risker' },
+  };
+  Object.keys(D).forEach(l => { if (STRINGS[l]) Object.assign(STRINGS[l], D[l]); });
+})();
+
+// ── Risk heatmap strings (merged into STRINGS) ───────────────────
+(function () {
+  const D = {
+    en: { heatTitle: 'Risk heatmap', heatHint: 'Likelihood \u00d7 impact \u2014 each cell shows how many registered risks land there. Color follows severity (Low / Medium / High / Critical).' },
+    da: { heatTitle: 'Risiko-heatmap', heatHint: 'Sandsynlighed \u00d7 konsekvens \u2014 hver celle viser hvor mange registrerede risici der lander der. Farven f\u00f8lger alvorlighed (Lav / Middel / H\u00f8j / Kritisk).' },
+    sv: { heatTitle: 'Riskv\u00e4rmekarta', heatHint: 'Sannolikhet \u00d7 p\u00e5verkan \u2014 varje cell visar hur m\u00e5nga registrerade risker som landar d\u00e4r. F\u00e4rgen f\u00f6ljer allvarlighetsgrad (L\u00e5g / Medel / H\u00f6g / Kritisk).' },
+  };
+  Object.keys(D).forEach(l => { if (STRINGS[l]) Object.assign(STRINGS[l], D[l]); });
+})();
+
 
 // ── Agent-drafting chrome strings (merged into STRINGS) ──────────
 (function () {
@@ -604,6 +632,73 @@ docHtml = function () {
     + 'code{background:#ececf6;padding:1px 5px;border-radius:4px}pre{background:#f5f5fc;border:1px solid #e4e4f0;border-radius:8px;padding:12px;overflow:auto;font-size:12.5px}</style></head><body>'
     + mdToHtml(d) + '</body></html>';
 };
+
+// ── Common AI risk starter set ───────────────────────────────────
+const COMMON_RISKS = [
+  { risk: 'Model drift degrades accuracy over time', likelihood: '3', impact: '4', mitigation: 'Drift monitoring + scheduled retraining' },
+  { risk: 'Hallucinated output presented as fact', likelihood: '3', impact: '4', mitigation: 'Grounding/citations + human review on high-stakes outputs' },
+  { risk: 'Prompt injection via untrusted content', likelihood: '3', impact: '4', mitigation: 'Input isolation, output validation, least-privilege tools' },
+  { risk: 'Sensitive data leakage in prompts or logs', likelihood: '2', impact: '5', mitigation: 'Data minimization, redaction, retention limits' },
+  { risk: 'Biased or unfair outcomes for protected groups', likelihood: '2', impact: '5', mitigation: 'Bias audit per release + fairness metrics in evaluation' },
+  { risk: 'Regulatory non-compliance with AI obligations', likelihood: '2', impact: '5', mitigation: 'Compliance gap analysis + counsel review before go-live' },
+  { risk: 'Vendor or model deprecation breaks the system', likelihood: '3', impact: '3', mitigation: 'Abstraction layer + tested fallback model' },
+  { risk: 'Cost overrun from unbounded token usage', likelihood: '3', impact: '3', mitigation: 'Budgets, caching, routing to cheaper models' },
+];
+function addCommonRisks() {
+  const existing = rows.map(r => r.risk.trim().toLowerCase());
+  COMMON_RISKS.forEach(cr => {
+    if (existing.indexOf(cr.risk.toLowerCase()) === -1) {
+      rows.push({ id: nextId++, risk: cr.risk, likelihood: cr.likelihood, impact: cr.impact, mitigation: cr.mitigation, owner: '' });
+    }
+  });
+  rows = rows.filter(r => r.risk.trim() !== '' || r.mitigation.trim() !== '' || r.owner.trim() !== '');
+  renderMatrix(); renderPreview(); save();
+}
+
+// ── Likelihood x impact heatmap (canvas, no libraries) ───────────
+const HEAT_COLORS = { low: '#EEEEFA', medium: '#fdf3e3', high: '#fbe3d6', critical: '#fbeaea' };
+function drawRiskHeat() {
+  const cv = document.getElementById('riskHeat');
+  if (!cv) return;
+  const ctx = cv.getContext('2d');
+  const W = cv.width, H = cv.height;
+  const mL = 64, mR = 16, mT = 16, mB = 52;
+  const cw = (W - mL - mR) / 5, ch = (H - mT - mB) / 5;
+  ctx.clearRect(0, 0, W, H);
+  const counts = {};
+  rows.filter(r => r.risk && r.risk.trim()).forEach(r => {
+    const k = Number(r.likelihood) + ',' + Number(r.impact);
+    counts[k] = (counts[k] || 0) + 1;
+  });
+  for (let l = 1; l <= 5; l++) {
+    for (let im = 1; im <= 5; im++) {
+      const x = mL + (im - 1) * cw;
+      const y = mT + (5 - l) * ch;
+      ctx.fillStyle = HEAT_COLORS[severityOf(l * im)];
+      ctx.fillRect(x, y, cw, ch);
+      ctx.strokeStyle = '#fff'; ctx.lineWidth = 2;
+      ctx.strokeRect(x, y, cw, ch);
+      const c = counts[l + ',' + im];
+      if (c) {
+        ctx.fillStyle = '#1B1474'; ctx.font = '700 16px Inter, sans-serif'; ctx.textAlign = 'center';
+        ctx.fillText(String(c), x + cw / 2, y + ch / 2 + 6);
+      }
+    }
+  }
+  ctx.fillStyle = '#5b5b6b'; ctx.font = '11px Inter, sans-serif'; ctx.textAlign = 'center';
+  for (let v = 1; v <= 5; v++) {
+    ctx.fillText(String(v), mL + (v - 0.5) * cw, mT + 5 * ch + 16);
+    ctx.textAlign = 'right';
+    ctx.fillText(String(v), mL - 8, mT + (5 - v + 0.5) * ch + 4);
+    ctx.textAlign = 'center';
+  }
+  ctx.font = '12px Inter, sans-serif';
+  ctx.fillText(t('colImpact'), mL + 2.5 * cw, H - 12);
+  ctx.save(); ctx.translate(16, mT + 2.5 * ch); ctx.rotate(-Math.PI / 2);
+  ctx.fillText(t('colLikelihood'), 0, 0); ctx.restore();
+}
+const _riskHeatRenderPreview = renderPreview;
+renderPreview = function () { _riskHeatRenderPreview(); drawRiskHeat(); };
 
 (function init() {
   document.getElementById('langSelect').value = lang;
