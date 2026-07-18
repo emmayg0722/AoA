@@ -1,0 +1,30 @@
+{
+ "fields": {
+  "client": "Nordkap Insurance",
+  "assessor": "E. Gao",
+  "platformStrategy": "hybrid",
+  "buildVsBuy": "Buy the platform (Azure OpenAI, Azure ML), build the fraud model and integration layer; no bespoke infra.",
+  "dataPlatform": "Extend Synapse DWH with an Event Hub stream from ClaimCenter FNOL; Purview as the single governance plane."
+ },
+ "nextId": 4,
+ "rows": [
+  {
+   "id": 1,
+   "year": "H1 2026",
+   "milestone": "FNOL event stream + feature store MVP",
+   "dependency": "ClaimCenter API rate-limit uplift"
+  },
+  {
+   "id": 2,
+   "year": "H2 2026",
+   "milestone": "Fraud-scoring service in production (one region)",
+   "dependency": "GPU/PTU quota; model governance sign-off"
+  },
+  {
+   "id": 3,
+   "year": "2027",
+   "milestone": "National rollout + document-intake pipeline",
+   "dependency": "Pilot go decision"
+  }
+ ]
+}

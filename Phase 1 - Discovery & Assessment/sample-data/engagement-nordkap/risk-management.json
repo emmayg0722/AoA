@@ -1,0 +1,50 @@
+{
+ "fields": {
+  "client": "Nordkap Insurance",
+  "assessor": "E. Gao",
+  "auditTrail": "Append-only score log (model version, feature snapshot, threshold, outcome, override) in immutable storage, 7-year retention; monthly integrity check; quarterly internal-audit review."
+ },
+ "nextId": 6,
+ "rows": [
+  {
+   "id": 1,
+   "risk": "False positives erode adjuster trust and SIU capacity",
+   "likelihood": "3",
+   "impact": "4",
+   "mitigation": "FPR ceiling 20% with monthly threshold review co-owned by SIU",
+   "owner": "SIU lead"
+  },
+  {
+   "id": 2,
+   "risk": "Model drift after pricing/product changes",
+   "likelihood": "4",
+   "impact": "4",
+   "mitigation": "Drift monitoring + retraining trigger tied to product releases",
+   "owner": "ML lead"
+  },
+  {
+   "id": 3,
+   "risk": "Prompt injection via manipulated claim narratives",
+   "likelihood": "3",
+   "impact": "4",
+   "mitigation": "Input isolation, schema-validated LLM output, adversarial test set",
+   "owner": "Security architect"
+  },
+  {
+   "id": 4,
+   "risk": "Regulatory reclassification tightens obligations",
+   "likelihood": "2",
+   "impact": "5",
+   "mitigation": "Counsel review each AI Act guidance update; Annex IV docs kept current",
+   "owner": "DPO"
+  },
+  {
+   "id": 5,
+   "risk": "ClaimCenter vendor add-on unsupported in future versions",
+   "likelihood": "2",
+   "impact": "3",
+   "mitigation": "Contractual support commitment + batch fallback path",
+   "owner": "Claims IT lead"
+  }
+ ]
+}

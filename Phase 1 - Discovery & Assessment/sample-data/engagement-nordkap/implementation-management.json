@@ -1,0 +1,30 @@
+{
+ "fields": {
+  "client": "Nordkap Insurance",
+  "assessor": "E. Gao",
+  "teamStructure": "Delivery lead (Nordkap), 2 ML engineers (partner), 2 integration engineers (claims IT), product owner from claims business, SIU SME 20%.",
+  "cadence": "2-week sprints; daily standup; sprint review with claims PO; monthly steering with Head of Claims.",
+  "decisionLog": "See ADR log: in-tenant Azure OpenAI; event-driven scoring; Azure AI Search as vector store."
+ },
+ "nextId": 4,
+ "rows": [
+  {
+   "id": 1,
+   "sprint": "Sprint 1-2",
+   "goal": "FNOL event stream + feature pipeline in staging",
+   "status": "done"
+  },
+  {
+   "id": 2,
+   "sprint": "Sprint 3-4",
+   "goal": "Scoring service + workbench sidebar integration",
+   "status": "inprogress"
+  },
+  {
+   "id": 3,
+   "sprint": "Sprint 5-6",
+   "goal": "SIU auto-referral flow + audit logging complete",
+   "status": "planned"
+  }
+ ]
+}

@@ -1,0 +1,51 @@
+{
+ "fields": {
+  "client": "Nordkap Insurance",
+  "assessor": "E. Gao"
+ },
+ "nextId": 7,
+ "rows": [
+  {
+   "id": 1,
+   "category": "Performance",
+   "requirement": "Fraud score returned to workbench after FNOL submission",
+   "target": "p99 < 2 s",
+   "priority": "must"
+  },
+  {
+   "id": 2,
+   "category": "Availability",
+   "requirement": "Scoring service availability during claims hours",
+   "target": "99.9% (06-22 CET)",
+   "priority": "must"
+  },
+  {
+   "id": 3,
+   "category": "Scalability",
+   "requirement": "Peak storm-event claim volume handled without degradation",
+   "target": "10x normal FNOL rate",
+   "priority": "should"
+  },
+  {
+   "id": 4,
+   "category": "Security",
+   "requirement": "All PII encrypted and access-logged end to end",
+   "target": "AES-256 at rest, TLS 1.2+, full audit trail",
+   "priority": "must"
+  },
+  {
+   "id": 5,
+   "category": "Compliance",
+   "requirement": "Every automated referral reconstructable for regulator review",
+   "target": "100% of decisions, 7-year retention",
+   "priority": "must"
+  },
+  {
+   "id": 6,
+   "category": "Usability",
+   "requirement": "Adjuster sees score rationale without leaving the workbench",
+   "target": "<= 1 click to full explanation",
+   "priority": "should"
+  }
+ ]
+}

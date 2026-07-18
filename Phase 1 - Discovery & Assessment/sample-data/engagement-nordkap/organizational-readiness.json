@@ -1,0 +1,19 @@
+{
+ "fields": {
+  "client": "Nordkap Insurance",
+  "assessor": "E. Gao",
+  "useCase": "Real-time claims fraud detection at FNOL (first notice of loss)",
+  "teamSize": "~180 in IT; 6 data engineers, 3 data scientists, no ML engineer",
+  "initiatives": "Claims chatbot pilot shipped 2025; an ML triage PoC stalled at handover to operations",
+  "skillNotes": "Strong .NET/integration skills; ML experience concentrated in two people. No MLOps experience in-house.",
+  "cultureNotes": "Claims leadership is enthusiastic after the chatbot pilot; adjusters worry about being second-guessed by a model. Works councils must be consulted before go-live.",
+  "processNotes": "SIU referral process is documented and consistent across regions - a good automation anchor. Model-change process does not exist yet.",
+  "stakeholderNotes": "Sponsor: Head of Claims. Sceptic: SIU lead (worried about false positives creating rework). Data owner for claims: enterprise data office.",
+  "recommendations": "Hire or contract one MLOps engineer before build; co-design referral thresholds with the SIU lead; brief works councils in month 1.",
+  "verdict": "conditional",
+  "score_skills": "3",
+  "score_culture": "4",
+  "score_process": "3",
+  "score_stakeholders": "4"
+ }
+}

@@ -1,0 +1,31 @@
+{
+ "fields": {
+  "client": "Nordkap Insurance",
+  "assessor": "E. Gao",
+  "rationale": "Microsoft-heavy estate, existing Azure landing zone, and Purview governance made in-tenant Azure services the lowest-risk path; the fraud model itself stays framework-agnostic (Python, ONNX-exportable).",
+  "alternatives": "AWS SageMaker stack (rejected: no landing zone, duplicate governance); self-hosted open-source LLM (deferred: ops burden before MLOps maturity exists).",
+  "risks": "Azure OpenAI quota constraints at national scale; single-cloud concentration; mitigations: PTU reservation and ONNX portability of the core model."
+ },
+ "stackRows": [
+  {
+   "layer": "agent-type",
+   "choice": "option #3"
+  },
+  {
+   "layer": "core-intelligence",
+   "choice": "option #4"
+  },
+  {
+   "layer": "vector-db",
+   "choice": "option #5"
+  },
+  {
+   "layer": "security-governance",
+   "choice": "option #1"
+  },
+  {
+   "layer": "deployment",
+   "choice": "option #3"
+  }
+ ]
+}

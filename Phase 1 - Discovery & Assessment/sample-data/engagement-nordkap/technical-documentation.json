@@ -1,0 +1,37 @@
+{
+ "fields": {
+  "client": "Nordkap Insurance",
+  "assessor": "E. Gao"
+ },
+ "nextId": 5,
+ "rows": [
+  {
+   "id": 1,
+   "document": "API documentation",
+   "owner": "Partner ML lead",
+   "location": "repo /docs/api (OpenAPI)",
+   "status": "done"
+  },
+  {
+   "id": 2,
+   "document": "Deployment manual",
+   "owner": "Claims IT platform team",
+   "location": "Wiki > ClaimsAI > Deploy",
+   "status": "inprogress"
+  },
+  {
+   "id": 3,
+   "document": "Operations runbook",
+   "owner": "Claims IT on-call lead",
+   "location": "Wiki > ClaimsAI > Runbook",
+   "status": "inprogress"
+  },
+  {
+   "id": 4,
+   "document": "Test report",
+   "owner": "QA lead",
+   "location": "Wiki > ClaimsAI > QA",
+   "status": "notstarted"
+  }
+ ]
+}

@@ -36,6 +36,9 @@
   .card .hint { font-size: 13.5px; color: var(--muted); margin-bottom: 14px; }
   ol.sop { margin-left: 20px; }
   ol.sop li { margin-bottom: 10px; font-size: 14px; }
+  ol.sop li.done > label.sop-step > span { text-decoration: line-through; color: var(--muted); }
+  label.sop-step { display: flex; gap: 9px; align-items: flex-start; font-weight: 400; margin: 0; cursor: pointer; font-size: 14px; color: var(--ink); }
+  label.sop-step input { width: auto; margin-top: 4px; flex: none; }
   label { display: block; font-size: 13px; font-weight: 600; color: var(--ink); margin: 10px 0 5px; }
   input[type=text], textarea { width: 100%; font-family: var(--font-body); font-size: 14px; color: var(--ink); border: 1.5px solid var(--line); border-radius: 8px; padding: 9px 11px; background: #fff; }
   textarea { resize: vertical; min-height: 70px; }
@@ -96,6 +99,7 @@
       <h2 data-i18n="sopTitle"></h2>
       <p class="hint" data-i18n="sopHint"></p>
       <ol class="sop" id="sopList"></ol>
+      <p class="hint" id="sopProgress" style="margin:8px 0 0"></p>
     </div>
 
     <div class="card">
@@ -148,8 +152,10 @@
         <button class="btn btn-primary" onclick="exportDoc('html')" data-i18n="btnExportHtml"></button>
         <button class="btn btn-primary" onclick="exportDoc('md')" data-i18n="btnExportMd"></button>
         <button class="btn btn-secondary" onclick="resetAll()" data-i18n="btnReset"></button>
+        <button class="btn btn-secondary" onclick="loadSample()" data-i18n="btnLoadSample"></button>
         <span class="saved" id="savedFlag"></span>
       </div>
+      <div id="sampleError" style="display:none;color:var(--red);font-size:12.5px;margin-top:8px"></div>
     </div>
   </main>
 
@@ -272,6 +278,32 @@ const STRINGS = {
     emptyNote: '(ännu inte dokumenterat)',
   },
 };
+
+// ── Checklist + sample-data strings (merged into STRINGS) ────────
+(function () {
+  const D = {
+    en: {
+      sopProgress: (n, total) => `${n} of ${total} steps done`,
+      btnLoadSample: '\ud83e\uddea Load sample',
+      sampleConfirm: 'Load the sample engagement into this tool? This replaces anything currently saved here.',
+      sampleLoadError2: (msg) => `Could not load the sample (${msg}). This can happen if the page was opened directly from disk rather than served over http(s).`,
+    },
+    da: {
+      sopProgress: (n, total) => `${n} af ${total} trin fuldf\u00f8rt`,
+      btnLoadSample: '\ud83e\uddea Indl\u00e6s eksempel',
+      sampleConfirm: 'Indl\u00e6s eksempel-engagementet i dette v\u00e6rkt\u00f8j? Dette erstatter alt, der aktuelt er gemt her.',
+      sampleLoadError2: (msg) => `Kunne ikke indl\u00e6se eksemplet (${msg}). Dette kan ske, hvis siden blev \u00e5bnet direkte fra disk i stedet for serveret over http(s).`,
+    },
+    sv: {
+      sopProgress: (n, total) => `${n} av ${total} steg klara`,
+      btnLoadSample: '\ud83e\uddea L\u00e4s in exempel',
+      sampleConfirm: 'L\u00e4s in exempeluppdraget i detta verktyg? Detta ers\u00e4tter allt som f\u00f6r n\u00e4rvarande \u00e4r sparat h\u00e4r.',
+      sampleLoadError2: (msg) => `Kunde inte l\u00e4sa in exemplet (${msg}). Detta kan h\u00e4nda om sidan \u00f6ppnades direkt fr\u00e5n disk ist\u00e4llet f\u00f6r att serveras \u00f6ver http(s).`,
+    },
+  };
+  Object.keys(D).forEach(l => { if (STRINGS[l]) Object.assign(STRINGS[l], D[l]); });
+})();
+
 
 // ── Rubric chrome strings (merged into STRINGS) ──────────────────
 (function () {
@@ -577,6 +609,42 @@ docMarkdown = function () {
   return m + block;
 };
 document.addEventListener('change', e => { if (e.target.matches && e.target.matches('select.rub')) renderRubric(); });
+
+// ── Checkable SOP steps (persisted) + sample-engagement loader ───
+let sopDone = [];
+try { const _o0 = JSON.parse(localStorage.getItem(KEY) || '{}'); if (Array.isArray(_o0.sopDone)) sopDone = _o0.sopDone; } catch (e) {}
+function renderSop() {
+  const steps = t('sop');
+  document.getElementById('sopList').innerHTML = steps.map((s, i) =>
+    `<li class="${sopDone[i] ? 'done' : ''}"><label class="sop-step"><input type="checkbox" ${sopDone[i] ? 'checked' : ''} onchange="toggleSop(${i}, this.checked)"><span>${esc(s)}</span></label></li>`
+  ).join('');
+  const pl = document.getElementById('sopProgress');
+  if (pl) pl.textContent = t('sopProgress')(sopDone.filter(Boolean).length, steps.length);
+}
+function toggleSop(i, v) { sopDone[i] = v; renderSop(); save(); }
+const _sopSave = save;
+save = function () {
+  _sopSave();
+  try {
+    const o = JSON.parse(localStorage.getItem(KEY) || '{}');
+    o.sopDone = sopDone;
+    localStorage.setItem(KEY, JSON.stringify(o));
+  } catch (e) {}
+};
+const _sopApplyI18n = applyI18n;
+applyI18n = function () { _sopApplyI18n(); renderSop(); };
+const SAMPLE_URL = '../../Phase%201%20-%20Discovery%20%26%20Assessment/sample-data/engagement-nordkap/security-architecture.json';
+function loadSample() {
+  if (!confirm(t('sampleConfirm'))) return;
+  const errEl = document.getElementById('sampleError');
+  if (errEl) errEl.style.display = 'none';
+  fetch(SAMPLE_URL)
+    .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+    .then(o => { localStorage.setItem(KEY, JSON.stringify(o)); location.reload(); })
+    .catch(err => {
+      if (errEl) { errEl.textContent = t('sampleLoadError2')(err.message); errEl.style.display = 'block'; }
+    });
+}
 
 (function init() {
   document.getElementById('langSelect').value = lang;

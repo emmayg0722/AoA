@@ -1,0 +1,27 @@
+{
+ "fields": {
+  "client": "Nordkap Insurance",
+  "assessor": "E. Gao"
+ },
+ "nextId": 4,
+ "rows": [
+  {
+   "id": 1,
+   "criterion": "Technical performance vs. success criteria",
+   "evidence": "18% detection uplift at 17% FPR on live pilot data",
+   "score": "5"
+  },
+  {
+   "id": 2,
+   "criterion": "User acceptance",
+   "evidence": "Adjusters overrode 12% of referrals; satisfaction 4.1/5",
+   "score": "4"
+  },
+  {
+   "id": 3,
+   "criterion": "Operational readiness",
+   "evidence": "Two latency spikes during storm week; runbook gaps found",
+   "score": "3"
+  }
+ ]
+}

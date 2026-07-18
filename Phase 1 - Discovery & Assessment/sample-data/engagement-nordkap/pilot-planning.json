@@ -1,0 +1,32 @@
+{
+ "fields": {
+  "client": "Nordkap Insurance",
+  "assessor": "E. Gao",
+  "pilotScope": "Region North claims team (14 adjusters, 2 SIU investigators)",
+  "timeline": "8 weeks, starting 2026-10-05",
+  "objective": "Do live FNOL scores change referral behaviour and hold up operationally - latency, adjuster acceptance, SIU workload?",
+  "integrationNotes": "Live Event Hub feed; scores surfaced in workbench sidebar; SIU auto-referral above threshold with manual override.",
+  "rollback": "Feature flag kills scoring instantly; claims flow is unaffected because the model only recommends."
+ },
+ "nextId": 4,
+ "rows": [
+  {
+   "id": 1,
+   "week": "Week 2",
+   "checkpoint": "All adjusters onboarded; scores visible on 100% of new FNOL",
+   "signal": "No P1 incidents; p99 latency < 2 s"
+  },
+  {
+   "id": 2,
+   "week": "Week 4",
+   "checkpoint": "Mid-pilot review with SIU",
+   "signal": "FPR <= 20%; referral queue within SIU capacity"
+  },
+  {
+   "id": 3,
+   "week": "Week 8",
+   "checkpoint": "Go/no-go evidence pack complete",
+   "signal": "Detection uplift confirmed on live data"
+  }
+ ]
+}

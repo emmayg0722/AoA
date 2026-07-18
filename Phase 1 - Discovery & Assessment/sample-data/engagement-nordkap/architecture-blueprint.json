@@ -1,0 +1,13 @@
+{
+ "fields": {
+  "client": "Nordkap Insurance",
+  "assessor": "E. Gao",
+  "useCase": "Real-time claims fraud detection at FNOL (first notice of loss)",
+  "execSummary": "A hybrid architecture: FNOL events stream from the on-prem claims core into Azure, where a fraud-scoring service returns a risk band and rationale to the adjuster workbench in under 2 seconds. Humans decide; the system recommends and documents.",
+  "overallArch": "Event-driven: ClaimCenter -> Event Hub -> scoring service (AKS) -> workbench plugin. Batch path retained for retro-scoring and model evaluation.",
+  "dataArch": "Feature store on Synapse; PII minimized at ingestion; Purview lineage from source to score. 3 years of labelled SIU outcomes as training base.",
+  "aiMlArch": "Gradient-boosted baseline + LLM narrative-analysis feature (Azure OpenAI, in-tenant); champion/challenger deployment; drift monitoring with monthly review.",
+  "integrationArch": "REST callback into ClaimCenter activity queue; SIU case system receives auto-referrals above threshold with full score rationale attached.",
+  "techSelections": "Azure OpenAI (in-tenant), Azure ML, Event Hub, AKS, Azure AI Search for narrative retrieval, Purview for governance."
+ }
+}

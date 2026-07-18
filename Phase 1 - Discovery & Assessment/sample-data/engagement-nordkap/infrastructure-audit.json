@@ -1,0 +1,19 @@
+{
+ "fields": {
+  "client": "Nordkap Insurance",
+  "assessor": "E. Gao",
+  "useCase": "Real-time claims fraud detection at FNOL (first notice of loss)",
+  "cloudProvider": "Azure (primary); on-prem VMware for the legacy claims core",
+  "certifications": "ISO 27001, SOC 2 Type II",
+  "stackNotes": "Guidewire ClaimCenter on-prem; policy admin on Azure; data warehouse on Synapse refreshed nightly. No streaming layer today.",
+  "cloudCapNotes": "Mature Azure landing zone with Entra ID and Key Vault. Azure OpenAI approved by security. GPU quota not yet requested.",
+  "integrationNotes": "ClaimCenter exposes REST APIs (rate-limited); FNOL events available only via nightly batch export today, which conflicts with the real-time requirement.",
+  "securityNotes": "Purview classification rolled out to the DWH but not the claims core. No egress filtering on the current ML sandbox.",
+  "recommendations": "1) Stand up an event stream from ClaimCenter FNOL (Event Hub). 2) Extend Purview coverage to claims core. 3) Request GPU/PTU quota for scoring latency headroom.",
+  "verdict": "conditional",
+  "score_stack": "3",
+  "score_cloud": "4",
+  "score_integration": "2",
+  "score_security": "4"
+ }
+}

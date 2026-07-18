@@ -1,0 +1,45 @@
+{
+ "fields": {
+  "client": "Nordkap Insurance",
+  "assessor": "E. Gao",
+  "riskClass": "Working assumption: fraud scoring that influences claim handling is treated as high-risk-adjacent under the EU AI Act pending counsel review (insurance risk-assessment listings); NIST AI RMF used as the management framework. To be confirmed by counsel."
+ },
+ "nextId": 6,
+ "rows": [
+  {
+   "id": 1,
+   "requirement": "Determine system risk classification (prohibited / high-risk / limited / minimal)",
+   "framework": "EU AI Act",
+   "status": "partial",
+   "notes": "Internal analysis done; counsel review scheduled"
+  },
+  {
+   "id": 2,
+   "requirement": "Technical documentation prepared and maintained (Annex IV)",
+   "framework": "EU AI Act",
+   "status": "gap",
+   "notes": "Blueprint exists; Annex IV structure not yet applied"
+  },
+  {
+   "id": 3,
+   "requirement": "Human oversight measures designed and documented",
+   "framework": "EU AI Act",
+   "status": "compliant",
+   "notes": "HITL checkpoints in governance framework"
+  },
+  {
+   "id": 4,
+   "requirement": "Automatic logging and record-keeping across the system lifecycle",
+   "framework": "EU AI Act",
+   "status": "partial",
+   "notes": "Score audit trail live; retention policy unsigned"
+  },
+  {
+   "id": 5,
+   "requirement": "Govern: AI policies, roles and accountability established",
+   "framework": "NIST AI RMF",
+   "status": "compliant",
+   "notes": "Board + usage policy operating"
+  }
+ ]
+}
