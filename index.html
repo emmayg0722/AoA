@@ -146,6 +146,24 @@
     border-radius: 20px;
     margin-top: 18px;
   }
+  .dash {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 22px 24px;
+    margin-bottom: 40px;
+  }
+  .dash-head { display: flex; justify-content: space-between; align-items: baseline; gap: 14px; flex-wrap: wrap; }
+  .dash-head h2 { font-family: var(--font-heading); font-weight: 600; font-size: 24px; color: var(--primary); }
+  .dash-report-link { font-size: 13.5px; font-weight: 600; color: var(--primary); background: var(--accent); padding: 7px 13px; border-radius: 8px; text-decoration: none; }
+  .dash-report-link:hover { background: #C3C5EC; }
+  .dash-sub { color: var(--muted); font-size: 14px; margin: 6px 0 14px; }
+  .dash-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 7px 14px; }
+  .dash-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--ink); text-decoration: none; padding: 3px 2px; border-radius: 6px; }
+  .dash-item:hover { background: var(--powder); }
+  .dash-item .dot { width: 9px; height: 9px; border-radius: 50%; flex: none; }
+  .dash-item .dot.started { background: var(--primary); }
+  .dash-item .dot.empty { background: var(--line); }
   .future {
     margin-top: 44px;
     padding-top: 28px;
@@ -199,6 +217,15 @@
   </header>
 
   <main>
+    <div class="dash">
+      <div class="dash-head">
+        <h2 data-i18n="dashTitle"></h2>
+        <a class="dash-report-link" href="engagement-report.html" data-i18n="dashReport"></a>
+      </div>
+      <p class="dash-sub" id="dashSummary"></p>
+      <div class="dash-grid" id="dashGrid"></div>
+    </div>
+
     <div class="phase-head">
       <h2 data-i18n="p1Title"></h2>
       <span class="phase-tag" data-i18n="tagP1"></span>
@@ -551,6 +578,11 @@ const STRINGS = {
     futureDesc: 'The toolkit follows the full AI-architect delivery lifecycle. These phases are scaffolded and will be filled in over time.',
     pillPhase7: 'Phase 7 · MLOps & Operations',
     footerText: 'Built as an independent AI-architecture consulting portfolio. All assessment tools run fully client-side — no data leaves your browser.',
+    dashTitle: 'Engagement dashboard',
+    dashReport: 'Open master report →',
+    dashClientPrefix: 'Current engagement:',
+    dashNoEngagement: 'No engagement data yet — open any tool below and fill in a client name to get started. Client, assessor, and use case carry over across every tool automatically.',
+    dashProgress: (n, total) => `${n} of ${total} tools started`,
   },
   da: {
     heroEyebrow: 'AI-arkitektur · Konsulentværktøjer',
@@ -654,6 +686,11 @@ const STRINGS = {
     futureDesc: 'Værktøjssættet følger hele AI-arkitektens leveringslivscyklus. Disse faser er skitseret og vil blive udfyldt over tid.',
     pillPhase7: 'Fase 7 · MLOps & Drift',
     footerText: 'Bygget som en uafhængig AI-arkitektur-konsulentportefølje. Alle vurderingsværktøjer kører fuldt klient-side — ingen data forlader din browser.',
+    dashTitle: 'Engagementsoverblik',
+    dashReport: 'Åbn samlet rapport →',
+    dashClientPrefix: 'Aktuelt engagement:',
+    dashNoEngagement: 'Ingen engagementsdata endnu — åbn et værktøj nedenfor og udfyld et kundenavn for at komme i gang. Kunde, vurderingsmand og use case følger automatisk med på tværs af alle værktøjer.',
+    dashProgress: (n, total) => `${n} af ${total} værktøjer påbegyndt`,
   },
   sv: {
     heroEyebrow: 'AI-arkitektur · Konsultverktyg',
@@ -757,12 +794,93 @@ const STRINGS = {
     futureDesc: 'Verktygssamlingen följer AI-arkitektens hela leveranslivscykel. Dessa faser är skisserade och kommer fyllas i över tid.',
     pillPhase7: 'Fas 7 · MLOps & Drift',
     footerText: 'Byggd som en oberoende AI-arkitektur-konsultportfölj. Alla bedömningsverktyg körs helt klient-sidan — ingen data lämnar din webbläsare.',
+    dashTitle: 'Uppdragsöversikt',
+    dashReport: 'Öppna samlad rapport →',
+    dashClientPrefix: 'Aktuellt uppdrag:',
+    dashNoEngagement: 'Ingen uppdragsdata än — öppna ett verktyg nedan och fyll i ett kundnamn för att komma igång. Kund, bedömare och användningsfall följer automatiskt med över alla verktyg.',
+    dashProgress: (n, total) => `${n} av ${total} verktyg påbörjade`,
   },
 };
 
+// ── Engagement dashboard: registry of every tool's localStorage key ──
+const TOOL_REGISTRY = [
+  { key: 'dra5c_engagement_v1', titleKey: 'c_dra5c_t', href: 'Phase%201%20-%20Discovery%20%26%20Assessment/data-readiness-assessment-5c/console.html' },
+  { key: 'aoa_infra_audit_v1', titleKey: 'c_infra_t', href: 'Phase%201%20-%20Discovery%20%26%20Assessment/infrastructure-audit/' },
+  { key: 'aoa_org_readiness_v1', titleKey: 'c_org_t', href: 'Phase%201%20-%20Discovery%20%26%20Assessment/organizational-readiness/' },
+  { key: 'aoa_usecase_priority_v1', titleKey: 'c_ucp_t', href: 'Phase%201%20-%20Discovery%20%26%20Assessment/use-case-prioritization/' },
+  { key: 'aoa_ai_strategy_v1', titleKey: 'c_strat_t', href: 'Phase%202%20-%20Strategy%20%26%20Roadmap/ai-strategy-planning/' },
+  { key: 'aoa_business_case_v1', titleKey: 'c_biz_t', href: 'Phase%202%20-%20Strategy%20%26%20Roadmap/business-case-development/' },
+  { key: 'aoa_tech_roadmap_v1', titleKey: 'c_techrm_t', href: 'Phase%202%20-%20Strategy%20%26%20Roadmap/technology-roadmap/' },
+  { key: 'aoa_org_roadmap_v1', titleKey: 'c_orgrm_t', href: 'Phase%202%20-%20Strategy%20%26%20Roadmap/organizational-roadmap/' },
+  { key: 'dra_arch_builder_v1', titleKey: 'c_archb_t', href: 'Phase%203%20-%20Architecture%20Design/Design%20Layers/architecture-builder.html' },
+  { key: 'aoa_arch_blueprint_v1', titleKey: 'c_bp_t', href: 'Phase%203%20-%20Architecture%20Design/architecture-blueprint/' },
+  { key: 'aoa_adr_v1', titleKey: 'c_adr_t', href: 'Phase%203%20-%20Architecture%20Design/architecture-decision-records/' },
+  { key: 'aoa_tech_stack_report_v1', titleKey: 'c_ts_t', href: 'Phase%203%20-%20Architecture%20Design/tech-stack-selection-report/' },
+  { key: 'aoa_security_arch_v1', titleKey: 'c_sec_t', href: 'Phase%203%20-%20Architecture%20Design/security-architecture/' },
+  { key: 'aoa_nfr_spec_v1', titleKey: 'c_nfr_t', href: 'Phase%203%20-%20Architecture%20Design/nfr-spec/' },
+  { key: 'aoa_poc_planning_v1', titleKey: 'c_poc_t', href: 'Phase%204%20-%20PoC%20%26%20Pilot/poc-planning/' },
+  { key: 'aoa_pilot_planning_v1', titleKey: 'c_pilot_t', href: 'Phase%204%20-%20PoC%20%26%20Pilot/pilot-planning/' },
+  { key: 'aoa_eval_godecision_v1', titleKey: 'c_eval_t', href: 'Phase%204%20-%20PoC%20%26%20Pilot/evaluation-godecision/' },
+  { key: 'aoa_impl_management_v1', titleKey: 'c_impl_t', href: 'Phase%205%20-%20Implementation%20%26%20Delivery/implementation-management/' },
+  { key: 'aoa_system_integration_v1', titleKey: 'c_sysint_t', href: 'Phase%205%20-%20Implementation%20%26%20Delivery/system-integration/' },
+  { key: 'aoa_quality_assurance_v1', titleKey: 'c_qa_t', href: 'Phase%205%20-%20Implementation%20%26%20Delivery/quality-assurance/' },
+  { key: 'aoa_deployment_golive_v1', titleKey: 'c_deploy_t', href: 'Phase%205%20-%20Implementation%20%26%20Delivery/deployment-golive/' },
+  { key: 'aoa_technical_documentation_v1', titleKey: 'c_techdoc_t', href: 'Phase%205%20-%20Implementation%20%26%20Delivery/technical-documentation/' },
+  { key: 'aoa_ai_governance_v1', titleKey: 'c_gov_t', href: 'Phase%206%20-%20Governance%2C%20Compliance%20%26%20Security/ai-governance-framework/' },
+  { key: 'aoa_compliance_assessment_v1', titleKey: 'c_comp_t', href: 'Phase%206%20-%20Governance%2C%20Compliance%20%26%20Security/compliance-assessment/' },
+  { key: 'aoa_responsible_ai_v1', titleKey: 'c_resp_t', href: 'Phase%206%20-%20Governance%2C%20Compliance%20%26%20Security/responsible-ai/' },
+  { key: 'aoa_risk_management_v1', titleKey: 'c_risk_t', href: 'Phase%206%20-%20Governance%2C%20Compliance%20%26%20Security/risk-management/' },
+];
+
+function _numOnly(s) { return /^\d+(\.\d+)?$/.test(s.trim()); }
+function _hasContent(v) {
+  if (typeof v === 'string') return v.trim() !== '' && !_numOnly(v);
+  if (Array.isArray(v)) return v.some(_hasContent);
+  if (v && typeof v === 'object') return Object.keys(v).some(k => ['lang', 'nextId', 'id'].indexOf(k) === -1 && _hasContent(v[k]));
+  return false;
+}
+// "Started" = has content beyond the shared client/assessor/useCase prefill.
+function toolStarted(key) {
+  try {
+    const raw = localStorage.getItem(key);
+    if (!raw) return false;
+    const o = JSON.parse(raw);
+    if (o && o.picks && Object.keys(o.picks).length) return true;
+    if (o && o.fields) {
+      const f = Object.assign({}, o.fields);
+      delete f.client; delete f.assessor; delete f.useCase;
+      const rest = Object.assign({}, o, { fields: f });
+      return _hasContent(rest);
+    }
+    const flat = Object.assign({}, o);
+    delete flat.client; delete flat.assessor; delete flat.useCase;
+    return _hasContent(flat);
+  } catch (e) { return false; }
+}
+
+function esc(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function renderDashboard() {
+  let eng = {};
+  try { eng = JSON.parse(localStorage.getItem('aoa_engagement_v1') || '{}'); } catch (e) {}
+  const started = TOOL_REGISTRY.filter(tl => toolStarted(tl.key)).length;
+  const summary = document.getElementById('dashSummary');
+  if (!eng.client && started === 0) {
+    summary.textContent = t('dashNoEngagement');
+  } else {
+    const parts = [];
+    if (eng.client) parts.push(t('dashClientPrefix') + ' ' + eng.client + (eng.useCase ? ' — ' + eng.useCase : ''));
+    parts.push(t('dashProgress')(started, TOOL_REGISTRY.length));
+    summary.textContent = parts.join(' · ');
+  }
+  document.getElementById('dashGrid').innerHTML = TOOL_REGISTRY.map(tl =>
+    `<a class="dash-item" href="${tl.href}"><i class="dot ${toolStarted(tl.key) ? 'started' : 'empty'}"></i>${esc(t(tl.titleKey))}</a>`
+  ).join('');
+}
+
 let lang = localStorage.getItem('aoa_lang') || 'en';
 function t(key) { return (STRINGS[lang] && STRINGS[lang][key] !== undefined) ? STRINGS[lang][key] : (STRINGS.en[key] !== undefined ? STRINGS.en[key] : key); }
-function setLang(l) { lang = l; localStorage.setItem('aoa_lang', l); document.getElementById('langSelect').value = l; applyI18n(); }
+function setLang(l) { lang = l; localStorage.setItem('aoa_lang', l); document.getElementById('langSelect').value = l; applyI18n(); renderDashboard(); }
 function applyI18n() {
   document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.getAttribute('data-i18n')); });
   document.documentElement.lang = lang;
@@ -771,6 +889,7 @@ function applyI18n() {
 (function init() {
   document.getElementById('langSelect').value = lang;
   applyI18n();
+  renderDashboard();
 })();
 </script>
 </body>
