@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Master Engagement Report — AI Architect Toolkit</title>
+<meta name="description" content="Assembles every tool's saved work for the current engagement into one combined report, with HTML/Markdown export and whole-engagement save/restore.">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='16' fill='%231B1474'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #1B1474; --primary-dark: #120D52; --accent: #DCDDF6; --powder: #EEEEFA;
+    --ink: #1c1c28; --muted: #5b5b6b; --line: #e4e4f0;
+    --green: #1a8a5c; --amber: #d4790e; --red: #c0392b;
+    --font-heading: 'Fraunces', Georgia, serif;
+    --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: var(--font-body); color: var(--ink); background: #fafaff; line-height: 1.6; }
+  .hero { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: #fff; padding: 44px 24px 36px; }
+  .wrap { max-width: 1000px; margin: 0 auto; }
+  .crumb { font-size: 13px; color: var(--accent); margin-bottom: 10px; }
+  .crumb a { color: var(--accent); text-decoration: none; }
+  .hero-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; flex-wrap: wrap; }
+  select#langSelect { font-family: var(--font-body); font-size: 13px; font-weight: 600; border: 1.5px solid rgba(255,255,255,0.4); background: rgba(255,255,255,0.08); color: #fff; border-radius: 8px; padding: 7px 10px; }
+  select#langSelect option { color: var(--ink); }
+  .hero h1 { font-family: var(--font-heading); font-weight: 700; font-size: 34px; line-height: 1.15; }
+  .hero p { margin-top: 10px; font-size: 15.5px; color: #dcdcf2; max-width: 680px; }
+  main { max-width: 1000px; margin: 0 auto; padding: 28px 24px 80px; }
+  .note { background: var(--powder); border: 1px solid var(--accent); border-radius: 12px; padding: 14px 16px; font-size: 14px; color: var(--muted); margin-bottom: 26px; }
+  .note strong { color: var(--primary); }
+  .card { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 22px 24px; margin-bottom: 20px; }
+  .card > h2 { font-family: var(--font-heading); font-weight: 600; font-size: 21px; color: var(--primary); margin-bottom: 4px; }
+  .card .hint { font-size: 13.5px; color: var(--muted); margin-bottom: 14px; }
+  .btn { font-family: var(--font-body); font-size: 13.5px; font-weight: 600; padding: 9px 16px; border-radius: 8px; border: none; cursor: pointer; transition: all 0.15s; }
+  .btn-primary { background: var(--accent); color: var(--primary); }
+  .btn-primary:hover { background: #C3C5EC; }
+  .btn-secondary { background: #fff; color: var(--primary); border: 1.5px solid var(--accent); }
+  .btn-secondary:hover { background: var(--powder); }
+  .btn-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px; }
+  .report { border: 1px dashed var(--line); border-radius: 10px; padding: 18px 20px; background: #fcfcff; font-size: 14px; }
+  .report h2 { font-family: var(--font-heading); color: var(--primary); font-size: 20px; margin: 22px 0 8px; border-bottom: 2px solid var(--accent); padding-bottom: 4px; }
+  .report h2:first-child { margin-top: 0; }
+  .report h3 { font-family: var(--font-heading); color: var(--primary); font-size: 16px; margin: 16px 0 6px; }
+  .report h3 a { color: var(--primary); text-decoration: none; }
+  .report h3 a:hover { text-decoration: underline; }
+  .report .meta { font-size: 13px; color: var(--muted); margin-bottom: 10px; }
+  .report dl { display: grid; grid-template-columns: minmax(160px, 0.6fr) 1.4fr; gap: 3px 16px; font-size: 13.5px; margin: 6px 0; }
+  .report dt { color: var(--muted); }
+  .report dd { white-space: pre-wrap; }
+  .report table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 8px 0; }
+  .report th, .report td { border: 1px solid var(--line); padding: 6px 9px; text-align: left; vertical-align: top; }
+  .report th { background: var(--powder); color: var(--primary); }
+  .report .empty-note { color: #aaa; font-style: italic; }
+  .saved { font-size: 12.5px; color: var(--green); margin-left: 8px; }
+  #importErr { display: none; color: var(--red); font-size: 12.5px; margin-top: 8px; }
+  @media (max-width: 680px) { .report dl { grid-template-columns: 1fr; } .hero h1 { font-size: 27px; } }
+</style>
+</head>
+<body>
+  <header class="hero"><div class="wrap">
+    <div class="hero-top">
+      <div class="crumb"><a href="./">AI Architect Toolkit</a> · <span data-i18n="crumbLabel"></span></div>
+      <select id="langSelect" onchange="setLang(this.value)">
+        <option value="en">English</option>
+        <option value="da">Dansk</option>
+        <option value="sv">Svenska</option>
+      </select>
+    </div>
+    <h1 data-i18n="heroTitle"></h1>
+    <p data-i18n="heroDesc"></p>
+  </div></header>
+
+  <main>
+    <div class="note"><strong data-i18n="noteLabel"></strong> <span data-i18n="noteBody"></span></div>
+
+    <div class="card">
+      <h2 data-i18n="manageTitle"></h2>
+      <p class="hint" data-i18n="manageHint"></p>
+      <div class="btn-row">
+        <button class="btn btn-secondary" onclick="exportAll()" data-i18n="btnExportAll"></button>
+        <button class="btn btn-secondary" onclick="document.getElementById('importFile').click()" data-i18n="btnImportAll"></button>
+        <input type="file" id="importFile" accept=".json" style="display:none">
+      </div>
+      <div id="importErr"></div>
+    </div>
+
+    <div class="card">
+      <h2 data-i18n="reportTitle"></h2>
+      <p class="hint" data-i18n="reportHint"></p>
+      <div class="report" id="report"></div>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="exportDoc('html')" data-i18n="btnExportHtml"></button>
+        <button class="btn btn-primary" onclick="exportDoc('md')" data-i18n="btnExportMd"></button>
+        <button class="btn btn-secondary" onclick="renderReport()" data-i18n="btnRefresh"></button>
+      </div>
+    </div>
+  </main>
+
+<script>
+// ════════════════════════════════════════════════════════════════
+// Master Engagement Report — fully client-side. Reads every tool's
+// localStorage state and assembles one combined engagement document.
+// Section/field labels are auto-derived and English-only (same
+// scoping as other content-heavy material in this toolkit).
+// ════════════════════════════════════════════════════════════════
+const ENG_KEY = 'aoa_engagement_v1';
+
+const STRINGS = {
+  en: {
+    crumbLabel: 'Master Engagement Report',
+    heroTitle: 'Master Engagement Report',
+    heroDesc: "Assembles every tool's saved work for the current engagement into one combined report — and saves or restores the whole engagement as a single file.",
+    noteLabel: 'How this works.',
+    noteBody: 'This page reads the locally saved state of every toolkit tool in this browser and assembles it below. Nothing is uploaded; report section labels are auto-generated in English regardless of the language selected above.',
+    manageTitle: 'Whole-engagement save & restore',
+    manageHint: "Export every tool's state as one JSON file (a full engagement backup), or restore a previously exported engagement into this browser.",
+    btnExportAll: '💾 Export whole engagement (.json)',
+    btnImportAll: '📥 Import whole engagement',
+    invalidFile: 'Invalid engagement file.',
+    importDone: 'Engagement imported — all tools in this browser now hold the restored data.',
+    reportTitle: 'Combined report',
+    reportHint: 'Every tool with saved data appears below, grouped by phase. Open a tool to change its content, then refresh.',
+    btnExportHtml: '🌐 Export HTML',
+    btnExportMd: '📄 Export Markdown',
+    btnRefresh: '🔄 Refresh',
+    emptyReport: 'No tool data found in this browser yet. Open any tool from the hub, fill it in, and come back — or import a saved engagement above.',
+    docFor: 'Engagement', docUseCase: 'Use case', docAssessor: 'Assessor', docDate: 'Date',
+    noData: '(no saved data)',
+  },
+  da: {
+    crumbLabel: 'Samlet engagementsrapport',
+    heroTitle: 'Samlet engagementsrapport',
+    heroDesc: 'Samler hvert værktøjs gemte arbejde for det aktuelle engagement i én kombineret rapport — og gemmer eller genskaber hele engagementet som én fil.',
+    noteLabel: 'Sådan virker det.',
+    noteBody: 'Denne side læser den lokalt gemte tilstand for hvert værktøj i denne browser og samler den nedenfor. Intet uploades; rapportens sektionsetiketter auto-genereres på engelsk uanset det valgte sprog ovenfor.',
+    manageTitle: 'Gem & genskab hele engagementet',
+    manageHint: 'Eksportér hvert værktøjs tilstand som én JSON-fil (en fuld engagement-backup), eller genskab et tidligere eksporteret engagement i denne browser.',
+    btnExportAll: '💾 Eksportér hele engagementet (.json)',
+    btnImportAll: '📥 Importér helt engagement',
+    invalidFile: 'Ugyldig engagement-fil.',
+    importDone: 'Engagement importeret — alle værktøjer i denne browser indeholder nu de genskabte data.',
+    reportTitle: 'Kombineret rapport',
+    reportHint: 'Hvert værktøj med gemte data vises nedenfor, grupperet efter fase. Åbn et værktøj for at ændre dets indhold, og opdatér derefter.',
+    btnExportHtml: '🌐 Eksportér HTML',
+    btnExportMd: '📄 Eksportér Markdown',
+    btnRefresh: '🔄 Opdatér',
+    emptyReport: 'Ingen værktøjsdata fundet i denne browser endnu. Åbn et værktøj fra forsiden, udfyld det, og kom tilbage — eller importér et gemt engagement ovenfor.',
+    docFor: 'Engagement', docUseCase: 'Use case', docAssessor: 'Vurderingsmand', docDate: 'Dato',
+    noData: '(ingen gemte data)',
+  },
+  sv: {
+    crumbLabel: 'Samlad uppdragsrapport',
+    heroTitle: 'Samlad uppdragsrapport',
+    heroDesc: 'Sammanställer varje verktygs sparade arbete för det aktuella uppdraget i en kombinerad rapport — och sparar eller återställer hela uppdraget som en enda fil.',
+    noteLabel: 'Så här fungerar det.',
+    noteBody: 'Denna sida läser det lokalt sparade tillståndet för varje verktyg i denna webbläsare och sammanställer det nedan. Inget laddas upp; rapportens sektionsetiketter auto-genereras på engelska oavsett valt språk ovan.',
+    manageTitle: 'Spara & återställ hela uppdraget',
+    manageHint: 'Exportera varje verktygs tillstånd som en JSON-fil (en full uppdragsbackup), eller återställ ett tidigare exporterat uppdrag i denna webbläsare.',
+    btnExportAll: '💾 Exportera hela uppdraget (.json)',
+    btnImportAll: '📥 Importera helt uppdrag',
+    invalidFile: 'Ogiltig uppdragsfil.',
+    importDone: 'Uppdrag importerat — alla verktyg i denna webbläsare innehåller nu den återställda datan.',
+    reportTitle: 'Kombinerad rapport',
+    reportHint: 'Varje verktyg med sparad data visas nedan, grupperat efter fas. Öppna ett verktyg för att ändra dess innehåll, och uppdatera sedan.',
+    btnExportHtml: '🌐 Exportera HTML',
+    btnExportMd: '📄 Exportera Markdown',
+    btnRefresh: '🔄 Uppdatera',
+    emptyReport: 'Ingen verktygsdata hittades i denna webbläsare än. Öppna ett verktyg från startsidan, fyll i det, och kom tillbaka — eller importera ett sparat uppdrag ovan.',
+    docFor: 'Uppdrag', docUseCase: 'Användningsfall', docAssessor: 'Bedömare', docDate: 'Datum',
+    noData: '(ingen sparad data)',
+  },
+};
+
+let lang = localStorage.getItem('aoa_lang') || 'en';
+function t(key) { const v = (STRINGS[lang] && STRINGS[lang][key] !== undefined) ? STRINGS[lang][key] : STRINGS.en[key]; return v; }
+function setLang(l) { lang = l; localStorage.setItem('aoa_lang', l); document.getElementById('langSelect').value = l; applyI18n(); renderReport(); }
+function applyI18n() {
+  document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.getAttribute('data-i18n')); });
+  document.title = t('heroTitle') + ' — AI Architect Toolkit';
+}
+
+// ── Registry: every tool's key, English title, and hub-relative link ──
+const REGISTRY = [
+  { phase: 'Phase 1 — Discovery & Assessment', tools: [
+    { key: 'dra5c_engagement_v1', title: 'Data Readiness Assessment (5C)', href: 'Phase%201%20-%20Discovery%20%26%20Assessment/data-readiness-assessment-5c/console.html' },
+    { key: 'aoa_infra_audit_v1', title: 'Infrastructure Audit', href: 'Phase%201%20-%20Discovery%20%26%20Assessment/infrastructure-audit/' },
+    { key: 'aoa_org_readiness_v1', title: 'Organizational Readiness Assessment', href: 'Phase%201%20-%20Discovery%20%26%20Assessment/organizational-readiness/' },
+    { key: 'aoa_usecase_priority_v1', title: 'Use Case Identification & Prioritization', href: 'Phase%201%20-%20Discovery%20%26%20Assessment/use-case-prioritization/' },
+  ]},
+  { phase: 'Phase 2 — Strategy & Roadmap', tools: [
+    { key: 'aoa_ai_strategy_v1', title: 'AI Strategy Planning', href: 'Phase%202%20-%20Strategy%20%26%20Roadmap/ai-strategy-planning/' },
+    { key: 'aoa_business_case_v1', title: 'Business Case Development', href: 'Phase%202%20-%20Strategy%20%26%20Roadmap/business-case-development/' },
+    { key: 'aoa_tech_roadmap_v1', title: 'Technology Roadmap', href: 'Phase%202%20-%20Strategy%20%26%20Roadmap/technology-roadmap/' },
+    { key: 'aoa_org_roadmap_v1', title: 'Organizational Roadmap', href: 'Phase%202%20-%20Strategy%20%26%20Roadmap/organizational-roadmap/' },
+  ]},
+  { phase: 'Phase 3 — Architecture Design', tools: [
+    { key: 'dra_arch_builder_v1', title: 'Architecture Builder', href: 'Phase%203%20-%20Architecture%20Design/Design%20Layers/architecture-builder.html' },
+    { key: 'aoa_arch_blueprint_v1', title: 'Architecture Blueprint', href: 'Phase%203%20-%20Architecture%20Design/architecture-blueprint/' },
+    { key: 'aoa_adr_v1', title: 'Architecture Decision Records', href: 'Phase%203%20-%20Architecture%20Design/architecture-decision-records/' },
+    { key: 'aoa_tech_stack_report_v1', title: 'Tech Stack Selection Report', href: 'Phase%203%20-%20Architecture%20Design/tech-stack-selection-report/' },
+    { key: 'aoa_security_arch_v1', title: 'Security Architecture', href: 'Phase%203%20-%20Architecture%20Design/security-architecture/' },
+    { key: 'aoa_nfr_spec_v1', title: 'Non-Functional Requirements Spec', href: 'Phase%203%20-%20Architecture%20Design/nfr-spec/' },
+  ]},
+  { phase: 'Phase 4 — PoC & Pilot', tools: [
+    { key: 'aoa_poc_planning_v1', title: 'PoC Planning & Feasibility Report', href: 'Phase%204%20-%20PoC%20%26%20Pilot/poc-planning/' },
+    { key: 'aoa_pilot_planning_v1', title: 'Pilot Planning & Results Analysis', href: 'Phase%204%20-%20PoC%20%26%20Pilot/pilot-planning/' },
+    { key: 'aoa_eval_godecision_v1', title: 'Evaluation & Go/No-Go Decision', href: 'Phase%204%20-%20PoC%20%26%20Pilot/evaluation-godecision/' },
+  ]},
+  { phase: 'Phase 5 — Implementation & Delivery', tools: [
+    { key: 'aoa_impl_management_v1', title: 'Implementation Management Plan', href: 'Phase%205%20-%20Implementation%20%26%20Delivery/implementation-management/' },
+    { key: 'aoa_system_integration_v1', title: 'System Integration Plan', href: 'Phase%205%20-%20Implementation%20%26%20Delivery/system-integration/' },
+    { key: 'aoa_quality_assurance_v1', title: 'Quality Assurance Test Plan', href: 'Phase%205%20-%20Implementation%20%26%20Delivery/quality-assurance/' },
+    { key: 'aoa_deployment_golive_v1', title: 'Deployment & Go-Live Plan', href: 'Phase%205%20-%20Implementation%20%26%20Delivery/deployment-golive/' },
+    { key: 'aoa_technical_documentation_v1', title: 'Technical Documentation Index', href: 'Phase%205%20-%20Implementation%20%26%20Delivery/technical-documentation/' },
+  ]},
+  { phase: 'Phase 6 — Governance, Compliance & Security', tools: [
+    { key: 'aoa_ai_governance_v1', title: 'AI Governance Framework', href: 'Phase%206%20-%20Governance%2C%20Compliance%20%26%20Security/ai-governance-framework/' },
+    { key: 'aoa_compliance_assessment_v1', title: 'Compliance Gap Analysis', href: 'Phase%206%20-%20Governance%2C%20Compliance%20%26%20Security/compliance-assessment/' },
+    { key: 'aoa_responsible_ai_v1', title: 'Responsible AI & Bias Audit', href: 'Phase%206%20-%20Governance%2C%20Compliance%20%26%20Security/responsible-ai/' },
+    { key: 'aoa_risk_management_v1', title: 'AI Risk Register', href: 'Phase%206%20-%20Governance%2C%20Compliance%20%26%20Security/risk-management/' },
+  ]},
+];
+
+function esc(s) { return String(s === undefined || s === null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+// data-eng keys → readable English labels: camelCase and snake_case → Title Case.
+function humanize(k) {
+  return String(k)
+    .replace(/_/g, ' ')
+    .replace(/([a-z0-9])([A-Z])/g, '$1 $2')
+    .replace(/\b[a-z]/g, c => c.toUpperCase())
+    .trim();
+}
+
+function readTool(key) {
+  try {
+    const raw = localStorage.getItem(key);
+    if (!raw) return null;
+    return JSON.parse(raw);
+  } catch (e) { return null; }
+}
+
+// Normalize the three storage shapes into { fields: {..}, lists: [{name, rows}], picks }
+function normalize(o) {
+  if (!o || typeof o !== 'object') return null;
+  const out = { fields: {}, lists: [], picks: null };
+  const src = o.fields && typeof o.fields === 'object' ? o.fields : o;
+  Object.keys(src).forEach(k => {
+    if (k === 'lang' || k === 'nextId') return;
+    const v = src[k];
+    if (typeof v === 'string' && v.trim() !== '') out.fields[k] = v;
+    if (typeof v === 'boolean' && v) out.fields[k] = 'yes';
+  });
+  Object.keys(o).forEach(k => {
+    const v = o[k];
+    if (Array.isArray(v) && v.length && typeof v[0] === 'object') {
+      const rows = v.filter(r => Object.keys(r).some(c => c !== 'id' && typeof r[c] === 'string' && r[c].trim() !== '' && !/^\d+$/.test(r[c].trim())));
+      if (rows.length) out.lists.push({ name: k, rows });
+    }
+  });
+  if (o.picks && typeof o.picks === 'object' && Object.keys(o.picks).length) out.picks = o.picks;
+  if (!Object.keys(out.fields).length && !out.lists.length && !out.picks) return null;
+  return out;
+}
+
+function toolSectionHtml(tool, n) {
+  let h = `<h3><a href="${tool.href}">${esc(tool.title)}</a></h3>`;
+  if (Object.keys(n.fields).length) {
+    h += '<dl>' + Object.keys(n.fields).map(k => `<dt>${esc(humanize(k))}</dt><dd>${esc(n.fields[k])}</dd>`).join('') + '</dl>';
+  }
+  n.lists.forEach(list => {
+    const cols = [];
+    list.rows.forEach(r => Object.keys(r).forEach(c => { if (c !== 'id' && cols.indexOf(c) === -1) cols.push(c); }));
+    h += `<table><thead><tr>${cols.map(c => `<th>${esc(humanize(c))}</th>`).join('')}</tr></thead><tbody>`;
+    h += list.rows.map(r => `<tr>${cols.map(c => `<td>${esc(r[c] === undefined ? '' : r[c])}</td>`).join('')}</tr>`).join('');
+    h += '</tbody></table>';
+  });
+  if (n.picks) {
+    h += '<dl>' + Object.keys(n.picks).map(k => `<dt>${esc(humanize(k))}</dt><dd>option #${Number(n.picks[k]) + 1}</dd>`).join('') + '</dl>';
+  }
+  return h;
+}
+
+function toolSectionMd(tool, n) {
+  let m = `### ${tool.title}\n\n`;
+  Object.keys(n.fields).forEach(k => { m += `- **${humanize(k)}:** ${n.fields[k]}\n`; });
+  n.lists.forEach(list => {
+    const cols = [];
+    list.rows.forEach(r => Object.keys(r).forEach(c => { if (c !== 'id' && cols.indexOf(c) === -1) cols.push(c); }));
+    m += `\n| ${cols.map(humanize).join(' | ')} |\n|${cols.map(() => '---').join('|')}|\n`;
+    m += list.rows.map(r => `| ${cols.map(c => String(r[c] === undefined ? '' : r[c]).replace(/\|/g, '\\|').replace(/\n/g, ' ')).join(' | ')} |`).join('\n') + '\n';
+  });
+  if (n.picks) {
+    Object.keys(n.picks).forEach(k => { m += `- **${humanize(k)}:** option #${Number(n.picks[k]) + 1}\n`; });
+  }
+  return m + '\n';
+}
+
+function engagementHeader() {
+  let eng = {};
+  try { eng = JSON.parse(localStorage.getItem(ENG_KEY) || '{}'); } catch (e) {}
+  return eng;
+}
+
+function renderReport() {
+  const eng = engagementHeader();
+  const date = new Date().toISOString().slice(0, 10);
+  let h = `<div class="meta"><strong>${esc(t('docFor'))}:</strong> ${esc(eng.client) || '—'} &nbsp;·&nbsp; <strong>${esc(t('docUseCase'))}:</strong> ${esc(eng.useCase) || '—'}<br><strong>${esc(t('docAssessor'))}:</strong> ${esc(eng.assessor) || '—'} &nbsp;·&nbsp; <strong>${esc(t('docDate'))}:</strong> ${date}</div>`;
+  let any = false;
+  REGISTRY.forEach(ph => {
+    const sections = [];
+    ph.tools.forEach(tool => {
+      const n = normalize(readTool(tool.key));
+      if (n) sections.push(toolSectionHtml(tool, n));
+    });
+    if (sections.length) {
+      any = true;
+      h += `<h2>${esc(ph.phase)}</h2>` + sections.join('');
+    }
+  });
+  if (!any) h += `<p class="empty-note">${esc(t('emptyReport'))}</p>`;
+  document.getElementById('report').innerHTML = h;
+}
+
+function reportMarkdown() {
+  const eng = engagementHeader();
+  const date = new Date().toISOString().slice(0, 10);
+  let m = `# Engagement Report — ${eng.client || '[client]'}\n\n`;
+  m += `**${t('docFor')}:** ${eng.client || '—'}  \n**${t('docUseCase')}:** ${eng.useCase || '—'}  \n`;
+  m += `**${t('docAssessor')}:** ${eng.assessor || '—'}  \n**${t('docDate')}:** ${date}\n\n`;
+  let any = false;
+  REGISTRY.forEach(ph => {
+    const sections = [];
+    ph.tools.forEach(tool => {
+      const n = normalize(readTool(tool.key));
+      if (n) sections.push(toolSectionMd(tool, n));
+    });
+    if (sections.length) {
+      any = true;
+      m += `## ${ph.phase}\n\n` + sections.join('');
+    }
+  });
+  if (!any) m += t('emptyReport') + '\n';
+  return m;
+}
+
+function reportHtmlDoc() {
+  const eng = engagementHeader();
+  return '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Engagement Report — ' + esc(eng.client || 'client') + '</title>'
+    + '<style>body{font-family:Inter,Segoe UI,sans-serif;color:#1c1c28;max-width:920px;margin:40px auto;padding:0 22px;line-height:1.6}'
+    + 'h1,h2,h3{color:#1B1474;font-family:Georgia,serif}h1{border-bottom:3px solid #DCDDF6;padding-bottom:8px}h2{border-bottom:2px solid #DCDDF6;padding-bottom:4px}'
+    + 'dl{display:grid;grid-template-columns:minmax(160px,0.6fr) 1.4fr;gap:3px 16px;font-size:14px}dt{color:#5b5b6b}dd{white-space:pre-wrap}'
+    + 'table{width:100%;border-collapse:collapse;font-size:13.5px;margin:10px 0}th,td{border:1px solid #e4e4f0;padding:6px 9px;text-align:left;vertical-align:top}th{background:#EEEEFA;color:#1B1474}</style></head><body>'
+    + '<h1>Engagement Report — ' + esc(eng.client || '[client]') + '</h1>'
+    + document.getElementById('report').innerHTML
+    + '</body></html>';
+}
+
+function download(text, fname, mime) {
+  const blob = new Blob([text], { type: mime });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = fname; a.click();
+  URL.revokeObjectURL(a.href);
+}
+function slug() { const eng = engagementHeader(); return (eng.client || 'engagement').replace(/\W+/g, '_'); }
+function exportDoc(fmt) {
+  renderReport();
+  if (fmt === 'md') download(reportMarkdown(), 'engagement_report_' + slug() + '.md', 'text/markdown');
+  else download(reportHtmlDoc(), 'engagement_report_' + slug() + '.html', 'text/html');
+}
+
+// ── Whole-engagement save/restore ────────────────────────────────
+function allKeys() {
+  const keys = [ENG_KEY];
+  REGISTRY.forEach(ph => ph.tools.forEach(tool => keys.push(tool.key)));
+  return keys;
+}
+function exportAll() {
+  const dump = { _format: 'aoa_engagement_bundle_v1', exportedAt: new Date().toISOString(), data: {} };
+  allKeys().forEach(k => {
+    const raw = localStorage.getItem(k);
+    if (raw !== null) dump.data[k] = raw;
+  });
+  download(JSON.stringify(dump, null, 2), 'aoa_engagement_' + slug() + '.json', 'application/json');
+}
+document.getElementById('importFile').addEventListener('change', e => {
+  const errEl = document.getElementById('importErr');
+  errEl.style.display = 'none';
+  const file = e.target.files[0]; if (!file) return;
+  const r = new FileReader();
+  r.onload = () => {
+    try {
+      const dump = JSON.parse(r.result);
+      if (!dump || dump._format !== 'aoa_engagement_bundle_v1' || !dump.data) throw new Error('format');
+      const valid = allKeys();
+      Object.keys(dump.data).forEach(k => {
+        if (valid.indexOf(k) !== -1) { JSON.parse(dump.data[k]); localStorage.setItem(k, dump.data[k]); }
+      });
+      renderReport();
+      errEl.style.color = 'var(--green)';
+      errEl.textContent = t('importDone');
+      errEl.style.display = 'block';
+    } catch (err) {
+      errEl.style.color = 'var(--red)';
+      errEl.textContent = t('invalidFile');
+      errEl.style.display = 'block';
+    }
+  };
+  r.readAsText(file);
+  e.target.value = '';
+});
+
+// ── Boot ─────────────────────────────────────────────────────────
+(function init() {
+  document.getElementById('langSelect').value = lang;
+  applyI18n();
+  renderReport();
+})();
+</script>
+</body>
+</html>

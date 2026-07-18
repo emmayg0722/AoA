@@ -423,9 +423,32 @@ function exportDoc(fmt) {
   else download(docHtml(), 'evaluation_godecision_' + slug() + '.html', 'text/html');
 }
 
+// ── Shared engagement profile (site-wide prefill of client/assessor/use case) ──
+const ENG_KEY = 'aoa_engagement_v1';
+const ENG_FIELDS = ['client', 'assessor', 'useCase'];
+function prefillEngagement() {
+  try {
+    const eng = JSON.parse(localStorage.getItem(ENG_KEY) || '{}');
+    ENG_FIELDS.forEach(k => {
+      const el = document.querySelector('[data-eng="' + k + '"]');
+      if (el && !el.value && eng[k]) el.value = eng[k];
+    });
+  } catch (e) {}
+}
+document.addEventListener('input', e => {
+  const k = e.target.getAttribute && e.target.getAttribute('data-eng');
+  if (!k || ENG_FIELDS.indexOf(k) === -1 || !e.target.value) return;
+  try {
+    const eng = JSON.parse(localStorage.getItem(ENG_KEY) || '{}');
+    eng[k] = e.target.value;
+    localStorage.setItem(ENG_KEY, JSON.stringify(eng));
+  } catch (e2) {}
+});
+
 (function init() {
   document.getElementById('langSelect').value = lang;
   loadSaved();
+  prefillEngagement();
   applyI18n();
   if (!rows.length) { rows.push({ id: nextId++, criterion: '', evidence: '', score: '3' }); }
   renderMatrix();

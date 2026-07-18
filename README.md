@@ -198,6 +198,18 @@ English/Danish/Swedish language selector).
 Phase 7 (MLOps & Operations) follows the same folder pattern and will be
 added over time.
 
+## Shared engagement profile, dashboard & master report
+
+Client, assessor, and use case are entered **once** and carry across the whole
+toolkit: every tool prefills those fields from a shared browser-local profile
+(`localStorage` key `aoa_engagement_v1`) and writes changes back to it. The hub
+shows an **engagement dashboard** — the current engagement plus a started/empty
+chip for each of the 26 stateful tools. A root-level **`engagement-report.html`**
+assembles every tool's saved work into one combined report (HTML/Markdown
+export) and can save or restore the *entire* engagement — all tools at once —
+as a single JSON file. Like everything else here, all of it is browser-local:
+nothing is uploaded anywhere.
+
 ## Site-wide language selector
 
 Every tool in the toolkit — the 24 new Phase 1–6 tools above plus the 5 tools
