@@ -67,6 +67,17 @@
   .preview table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 8px 0; }
   .preview th, .preview td { border: 1px solid var(--line); padding: 6px 9px; text-align: left; }
   .preview th { background: var(--powder); color: var(--primary); }
+  .prompt-box { display: none; margin-top: 12px; }
+  pre.prompt { background: #f5f5fc; border: 1px solid var(--line); border-radius: 10px; padding: 14px; font-size: 12.5px; line-height: 1.5; white-space: pre-wrap; word-break: break-word; color: #2a2a3a; max-height: 320px; overflow: auto; }
+  .preview h2 { font-family: var(--font-heading); color: var(--primary); font-size: 18px; margin: 16px 0 6px; }
+  .preview h4, .preview h5 { font-family: var(--font-heading); color: var(--primary); margin: 12px 0 4px; }
+  .preview ul, .preview ol { margin: 8px 0 8px 22px; }
+  .preview code { background: #ececf6; padding: 1px 5px; border-radius: 4px; font-size: 12.5px; }
+  .preview pre { background: #f5f5fc; border: 1px solid var(--line); border-radius: 8px; padding: 12px; overflow: auto; font-size: 12.5px; white-space: pre-wrap; word-break: break-word; margin: 10px 0; }
+  .preview table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 8px 0; }
+  .preview th, .preview td { border: 1px solid var(--line); padding: 6px 9px; text-align: left; vertical-align: top; }
+  .preview th { background: var(--powder); color: var(--primary); }
+  textarea[data-eng="draftDoc"] { min-height: 110px; }
   .saved { font-size: 12.5px; color: var(--green); margin-left: 8px; }
   @media (max-width: 720px) { .grid2 { grid-template-columns: 1fr; } .hero h1 { font-size: 27px; } table.matrix { font-size: 12px; } }
 </style>
@@ -117,6 +128,16 @@
       <div class="btn-row">
         <button class="btn btn-secondary" onclick="addRow()" data-i18n="btnAddRow"></button>
       </div>
+    </div>
+
+    <div class="card">
+      <h2 data-i18n="draftTitle"></h2>
+      <p class="hint" data-i18n="draftHint"></p>
+      <div class="btn-row"><button class="btn btn-primary" onclick="genDraftPrompt()" data-i18n="btnGenDraft"></button></div>
+      <div class="prompt-box" id="pbDraft"><pre class="prompt" id="ptDraft"></pre>
+        <div class="btn-row"><button class="btn btn-secondary" onclick="copyDraftPrompt()" data-i18n="btnCopyDraft"></button></div></div>
+      <label data-i18n="lblDraftDoc"></label>
+      <textarea data-eng="draftDoc" placeholder="Paste the Markdown document the agent drafted&#8230;"></textarea>
     </div>
 
     <div class="card">
@@ -281,6 +302,41 @@ const STRINGS = {
     emptyNote: '(ännu inte dokumenterat)',
   },
 };
+
+// ── Agent-drafting chrome strings (merged into STRINGS) ──────────
+(function () {
+  const D = {
+    en: {
+      draftTitle: 'Agent drafting',
+      draftHint: "Generate a prompt that carries this tool's methodology and your full intake, run it in Claude (or any capable model), then paste the drafted Markdown below. A pasted draft replaces the template preview and both exports; clear it to go back to the template. Prompts are English — ask the agent for another output language if needed.",
+      btnGenDraft: '\ud83e\udd16 Generate drafting prompt',
+      btnCopyDraft: '\ud83d\udccb Copy prompt',
+      lblDraftDoc: 'Drafted document (Markdown, optional)',
+      draftCopied: '\u2705 Copied!',
+      draftCopyFail: 'Copy failed \u2014 select the text manually.',
+    },
+    da: {
+      draftTitle: 'Agent-udkast',
+      draftHint: 'Gener\u00e9r en prompt, der b\u00e6rer dette v\u00e6rkt\u00f8js metodik og hele dit optag, k\u00f8r den i Claude (eller en anden kapabel model), og inds\u00e6t derefter det udkastede Markdown nedenfor. Et indsat udkast erstatter skabelon-forh\u00e5ndsvisningen og begge eksporter; ryd det for at vende tilbage til skabelonen. Prompts er p\u00e5 engelsk \u2014 bed agenten om et andet outputsprog efter behov.',
+      btnGenDraft: '\ud83e\udd16 Gener\u00e9r udkast-prompt',
+      btnCopyDraft: '\ud83d\udccb Kopi\u00e9r prompt',
+      lblDraftDoc: 'Udkastet dokument (Markdown, valgfrit)',
+      draftCopied: '\u2705 Kopieret!',
+      draftCopyFail: 'Kopiering mislykkedes \u2014 mark\u00e9r teksten manuelt.',
+    },
+    sv: {
+      draftTitle: 'Agent-utkast',
+      draftHint: 'Generera en prompt som b\u00e4r detta verktygs metodik och hela ditt intag, k\u00f6r den i Claude (eller annan kapabel modell), och klistra sedan in det utkastade Markdown nedan. Ett inklistrat utkast ers\u00e4tter mallf\u00f6rhandsgranskningen och b\u00e5da exporterna; rensa det f\u00f6r att g\u00e5 tillbaka till mallen. Prompter \u00e4r p\u00e5 engelska \u2014 be agenten om ett annat utdataspr\u00e5k vid behov.',
+      btnGenDraft: '\ud83e\udd16 Generera utkast-prompt',
+      btnCopyDraft: '\ud83d\udccb Kopiera prompt',
+      lblDraftDoc: 'Utkastat dokument (Markdown, valfritt)',
+      draftCopied: '\u2705 Kopierat!',
+      draftCopyFail: 'Kopiering misslyckades \u2014 markera texten manuellt.',
+    },
+  };
+  Object.keys(D).forEach(l => { if (STRINGS[l]) Object.assign(STRINGS[l], D[l]); });
+})();
+
 
 let lang = localStorage.getItem('aoa_lang') || 'en';
 function t(key) { return (STRINGS[lang] && STRINGS[lang][key] !== undefined) ? STRINGS[lang][key] : (STRINGS.en[key] !== undefined ? STRINGS.en[key] : key); }
@@ -453,6 +509,101 @@ document.addEventListener('input', e => {
     localStorage.setItem(ENG_KEY, JSON.stringify(eng));
   } catch (e2) {}
 });
+
+// ── Agent drafting engine: prompt generation + Markdown paste-back.
+// A non-empty draft replaces the echo template in preview and exports. ──
+function _mdInline(s) { return esc(s).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/`(.+?)`/g, '<code>$1</code>'); }
+function _mdRow(line) { return line.trim().replace(/^\|/, '').replace(/\|$/, '').split('|').map(c => c.trim()); }
+function mdToHtml(md) {
+  if (!md || !md.trim()) return '';
+  const L = md.replace(/\r/g, '').split('\n');
+  let html = '', i = 0;
+  while (i < L.length) {
+    const line = L[i];
+    if (/^\s*$/.test(line)) { i++; continue; }
+    if (/^```/.test(line.trim())) {
+      i++; const buf = [];
+      while (i < L.length && !/^```/.test(L[i].trim())) { buf.push(L[i]); i++; }
+      i++;
+      html += '<pre>' + esc(buf.join('\n')) + '</pre>';
+      continue;
+    }
+    if (line.includes('|') && i + 1 < L.length && /-/.test(L[i + 1]) && /^[\s:|-]+$/.test(L[i + 1].trim())) {
+      const head = _mdRow(line); i += 2; const body = [];
+      while (i < L.length && L[i].includes('|') && L[i].trim() !== '') { body.push(_mdRow(L[i])); i++; }
+      html += '<table><thead><tr>' + head.map(h => '<th>' + _mdInline(h) + '</th>').join('') + '</tr></thead><tbody>'
+            + body.map(r => '<tr>' + r.map(c => '<td>' + _mdInline(c) + '</td>').join('') + '</tr>').join('') + '</tbody></table>';
+      continue;
+    }
+    let m;
+    if (m = line.match(/^(#{1,4})\s+(.*)/)) { const lv = m[1].length + 1; html += '<h' + lv + '>' + _mdInline(m[2]) + '</h' + lv + '>'; i++; continue; }
+    if (/^\s*[-*]\s+/.test(line)) { const it = []; while (i < L.length && /^\s*[-*]\s+/.test(L[i])) { it.push(L[i].replace(/^\s*[-*]\s+/, '')); i++; } html += '<ul>' + it.map(x => '<li>' + _mdInline(x) + '</li>').join('') + '</ul>'; continue; }
+    if (/^\s*\d+\.\s+/.test(line)) { const it = []; while (i < L.length && /^\s*\d+\.\s+/.test(L[i])) { it.push(L[i].replace(/^\s*\d+\.\s+/, '')); i++; } html += '<ol>' + it.map(x => '<li>' + _mdInline(x) + '</li>').join('') + '</ol>'; continue; }
+    const para = [line]; i++;
+    while (i < L.length && !/^\s*$/.test(L[i]) && !/^(#{1,4}\s|[-*]\s|\d+\.\s)/.test(L[i]) && !L[i].includes('|')) { para.push(L[i]); i++; }
+    html += '<p>' + _mdInline(para.join(' ')) + '</p>';
+  }
+  return html;
+}
+function _humanizeKey(k) { return String(k).replace(/_/g, ' ').replace(/([a-z0-9])([A-Z])/g, '$1 $2').replace(/\b[a-z]/g, c => c.toUpperCase()).trim(); }
+function buildDraftPrompt() {
+  const title = STRINGS.en.docTitle || STRINGS.en.heroTitle;
+  let p = 'You are an expert AI-architecture consultant. Draft the complete "' + title + '" deliverable for the engagement below as clean, client-ready Markdown.\n\n';
+  p += "Methodology to follow (this tool's SOP):\n";
+  (STRINGS.en.sop || []).forEach((s, i) => { p += (i + 1) + '. ' + s + '\n'; });
+  p += "\nConsultant intake (verbatim \u2014 build on it, don't merely restate it):\n";
+  document.querySelectorAll('[data-eng]').forEach(el => {
+    const k = el.getAttribute('data-eng');
+    if (k === 'draftDoc') return;
+    const v = (el.type === 'checkbox') ? (el.checked ? 'yes' : '') : el.value;
+    if (v && String(v).trim()) p += '- ' + _humanizeKey(k) + ': ' + v + '\n';
+  });
+  let rowsData = null;
+  if (typeof rows !== 'undefined' && Array.isArray(rows) && rows.length) rowsData = rows;
+  else if (typeof adrs !== 'undefined' && Array.isArray(adrs) && adrs.length) rowsData = adrs;
+  if (rowsData) {
+    const cleaned = rowsData.map(r => { const o = Object.assign({}, r); delete o.id; return o; })
+      .filter(o => Object.keys(o).some(c => typeof o[c] === 'string' && o[c].trim() !== ''));
+    if (cleaned.length) p += '\nStructured entries (JSON):\n' + JSON.stringify(cleaned, null, 2) + '\n';
+  }
+  if (typeof stackRows !== 'undefined' && Array.isArray(stackRows) && stackRows.length) {
+    p += '\nImported architecture stack (JSON):\n' + JSON.stringify(stackRows, null, 2) + '\n';
+  }
+  p += '\nRequirements: professional consulting tone; expand thin inputs into complete, specific sections; never invent client facts \u2014 where information is missing, add it to a final "Open questions for the client" section; structure with clear Markdown headings; output only the document.';
+  return p;
+}
+function genDraftPrompt() {
+  document.getElementById('ptDraft').textContent = buildDraftPrompt();
+  document.getElementById('pbDraft').style.display = 'block';
+}
+function copyDraftPrompt() {
+  const txt = document.getElementById('ptDraft').textContent;
+  navigator.clipboard.writeText(txt).then(() => {
+    const btn = event.target; const o = btn.textContent;
+    btn.textContent = t('draftCopied'); setTimeout(() => { btn.textContent = o; }, 1800);
+  }).catch(() => alert(t('draftCopyFail')));
+}
+const _tplRenderPreview = renderPreview;
+renderPreview = function () {
+  const d = val('draftDoc');
+  if (d && d.trim()) document.getElementById('preview').innerHTML = mdToHtml(d);
+  else _tplRenderPreview();
+};
+const _tplDocMarkdown = docMarkdown;
+docMarkdown = function () {
+  const d = val('draftDoc');
+  return (d && d.trim()) ? d : _tplDocMarkdown();
+};
+const _tplDocHtml = docHtml;
+docHtml = function () {
+  const d = val('draftDoc');
+  if (!(d && d.trim())) return _tplDocHtml();
+  return '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>' + esc((STRINGS.en.docTitle || '') + ' \u2014 ' + (val('client') || 'client')) + '</title>'
+    + '<style>body{font-family:Inter,Segoe UI,sans-serif;color:#1c1c28;max-width:880px;margin:40px auto;padding:0 22px;line-height:1.6}'
+    + 'h1,h2,h3,h4{color:#1B1474;font-family:Georgia,serif}table{width:100%;border-collapse:collapse;font-size:14px;margin:12px 0}th,td{border:1px solid #e4e4f0;padding:7px 10px;text-align:left;vertical-align:top}th{background:#EEEEFA;color:#1B1474}'
+    + 'code{background:#ececf6;padding:1px 5px;border-radius:4px}pre{background:#f5f5fc;border:1px solid #e4e4f0;border-radius:8px;padding:12px;overflow:auto;font-size:12.5px}</style></head><body>'
+    + mdToHtml(d) + '</body></html>';
+};
 
 (function init() {
   document.getElementById('langSelect').value = lang;
