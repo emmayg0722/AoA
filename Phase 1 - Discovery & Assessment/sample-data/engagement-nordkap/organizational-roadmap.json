@@ -1,0 +1,10 @@
+{
+ "fields": {
+  "client": "Nordkap Insurance",
+  "assessor": "E. Gao",
+  "coeNotes": "Small hub-and-spoke AI CoE (4 FTE) under the CDO: standards, model governance, platform. Delivery stays in claims IT.",
+  "talentNotes": "Hire 1 MLOps engineer (Q1) and 1 ML engineer (Q2); upskill 6 data engineers via the vendor academy; adjuster AI-literacy training before pilot.",
+  "structureNotes": "Create a product-owner role for \"Claims AI\" in the claims business, not IT. SIU gets a named model-feedback responsibility.",
+  "partnerNotes": "Azure account team for platform; boutique ML partner for the first build with contractual knowledge transfer; university collaboration for fraud-pattern research."
+ }
+}

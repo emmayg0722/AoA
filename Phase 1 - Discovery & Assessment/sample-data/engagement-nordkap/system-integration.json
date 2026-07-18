@@ -1,0 +1,33 @@
+{
+ "fields": {
+  "client": "Nordkap Insurance",
+  "assessor": "E. Gao",
+  "apiNotes": "Scoring service exposes one POST /score endpoint (OpenAPI-documented); auth via managed identity; 2s timeout with graceful no-score fallback.",
+  "migrationNotes": "One-time backfill of 3 years of FNOL features; nightly reconciliation job compares stream vs. batch counts.",
+  "legacyNotes": "ClaimCenter event add-on needs a vendor patch (lead time 6 weeks) - critical path; no sandbox for the SIU case system, testing against staging only."
+ },
+ "nextId": 4,
+ "rows": [
+  {
+   "id": 1,
+   "system": "Guidewire ClaimCenter",
+   "method": "Event add-on -> Event Hub; REST callback",
+   "dataFlow": "Bidirectional, near-real-time",
+   "status": "inprogress"
+  },
+  {
+   "id": 2,
+   "system": "SIU case management",
+   "method": "REST webhook (auto-referral)",
+   "dataFlow": "Outbound, on threshold",
+   "status": "planned"
+  },
+  {
+   "id": 3,
+   "system": "Synapse DWH",
+   "method": "Batch feature backfill + nightly sync",
+   "dataFlow": "Inbound, nightly",
+   "status": "done"
+  }
+ ]
+}

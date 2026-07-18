@@ -1,0 +1,12 @@
+{
+ "fields": {
+  "client": "Nordkap Insurance",
+  "assessor": "E. Gao",
+  "useCase": "Real-time claims fraud detection at FNOL (first notice of loss)",
+  "investment": "450000",
+  "annualBenefit": "380000",
+  "horizon": "3",
+  "riskNotes": "Benefit case depends on SIU capacity to work the additional referrals; false-positive rate above 20% would erode adjuster trust and the benefit.",
+  "recommendation": "Proceed: payback inside 15 months at conservative detection-uplift assumptions; fund PoC + pilot as one gate-reviewed program."
+ }
+}

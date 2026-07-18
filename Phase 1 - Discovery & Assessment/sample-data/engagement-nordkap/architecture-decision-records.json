@@ -1,0 +1,33 @@
+{
+ "fields": {
+  "client": "Nordkap Insurance",
+  "assessor": "E. Gao"
+ },
+ "nextId": 4,
+ "adrs": [
+  {
+   "id": 1,
+   "title": "Run all LLM workloads on in-tenant Azure OpenAI",
+   "status": "accepted",
+   "context": "Claims narratives contain PII and health details; data residency and Purview coverage are mandatory.",
+   "decision": "Use Azure OpenAI inside the Nordkap tenant for all LLM features; no public-API calls.",
+   "consequences": "Slightly behind public API on model releases; quota management becomes an ops task."
+  },
+  {
+   "id": 2,
+   "title": "Event-driven scoring instead of batch",
+   "status": "accepted",
+   "context": "Fraud value concentrates at FNOL; nightly batch loses the intervention window.",
+   "decision": "Stream FNOL events via Event Hub and score synchronously with a 2s budget.",
+   "consequences": "Requires ClaimCenter event integration work and 24/7 service operation."
+  },
+  {
+   "id": 3,
+   "title": "Vector store: Azure AI Search",
+   "status": "proposed",
+   "context": "Narrative-similarity features need vector + keyword search under existing governance.",
+   "decision": "Use Azure AI Search rather than a self-hosted vector DB.",
+   "consequences": "Azure lock-in accepted in exchange for Entra ID + Purview integration."
+  }
+ ]
+}

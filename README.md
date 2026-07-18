@@ -198,6 +198,15 @@ English/Danish/Swedish language selector).
 Phase 7 (MLOps & Operations) follows the same folder pattern and will be
 added over time.
 
+## SOP checklists & the Nordkap sample engagement
+
+Every tool's SOP is now a **checkable checklist** — step state persists locally
+with the rest of the tool's data and survives language switches. And every tool
+has a **"🧪 Load sample"** button that loads its slice of one consistent
+fictional engagement (*Nordkap Insurance — claims fraud detection at FNOL*,
+under `sample-data/engagement-nordkap/`), so the whole toolkit — including the
+hub dashboard and master report — can be demoed end-to-end in a few clicks.
+
 ## Scored rubrics, pre-seeded content & charts
 
 - **Scored rubrics**: Infrastructure Audit, Organizational Readiness, and

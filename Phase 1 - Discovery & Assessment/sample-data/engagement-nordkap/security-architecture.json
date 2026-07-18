@@ -1,0 +1,16 @@
+{
+ "fields": {
+  "client": "Nordkap Insurance",
+  "assessor": "E. Gao",
+  "protectionNotes": "Threat model centers on adversarial claimants: manipulated narratives and documents crafted to suppress fraud scores.",
+  "encryptionNotes": "AES-256 at rest (SSE + CMK in Key Vault); TLS 1.2+ in transit; PII fields tokenized before feature store.",
+  "accessNotes": "Scoring service runs under its own managed identity with least privilege; adjusters see scores via existing ClaimCenter roles; no direct model access.",
+  "auditNotes": "Every score, referral, and override logged immutably (append-only storage, 7-year retention) with model version and feature snapshot.",
+  "injectionNotes": "Claim narratives are untrusted input: isolated from system instructions, length-limited, and the LLM feature output is schema-validated before entering the score.",
+  "score_protection": "4",
+  "score_encryption": "4",
+  "score_access": "4",
+  "score_audit": "3",
+  "score_injection": "3"
+ }
+}

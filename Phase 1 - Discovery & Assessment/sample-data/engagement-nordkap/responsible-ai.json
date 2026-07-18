@@ -1,0 +1,32 @@
+{
+ "fields": {
+  "client": "Nordkap Insurance",
+  "assessor": "E. Gao",
+  "transparency": "Adjusters see the top contributing factors per score; customers whose claims are referred receive the standard investigation notice - wording under legal review.",
+  "privacy": "PII tokenized before the feature store; narratives minimized before LLM feature extraction; 7-year retention aligned to claims records; no training on customer data outside tenant."
+ },
+ "nextId": 4,
+ "rows": [
+  {
+   "id": 1,
+   "dimension": "Postcode as socioeconomic proxy",
+   "method": "Equalized odds across region deciles on holdout year",
+   "finding": "FPR gap 2.1pt between highest/lowest decile",
+   "status": "concern"
+  },
+  {
+   "id": 2,
+   "dimension": "Age",
+   "method": "Demographic parity + FPR comparison",
+   "finding": "No material gap (<1pt)",
+   "status": "pass"
+  },
+  {
+   "id": 3,
+   "dimension": "Language of narrative (non-native phrasing)",
+   "method": "Counterfactual paraphrase testing on LLM feature",
+   "finding": "Testing in progress",
+   "status": "pending"
+  }
+ ]
+}

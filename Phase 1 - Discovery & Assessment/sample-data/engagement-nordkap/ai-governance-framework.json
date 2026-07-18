@@ -1,0 +1,10 @@
+{
+ "fields": {
+  "client": "Nordkap Insurance",
+  "assessor": "E. Gao",
+  "committee": "AI governance board: CDO (chair), Head of Claims, CISO, DPO, SIU lead, works-council observer. Meets monthly; approves every model go-live and material change.",
+  "usagePolicy": "Pre-approved: decision support with human override. Board review: any auto-action affecting a customer. Prohibited: fully automated claim denial; use of protected attributes as features.",
+  "lifecycle": "Models registered centrally; champion/challenger promotion needs board sign-off; drift beyond threshold triggers review; retirement plan mandatory at approval time.",
+  "hitl": "Adjuster decides every claim outcome; SIU investigator confirms every fraud referral before customer impact; overrides feed monthly model review."
+ }
+}

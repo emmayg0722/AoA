@@ -1,0 +1,40 @@
+{
+ "fields": {
+  "client": "Nordkap Insurance",
+  "assessor": "E. Gao",
+  "strategyNotes": "Correct = the score the offline-validated model would give, delivered in budget, with every referral auditable. Out of scope: re-validating model science (done in PoC). Acceptance thresholds per row below."
+ },
+ "nextId": 6,
+ "rows": [
+  {
+   "id": 1,
+   "testType": "Model performance",
+   "scope": "Holdout year + storm-event slice; parity with offline scores",
+   "status": "passed"
+  },
+  {
+   "id": 2,
+   "testType": "Integration",
+   "scope": "Contract tests: ClaimCenter events, SIU webhook, DWH sync",
+   "status": "passed"
+  },
+  {
+   "id": 3,
+   "testType": "Load & performance",
+   "scope": "10x FNOL rate replay; p99 < 2 s sustained",
+   "status": "inprogress"
+  },
+  {
+   "id": 4,
+   "testType": "Security",
+   "scope": "Prompt injection via narratives; exfiltration; IDOR on score API",
+   "status": "inprogress"
+  },
+  {
+   "id": 5,
+   "testType": "User acceptance",
+   "scope": "14 pilot adjusters complete referral scenarios",
+   "status": "notstarted"
+  }
+ ]
+}

@@ -1,0 +1,30 @@
+{
+ "fields": {
+  "client": "Nordkap Insurance",
+  "assessor": "E. Gao",
+  "vision": "By 2028, every claims decision at Nordkap is supported - never silently made - by AI, cutting fraud leakage 25% while keeping adjusters in charge of every customer-affecting outcome.",
+  "alignment": "Supports the group strategy pillars \"profitable growth\" (loss-ratio improvement) and \"effortless claims\" (cycle-time reduction) without adding headcount.",
+  "metrics": "Fraud detection rate at FNOL; false-positive referral rate; claims cycle time; adjuster satisfaction; model-governance audit findings."
+ },
+ "nextId": 4,
+ "rows": [
+  {
+   "id": 1,
+   "year": "2026",
+   "milestone": "Fraud-detection pilot live in one region; AI governance board operating",
+   "metric": "Pilot detection uplift >= 15% vs. baseline"
+  },
+  {
+   "id": 2,
+   "year": "2027",
+   "milestone": "Fraud scoring national; document-intake automation in production",
+   "metric": "Fraud leakage -15%; intake handling time -50%"
+  },
+  {
+   "id": 3,
+   "year": "2028",
+   "milestone": "AI-supported decisioning across claims lifecycle incl. subrogation",
+   "metric": "Loss ratio -1.5pt; NPS +5"
+  }
+ ]
+}

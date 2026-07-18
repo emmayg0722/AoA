@@ -1,0 +1,13 @@
+{
+ "fields": {
+  "client": "Nordkap Insurance",
+  "assessor": "E. Gao",
+  "objective": "Can a model trained on 3 years of labelled SIU outcomes detect >= 15% more confirmed fraud at FNOL than the current rule set, at <= 20% false-positive referrals?",
+  "scope": "Historical FNOL data, one region, offline scoring against known outcomes.",
+  "outOfScope": "Live integration, real-time latency, UI, national data, document/image fraud.",
+  "successCriteria": "Detection uplift >= 15% at FPR <= 20% on the holdout year; SIU lead agrees sampled referrals are workable.",
+  "timeline": "4 weeks, starting 2026-08-03",
+  "verdict": "proceed",
+  "demoEnv": "Azure ML workspace in the sandbox subscription; anonymized extract approved by the data office."
+ }
+}

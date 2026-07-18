@@ -1,0 +1,49 @@
+{
+ "fields": {
+  "client": "Nordkap Insurance",
+  "assessor": "E. Gao"
+ },
+ "nextId": 6,
+ "rows": [
+  {
+   "id": 1,
+   "name": "Claims fraud detection at FNOL",
+   "pain": "Manual SIU referral misses est. 30% of fraud; avg detection lag 45 days",
+   "roi": "5",
+   "feas": "4",
+   "impact": "5"
+  },
+  {
+   "id": 2,
+   "name": "Claims document intake automation",
+   "pain": "12 min average manual re-keying per claim",
+   "roi": "4",
+   "feas": "4",
+   "impact": "4"
+  },
+  {
+   "id": 3,
+   "name": "Underwriting risk summary drafting",
+   "pain": "Underwriters spend ~2h/day summarizing submissions",
+   "roi": "4",
+   "feas": "3",
+   "impact": "4"
+  },
+  {
+   "id": 4,
+   "name": "Customer service copilot",
+   "pain": "Average handle time 8.5 min; 30% of calls transferred",
+   "roi": "3",
+   "feas": "4",
+   "impact": "3"
+  },
+  {
+   "id": 5,
+   "name": "Subrogation opportunity detection",
+   "pain": "Recovery opportunities missed in ~15% of eligible claims",
+   "roi": "4",
+   "feas": "2",
+   "impact": "4"
+  }
+ ]
+}

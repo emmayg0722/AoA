@@ -1,0 +1,31 @@
+{
+ "fields": {
+  "client": "Nordkap Insurance",
+  "assessor": "E. Gao",
+  "strategy": "canary",
+  "prodConfig": "AKS 3-node pool with autoscale; PTU-reserved Azure OpenAI; alerts on latency p99, FPR drift, and event-lag; cost cap alarms.",
+  "rollback": "Feature flag disables scoring instantly (claims flow unaffected). Auto-rollback if error rate > 2% or event lag > 60 s for 5 min.",
+  "hypercare": "2-week hypercare: partner ML engineer + claims IT on-call 06-22 CET; daily triage; escalation to vendor for ClaimCenter add-on issues."
+ },
+ "nextId": 4,
+ "rows": [
+  {
+   "id": 1,
+   "wave": "Wave 1 - Region North (pilot region)",
+   "scope": "Already-trained users",
+   "signal": "Error rate < 0.5%; no SIU queue overflow, 2 weeks"
+  },
+  {
+   "id": 2,
+   "wave": "Wave 2 - Regions East + West",
+   "scope": "+40% volume",
+   "signal": "Latency and FPR stable at higher volume"
+  },
+  {
+   "id": 3,
+   "wave": "Wave 3 - National",
+   "scope": "All FNOL",
+   "signal": "Steering sign-off after wave-2 review"
+  }
+ ]
+}
