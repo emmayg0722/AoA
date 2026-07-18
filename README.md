@@ -198,6 +198,17 @@ English/Danish/Swedish language selector).
 Phase 7 (MLOps & Operations) follows the same folder pattern and will be
 added over time.
 
+## Agent drafting (all 24 deliverable tools)
+
+Every deliverable tool has an **"Agent drafting"** card: one click generates a
+prompt that carries the tool's SOP methodology and your full intake (including
+any matrix rows), you run it in Claude (or any capable model), and paste the
+drafted Markdown back. A pasted draft **replaces** the echo template in the live
+preview and in both exports — turning each tool from a form-filler into a real
+drafting assistant, still with zero API calls from the page itself. Clearing
+the draft returns to the template. Prompts are English (same scoping as the
+DRA-5C console's agent prompts).
+
 ## Shared engagement profile, dashboard & master report
 
 Client, assessor, and use case are entered **once** and carry across the whole
