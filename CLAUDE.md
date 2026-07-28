@@ -24,35 +24,45 @@ when adding new phases or tools so terminology stays consistent.
 
 ```
 .
-├── index.html                    # Portfolio hub — links to every phase's tools
+├── index.html                    # Portfolio hub — links to every phase's tools, plus a
+│                                  # cross-tool "engagement dashboard" (TOOL_REGISTRY)
+├── engagement-report.html        # Master engagement report — reads every tool's saved
+│                                  # localStorage state in this browser and assembles one
+│                                  # combined document (REGISTRY); supports export/import
+│                                  # of a full engagement as one JSON file
 ├── og-image.png                  # Social/link preview image
 ├── .nojekyll                     # Serve files as-is on GitHub Pages (do not delete)
-├── README.md                     # Human-facing overview
+├── README.md                     # Human-facing overview (kept in sync with actual tools)
 ├── AI-Architect-Consulting-Work-Research.md   # Phase 1–10 reference this toolkit follows
 ├── .claude/agents/               # Claude Code agents (MUST live here to be loadable)
-│   └── dra-5c.md                 # Data Readiness Assessment (5C) orchestrating agent
-├── Phase 1 - Discovery & Assessment/
-│   ├── ai-maturity-assessment/
-│   │   ├── index.html            # Browser tool: 6-dimension maturity scoring
-│   │   └── python/               # Optional Streamlit + CLI implementation
-│   ├── data-readiness-assessment-5c/
-│   │   ├── console.html          # Front-end that walks the 4-step 5C assessment
-│   │   ├── profiler.html         # Browser-local data profiler (raw data stays local)
-│   │   ├── methodology.md        # The 5C method
-│   │   ├── copilot-prompt-pack.md, m365-copilot-integration.md
-│   │   └── templates/            # Fill-in markdown deliverables
-│   └── sample-data/              # SYNTHETIC demo data only (see its README)
-└── Phase 3 - Architecture Design/
-    └── Design Layers/
-        ├── architecture-builder.html   # Interactive 14-layer "pick one per layer" builder
-        ├── README.md                   # 18-layer agentic architecture reference
-        └── layers/                     # One markdown file per layer (01…18)
+│   ├── dra-5c.md                 # Data Readiness Assessment (5C) orchestrating agent
+│   └── use-case-evaluator.md     # Use-case evaluation mentor (scores against Phase 1/4 rubrics)
+├── Phase 1 - Discovery & Assessment/    # ai-maturity-assessment, data-readiness-assessment-5c,
+│                                        # infrastructure-audit, organizational-readiness,
+│                                        # use-case-prioritization, sample-data/
+├── Phase 2 - Strategy & Roadmap/        # ai-strategy-planning, business-case-development,
+│                                        # organizational-roadmap, technology-roadmap
+├── Phase 3 - Architecture Design/       # Design Layers (architecture-builder.html + an
+│                                        # 18-layer markdown reference), architecture-blueprint,
+│                                        # architecture-decision-records, nfr-spec,
+│                                        # security-architecture, tech-stack-selection-report
+├── Phase 4 - PoC & Pilot/               # evaluation-godecision, pilot-planning, poc-planning
+├── Phase 5 - Implementation & Delivery/ # deployment-golive, implementation-management,
+│                                        # quality-assurance, system-integration,
+│                                        # technical-documentation
+└── Phase 6 - Governance, Compliance & Security/  # ai-governance-framework,
+                                                    # compliance-assessment, responsible-ai,
+                                                    # risk-management
 ```
 
-Phases 2, 4–7 are scaffolded conceptually (listed on `index.html`) and will be
-filled in over time. **Folder names contain spaces and `&`** (e.g.
-`Phase 1 - Discovery & Assessment`) — always quote paths in shell commands and
-URL-encode them in HTML links (`Phase%201%20-%20Discovery%20%26%20Assessment/…`).
+**All 6 phases above are fully built** — every subfolder listed is a real, working tool,
+not a placeholder. Phases 7–10 (MLOps & Operations, and beyond) don't exist yet; add them
+the same way when the time comes. Almost every tool folder is `index.html`; the two
+exceptions are `data-readiness-assessment-5c/` (`console.html` + `profiler.html`) and
+`Design Layers/` (`architecture-builder.html`) — the hub's cards link to those files
+directly. **Folder names contain spaces and `&`** (e.g. `Phase 1 - Discovery & Assessment`)
+— always quote paths in shell commands and URL-encode them in HTML links
+(`Phase%201%20-%20Discovery%20%26%20Assessment/…`).
 
 ## Core conventions
 
@@ -91,12 +101,21 @@ The hub and tools share a design system: navy primary `#1B1474` (dark
 and **Inter** for body (Google Fonts). Reuse these CSS variables and the card/hero
 patterns from `index.html` for new pages so the toolkit reads as one product.
 
-### 6. Bilingual where it started bilingual
-The AI Maturity Assessment (and its Python impl) is **English + 中文** throughout —
-questions, options, reports. Preserve both languages when editing those assets.
-Other assets are English-only; match whatever the file already uses.
+### 6. Language conventions vary by asset — match what's already there
+The **Python** maturity-assessment implementation (`ai-maturity-assessment/python/`) is
+**English + 中文** throughout — questions, options, reports. Preserve both languages when
+editing it. The **browser** tools (including the HTML `ai-maturity-assessment/index.html`)
+use an **English / Dansk / Svenska** language selector instead — this is the pattern for
+every HTML tool in the repo, not just the newer ones. When adding a language to an HTML
+tool, add it to all three; when editing the Python impl, keep EN/中文 in sync.
 
-## The `dra-5c` agent
+## The Claude Code agents
+
+`.claude/agents/` holds two orchestrating subagents. Both are Read/Write/Glob/Grep only —
+no code execution — and both refuse to invent methodology, instead reading it from the
+tool files/docs already in the repo.
+
+### `dra-5c`
 
 `.claude/agents/dra-5c.md` defines a Claude Code subagent (model: sonnet; tools:
 Read, Write, Glob, Grep) that orchestrates the 5C Data Readiness Assessment. It
@@ -109,6 +128,18 @@ inventing formats. Two invariants baked into the agent, keep them if you edit it
   `profiler.html`.
 
 Claude Code requires agents to live in `.claude/agents/`; don't move it.
+
+### `use-case-evaluator`
+
+`.claude/agents/use-case-evaluator.md` defines a subagent (model: sonnet; tools:
+Read, Write, Glob, Grep) that interviews the architect about a proposed client use case
+and scores it against rubrics that already exist in this repo — the ROI/Feasibility/
+Impact matrix in `use-case-prioritization/index.html`, the technical/user-acceptance/
+business-impact criteria in `evaluation-godecision/index.html`, and a DRA-5C scorecard if
+one exists for the engagement — rather than inventing new criteria. It ends in a Pursue /
+Pursue-with-conditions / Don't-pursue verdict plus paste-ready JSON matching those two
+tools' localStorage shapes. Meant to double as both a learning tool (it explains its
+reasoning) and a fast pre-check before running the full client-facing tools.
 
 ## The Python maturity-assessment implementation
 

@@ -161,9 +161,10 @@
   .dash-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 7px 14px; }
   .dash-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--ink); text-decoration: none; padding: 3px 2px; border-radius: 6px; }
   .dash-item:hover { background: var(--powder); }
-  .dash-item .dot { width: 9px; height: 9px; border-radius: 50%; flex: none; }
+  .dash-item .dot { width: 9px; height: 9px; border-radius: 50%; flex: none; box-sizing: border-box; }
   .dash-item .dot.started { background: var(--primary); }
-  .dash-item .dot.empty { background: var(--line); }
+  .dash-item .dot.empty { background: none; border: 1.5px solid var(--line); }
+  .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
   .future {
     margin-top: 44px;
     padding-top: 28px;
@@ -193,7 +194,7 @@
     color: var(--muted);
     font-size: 13px;
   }
-  @media (max-width: 640px) {
+  @media (max-width: 720px) {
     .hero { padding: 56px 20px 48px; }
     .hero h1 { font-size: 34px; }
     .cards { grid-template-columns: 1fr; }
@@ -583,6 +584,7 @@ const STRINGS = {
     dashClientPrefix: 'Current engagement:',
     dashNoEngagement: 'No engagement data yet — open any tool below and fill in a client name to get started. Client, assessor, and use case carry over across every tool automatically.',
     dashProgress: (n, total) => `${n} of ${total} tools started`,
+    dashStarted: 'started', dashNotStarted: 'not started',
   },
   da: {
     heroEyebrow: 'AI-arkitektur · Konsulentværktøjer',
@@ -691,6 +693,7 @@ const STRINGS = {
     dashClientPrefix: 'Aktuelt engagement:',
     dashNoEngagement: 'Ingen engagementsdata endnu — åbn et værktøj nedenfor og udfyld et kundenavn for at komme i gang. Kunde, vurderingsmand og use case følger automatisk med på tværs af alle værktøjer.',
     dashProgress: (n, total) => `${n} af ${total} værktøjer påbegyndt`,
+    dashStarted: 'påbegyndt', dashNotStarted: 'ikke påbegyndt',
   },
   sv: {
     heroEyebrow: 'AI-arkitektur · Konsultverktyg',
@@ -799,11 +802,13 @@ const STRINGS = {
     dashClientPrefix: 'Aktuellt uppdrag:',
     dashNoEngagement: 'Ingen uppdragsdata än — öppna ett verktyg nedan och fyll i ett kundnamn för att komma igång. Kund, bedömare och användningsfall följer automatiskt med över alla verktyg.',
     dashProgress: (n, total) => `${n} av ${total} verktyg påbörjade`,
+    dashStarted: 'påbörjat', dashNotStarted: 'ej påbörjat',
   },
 };
 
 // ── Engagement dashboard: registry of every tool's localStorage key ──
 const TOOL_REGISTRY = [
+  { key: 'aoa_ai_maturity_v1', titleKey: 'c_aiMaturity_t', href: 'Phase%201%20-%20Discovery%20%26%20Assessment/ai-maturity-assessment/' },
   { key: 'dra5c_engagement_v1', titleKey: 'c_dra5c_t', href: 'Phase%201%20-%20Discovery%20%26%20Assessment/data-readiness-assessment-5c/console.html' },
   { key: 'aoa_infra_audit_v1', titleKey: 'c_infra_t', href: 'Phase%201%20-%20Discovery%20%26%20Assessment/infrastructure-audit/' },
   { key: 'aoa_org_readiness_v1', titleKey: 'c_org_t', href: 'Phase%201%20-%20Discovery%20%26%20Assessment/organizational-readiness/' },
@@ -873,9 +878,11 @@ function renderDashboard() {
     parts.push(t('dashProgress')(started, TOOL_REGISTRY.length));
     summary.textContent = parts.join(' · ');
   }
-  document.getElementById('dashGrid').innerHTML = TOOL_REGISTRY.map(tl =>
-    `<a class="dash-item" href="${tl.href}"><i class="dot ${toolStarted(tl.key) ? 'started' : 'empty'}"></i>${esc(t(tl.titleKey))}</a>`
-  ).join('');
+  document.getElementById('dashGrid').innerHTML = TOOL_REGISTRY.map(tl => {
+    const started = toolStarted(tl.key);
+    const statusLabel = started ? t('dashStarted') : t('dashNotStarted');
+    return `<a class="dash-item" href="${tl.href}" title="${esc(statusLabel)}"><i class="dot ${started ? 'started' : 'empty'}" aria-hidden="true"></i>${esc(t(tl.titleKey))}<span class="sr-only"> (${esc(statusLabel)})</span></a>`;
+  }).join('');
 }
 
 let lang = localStorage.getItem('aoa_lang') || 'en';

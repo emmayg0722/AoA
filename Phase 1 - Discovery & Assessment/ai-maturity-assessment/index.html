@@ -60,6 +60,9 @@
   select#langSelect { font-family: var(--font-body); font-size: 13px; font-weight: 600; border: 1.5px solid rgba(255,255,255,0.4); background: rgba(255,255,255,0.08); color: #fff; border-radius: 8px; padding: 7px 10px; }
   select#langSelect option { color: var(--text); }
   .lang-scope-note { font-size: 0.85rem; color: var(--text-light); background: var(--powder); border: 1px solid var(--accent); border-radius: var(--radius); padding: 0.7rem 0.9rem; margin-bottom: 1rem; }
+  .crumb { font-size: 0.8rem; color: var(--blue); margin-bottom: 0.7rem; }
+  .crumb a { color: inherit; text-decoration: none; opacity: 0.85; }
+  .crumb a:hover { text-decoration: underline; }
 
   /* Progress bar */
   .progress-wrap {
@@ -280,7 +283,7 @@
   .page.active { display: block; }
 
   /* Responsive */
-  @media (max-width: 640px) {
+  @media (max-width: 720px) {
     .container { padding: 0.5rem; }
     .dim-score-row .dim-label { width: 120px; }
     .header h1 { font-size: 1.5rem; }
@@ -293,6 +296,7 @@
 <body>
 
 <div class="header">
+  <div class="crumb"><a href="../">AI Architect Toolkit</a> · Phase 1 · Discovery &amp; Assessment</div>
   <div class="lang-row">
     <select id="langSelect" onchange="setLang(this.value)">
       <option value="en">English</option>
@@ -913,7 +917,76 @@ function init() {
   document.getElementById('langSelect').value = lang;
   applyI18n();
   renderDimGrid();
-  loadFromShareLink();
+  if (location.hash.startsWith('#r=')) {
+    loadFromShareLink();
+  } else {
+    loadState();
+    prefillEngagement();
+  }
+  bindAutosave();
+}
+
+// ── Local autosave (survives refresh) + shared engagement profile ──
+const AOA_STATE_KEY = 'aoa_ai_maturity_v1';
+const ENG_KEY = 'aoa_engagement_v1';
+function buildStatePayload() {
+  return {
+    fields: {
+      company: document.getElementById('inputCompany').value,
+      industry: document.getElementById('inputIndustry').value,
+      assessor: document.getElementById('inputAssessor').value,
+      mode: document.getElementById('inputMode').value,
+      targetLevel: document.getElementById('inputTarget').value,
+    },
+    answers: answers,
+  };
+}
+function saveState() {
+  try { localStorage.setItem(AOA_STATE_KEY, JSON.stringify(buildStatePayload())); } catch (e) {}
+}
+function loadState() {
+  try {
+    const raw = localStorage.getItem(AOA_STATE_KEY);
+    if (!raw) return;
+    const payload = JSON.parse(raw);
+    const f = payload.fields || {};
+    if (f.company) document.getElementById('inputCompany').value = f.company;
+    if (f.industry) document.getElementById('inputIndustry').value = f.industry;
+    if (f.assessor) document.getElementById('inputAssessor').value = f.assessor;
+    if (f.mode) document.getElementById('inputMode').value = f.mode;
+    if (f.targetLevel) document.getElementById('inputTarget').value = f.targetLevel;
+    if (payload.answers && Object.keys(payload.answers).length) answers = payload.answers;
+  } catch (e) {}
+}
+function prefillEngagement() {
+  try {
+    const eng = JSON.parse(localStorage.getItem(ENG_KEY) || '{}');
+    const c = document.getElementById('inputCompany');
+    const a = document.getElementById('inputAssessor');
+    if (c && !c.value && eng.client) c.value = eng.client;
+    if (a && !a.value && eng.assessor) a.value = eng.assessor;
+  } catch (e) {}
+}
+function saveEngagementField(key, value) {
+  if (!value) return;
+  try {
+    const eng = JSON.parse(localStorage.getItem(ENG_KEY) || '{}');
+    eng[key] = value;
+    localStorage.setItem(ENG_KEY, JSON.stringify(eng));
+  } catch (e) {}
+}
+function bindAutosave() {
+  ['inputCompany', 'inputAssessor', 'inputIndustry', 'inputMode', 'inputTarget'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener('input', onSetupFieldChange);
+    el.addEventListener('change', onSetupFieldChange);
+  });
+}
+function onSetupFieldChange() {
+  saveState();
+  saveEngagementField('client', document.getElementById('inputCompany').value);
+  saveEngagementField('assessor', document.getElementById('inputAssessor').value);
 }
 
 function loadFromShareLink() {
@@ -1006,6 +1079,7 @@ function selectOption(qid, value) {
   });
   document.querySelector(`[data-qid="${qid}"]`).closest('.question-card').classList.add('answered');
   updateProgress();
+  saveState();
 }
 
 function renderDimension() {

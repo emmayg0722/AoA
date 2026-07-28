@@ -129,7 +129,7 @@
     <div class="card">
       <h2 data-i18n="chartTitle"></h2>
       <p class="hint" data-i18n="chartHint"></p>
-      <div style="overflow-x:auto"><canvas id="ucChart" width="540" height="400"></canvas></div>
+      <div style="overflow-x:auto"><canvas id="ucChart" width="540" height="400" role="img" aria-label="Quick-win scatter chart"></canvas></div>
     </div>
 
     <div class="card">
@@ -626,6 +626,10 @@ docHtml = function () {
 function drawUcChart() {
   const cv = document.getElementById('ucChart');
   if (!cv) return;
+  const named = rows.filter(r => r.name && r.name.trim());
+  cv.setAttribute('aria-label', named.length
+    ? 'Quick-win scatter chart. ' + named.map(r => `${r.name}: feasibility ${r.feas}, value ${((Number(r.roi) + Number(r.impact)) / 2).toFixed(1)}${isQuickWin(r) ? ', quick win' : ''}`).join('; ') + '.'
+    : 'Quick-win scatter chart. No use cases added yet.');
   const ctx = cv.getContext('2d');
   const W = cv.width, H = cv.height;
   const mL = 56, mR = 16, mT = 16, mB = 46;

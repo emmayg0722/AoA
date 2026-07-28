@@ -56,7 +56,7 @@
   .report .empty-note { color: #aaa; font-style: italic; }
   .saved { font-size: 12.5px; color: var(--green); margin-left: 8px; }
   #importErr { display: none; color: var(--red); font-size: 12.5px; margin-top: 8px; }
-  @media (max-width: 680px) { .report dl { grid-template-columns: 1fr; } .hero h1 { font-size: 27px; } }
+  @media (max-width: 720px) { .report dl { grid-template-columns: 1fr; } .hero h1 { font-size: 27px; } }
 </style>
 </head>
 <body>
@@ -185,6 +185,7 @@ function applyI18n() {
 // ── Registry: every tool's key, English title, and hub-relative link ──
 const REGISTRY = [
   { phase: 'Phase 1 — Discovery & Assessment', tools: [
+    { key: 'aoa_ai_maturity_v1', title: 'AI Maturity Assessment', href: 'Phase%201%20-%20Discovery%20%26%20Assessment/ai-maturity-assessment/' },
     { key: 'dra5c_engagement_v1', title: 'Data Readiness Assessment (5C)', href: 'Phase%201%20-%20Discovery%20%26%20Assessment/data-readiness-assessment-5c/console.html' },
     { key: 'aoa_infra_audit_v1', title: 'Infrastructure Audit', href: 'Phase%201%20-%20Discovery%20%26%20Assessment/infrastructure-audit/' },
     { key: 'aoa_org_readiness_v1', title: 'Organizational Readiness Assessment', href: 'Phase%201%20-%20Discovery%20%26%20Assessment/organizational-readiness/' },
