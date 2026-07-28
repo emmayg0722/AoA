@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI Risk Register — Phase 6</title>
-<meta name="description" content="AI risk management SOP, client intake, a scored risk register (likelihood x impact), and an auto-generated risk assessment report.">
+<title>MLOps Platform Architecture — Phase 7</title>
+<meta name="description" content="SOP, client intake, a platform-component tracker, and an auto-generated MLOps platform architecture document.">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='16' fill='%231B1474'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -22,7 +22,7 @@
   :focus-visible { outline: 2px solid var(--primary); outline-offset: 3px; border-radius: 4px; }
   .hero :focus-visible, .header :focus-visible { outline-color: #fff; }
   .hero { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: #fff; padding: 44px 24px 36px; }
-  .wrap { max-width: 1150px; margin: 0 auto; }
+  .wrap { max-width: 1100px; margin: 0 auto; }
   .crumb { font-size: 13px; color: var(--accent); margin-bottom: 10px; }
   .crumb a { color: var(--accent); text-decoration: none; }
   .crumb .next-nav a { font-weight: 700; }
@@ -31,7 +31,7 @@
   .hero p { margin-top: 10px; font-size: 15.5px; color: #dcdcf2; max-width: 680px; }
   select#langSelect { font-family: var(--font-body); font-size: 13px; font-weight: 600; border: 1.5px solid rgba(255,255,255,0.4); background: rgba(255,255,255,0.08); color: #fff; border-radius: 8px; padding: 7px 10px; }
   select#langSelect option { color: var(--ink); }
-  main { max-width: 1150px; margin: 0 auto; padding: 28px 24px 80px; }
+  main { max-width: 1100px; margin: 0 auto; padding: 28px 24px 80px; }
   .note { background: var(--powder); border: 1px solid var(--accent); border-radius: 12px; padding: 14px 16px; font-size: 14px; color: var(--muted); margin-bottom: 26px; }
   .note strong { color: var(--primary); }
   .card { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 22px 24px; margin-bottom: 20px; }
@@ -58,13 +58,12 @@
   table.matrix td { padding: 6px 8px; border-bottom: 1px solid var(--line); vertical-align: middle; }
   table.matrix input[type=text] { padding: 6px 8px; font-size: 13px; }
   table.matrix select { padding: 6px 6px; font-size: 13px; }
-  .score-cell { font-weight: 700; color: var(--primary); text-align: center; }
   .rm-btn { background: none; border: none; color: var(--red); cursor: pointer; font-size: 15px; }
-  .sev-badge { display: inline-block; font-size: 10.5px; font-weight: 700; padding: 2px 8px; border-radius: 10px; white-space: nowrap; }
-  .sev-low { background: var(--powder); color: var(--muted); }
-  .sev-medium { background: #fdf3e3; color: var(--amber); }
-  .sev-high { background: #fbe3d6; color: #b5501a; }
-  .sev-critical { background: #fbeaea; color: var(--red); }
+  .status-badge { display: inline-block; font-size: 10.5px; font-weight: 700; padding: 2px 8px; border-radius: 10px; white-space: nowrap; }
+  .status-planned { background: var(--powder); color: var(--muted); }
+  .status-inprogress { background: #fdf3e3; color: var(--amber); }
+  .status-live { background: #e7f5ee; color: var(--green); }
+  .status-blocked { background: #fbeaea; color: var(--red); }
   .preview { border: 1px dashed var(--line); border-radius: 10px; padding: 18px 20px; background: #fcfcff; font-size: 14px; }
   .preview h3 { font-family: var(--font-heading); color: var(--primary); font-size: 16px; margin: 14px 0 6px; }
   .preview h3:first-child { margin-top: 0; }
@@ -91,7 +90,7 @@
 <body>
   <header class="hero"><div class="wrap">
     <div class="hero-top">
-      <div class="crumb"><a href="../../">AI Architect Toolkit</a> · Phase 6 · Governance, Compliance &amp; Security · <span class="next-nav">Next: <a href="../../Phase%207%20-%20MLOps%20%26%20Operations/mlops-platform-design/">MLOps Platform Architecture →</a></span></div>
+      <div class="crumb"><a href="../../">AI Architect Toolkit</a> · Phase 7 · MLOps &amp; Operations · <span class="next-nav">Next: <a href="../model-monitoring/">Model Monitoring &amp; Drift Detection Plan →</a></span></div>
       <select id="langSelect" onchange="setLang(this.value)">
         <option value="en">English</option>
         <option value="da">Dansk</option>
@@ -113,35 +112,29 @@
     </div>
 
     <div class="card">
-      <h2 data-i18n="clientTitle"></h2>
+      <h2 data-i18n="intakeTitle"></h2>
       <div class="grid2">
         <div><label data-i18n="lblClient"></label><input type="text" data-eng="client" placeholder="Acme Corp"></div>
         <div><label data-i18n="lblAssessor"></label><input type="text" data-eng="assessor"></div>
       </div>
-      <label data-i18n="lblAuditTrail"></label>
-      <textarea data-eng="auditTrail" placeholder="What gets logged, for how long, and how is it made tamper-evident?"></textarea>
+      <label data-i18n="lblCicdNotes"></label>
+      <textarea data-eng="cicdNotes"></textarea>
+      <label data-i18n="lblRegistryNotes"></label>
+      <textarea data-eng="registryNotes"></textarea>
+      <label data-i18n="lblFeatureStoreNotes"></label>
+      <textarea data-eng="featureStoreNotes"></textarea>
+      <label data-i18n="lblExperimentNotes"></label>
+      <textarea data-eng="experimentNotes"></textarea>
     </div>
 
     <div class="card">
-      <h2 data-i18n="matrixTitle"></h2>
-      <p class="hint" data-i18n="matrixHint"></p>
+      <h2 data-i18n="tableTitle"></h2>
+      <p class="hint" data-i18n="tableHint"></p>
       <table class="matrix">
-        <thead><tr>
-          <th data-i18n="colRisk"></th><th data-i18n="colLikelihood"></th><th data-i18n="colImpact"></th>
-          <th data-i18n="colScore"></th><th data-i18n="colMitigation"></th><th data-i18n="colOwner"></th><th></th>
-        </tr></thead>
+        <thead><tr><th data-i18n="colA"></th><th data-i18n="colB"></th><th data-i18n="colC"></th><th data-i18n="colStatus"></th><th></th></tr></thead>
         <tbody id="matrixBody"></tbody>
       </table>
-      <div class="btn-row">
-        <button class="btn btn-secondary" onclick="addRow()" data-i18n="btnAddRow"></button>
-        <button class="btn btn-secondary" onclick="addCommonRisks()" data-i18n="btnAddCommon"></button>
-      </div>
-    </div>
-
-    <div class="card">
-      <h2 data-i18n="heatTitle"></h2>
-      <p class="hint" data-i18n="heatHint"></p>
-      <div style="overflow-x:auto"><canvas id="riskHeat" width="540" height="400" role="img" aria-label="Risk heatmap"></canvas></div>
+      <div class="btn-row"><button class="btn btn-secondary" onclick="addRow()" data-i18n="btnAddRow"></button></div>
     </div>
 
     <div class="card">
@@ -170,152 +163,165 @@
   </main>
 
 <script>
-const KEY = 'aoa_risk_management_v1';
+const KEY = 'aoa_mlops_platform_v1';
+const STATUS_KEYS = { planned: 'statusPlanned', inprogress: 'statusInprogress', live: 'statusLive', blocked: 'statusBlocked' };
 
 const STRINGS = {
   en: {
-    heroTitle: 'AI Risk Register',
-    heroDesc: 'SOP, client intake, a scored risk register (likelihood × impact), and an auto-generated risk assessment report.',
-    noteLabel: 'How this works.',
-    noteBody: 'Add each risk and score its likelihood and impact 1-5; severity computes live. No API calls — everything autosaves locally.',
-    sopTitle: 'SOP — how this is usually done',
-    sopHint: 'The order an architect actually works this exercise in.',
+    heroTitle: "MLOps Platform Architecture",
+    heroDesc: "SOP, client intake, a platform-component tracker, and an auto-generated MLOps platform architecture document.",
+    noteLabel: "How this works.",
+    noteBody: "Fill in the intake fields and component tracker below; the architecture document builds live. No API calls — everything autosaves locally.",
+    sopTitle: "SOP — how this is usually done",
+    sopHint: "The order an architect actually works this exercise in.",
     sop: [
-      'Build the AI risk register from every upstream artifact this engagement has already produced: data readiness gaps, compliance gaps, bias audit findings, security architecture threats, and known model limitations.',
-      'Score each risk on likelihood (1-5) and impact (1-5); the product is the risk score — this keeps prioritization consistent and defensible instead of a gut-feel ranking.',
-      'Assign an owner to every risk above a "low" severity threshold — an unowned risk does not get mitigated.',
-      'Design the real-time risk assessment mechanism: what monitoring signal would tell you a registered risk has materialized, not just that something in general went wrong.',
-      'Maintain a persistent, tamper-evident audit trail so full-lifecycle compliance can be proven after the fact, not reconstructed from memory during an incident review.',
+      "Start from the model lifecycle the client actually needs, not a reference architecture — a single batch-scored model does not need the same platform as a fleet of continuously retrained ones.",
+      "Design the CI/CD pipeline as three separable pipelines (data, training, deployment) so a failure in one does not block the others, and so each can be triggered independently.",
+      "Stand up the model registry before the first production deploy — retrofitting versioning onto models already in production is far more expensive than starting with it.",
+      "Decide whether a feature store is genuinely warranted: it pays for itself when features are reused across models or when training/serving skew is a real risk, and is overhead otherwise.",
+      "Wire experiment tracking into the training pipeline itself rather than relying on discipline — if logging a run is a manual step, runs will go unlogged.",
     ],
-    clientTitle: 'Client',
-    lblClient: 'Client / engagement',
-    lblAssessor: 'Assessor',
-    lblAuditTrail: 'Audit trail design',
-    matrixTitle: 'Risk register',
-    matrixHint: 'Add each risk and score likelihood and impact 1 (low) to 5 (high). Severity = likelihood × impact.',
-    colRisk: 'Risk',
-    colLikelihood: 'Likelihood',
-    colImpact: 'Impact',
-    colScore: 'Score',
-    colMitigation: 'Mitigation',
-    colOwner: 'Owner',
-    btnAddRow: '+ Add risk',
-    sevLow: 'Low',
-    sevMedium: 'Medium',
-    sevHigh: 'High',
-    sevCritical: 'Critical',
-    previewTitle: 'AI risk assessment report',
-    previewHint: 'This is the actual deliverable — the scored risk register, auto-generated and customized for this client.',
-    btnExportHtml: '🌐 Export HTML',
-    btnExportMd: '📄 Export Markdown',
-    btnReset: '🔄 Reset',
-    docTitle: 'AI Risk Assessment Report',
-    docFor: 'Prepared for',
-    docAssessor: 'Assessor',
-    docDate: 'Date',
-    secAuditTrail: '1. Audit Trail Design',
-    secRegister: '2. Risk Register',
-    noRows: 'No risks added yet.',
-    placeholderRisk: 'e.g. Model drift on seasonal claims patterns',
-    placeholderMitigation: 'e.g. Monthly drift monitoring + quarterly retrain',
-    placeholderOwner: 'e.g. ML lead',
-    emptyNote: '(not yet documented)',
+    intakeTitle: "Client & platform intake",
+    lblClient: "Client / engagement",
+    lblAssessor: "Assessor",
+    lblCicdNotes: "CI/CD pipeline design (data, training, deployment)",
+    lblRegistryNotes: "Model registry & version management",
+    lblFeatureStoreNotes: "Feature store design (or the rationale for not having one)",
+    lblExperimentNotes: "Experiment tracking platform & configuration",
+    tableTitle: "Platform components",
+    tableHint: "Add one row per component of the MLOps platform, with the tooling chosen and who owns it.",
+    colA: "Component",
+    colB: "Tooling",
+    colC: "Owner",
+    colStatus: "Status",
+    btnAddRow: "+ Add component",
+    statusPlanned: "Planned",
+    statusInprogress: "In progress",
+    statusLive: "Live",
+    statusBlocked: "Blocked",
+    previewTitle: "MLOps platform architecture",
+    previewHint: "This is the actual deliverable — auto-generated and customized for this client.",
+    btnExportHtml: "🌐 Export HTML",
+    btnExportMd: "📄 Export Markdown",
+    btnReset: "🔄 Reset",
+    docTitle: "MLOps Platform Architecture",
+    docFor: "Prepared for",
+    docAssessor: "Assessor",
+    docDate: "Date",
+    secA: "1. CI/CD Pipeline Design",
+    secB: "2. Model Registry & Version Management",
+    secC: "3. Feature Store",
+    secD: "4. Experiment Tracking",
+    secE: "5. Platform Components",
+    noRows: "No platform components added yet.",
+    phA: "e.g. Training orchestrator",
+    phB: "e.g. Kubeflow Pipelines",
+    phC: "e.g. Platform team",
+    emptyNote: "(not yet documented)",
   },
   da: {
-    heroTitle: 'AI-risikoregister',
-    heroDesc: 'SOP, kundeoptag, et scoret risikoregister (sandsynlighed × konsekvens), og en automatisk genereret risikovurderingsrapport.',
-    noteLabel: 'Sådan virker det.',
-    noteBody: 'Tilføj hver risiko og score dens sandsynlighed og konsekvens 1-5; alvorlighed beregnes live. Ingen API-kald — alt gemmes automatisk lokalt.',
-    sopTitle: 'SOP — sådan gøres det normalt',
-    sopHint: 'Rækkefølgen en arkitekt reelt arbejder denne øvelse igennem.',
+    heroTitle: "MLOps-platformarkitektur",
+    heroDesc: "SOP, kundeoptag, en platformkomponent-tracker, og et automatisk genereret MLOps-platformarkitekturdokument.",
+    noteLabel: "Sådan virker det.",
+    noteBody: "Udfyld optagsfelterne og komponenttrackeren nedenfor; arkitekturdokumentet opbygges live. Ingen API-kald — alt gemmes automatisk lokalt.",
+    sopTitle: "SOP — sådan gøres det normalt",
+    sopHint: "Rækkefølgen en arkitekt reelt arbejder denne øvelse igennem.",
     sop: [
-      'Byg AI-risikoregisteret ud fra hvert upstream-artefakt, dette engagement allerede har produceret: datamodenheds-gaps, compliance-gaps, bias-auditfund, sikkerhedsarkitekturtrusler, og kendte modelbegrænsninger.',
-      'Score hver risiko på sandsynlighed (1-5) og konsekvens (1-5); produktet er risikoscoren — det holder prioritering konsistent og forsvarlig fremfor en mavefornemmelses-rangering.',
-      'Tildel en ejer til enhver risiko over en "lav"-alvorlighedstærskel — en risiko uden ejer bliver ikke afhjulpet.',
-      'Design den realtids-risikovurderingsmekanisme: hvilket overvågningssignal ville fortælle dig, at en registreret risiko er materialiseret, ikke bare at noget generelt gik galt.',
-      'Vedligehold en vedvarende, manipulationssikker audit trail, så fuld livscyklus-compliance kan bevises bagefter, ikke rekonstrueres fra hukommelsen under en hændelsesgennemgang.',
+      "Start fra den modellivscyklus kunden reelt har brug for, ikke en referencearkitektur — én batch-scoret model kræver ikke samme platform som en flotille af løbende gentrænede modeller.",
+      "Design CI/CD-pipelinen som tre adskillelige pipelines (data, træning, deployment), så en fejl i én ikke blokerer de andre, og så hver kan trigges uafhængigt.",
+      "Etablér modelregistret før den første produktionsdeployment — at eftermontere versionering på modeller, der allerede kører i produktion, er langt dyrere end at starte med det.",
+      "Afgør om en feature store reelt er berettiget: den betaler sig, når features genbruges på tværs af modeller, eller når training/serving-skew er en reel risiko, og er overhead ellers.",
+      "Byg experiment tracking ind i selve træningspipelinen frem for at basere det på disciplin — hvis logning af en kørsel er et manuelt trin, bliver kørsler ikke logget.",
     ],
-    clientTitle: 'Kunde',
-    lblClient: 'Kunde / engagement',
-    lblAssessor: 'Vurderingsmand',
-    lblAuditTrail: 'Audit trail-design',
-    matrixTitle: 'Risikoregister',
-    matrixHint: 'Tilføj hver risiko og score sandsynlighed og konsekvens 1 (lav) til 5 (høj). Alvorlighed = sandsynlighed × konsekvens.',
-    colRisk: 'Risiko',
-    colLikelihood: 'Sandsynlighed',
-    colImpact: 'Konsekvens',
-    colScore: 'Score',
-    colMitigation: 'Afhjælpning',
-    colOwner: 'Ejer',
-    btnAddRow: '+ Tilføj risiko',
-    sevLow: 'Lav',
-    sevMedium: 'Middel',
-    sevHigh: 'Høj',
-    sevCritical: 'Kritisk',
-    previewTitle: 'AI-risikovurderingsrapport',
-    previewHint: 'Dette er selve leverancen — det scorede risikoregister, automatisk genereret og tilpasset denne kunde.',
-    btnExportHtml: '🌐 Eksportér HTML',
-    btnExportMd: '📄 Eksportér Markdown',
-    btnReset: '🔄 Nulstil',
-    docTitle: 'AI-risikovurderingsrapport',
-    docFor: 'Udarbejdet for',
-    docAssessor: 'Vurderingsmand',
-    docDate: 'Dato',
-    secAuditTrail: '1. Audit trail-design',
-    secRegister: '2. Risikoregister',
-    noRows: 'Ingen risici tilføjet endnu.',
-    placeholderRisk: 'fx Modeldrift på sæsonbetonede skadesmønstre',
-    placeholderMitigation: 'fx Månedlig driftovervågning + kvartalsvis gentræning',
-    placeholderOwner: 'fx ML-lead',
-    emptyNote: '(endnu ikke dokumenteret)',
+    intakeTitle: "Kunde- og platformoptag",
+    lblClient: "Kunde / engagement",
+    lblAssessor: "Vurderingsmand",
+    lblCicdNotes: "CI/CD-pipelinedesign (data, træning, deployment)",
+    lblRegistryNotes: "Modelregister og versionsstyring",
+    lblFeatureStoreNotes: "Feature store-design (eller begrundelsen for ikke at have én)",
+    lblExperimentNotes: "Experiment tracking-platform og konfiguration",
+    tableTitle: "Platformkomponenter",
+    tableHint: "Tilføj en række pr. komponent i MLOps-platformen, med det valgte værktøj og hvem der ejer den.",
+    colA: "Komponent",
+    colB: "Værktøj",
+    colC: "Ejer",
+    colStatus: "Status",
+    btnAddRow: "+ Tilføj komponent",
+    statusPlanned: "Planlagt",
+    statusInprogress: "I gang",
+    statusLive: "I drift",
+    statusBlocked: "Blokeret",
+    previewTitle: "MLOps-platformarkitektur",
+    previewHint: "Dette er selve leverancen — automatisk genereret og tilpasset denne kunde.",
+    btnExportHtml: "🌐 Eksportér HTML",
+    btnExportMd: "📄 Eksportér Markdown",
+    btnReset: "🔄 Nulstil",
+    docTitle: "MLOps-platformarkitektur",
+    docFor: "Udarbejdet for",
+    docAssessor: "Vurderingsmand",
+    docDate: "Dato",
+    secA: "1. CI/CD-pipelinedesign",
+    secB: "2. Modelregister og versionsstyring",
+    secC: "3. Feature store",
+    secD: "4. Experiment tracking",
+    secE: "5. Platformkomponenter",
+    noRows: "Ingen platformkomponenter tilføjet endnu.",
+    phA: "fx Træningsorkestrator",
+    phB: "fx Kubeflow Pipelines",
+    phC: "fx Platformteam",
+    emptyNote: "(endnu ikke dokumenteret)",
   },
   sv: {
-    heroTitle: 'AI-riskregister',
-    heroDesc: 'SOP, kundintag, ett poängsatt riskregister (sannolikhet × påverkan), och en automatiskt genererad riskbedömningsrapport.',
-    noteLabel: 'Så här fungerar det.',
-    noteBody: 'Lägg till varje risk och poängsätt dess sannolikhet och påverkan 1-5; allvarlighetsgrad beräknas live. Inga API-anrop — allt sparas automatiskt lokalt.',
-    sopTitle: 'SOP — så här görs det vanligtvis',
-    sopHint: 'Ordningen en arkitekt faktiskt arbetar igenom denna övning.',
+    heroTitle: "MLOps-plattformsarkitektur",
+    heroDesc: "SOP, kundintag, en plattformskomponent-spårare, och ett automatiskt genererat MLOps-plattformsarkitekturdokument.",
+    noteLabel: "Så här fungerar det.",
+    noteBody: "Fyll i intagsfälten och komponentspåraren nedan; arkitekturdokumentet byggs upp live. Inga API-anrop — allt sparas automatiskt lokalt.",
+    sopTitle: "SOP — så här görs det vanligtvis",
+    sopHint: "Ordningen en arkitekt faktiskt arbetar igenom denna övning.",
     sop: [
-      'Bygg AI-riskregistret utifrån varje uppströms-artefakt detta uppdrag redan har producerat: databeredskapsluckor, compliance-luckor, bias-auditfynd, säkerhetsarkitekturhot, och kända modellbegränsningar.',
-      'Poängsätt varje risk på sannolikhet (1-5) och påverkan (1-5); produkten är riskpoängen — det håller prioriteringen konsekvent och försvarbar istället för en magkänslerangordning.',
-      'Tilldela en ägare till varje risk över en "låg"-allvarlighetströskel — en risk utan ägare åtgärdas inte.',
-      'Designa realtids-riskbedömningsmekanismen: vilken övervakningssignal skulle tala om för dig att en registrerad risk har materialiserats, inte bara att något generellt gick fel.',
-      'Underhåll ett bestående, manipuleringssäkert audit trail så att fullständig livscykel-compliance kan bevisas i efterhand, inte rekonstrueras ur minnet under en incidentgenomgång.',
+      "Utgå från den modellivscykel kunden faktiskt behöver, inte en referensarkitektur — en enda batch-poängsatt modell kräver inte samma plattform som en flotta av löpande omtränade modeller.",
+      "Designa CI/CD-pipelinen som tre särskiljbara pipelines (data, träning, deployment), så att ett fel i en inte blockerar de andra, och så att varje kan triggas oberoende.",
+      "Etablera modellregistret före första produktionsdeployen — att i efterhand montera versionshantering på modeller som redan kör i produktion är vida dyrare än att börja med det.",
+      "Avgör om en feature store verkligen är motiverad: den betalar sig när features återanvänds över modeller eller när training/serving-skew är en reell risk, och är overhead annars.",
+      "Bygg in experiment tracking i själva träningspipelinen istället för att förlita er på disciplin — om loggning av en körning är ett manuellt steg kommer körningar inte att loggas.",
     ],
-    clientTitle: 'Kund',
-    lblClient: 'Kund / uppdrag',
-    lblAssessor: 'Bedömare',
-    lblAuditTrail: 'Audit trail-design',
-    matrixTitle: 'Riskregister',
-    matrixHint: 'Lägg till varje risk och poängsätt sannolikhet och påverkan 1 (låg) till 5 (hög). Allvarlighetsgrad = sannolikhet × påverkan.',
-    colRisk: 'Risk',
-    colLikelihood: 'Sannolikhet',
-    colImpact: 'Påverkan',
-    colScore: 'Poäng',
-    colMitigation: 'Åtgärd',
-    colOwner: 'Ägare',
-    btnAddRow: '+ Lägg till risk',
-    sevLow: 'Låg',
-    sevMedium: 'Medel',
-    sevHigh: 'Hög',
-    sevCritical: 'Kritisk',
-    previewTitle: 'AI-riskbedömningsrapport',
-    previewHint: 'Detta är själva leveransen — det poängsatta riskregistret, automatiskt genererat och anpassat för denna kund.',
-    btnExportHtml: '🌐 Exportera HTML',
-    btnExportMd: '📄 Exportera Markdown',
-    btnReset: '🔄 Återställ',
-    docTitle: 'AI-riskbedömningsrapport',
-    docFor: 'Framtagen för',
-    docAssessor: 'Bedömare',
-    docDate: 'Datum',
-    secAuditTrail: '1. Audit trail-design',
-    secRegister: '2. Riskregister',
-    noRows: 'Inga risker tillagda än.',
-    placeholderRisk: 't.ex. Modelldrift på säsongsbetonade skademönster',
-    placeholderMitigation: 't.ex. Månatlig driftövervakning + kvartalsvis omträning',
-    placeholderOwner: 't.ex. ML-lead',
-    emptyNote: '(ännu inte dokumenterat)',
+    intakeTitle: "Kund- och plattformsintag",
+    lblClient: "Kund / uppdrag",
+    lblAssessor: "Bedömare",
+    lblCicdNotes: "CI/CD-pipelinedesign (data, träning, deployment)",
+    lblRegistryNotes: "Modellregister och versionshantering",
+    lblFeatureStoreNotes: "Feature store-design (eller skälet till att inte ha en)",
+    lblExperimentNotes: "Experiment tracking-plattform och konfiguration",
+    tableTitle: "Plattformskomponenter",
+    tableHint: "Lägg till en rad per komponent i MLOps-plattformen, med valt verktyg och vem som äger den.",
+    colA: "Komponent",
+    colB: "Verktyg",
+    colC: "Ägare",
+    colStatus: "Status",
+    btnAddRow: "+ Lägg till komponent",
+    statusPlanned: "Planerad",
+    statusInprogress: "Pågår",
+    statusLive: "I drift",
+    statusBlocked: "Blockerad",
+    previewTitle: "MLOps-plattformsarkitektur",
+    previewHint: "Detta är själva leveransen — automatiskt genererad och anpassad för denna kund.",
+    btnExportHtml: "🌐 Exportera HTML",
+    btnExportMd: "📄 Exportera Markdown",
+    btnReset: "🔄 Återställ",
+    docTitle: "MLOps-plattformsarkitektur",
+    docFor: "Framtagen för",
+    docAssessor: "Bedömare",
+    docDate: "Datum",
+    secA: "1. CI/CD-pipelinedesign",
+    secB: "2. Modellregister och versionshantering",
+    secC: "3. Feature store",
+    secD: "4. Experiment tracking",
+    secE: "5. Plattformskomponenter",
+    noRows: "Inga plattformskomponenter tillagda än.",
+    phA: "t.ex. Träningsorkestrerare",
+    phB: "t.ex. Kubeflow Pipelines",
+    phC: "t.ex. Plattformsteam",
+    emptyNote: "(ännu inte dokumenterat)",
   },
 };
 
@@ -340,27 +346,6 @@ const STRINGS = {
       sampleConfirm: 'L\u00e4s in exempeluppdraget i detta verktyg? Detta ers\u00e4tter allt som f\u00f6r n\u00e4rvarande \u00e4r sparat h\u00e4r.',
       sampleLoadError2: (msg) => `Kunde inte l\u00e4sa in exemplet (${msg}). Detta kan h\u00e4nda om sidan \u00f6ppnades direkt fr\u00e5n disk ist\u00e4llet f\u00f6r att serveras \u00f6ver http(s).`,
     },
-  };
-  Object.keys(D).forEach(l => { if (STRINGS[l]) Object.assign(STRINGS[l], D[l]); });
-})();
-
-
-// ── Common-risks button strings (merged into STRINGS) ────────────
-(function () {
-  const D = {
-    en: { btnAddCommon: '\u2795 Add common AI risks' },
-    da: { btnAddCommon: '\u2795 Tilf\u00f8j almindelige AI-risici' },
-    sv: { btnAddCommon: '\u2795 L\u00e4gg till vanliga AI-risker' },
-  };
-  Object.keys(D).forEach(l => { if (STRINGS[l]) Object.assign(STRINGS[l], D[l]); });
-})();
-
-// ── Risk heatmap strings (merged into STRINGS) ───────────────────
-(function () {
-  const D = {
-    en: { heatTitle: 'Risk heatmap', heatHint: 'Likelihood \u00d7 impact \u2014 each cell shows how many registered risks land there. Color follows severity (Low / Medium / High / Critical).' },
-    da: { heatTitle: 'Risiko-heatmap', heatHint: 'Sandsynlighed \u00d7 konsekvens \u2014 hver celle viser hvor mange registrerede risici der lander der. Farven f\u00f8lger alvorlighed (Lav / Middel / H\u00f8j / Kritisk).' },
-    sv: { heatTitle: 'Riskv\u00e4rmekarta', heatHint: 'Sannolikhet \u00d7 p\u00e5verkan \u2014 varje cell visar hur m\u00e5nga registrerade risker som landar d\u00e4r. F\u00e4rgen f\u00f6ljer allvarlighetsgrad (L\u00e5g / Medel / H\u00f6g / Kritisk).' },
   };
   Object.keys(D).forEach(l => { if (STRINGS[l]) Object.assign(STRINGS[l], D[l]); });
 })();
@@ -405,7 +390,7 @@ let lang = localStorage.getItem('aoa_lang') || 'en';
 function t(key) { return (STRINGS[lang] && STRINGS[lang][key] !== undefined) ? STRINGS[lang][key] : (STRINGS.en[key] !== undefined ? STRINGS.en[key] : key); }
 function esc(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
-let rows = []; // { id, risk, likelihood, impact, mitigation, owner }
+let rows = []; // { id, component, tooling, owner, status }
 let nextId = 1;
 
 function setLang(l) {
@@ -419,7 +404,7 @@ function setLang(l) {
 }
 function applyI18n() {
   document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.getAttribute('data-i18n')); });
-  document.title = t('heroTitle') + ' — Phase 6';
+  document.title = t('heroTitle') + ' — Phase 7';
   document.getElementById('sopList').innerHTML = t('sop').map(s => `<li>${esc(s)}</li>`).join('');
 }
 
@@ -441,61 +426,36 @@ function loadSaved() {
   } catch (e) {}
 }
 
-function addRow() {
-  rows.push({ id: nextId++, risk: '', likelihood: '3', impact: '3', mitigation: '', owner: '' });
-  renderMatrix(); renderPreview(); save();
-}
-function removeRow(id) {
-  rows = rows.filter(r => r.id !== id);
-  renderMatrix(); renderPreview(); save();
-}
-function updateRow(id, field, value) {
-  const r = rows.find(r => r.id === id);
-  if (r) r[field] = value;
-  renderPreview(); save();
-  if (field === 'likelihood' || field === 'impact') renderMatrix();
-}
-function scoreOf(r) { return Number(r.likelihood) * Number(r.impact); }
-function severityOf(score) {
-  if (score >= 15) return 'critical';
-  if (score >= 8) return 'high';
-  if (score >= 4) return 'medium';
-  return 'low';
-}
-function severityLabel(s) { return s === 'critical' ? t('sevCritical') : s === 'high' ? t('sevHigh') : s === 'medium' ? t('sevMedium') : t('sevLow'); }
+function addRow() { rows.push({ id: nextId++, component: '', tooling: '', owner: '', status: 'planned' }); renderMatrix(); renderPreview(); save(); }
+function removeRow(id) { rows = rows.filter(r => r.id !== id); renderMatrix(); renderPreview(); save(); }
+function updateRow(id, field, value) { const r = rows.find(r => r.id === id); if (r) r[field] = value; renderPreview(); save(); if (field === 'status') renderMatrix(); }
 
 function renderMatrix() {
   const body = document.getElementById('matrixBody');
-  if (!rows.length) { body.innerHTML = `<tr><td colspan="7" style="color:var(--muted);font-style:italic;padding:14px 8px">${esc(t('noRows'))}</td></tr>`; return; }
-  const opts = n => [1,2,3,4,5].map(v => `<option value="${v}" ${String(v)===String(n)?'selected':''}>${v}</option>`).join('');
-  body.innerHTML = rows.map(r => {
-    const score = scoreOf(r);
-    const sev = severityOf(score);
-    return `<tr>
-      <td><input type="text" value="${esc(r.risk)}" placeholder="${esc(t('placeholderRisk'))}" oninput="updateRow(${r.id},'risk',this.value)"></td>
-      <td><select onchange="updateRow(${r.id},'likelihood',this.value)">${opts(r.likelihood)}</select></td>
-      <td><select onchange="updateRow(${r.id},'impact',this.value)">${opts(r.impact)}</select></td>
-      <td class="score-cell">${score} <span class="sev-badge sev-${sev}">${esc(severityLabel(sev))}</span></td>
-      <td><input type="text" value="${esc(r.mitigation)}" placeholder="${esc(t('placeholderMitigation'))}" oninput="updateRow(${r.id},'mitigation',this.value)"></td>
-      <td><input type="text" value="${esc(r.owner)}" placeholder="${esc(t('placeholderOwner'))}" oninput="updateRow(${r.id},'owner',this.value)"></td>
+  if (!rows.length) { body.innerHTML = `<tr><td colspan="5" style="color:var(--muted);font-style:italic;padding:14px 8px">${esc(t('noRows'))}</td></tr>`; return; }
+  body.innerHTML = rows.map(r => `<tr>
+      <td><input type="text" value="${esc(r.component)}" placeholder="${esc(t('phA'))}" oninput="updateRow(${r.id},'component',this.value)"></td>
+      <td><input type="text" value="${esc(r.tooling)}" placeholder="${esc(t('phB'))}" oninput="updateRow(${r.id},'tooling',this.value)"></td>
+      <td><input type="text" value="${esc(r.owner)}" placeholder="${esc(t('phC'))}" oninput="updateRow(${r.id},'owner',this.value)"></td>
+      <td><select onchange="updateRow(${r.id},'status',this.value)">
+        ${Object.entries(STATUS_KEYS).map(([v, k]) => `<option value="${v}" ${r.status === v ? 'selected' : ''}>${esc(t(k))}</option>`).join('')}
+      </select></td>
       <td><button class="rm-btn" onclick="removeRow(${r.id})" title="remove">✕</button></td>
-    </tr>`;
-  }).join('');
+    </tr>`).join('');
 }
 
 function renderPreview() {
   const date = new Date().toISOString().slice(0, 10);
-  const sorted = [...rows].filter(r => r.risk.trim()).sort((a, b) => scoreOf(b) - scoreOf(a));
+  const filled = rows.filter(r => r.component.trim());
   let h = `<div class="meta"><strong>${esc(t('docFor'))}:</strong> ${esc(val('client')) || '—'} &nbsp;·&nbsp; <strong>${esc(t('docAssessor'))}:</strong> ${esc(val('assessor')) || '—'} &nbsp;·&nbsp; <strong>${esc(t('docDate'))}:</strong> ${date}</div>`;
-  h += `<h3>${esc(t('secAuditTrail'))}</h3><p>${orEmpty(val('auditTrail'))}</p>`;
-  h += `<h3>${esc(t('secRegister'))}</h3>`;
-  if (sorted.length) {
-    h += `<table><thead><tr><th>${esc(t('colRisk'))}</th><th>${esc(t('colLikelihood'))}</th><th>${esc(t('colImpact'))}</th><th>${esc(t('colScore'))}</th><th>${esc(t('colMitigation'))}</th><th>${esc(t('colOwner'))}</th></tr></thead><tbody>`;
-    h += sorted.map(r => {
-      const score = scoreOf(r);
-      const sev = severityOf(score);
-      return `<tr><td>${esc(r.risk)}</td><td>${r.likelihood}</td><td>${r.impact}</td><td><strong>${score}</strong> <span class="sev-badge sev-${sev}">${esc(severityLabel(sev))}</span></td><td>${esc(r.mitigation) || '—'}</td><td>${esc(r.owner) || '—'}</td></tr>`;
-    }).join('');
+  h += `<h3>${esc(t('secA'))}</h3><p>${orEmpty(val('cicdNotes'))}</p>`;
+  h += `<h3>${esc(t('secB'))}</h3><p>${orEmpty(val('registryNotes'))}</p>`;
+  h += `<h3>${esc(t('secC'))}</h3><p>${orEmpty(val('featureStoreNotes'))}</p>`;
+  h += `<h3>${esc(t('secD'))}</h3><p>${orEmpty(val('experimentNotes'))}</p>`;
+  h += `<h3>${esc(t('secE'))}</h3>`;
+  if (filled.length) {
+    h += `<table><thead><tr><th>${esc(t('colA'))}</th><th>${esc(t('colB'))}</th><th>${esc(t('colC'))}</th><th>${esc(t('colStatus'))}</th></tr></thead><tbody>`;
+    h += filled.map(r => `<tr><td>${esc(r.component)}</td><td>${esc(r.tooling)}</td><td>${esc(r.owner)}</td><td><span class="status-badge status-${r.status}">${esc(t(STATUS_KEYS[r.status] || 'statusPlanned'))}</span></td></tr>`).join('');
     h += '</tbody></table>';
   } else {
     h += `<p><em>${esc(t('noRows'))}</em></p>`;
@@ -513,21 +473,20 @@ function resetAll() {
   renderMatrix(); renderPreview(); save();
 }
 
-function slug() { return (val('client') || 'ai_risk_register').replace(/\W+/g, '_'); }
+function slug() { return (val('client') || 'mlops_platform').replace(/\W+/g, '_'); }
 function docMarkdown() {
   const date = new Date().toISOString().slice(0, 10);
-  const sorted = [...rows].filter(r => r.risk.trim()).sort((a, b) => scoreOf(b) - scoreOf(a));
+  const filled = rows.filter(r => r.component.trim());
   let m = `# ${t('docTitle')} — ${val('client') || '[client]'}\n\n`;
   m += `**${t('docFor')}:** ${val('client') || '—'}  \n**${t('docAssessor')}:** ${val('assessor') || '—'}  \n**${t('docDate')}:** ${date}\n\n`;
-  m += `## ${t('secAuditTrail')}\n${val('auditTrail') || t('emptyNote')}\n\n`;
-  m += `## ${t('secRegister')}\n\n`;
-  if (sorted.length) {
-    m += `| ${t('colRisk')} | ${t('colLikelihood')} | ${t('colImpact')} | ${t('colScore')} | ${t('colMitigation')} | ${t('colOwner')} |\n|---|---|---|---|---|---|\n`;
-    m += sorted.map(r => {
-      const score = scoreOf(r);
-      const sev = severityLabel(severityOf(score));
-      return `| ${r.risk} | ${r.likelihood} | ${r.impact} | **${score}** (${sev}) | ${r.mitigation || '—'} | ${r.owner || '—'} |`;
-    }).join('\n') + '\n';
+  m += `## ${t('secA')}\n${val('cicdNotes') || t('emptyNote')}\n\n`;
+  m += `## ${t('secB')}\n${val('registryNotes') || t('emptyNote')}\n\n`;
+  m += `## ${t('secC')}\n${val('featureStoreNotes') || t('emptyNote')}\n\n`;
+  m += `## ${t('secD')}\n${val('experimentNotes') || t('emptyNote')}\n\n`;
+  m += `## ${t('secE')}\n\n`;
+  if (filled.length) {
+    m += `| ${t('colA')} | ${t('colB')} | ${t('colC')} | ${t('colStatus')} |\n|---|---|---|---|\n`;
+    m += filled.map(r => `| ${r.component} | ${r.tooling} | ${r.owner} | ${t(STATUS_KEYS[r.status] || 'statusPlanned')} |`).join('\n') + '\n';
   } else {
     m += `${t('noRows')}\n`;
   }
@@ -536,7 +495,7 @@ function docMarkdown() {
 function docHtml() {
   return '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>' + esc(t('docTitle')) + ' — ' + esc(val('client') || 'client') + '</title>'
     + '<style>body{font-family:Inter,Segoe UI,sans-serif;color:#1c1c28;max-width:880px;margin:40px auto;padding:0 22px;line-height:1.6}'
-    + 'h1,h3{color:#1B1474;font-family:Georgia,serif}table{width:100%;border-collapse:collapse;font-size:14px}th,td{border:1px solid #e4e4f0;padding:7px 10px;text-align:left}th{background:#EEEEFA;color:#1B1474}.sev-badge{font-size:11px;font-weight:700;padding:2px 9px;border-radius:10px;background:#EEEEFA;color:#1B1474}</style></head><body>'
+    + 'h1,h3{color:#1B1474;font-family:Georgia,serif}table{width:100%;border-collapse:collapse;font-size:14px}th,td{border:1px solid #e4e4f0;padding:7px 10px;text-align:left}th{background:#EEEEFA;color:#1B1474}.status-badge{font-size:11px;font-weight:700;padding:2px 9px;border-radius:10px;background:#EEEEFA;color:#1B1474}</style></head><body>'
     + document.getElementById('preview').outerHTML.replace('id="preview"', '')
     + '</body></html>';
 }
@@ -547,8 +506,8 @@ function download(text, fname, mime) {
   URL.revokeObjectURL(a.href);
 }
 function exportDoc(fmt) {
-  if (fmt === 'md') download(docMarkdown(), 'ai_risk_register_' + slug() + '.md', 'text/markdown');
-  else download(docHtml(), 'ai_risk_register_' + slug() + '.html', 'text/html');
+  if (fmt === 'md') download(docMarkdown(), 'mlops_platform_' + slug() + '.md', 'text/markdown');
+  else download(docHtml(), 'mlops_platform_' + slug() + '.html', 'text/html');
 }
 
 // ── Shared engagement profile (site-wide prefill of client/assessor/use case) ──
@@ -668,77 +627,6 @@ docHtml = function () {
     + mdToHtml(d) + '</body></html>';
 };
 
-// ── Common AI risk starter set ───────────────────────────────────
-const COMMON_RISKS = [
-  { risk: 'Model drift degrades accuracy over time', likelihood: '3', impact: '4', mitigation: 'Drift monitoring + scheduled retraining' },
-  { risk: 'Hallucinated output presented as fact', likelihood: '3', impact: '4', mitigation: 'Grounding/citations + human review on high-stakes outputs' },
-  { risk: 'Prompt injection via untrusted content', likelihood: '3', impact: '4', mitigation: 'Input isolation, output validation, least-privilege tools' },
-  { risk: 'Sensitive data leakage in prompts or logs', likelihood: '2', impact: '5', mitigation: 'Data minimization, redaction, retention limits' },
-  { risk: 'Biased or unfair outcomes for protected groups', likelihood: '2', impact: '5', mitigation: 'Bias audit per release + fairness metrics in evaluation' },
-  { risk: 'Regulatory non-compliance with AI obligations', likelihood: '2', impact: '5', mitigation: 'Compliance gap analysis + counsel review before go-live' },
-  { risk: 'Vendor or model deprecation breaks the system', likelihood: '3', impact: '3', mitigation: 'Abstraction layer + tested fallback model' },
-  { risk: 'Cost overrun from unbounded token usage', likelihood: '3', impact: '3', mitigation: 'Budgets, caching, routing to cheaper models' },
-];
-function addCommonRisks() {
-  const existing = rows.map(r => r.risk.trim().toLowerCase());
-  COMMON_RISKS.forEach(cr => {
-    if (existing.indexOf(cr.risk.toLowerCase()) === -1) {
-      rows.push({ id: nextId++, risk: cr.risk, likelihood: cr.likelihood, impact: cr.impact, mitigation: cr.mitigation, owner: '' });
-    }
-  });
-  rows = rows.filter(r => r.risk.trim() !== '' || r.mitigation.trim() !== '' || r.owner.trim() !== '');
-  renderMatrix(); renderPreview(); save();
-}
-
-// ── Likelihood x impact heatmap (canvas, no libraries) ───────────
-const HEAT_COLORS = { low: '#EEEEFA', medium: '#fdf3e3', high: '#fbe3d6', critical: '#fbeaea' };
-function drawRiskHeat() {
-  const cv = document.getElementById('riskHeat');
-  if (!cv) return;
-  const named = rows.filter(r => r.risk && r.risk.trim());
-  cv.setAttribute('aria-label', named.length
-    ? 'Risk heatmap. ' + named.map(r => `${r.risk}: likelihood ${r.likelihood}, impact ${r.impact}, ${severityLabel(severityOf(Number(r.likelihood) * Number(r.impact)))} severity`).join('; ') + '.'
-    : 'Risk heatmap. No risks added yet.');
-  const ctx = cv.getContext('2d');
-  const W = cv.width, H = cv.height;
-  const mL = 64, mR = 16, mT = 16, mB = 52;
-  const cw = (W - mL - mR) / 5, ch = (H - mT - mB) / 5;
-  ctx.clearRect(0, 0, W, H);
-  const counts = {};
-  rows.filter(r => r.risk && r.risk.trim()).forEach(r => {
-    const k = Number(r.likelihood) + ',' + Number(r.impact);
-    counts[k] = (counts[k] || 0) + 1;
-  });
-  for (let l = 1; l <= 5; l++) {
-    for (let im = 1; im <= 5; im++) {
-      const x = mL + (im - 1) * cw;
-      const y = mT + (5 - l) * ch;
-      ctx.fillStyle = HEAT_COLORS[severityOf(l * im)];
-      ctx.fillRect(x, y, cw, ch);
-      ctx.strokeStyle = '#fff'; ctx.lineWidth = 2;
-      ctx.strokeRect(x, y, cw, ch);
-      const c = counts[l + ',' + im];
-      if (c) {
-        ctx.fillStyle = '#1B1474'; ctx.font = '700 16px Inter, sans-serif'; ctx.textAlign = 'center';
-        ctx.fillText(String(c), x + cw / 2, y + ch / 2 + 6);
-      }
-    }
-  }
-  ctx.fillStyle = '#5b5b6b'; ctx.font = '11px Inter, sans-serif'; ctx.textAlign = 'center';
-  for (let v = 1; v <= 5; v++) {
-    ctx.fillText(String(v), mL + (v - 0.5) * cw, mT + 5 * ch + 16);
-    ctx.textAlign = 'right';
-    ctx.fillText(String(v), mL - 8, mT + (5 - v + 0.5) * ch + 4);
-    ctx.textAlign = 'center';
-  }
-  ctx.font = '12px Inter, sans-serif';
-  ctx.fillText(t('colImpact'), mL + 2.5 * cw, H - 12);
-  ctx.save(); ctx.translate(16, mT + 2.5 * ch); ctx.rotate(-Math.PI / 2);
-  ctx.fillText(t('colLikelihood'), 0, 0); ctx.restore();
-}
-const _riskHeatRenderPreview = renderPreview;
-renderPreview = function () { _riskHeatRenderPreview(); drawRiskHeat(); };
-
 // ── Checkable SOP steps (persisted) + sample-engagement loader ───
 let sopDone = [];
 try { const _o0 = JSON.parse(localStorage.getItem(KEY) || '{}'); if (Array.isArray(_o0.sopDone)) sopDone = _o0.sopDone; } catch (e) {}
@@ -762,7 +650,7 @@ save = function () {
 };
 const _sopApplyI18n = applyI18n;
 applyI18n = function () { _sopApplyI18n(); renderSop(); };
-const SAMPLE_URL = '../../Phase%201%20-%20Discovery%20%26%20Assessment/sample-data/engagement-nordkap/risk-management.json';
+const SAMPLE_URL = '../../Phase%201%20-%20Discovery%20%26%20Assessment/sample-data/engagement-nordkap/mlops-platform-design.json';
 function loadSample() {
   if (!confirm(t('sampleConfirm'))) return;
   const errEl = document.getElementById('sampleError');
@@ -780,7 +668,7 @@ function loadSample() {
   loadSaved();
   prefillEngagement();
   applyI18n();
-  if (!rows.length) { rows.push({ id: nextId++, risk: '', likelihood: '3', impact: '3', mitigation: '', owner: '' }); }
+  if (!rows.length) { rows.push({ id: nextId++, component: '', tooling: '', owner: '', status: 'planned' }); }
   renderMatrix();
   renderPreview();
 })();

@@ -1,0 +1,70 @@
+{
+  "fields": {
+    "client": "Nordkap Insurance",
+    "assessor": "Emma Gao",
+    "cicdNotes": "Three separate pipelines on Azure DevOps. Data pipeline runs nightly (FNOL claim extract, validation, feature build). Training pipeline is triggered manually for now and on drift alert once monitoring is live. Deployment pipeline promotes a registered model through dev -> staging -> production with a manual approval gate before production, since a fraud model denying a legitimate claim is a regulated customer-impact event.",
+    "registryNotes": "MLflow Model Registry, self-hosted alongside the existing Azure ML workspace. Every model version carries: training data snapshot ID, feature set version, evaluation metrics on the holdout set, and the fairness-audit result from the Phase 6 Responsible AI review. Promotion to Production requires all four present, enforced in the deployment pipeline rather than by convention.",
+    "featureStoreNotes": "Deferred, deliberately. Only one model consumes these features today, so a feature store would be overhead. The training/serving skew risk is instead handled by a single shared feature-build module imported by both the batch training job and the online scoring service. Revisit when the second model (claims triage) enters development.",
+    "experimentNotes": "MLflow Tracking, wired directly into the training entrypoint so every run logs parameters, metrics, and artifacts without a manual step. Runs are tagged with the git commit of the training code. Retention: 18 months, matching the audit window agreed in the governance framework."
+  },
+  "rows": [
+    {
+      "id": 1,
+      "component": "Data pipeline",
+      "tooling": "Azure Data Factory + Great Expectations",
+      "owner": "Data platform team",
+      "status": "live"
+    },
+    {
+      "id": 2,
+      "component": "Feature build module",
+      "tooling": "Python package, shared train/serve",
+      "owner": "ML engineering",
+      "status": "live"
+    },
+    {
+      "id": 3,
+      "component": "Training orchestrator",
+      "tooling": "Azure ML Pipelines",
+      "owner": "ML engineering",
+      "status": "inprogress"
+    },
+    {
+      "id": 4,
+      "component": "Model registry",
+      "tooling": "MLflow Model Registry",
+      "owner": "ML engineering",
+      "status": "live"
+    },
+    {
+      "id": 5,
+      "component": "Experiment tracking",
+      "tooling": "MLflow Tracking",
+      "owner": "ML engineering",
+      "status": "live"
+    },
+    {
+      "id": 6,
+      "component": "Online scoring service",
+      "tooling": "Azure Kubernetes Service",
+      "owner": "Platform team",
+      "status": "inprogress"
+    },
+    {
+      "id": 7,
+      "component": "Deployment pipeline",
+      "tooling": "Azure DevOps + manual prod gate",
+      "owner": "Platform team",
+      "status": "planned"
+    }
+  ],
+  "nextId": 8,
+  "sopDone": [
+    true,
+    true,
+    true,
+    true,
+    false
+  ],
+  "lang": "en"
+}

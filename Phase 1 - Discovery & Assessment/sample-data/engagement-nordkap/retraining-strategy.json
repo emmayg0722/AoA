@@ -1,0 +1,56 @@
+{
+  "fields": {
+    "client": "Nordkap Insurance",
+    "assessor": "Emma Gao",
+    "triggerNotes": "Three triggers, in priority order. (1) Performance decay: rolling 90-day AUC more than 0.03 below the registered holdout AUC. (2) Sustained input drift: PSI above 0.2 on a top-6 feature for three consecutive weeks, which distinguishes a real shift from a seasonal blip. (3) A calendar floor of two retrains per year regardless of signal, so the pipeline never sits unexercised long enough to rot. Deliberately no monthly schedule: at Nordkap's claim volume a monthly retrain costs more in review effort than the accuracy it recovers.",
+    "pipelineNotes": "Azure ML pipeline, fully reproducible. Each run pins a dated data snapshot ID, the git commit of the training code, and the feature-build package version, then logs evaluation on both the fixed holdout set and a recent-claims set so seasonal effects are visible. The run writes a candidate version to the MLflow registry in Staging; nothing promotes automatically. The fairness audit from the Phase 6 Responsible AI review is re-run on every candidate, and a candidate that regresses on any protected-group metric is blocked from promotion.",
+    "releaseNotes": "Shadow first, then canary. A candidate scores live traffic in shadow mode for two weeks with no effect on analyst queues, which builds a same-traffic comparison against the incumbent. If shadow holds, it moves to a 10% canary for two weeks, then 50%, then full. Win condition agreed with claims operations before any candidate starts: no worse false-positive rate on legitimate claims, and at least a 2-point improvement in fraud caught per 1000 claims. A candidate that merely ties does not ship, because every promotion costs analyst retraining attention.",
+    "rollbackNotes": "The previous Production version stays registered and warm, so rollback is a registry pointer change plus a scoring-service restart, targeted under 15 minutes. Rollback authority sits with the on-call engineer without needing model-owner approval, since the failure modes that need rollback are time-critical. Tested during the deployment dry run and re-tested each quarter as part of the on-call rotation handover; the last drill is logged in the runbook."
+  },
+  "rows": [
+    {
+      "id": 1,
+      "trigger": "Performance decay",
+      "signal": "Rolling 90-day AUC on dispositioned claims",
+      "action": "Auto-run retraining pipeline, notify model owner",
+      "status": "automated"
+    },
+    {
+      "id": 2,
+      "trigger": "Sustained input drift",
+      "signal": "PSI on top-6 features, 3 consecutive weeks",
+      "action": "Open review ticket, retrain if confirmed",
+      "status": "agreed"
+    },
+    {
+      "id": 3,
+      "trigger": "Calendar floor",
+      "signal": "Time since last successful retrain",
+      "action": "Retrain at 6 months regardless of signal",
+      "status": "agreed"
+    },
+    {
+      "id": 4,
+      "trigger": "Upstream schema change",
+      "signal": "Feature-build validation failure",
+      "action": "Block scoring, page on-call, rebuild features",
+      "status": "proposed"
+    },
+    {
+      "id": 5,
+      "trigger": "Fairness regression",
+      "signal": "Protected-group metric on candidate evaluation",
+      "action": "Block promotion, escalate to governance committee",
+      "status": "automated"
+    }
+  ],
+  "nextId": 6,
+  "sopDone": [
+    true,
+    true,
+    true,
+    true,
+    false
+  ],
+  "lang": "en"
+}

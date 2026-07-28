@@ -1,0 +1,63 @@
+{
+  "fields": {
+    "client": "Nordkap Insurance",
+    "assessor": "Emma Gao",
+    "monitoringNotes": "Azure cost exports tagged per workload, so the fraud model's spend separates from the rest of the claims platform. Attribution splits three ways: online scoring, batch feature build, and training/retraining runs. Before tagging, the whole thing was a single line in the claims-platform bill, which is why the first optimization conversation went nowhere. Reviewed monthly alongside the outcome dashboard so cost per claim scored sits next to fraud caught per 1000 claims.",
+    "utilizationNotes": "The scoring service was provisioned on GPU nodes carried over from the pilot, running at roughly 8% accelerator utilization because this model is a gradient-boosted tree, not a deep network. It does not need a GPU at all. The batch feature build is CPU-bound and was sized for peak but runs at night when nothing competes, so it can use spot capacity. Together these two findings account for most of the available saving, and neither touches the model.",
+    "compressionNotes": "Not applicable to the fraud model itself; a tree ensemble at this size has no meaningful compression story and inference is already sub-millisecond on CPU. It is relevant to the analyst-facing explanation summaries, which currently call a large general-purpose model. A smaller model fine-tuned on approved summaries was evaluated: quality held on the same rubric used to accept the original, so this is a real saving rather than a quality trade. Recommended, pending a review of the fine-tuning data handling with the governance committee.",
+    "cachingNotes": "Two opportunities. Bureau data pulls are billed per call and are frequently repeated within a claim's lifecycle as it is re-scored after new information arrives; a 24-hour cache on bureau responses removes most of the duplication with no effect on scoring behaviour, since bureau data does not change intraday. Second, explanation summaries are regenerated whenever an analyst reopens a claim even when nothing changed; keying the cache on the feature vector avoids that entirely."
+  },
+  "rows": [
+    {
+      "id": 1,
+      "lever": "Move scoring off GPU to CPU nodes",
+      "saving": "~55% of scoring compute",
+      "effort": "Low effort, no accuracy impact",
+      "status": "implemented"
+    },
+    {
+      "id": 2,
+      "lever": "Cache bureau data pulls for 24h",
+      "saving": "~40% of bureau API spend",
+      "effort": "Low effort, no behaviour change",
+      "status": "agreed"
+    },
+    {
+      "id": 3,
+      "lever": "Spot capacity for nightly feature build",
+      "saving": "~60% of batch compute",
+      "effort": "Medium, needs retry handling",
+      "status": "agreed"
+    },
+    {
+      "id": 4,
+      "lever": "Cache explanation summaries on feature vector",
+      "saving": "~25% of summary generation",
+      "effort": "Low effort",
+      "status": "agreed"
+    },
+    {
+      "id": 5,
+      "lever": "Smaller fine-tuned model for summaries",
+      "saving": "~70% of summary generation",
+      "effort": "Medium, quality held on the accept rubric",
+      "status": "identified"
+    },
+    {
+      "id": 6,
+      "lever": "Quantize the fraud model",
+      "saving": "Negligible",
+      "effort": "Rejected: tree ensemble, already sub-ms on CPU",
+      "status": "rejected"
+    }
+  ],
+  "nextId": 7,
+  "sopDone": [
+    true,
+    true,
+    true,
+    true,
+    true
+  ],
+  "lang": "en"
+}

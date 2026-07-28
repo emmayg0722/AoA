@@ -15,11 +15,16 @@ Each tool fetches its sample file from this folder at runtime (same-origin, no
 external network call) and feeds it through the tool's normal loading/restore
 path — there is no separate "demo mode" code path to maintain.
 
-## `engagement-nordkap/` — one sample engagement across all 24 tools
+## `engagement-nordkap/` — one sample engagement across all 29 tools
 
 One consistent **fictional** engagement — *Nordkap Insurance*, real-time claims
 fraud detection at FNOL — with one JSON file per deliverable tool
 (`<tool-folder>.json`), each matching that tool's exact localStorage shape.
+The Phase 7 files (`mlops-platform-design`, `model-monitoring`,
+`retraining-strategy`, `operations-runbook`, `cost-optimization`) continue the
+same engagement into production operations, so the monitoring thresholds,
+retraining triggers, and incident playbooks all refer back to the same fraud
+model the earlier phases scoped and built.
 Every tool's **"🧪 Load sample"** button (in the export row) fetches its file
 same-origin and restores it through the tool's normal load path, after a
 confirmation (it replaces whatever is currently saved in that tool). Load

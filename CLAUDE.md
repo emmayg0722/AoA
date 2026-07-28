@@ -50,14 +50,18 @@ when adding new phases or tools so terminology stays consistent.
 ├── Phase 5 - Implementation & Delivery/ # deployment-golive, implementation-management,
 │                                        # quality-assurance, system-integration,
 │                                        # technical-documentation
-└── Phase 6 - Governance, Compliance & Security/  # ai-governance-framework,
-                                                    # compliance-assessment, responsible-ai,
-                                                    # risk-management
+├── Phase 6 - Governance, Compliance & Security/  # ai-governance-framework,
+│                                                   # compliance-assessment, responsible-ai,
+│                                                   # risk-management
+└── Phase 7 - MLOps & Operations/        # mlops-platform-design, model-monitoring,
+                                          # retraining-strategy, operations-runbook,
+                                          # cost-optimization
 ```
 
-**All 6 phases above are fully built** — every subfolder listed is a real, working tool,
-not a placeholder. Phases 7–10 (MLOps & Operations, and beyond) don't exist yet; add them
-the same way when the time comes. Almost every tool folder is `index.html`; the two
+**All 7 phases above are fully built** — every subfolder listed is a real, working tool,
+not a placeholder. Phases 8–10 (Change Management & Enablement, Vendor Evaluation &
+Technology Selection, ROI Analysis & Cost Optimization) don't exist yet; add them the
+same way when the time comes. Almost every tool folder is `index.html`; the two
 exceptions are `data-readiness-assessment-5c/` (`console.html` + `profiler.html`) and
 `Design Layers/` (`architecture-builder.html`) — the hub's cards link to those files
 directly. **Folder names contain spaces and `&`** (e.g. `Phase 1 - Discovery & Assessment`)

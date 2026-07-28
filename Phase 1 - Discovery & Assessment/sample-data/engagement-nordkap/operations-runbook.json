@@ -1,0 +1,70 @@
+{
+  "fields": {
+    "client": "Nordkap Insurance",
+    "assessor": "Emma Gao",
+    "runbookNotes": "Written for a Nordkap platform engineer on rotation who has not worked on the fraud model. Every playbook opens with how to confirm the symptom, then the first action, then when to stop and escalate. Model internals are deliberately out of scope: the runbook tells the on-call engineer how to restore service or safely disable scoring, not how to diagnose the model. Lives in the Nordkap wiki next to the existing claims-platform runbooks so on-call has one place to look, with this document as the source of record.",
+    "rotationNotes": "Nordkap platform team, five engineers, one week per rotation, business-hours primary with an out-of-hours pager for Sev 1 only. Our team shadows the first two rotations and is reachable as secondary for the first 60 days after go-live, then fully hands over. Each rotation starts with a 15-minute handover covering open alerts, any silenced monitors and why, and the state of the current model version.",
+    "escalationNotes": "Three levels. On-call engineer handles service restoration and may disable scoring or roll back a model version without further approval, since both are reversible and time-critical. Platform lead is engaged for anything touching the data pipeline or requiring a change outside the runbook. Model owner (claims analytics) is engaged for anything about model behaviour or output quality, and is the only role that can approve promoting a new version. Sev 1 with customer impact also notifies the AI governance committee within one business day, per the Phase 6 framework.",
+    "incidentNotes": "Severity is set by customer impact, not by component: Sev 1 is wrong decisions reaching policyholders or a total scoring outage during business hours; Sev 2 is degraded scoring with the analyst fallback holding; Sev 3 is monitoring and pipeline issues with no scoring impact. Sev 1 and Sev 2 get a written post-incident review within five working days, blameless, with actions assigned to a named owner and a date. Reviews are read at the monthly model review so recurring causes surface rather than accumulating."
+  },
+  "rows": [
+    {
+      "id": 1,
+      "scenario": "Scoring service returns 5xx",
+      "response": "Check pod health and recent deploys, restart service, verify the analyst queue drains",
+      "escalatesTo": "Platform lead after 30 min unresolved",
+      "status": "tested"
+    },
+    {
+      "id": 2,
+      "scenario": "Scoring latency breaches SLO",
+      "response": "Check inference quota and node pressure, scale out replicas",
+      "escalatesTo": "Platform lead",
+      "status": "tested"
+    },
+    {
+      "id": 3,
+      "scenario": "Feature pipeline failed overnight",
+      "response": "Confirm scoring is serving stale features, disable scoring if snapshot is over 48h old, rerun pipeline",
+      "escalatesTo": "Data platform team, then model owner",
+      "status": "tested"
+    },
+    {
+      "id": 4,
+      "scenario": "Model returns confident but implausible scores",
+      "response": "Disable scoring, route claims to full analyst review, capture sample payloads",
+      "escalatesTo": "Model owner immediately",
+      "status": "reviewed"
+    },
+    {
+      "id": 5,
+      "scenario": "Drift or decay alert fires",
+      "response": "Confirm the alert against the dashboard, open a review ticket, do not retrain from the on-call seat",
+      "escalatesTo": "Model owner, next business day",
+      "status": "reviewed"
+    },
+    {
+      "id": 6,
+      "scenario": "PII detected in analyst-queue output",
+      "response": "Block the write path, preserve the payload for audit, raise a Sev 1",
+      "escalatesTo": "Model owner and data protection officer",
+      "status": "draft"
+    },
+    {
+      "id": 7,
+      "scenario": "Inference cost spike",
+      "response": "Check request volume and cache hit rate, confirm no retry storm",
+      "escalatesTo": "Platform lead",
+      "status": "draft"
+    }
+  ],
+  "nextId": 8,
+  "sopDone": [
+    true,
+    true,
+    true,
+    false,
+    false
+  ],
+  "lang": "en"
+}

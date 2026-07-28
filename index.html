@@ -531,11 +531,57 @@
       </a>
     </div>
 
+    <div class="phase-head" id="phase-7" style="margin-top:44px">
+      <h2 data-i18n="p7Title"></h2>
+      <span class="phase-tag" data-i18n="tagP7"></span>
+      <span class="phase-count"></span>
+    </div>
+    <p class="phase-sub" data-i18n="p7Sub"></p>
+
+    <div class="cards">
+      <a class="card" href="Phase%207%20-%20MLOps%20%26%20Operations/mlops-platform-design/">
+        <div class="icon">⚙️</div>
+        <h3 data-i18n="c_mlops_t"></h3>
+        <p data-i18n="c_mlops_d"></p>
+        <span class="go" data-i18n="c_mlops_c"></span>
+      </a>
+
+      <a class="card" href="Phase%207%20-%20MLOps%20%26%20Operations/model-monitoring/">
+        <div class="icon">📡</div>
+        <h3 data-i18n="c_monitor_t"></h3>
+        <p data-i18n="c_monitor_d"></p>
+        <span class="go" data-i18n="c_monitor_c"></span>
+      </a>
+
+      <a class="card" href="Phase%207%20-%20MLOps%20%26%20Operations/retraining-strategy/">
+        <div class="icon">🔁</div>
+        <h3 data-i18n="c_retrain_t"></h3>
+        <p data-i18n="c_retrain_d"></p>
+        <span class="go" data-i18n="c_retrain_c"></span>
+      </a>
+
+      <a class="card" href="Phase%207%20-%20MLOps%20%26%20Operations/operations-runbook/">
+        <div class="icon">📕</div>
+        <h3 data-i18n="c_runbook_t"></h3>
+        <p data-i18n="c_runbook_d"></p>
+        <span class="go" data-i18n="c_runbook_c"></span>
+      </a>
+
+      <a class="card" href="Phase%207%20-%20MLOps%20%26%20Operations/cost-optimization/">
+        <div class="icon">💸</div>
+        <h3 data-i18n="c_cost_t"></h3>
+        <p data-i18n="c_cost_d"></p>
+        <span class="go" data-i18n="c_cost_c"></span>
+      </a>
+    </div>
+
     <div class="future">
       <h2 data-i18n="futureTitle"></h2>
       <p data-i18n="futureDesc"></p>
       <div class="pills">
-        <span class="pill" data-i18n="pillPhase7"></span>
+        <span class="pill" data-i18n="pillPhase8"></span>
+        <span class="pill" data-i18n="pillPhase9"></span>
+        <span class="pill" data-i18n="pillPhase10"></span>
       </div>
     </div>
   </main>
@@ -646,9 +692,29 @@ const STRINGS = {
     c_risk_t: 'AI Risk Register',
     c_risk_d: 'SOP plus a scored risk register (likelihood × impact, severity, mitigation, owner), auto-generating a risk assessment report. EN / DA / SV.',
     c_risk_c: 'Open register →',
+    tagP7: 'Phase 7',
+    p7Title: 'MLOps & Operations',
+    p7Sub: 'Keep the deployed solution working: the platform that retrains and redeploys it, the monitoring that catches drift before users do, and the runbook the client\'s own on-call team will run on.',
+    c_mlops_t: 'MLOps Platform Architecture',
+    c_mlops_d: 'SOP, client intake, and a platform-component tracker covering CI/CD pipelines, model registry, feature store, and experiment tracking, auto-generating an MLOps platform architecture document. EN / DA / SV.',
+    c_mlops_c: 'Open architecture →',
+    c_monitor_t: 'Model Monitoring & Drift Detection Plan',
+    c_monitor_d: 'SOP, client intake, and a monitored-signal tracker (signal, detection method, threshold) spanning data drift, concept drift, model decay, hallucination and data-leakage checks, auto-generating a monitoring plan. EN / DA / SV.',
+    c_monitor_c: 'Open plan →',
+    c_retrain_t: 'Model Retraining Strategy',
+    c_retrain_d: 'SOP, client intake, and a retraining-trigger tracker tying each trigger to a monitored signal, plus A/B, shadow, canary and rollback approach, auto-generating a retraining strategy document. EN / DA / SV.',
+    c_retrain_c: 'Open strategy →',
+    c_runbook_t: 'Operations Runbook & On-Call Plan',
+    c_runbook_d: 'SOP, client intake, and an incident-playbook tracker (scenario, first response, escalation) covering on-call rotation and incident response, auto-generating an operations runbook. EN / DA / SV.',
+    c_runbook_c: 'Open runbook →',
+    c_cost_t: 'Inference Cost Optimization Report',
+    c_cost_d: 'SOP, client intake, and an optimization-lever tracker ranked by saving against effort, covering cost attribution, utilization, compression and caching, auto-generating a cost optimization report. EN / DA / SV.',
+    c_cost_c: 'Open report →',
     futureTitle: 'Further phases',
-    futureDesc: 'The toolkit follows the full AI-architect delivery lifecycle. These phases are scaffolded and will be filled in over time.',
-    pillPhase7: 'Phase 7 · MLOps & Operations',
+    futureDesc: 'The toolkit follows the full AI-architect delivery lifecycle. Phases 1 through 7 are built; these remaining phases will be added over time.',
+    pillPhase8: 'Phase 8 · Change Management & Enablement',
+    pillPhase9: 'Phase 9 · Vendor Evaluation & Technology Selection',
+    pillPhase10: 'Phase 10 · ROI Analysis & Cost Optimization',
     footerText: 'Built as an independent AI-architecture consulting portfolio. All assessment tools run fully client-side — no data leaves your browser.',
     dashTitle: 'Engagement dashboard',
     dashReport: 'Open master report →',
@@ -759,9 +825,29 @@ const STRINGS = {
     c_risk_t: 'AI-risikoregister',
     c_risk_d: 'SOP plus et scoret risikoregister (sandsynlighed × konsekvens, alvorlighed, afhjælpning, ejer), der automatisk genererer en risikovurderingsrapport. EN / DA / SV.',
     c_risk_c: 'Åbn register →',
+    tagP7: 'Fase 7',
+    p7Title: 'MLOps & Drift',
+    p7Sub: 'Hold den udrullede løsning kørende: platformen der gentræner og genudruller den, monitoreringen der fanger drift før brugerne gør, og håndbogen kundens eget vagtteam kommer til at køre på.',
+    c_mlops_t: 'MLOps-platformarkitektur',
+    c_mlops_d: 'SOP, kundeoptag, og en platformkomponent-tracker der dækker CI/CD-pipelines, modelregister, feature store og experiment tracking, og automatisk genererer et MLOps-platformarkitekturdokument. EN / DA / SV.',
+    c_mlops_c: 'Åbn arkitektur →',
+    c_monitor_t: 'Modelmonitorering & driftdetektionsplan',
+    c_monitor_d: 'SOP, kundeoptag, og en overvåget-signal-tracker (signal, detektionsmetode, tærskel) der spænder over datadrift, konceptdrift, modelforringelse, hallucinations- og datalækagetjek, og automatisk genererer en monitoreringsplan. EN / DA / SV.',
+    c_monitor_c: 'Åbn plan →',
+    c_retrain_t: 'Model-gentræningsstrategi',
+    c_retrain_d: 'SOP, kundeoptag, og en gentræningstrigger-tracker der binder hver trigger til et overvåget signal, plus A/B-, shadow-, canary- og rollback-tilgang, og automatisk genererer et gentræningsstrategidokument. EN / DA / SV.',
+    c_retrain_c: 'Åbn strategi →',
+    c_runbook_t: 'Driftshåndbog & vagtplan',
+    c_runbook_d: 'SOP, kundeoptag, og en hændelses-playbook-tracker (scenarie, første reaktion, eskalation) der dækker vagtrotation og hændelsesrespons, og automatisk genererer en driftshåndbog. EN / DA / SV.',
+    c_runbook_c: 'Åbn håndbog →',
+    c_cost_t: 'Rapport om optimering af inferensomkostninger',
+    c_cost_d: 'SOP, kundeoptag, og en optimeringsgreb-tracker rangeret efter besparelse mod indsats, der dækker omkostningsattribuering, udnyttelse, kompression og caching, og automatisk genererer en omkostningsoptimeringsrapport. EN / DA / SV.',
+    c_cost_c: 'Åbn rapport →',
     futureTitle: 'Kommende faser',
     futureDesc: 'Værktøjssættet følger hele AI-arkitektens leveringslivscyklus. Disse faser er skitseret og vil blive udfyldt over tid.',
-    pillPhase7: 'Fase 7 · MLOps & Drift',
+    pillPhase8: 'Fase 8 · Organisationsforandring & Enablement',
+    pillPhase9: 'Fase 9 · Leverandørvurdering & Teknologivalg',
+    pillPhase10: 'Fase 10 · ROI-analyse & Omkostningsoptimering',
     footerText: 'Bygget som en uafhængig AI-arkitektur-konsulentportefølje. Alle vurderingsværktøjer kører fuldt klient-side — ingen data forlader din browser.',
     dashTitle: 'Engagementsoverblik',
     dashReport: 'Åbn samlet rapport →',
@@ -872,9 +958,29 @@ const STRINGS = {
     c_risk_t: 'AI-riskregister',
     c_risk_d: 'SOP plus ett poängsatt riskregister (sannolikhet × påverkan, allvarlighetsgrad, åtgärd, ägare), som automatiskt genererar en riskbedömningsrapport. EN / DA / SV.',
     c_risk_c: 'Öppna register →',
+    tagP7: 'Fas 7',
+    p7Title: 'MLOps & Drift',
+    p7Sub: 'Håll den driftsatta lösningen fungerande: plattformen som omtränar och driftsätter om den, monitoreringen som fångar drift före användarna, och handboken kundens eget jourteam kommer att köra på.',
+    c_mlops_t: 'MLOps-plattformsarkitektur',
+    c_mlops_d: 'SOP, kundintag, och en plattformskomponent-spårare som täcker CI/CD-pipelines, modellregister, feature store och experiment tracking, och automatiskt genererar ett MLOps-plattformsarkitekturdokument. EN / DA / SV.',
+    c_mlops_c: 'Öppna arkitektur →',
+    c_monitor_t: 'Modellmonitorering & driftdetekteringsplan',
+    c_monitor_d: 'SOP, kundintag, och en övervakat-signal-spårare (signal, detekteringsmetod, tröskel) som spänner över datadrift, konceptdrift, modellförsämring, hallucinations- och dataläckagekontroller, och automatiskt genererar en monitoreringsplan. EN / DA / SV.',
+    c_monitor_c: 'Öppna plan →',
+    c_retrain_t: 'Modellomträningsstrategi',
+    c_retrain_d: 'SOP, kundintag, och en omträningstrigger-spårare som binder varje trigger till en övervakad signal, plus A/B-, shadow-, canary- och rollback-ansats, och automatiskt genererar ett omträningsstrategidokument. EN / DA / SV.',
+    c_retrain_c: 'Öppna strategi →',
+    c_runbook_t: 'Driftshandbok & jourplan',
+    c_runbook_d: 'SOP, kundintag, och en incident-playbook-spårare (scenario, första åtgärd, eskalering) som täcker jourrotation och incidentrespons, och automatiskt genererar en driftshandbok. EN / DA / SV.',
+    c_runbook_c: 'Öppna handbok →',
+    c_cost_t: 'Rapport om optimering av inferenskostnader',
+    c_cost_d: 'SOP, kundintag, och en optimeringsspak-spårare rangordnad efter besparing mot insats, som täcker kostnadsattribuering, utnyttjande, kompression och caching, och automatiskt genererar en kostnadsoptimeringsrapport. EN / DA / SV.',
+    c_cost_c: 'Öppna rapport →',
     futureTitle: 'Kommande faser',
     futureDesc: 'Verktygssamlingen följer AI-arkitektens hela leveranslivscykel. Dessa faser är skisserade och kommer fyllas i över tid.',
-    pillPhase7: 'Fas 7 · MLOps & Drift',
+    pillPhase8: 'Fas 8 · Organisationsförändring & Enablement',
+    pillPhase9: 'Fas 9 · Leverantörsbedömning & Teknikval',
+    pillPhase10: 'Fas 10 · ROI-analys & Kostnadsoptimering',
     footerText: 'Byggd som en oberoende AI-arkitektur-konsultportfölj. Alla bedömningsverktyg körs helt klient-sidan — ingen data lämnar din webbläsare.',
     dashTitle: 'Uppdragsöversikt',
     dashReport: 'Öppna samlad rapport →',
@@ -914,6 +1020,11 @@ const TOOL_REGISTRY = [
   { key: 'aoa_compliance_assessment_v1', titleKey: 'c_comp_t', href: 'Phase%206%20-%20Governance%2C%20Compliance%20%26%20Security/compliance-assessment/' },
   { key: 'aoa_responsible_ai_v1', titleKey: 'c_resp_t', href: 'Phase%206%20-%20Governance%2C%20Compliance%20%26%20Security/responsible-ai/' },
   { key: 'aoa_risk_management_v1', titleKey: 'c_risk_t', href: 'Phase%206%20-%20Governance%2C%20Compliance%20%26%20Security/risk-management/' },
+  { key: 'aoa_mlops_platform_v1', titleKey: 'c_mlops_t', href: 'Phase%207%20-%20MLOps%20%26%20Operations/mlops-platform-design/' },
+  { key: 'aoa_model_monitoring_v1', titleKey: 'c_monitor_t', href: 'Phase%207%20-%20MLOps%20%26%20Operations/model-monitoring/' },
+  { key: 'aoa_retraining_strategy_v1', titleKey: 'c_retrain_t', href: 'Phase%207%20-%20MLOps%20%26%20Operations/retraining-strategy/' },
+  { key: 'aoa_operations_runbook_v1', titleKey: 'c_runbook_t', href: 'Phase%207%20-%20MLOps%20%26%20Operations/operations-runbook/' },
+  { key: 'aoa_cost_optimization_v1', titleKey: 'c_cost_t', href: 'Phase%207%20-%20MLOps%20%26%20Operations/cost-optimization/' },
 ];
 
 function _numOnly(s) { return /^\d+(\.\d+)?$/.test(s.trim()); }
@@ -974,6 +1085,7 @@ const PHASE_NAV = [
   { id: 'phase-4', titleKey: 'p4Title', tagKey: 'tagP4' },
   { id: 'phase-5', titleKey: 'p5Title', tagKey: 'tagP5' },
   { id: 'phase-6', titleKey: 'p6Title', tagKey: 'tagP6' },
+  { id: 'phase-7', titleKey: 'p7Title', tagKey: 'tagP7' },
 ];
 function renderPhaseNav() {
   const nav = document.getElementById('phaseNav');
