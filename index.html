@@ -76,7 +76,48 @@
     color: #dcdcf2;
     max-width: 620px;
   }
+  .hero-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 22px;
+    margin-top: 26px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255,255,255,0.18);
+  }
+  .hero-stats span {
+    font-size: 14px;
+    color: #dcdcf2;
+  }
+  .hero-stats strong {
+    font-family: var(--font-heading);
+    font-size: 20px;
+    color: #fff;
+    margin-right: 6px;
+  }
   main { max-width: 960px; margin: 0 auto; padding: 48px 24px 72px; }
+  .phase-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 36px;
+  }
+  .phase-nav a {
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--primary);
+    background: var(--powder);
+    border: 1px solid var(--line);
+    padding: 7px 13px;
+    border-radius: 20px;
+    text-decoration: none;
+    transition: background 0.15s ease, border-color 0.15s ease;
+  }
+  .phase-nav a:hover { background: var(--accent); border-color: var(--accent); }
+  .phase-count {
+    font-size: 12px;
+    color: var(--muted);
+    font-weight: 500;
+  }
   .phase-head {
     display: flex;
     align-items: baseline;
@@ -214,10 +255,17 @@
       </div>
       <h1 data-i18n="heroTitle"></h1>
       <p data-i18n="heroDesc"></p>
+      <div class="hero-stats">
+        <span><strong>27</strong><span data-i18n="statTools"></span></span>
+        <span><strong>6</strong><span data-i18n="statPhases"></span></span>
+        <span data-i18n="statPrivacy"></span>
+      </div>
     </div>
   </header>
 
   <main>
+    <nav class="phase-nav" id="phaseNav" aria-label="Jump to phase"></nav>
+
     <div class="dash">
       <div class="dash-head">
         <h2 data-i18n="dashTitle"></h2>
@@ -227,9 +275,10 @@
       <div class="dash-grid" id="dashGrid"></div>
     </div>
 
-    <div class="phase-head">
+    <div class="phase-head" id="phase-1">
       <h2 data-i18n="p1Title"></h2>
       <span class="phase-tag" data-i18n="tagP1"></span>
+      <span class="phase-count" data-count="5"></span>
     </div>
     <p class="phase-sub" data-i18n="p1Sub"></p>
 
@@ -270,9 +319,10 @@
       </a>
     </div>
 
-    <div class="phase-head" style="margin-top:44px">
+    <div class="phase-head" id="phase-2" style="margin-top:44px">
       <h2 data-i18n="p2Title"></h2>
       <span class="phase-tag" data-i18n="tagP2"></span>
+      <span class="phase-count" data-count="4"></span>
     </div>
     <p class="phase-sub" data-i18n="p2Sub"></p>
 
@@ -306,9 +356,10 @@
       </a>
     </div>
 
-    <div class="phase-head" style="margin-top:44px">
+    <div class="phase-head" id="phase-3" style="margin-top:44px">
       <h2 data-i18n="p3Title"></h2>
       <span class="phase-tag" data-i18n="tagP3"></span>
+      <span class="phase-count" data-count="6"></span>
     </div>
     <p class="phase-sub" data-i18n="p3Sub"></p>
 
@@ -356,9 +407,10 @@
       </a>
     </div>
 
-    <div class="phase-head" style="margin-top:44px">
+    <div class="phase-head" id="phase-4" style="margin-top:44px">
       <h2 data-i18n="p4Title"></h2>
       <span class="phase-tag" data-i18n="tagP4"></span>
+      <span class="phase-count" data-count="3"></span>
     </div>
     <p class="phase-sub" data-i18n="p4Sub"></p>
 
@@ -385,9 +437,10 @@
       </a>
     </div>
 
-    <div class="phase-head" style="margin-top:44px">
+    <div class="phase-head" id="phase-5" style="margin-top:44px">
       <h2 data-i18n="p5Title"></h2>
       <span class="phase-tag" data-i18n="tagP5"></span>
+      <span class="phase-count" data-count="5"></span>
     </div>
     <p class="phase-sub" data-i18n="p5Sub"></p>
 
@@ -428,9 +481,10 @@
       </a>
     </div>
 
-    <div class="phase-head" style="margin-top:44px">
+    <div class="phase-head" id="phase-6" style="margin-top:44px">
       <h2 data-i18n="p6Title"></h2>
       <span class="phase-tag" data-i18n="tagP6"></span>
+      <span class="phase-count" data-count="4"></span>
     </div>
     <p class="phase-sub" data-i18n="p6Sub"></p>
 
@@ -481,6 +535,9 @@ const STRINGS = {
     heroEyebrow: 'AI Architecture · Consulting Toolkit',
     heroTitle: 'Practical tools for AI-architecture engagements, organized by delivery phase.',
     heroDesc: 'An evolving set of assessments and accelerators that mirror how an AI architect actually moves a client from discovery to production.',
+    statTools: ' tools', statPhases: ' delivery phases', statPrivacy: 'Runs fully in your browser. Nothing is uploaded.',
+    jumpToLabel: 'Jump to:',
+    toolsCountLabel: (n) => `${n} tool${n === 1 ? '' : 's'}`,
     tagP1: 'Phase 1', tagP2: 'Phase 2', tagP3: 'Phase 3', tagP4: 'Phase 4', tagP5: 'Phase 5', tagP6: 'Phase 6',
     p1Title: 'Discovery & Assessment',
     p1Sub: "Understand the client's starting point: where they sit on the AI maturity curve, and whether their data is actually ready for the use cases they have in mind.",
@@ -590,6 +647,9 @@ const STRINGS = {
     heroEyebrow: 'AI-arkitektur · Konsulentværktøjer',
     heroTitle: 'Praktiske værktøjer til AI-arkitektur-engagementer, organiseret efter leveringsfase.',
     heroDesc: 'Et voksende sæt af vurderinger og accelleratorer, der afspejler hvordan en AI-arkitekt reelt flytter en kunde fra discovery til produktion.',
+    statTools: ' værktøjer', statPhases: ' leveringsfaser', statPrivacy: 'Kører fuldt ud i din browser. Intet uploades.',
+    jumpToLabel: 'Gå til:',
+    toolsCountLabel: (n) => `${n} værktøj${n === 1 ? '' : 'er'}`,
     tagP1: 'Fase 1', tagP2: 'Fase 2', tagP3: 'Fase 3', tagP4: 'Fase 4', tagP5: 'Fase 5', tagP6: 'Fase 6',
     p1Title: 'Discovery & Vurdering',
     p1Sub: 'Forstå kundens udgangspunkt: hvor de befinder sig på AI-modenhedskurven, og om deres data reelt er klar til de use cases, de har i tankerne.',
@@ -699,6 +759,9 @@ const STRINGS = {
     heroEyebrow: 'AI-arkitektur · Konsultverktyg',
     heroTitle: 'Praktiska verktyg för AI-arkitekturuppdrag, organiserade efter leveransfas.',
     heroDesc: 'En växande uppsättning bedömningar och acceleratorer som speglar hur en AI-arkitekt faktiskt flyttar en kund från discovery till produktion.',
+    statTools: ' verktyg', statPhases: ' leveransfaser', statPrivacy: 'Körs helt i din webbläsare. Inget laddas upp.',
+    jumpToLabel: 'Gå till:',
+    toolsCountLabel: (n) => `${n} verktyg`,
     tagP1: 'Fas 1', tagP2: 'Fas 2', tagP3: 'Fas 3', tagP4: 'Fas 4', tagP5: 'Fas 5', tagP6: 'Fas 6',
     p1Title: 'Discovery & Bedömning',
     p1Sub: 'Förstå kundens utgångsläge: var de befinner sig på AI-mognadskurvan, och om deras data faktiskt är redo för de användningsfall de har i åtanke.',
@@ -888,9 +951,31 @@ function renderDashboard() {
 let lang = localStorage.getItem('aoa_lang') || 'en';
 function t(key) { return (STRINGS[lang] && STRINGS[lang][key] !== undefined) ? STRINGS[lang][key] : (STRINGS.en[key] !== undefined ? STRINGS.en[key] : key); }
 function setLang(l) { lang = l; localStorage.setItem('aoa_lang', l); document.getElementById('langSelect').value = l; applyI18n(); renderDashboard(); }
+const PHASE_NAV = [
+  { id: 'phase-1', titleKey: 'p1Title', tagKey: 'tagP1' },
+  { id: 'phase-2', titleKey: 'p2Title', tagKey: 'tagP2' },
+  { id: 'phase-3', titleKey: 'p3Title', tagKey: 'tagP3' },
+  { id: 'phase-4', titleKey: 'p4Title', tagKey: 'tagP4' },
+  { id: 'phase-5', titleKey: 'p5Title', tagKey: 'tagP5' },
+  { id: 'phase-6', titleKey: 'p6Title', tagKey: 'tagP6' },
+];
+function renderPhaseNav() {
+  const nav = document.getElementById('phaseNav');
+  if (!nav) return;
+  nav.innerHTML = PHASE_NAV.map(p => `<a href="#${p.id}">${esc(t(p.tagKey))} · ${esc(t(p.titleKey))}</a>`).join('');
+}
+function renderPhaseCounts() {
+  document.querySelectorAll('.phase-count').forEach(el => {
+    const n = Number(el.getAttribute('data-count'));
+    if (n) el.textContent = t('toolsCountLabel')(n);
+  });
+}
+
 function applyI18n() {
   document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.getAttribute('data-i18n')); });
   document.documentElement.lang = lang;
+  renderPhaseNav();
+  renderPhaseCounts();
 }
 
 (function init() {
