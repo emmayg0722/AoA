@@ -256,8 +256,8 @@
       <h1 data-i18n="heroTitle"></h1>
       <p data-i18n="heroDesc"></p>
       <div class="hero-stats">
-        <span><strong>27</strong><span data-i18n="statTools"></span></span>
-        <span><strong>6</strong><span data-i18n="statPhases"></span></span>
+        <span><strong id="statToolsNum"></strong><span data-i18n="statTools"></span></span>
+        <span><strong id="statPhasesNum"></strong><span data-i18n="statPhases"></span></span>
         <span data-i18n="statPrivacy"></span>
       </div>
     </div>
@@ -278,7 +278,7 @@
     <div class="phase-head" id="phase-1">
       <h2 data-i18n="p1Title"></h2>
       <span class="phase-tag" data-i18n="tagP1"></span>
-      <span class="phase-count" data-count="5"></span>
+      <span class="phase-count"></span>
     </div>
     <p class="phase-sub" data-i18n="p1Sub"></p>
 
@@ -322,7 +322,7 @@
     <div class="phase-head" id="phase-2" style="margin-top:44px">
       <h2 data-i18n="p2Title"></h2>
       <span class="phase-tag" data-i18n="tagP2"></span>
-      <span class="phase-count" data-count="4"></span>
+      <span class="phase-count"></span>
     </div>
     <p class="phase-sub" data-i18n="p2Sub"></p>
 
@@ -359,7 +359,7 @@
     <div class="phase-head" id="phase-3" style="margin-top:44px">
       <h2 data-i18n="p3Title"></h2>
       <span class="phase-tag" data-i18n="tagP3"></span>
-      <span class="phase-count" data-count="6"></span>
+      <span class="phase-count"></span>
     </div>
     <p class="phase-sub" data-i18n="p3Sub"></p>
 
@@ -410,7 +410,7 @@
     <div class="phase-head" id="phase-4" style="margin-top:44px">
       <h2 data-i18n="p4Title"></h2>
       <span class="phase-tag" data-i18n="tagP4"></span>
-      <span class="phase-count" data-count="3"></span>
+      <span class="phase-count"></span>
     </div>
     <p class="phase-sub" data-i18n="p4Sub"></p>
 
@@ -440,7 +440,7 @@
     <div class="phase-head" id="phase-5" style="margin-top:44px">
       <h2 data-i18n="p5Title"></h2>
       <span class="phase-tag" data-i18n="tagP5"></span>
-      <span class="phase-count" data-count="5"></span>
+      <span class="phase-count"></span>
     </div>
     <p class="phase-sub" data-i18n="p5Sub"></p>
 
@@ -484,7 +484,7 @@
     <div class="phase-head" id="phase-6" style="margin-top:44px">
       <h2 data-i18n="p6Title"></h2>
       <span class="phase-tag" data-i18n="tagP6"></span>
-      <span class="phase-count" data-count="4"></span>
+      <span class="phase-count"></span>
     </div>
     <p class="phase-sub" data-i18n="p6Sub"></p>
 
@@ -965,10 +965,21 @@ function renderPhaseNav() {
   nav.innerHTML = PHASE_NAV.map(p => `<a href="#${p.id}">${esc(t(p.tagKey))} · ${esc(t(p.titleKey))}</a>`).join('');
 }
 function renderPhaseCounts() {
-  document.querySelectorAll('.phase-count').forEach(el => {
-    const n = Number(el.getAttribute('data-count'));
-    if (n) el.textContent = t('toolsCountLabel')(n);
+  document.querySelectorAll('.phase-head').forEach(head => {
+    const countEl = head.querySelector('.phase-count');
+    if (!countEl) return;
+    let cardsEl = head.nextElementSibling;
+    while (cardsEl && !cardsEl.classList.contains('cards')) cardsEl = cardsEl.nextElementSibling;
+    if (!cardsEl) return;
+    const n = cardsEl.querySelectorAll('a.card').length;
+    if (n) countEl.textContent = t('toolsCountLabel')(n);
   });
+  const totalTools = document.querySelectorAll('main .cards a.card').length;
+  const totalPhases = document.querySelectorAll('.phase-head').length;
+  const statTools = document.getElementById('statToolsNum');
+  const statPhases = document.getElementById('statPhasesNum');
+  if (statTools) statTools.textContent = totalTools;
+  if (statPhases) statPhases.textContent = totalPhases;
 }
 
 function applyI18n() {

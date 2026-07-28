@@ -75,8 +75,8 @@
     <h1 data-i18n="heroTitle"></h1>
     <p data-i18n="heroDesc"></p>
     <div class="hero-stats">
-      <span><strong>27</strong><span data-i18n="statTools"></span></span>
-      <span><strong>6</strong><span data-i18n="statPhases"></span></span>
+      <span><strong id="statToolsNum"></strong><span data-i18n="statTools"></span></span>
+      <span><strong id="statPhasesNum"></strong><span data-i18n="statPhases"></span></span>
       <span data-i18n="statPrivacy"></span>
     </div>
   </div></header>
@@ -191,6 +191,10 @@ function setLang(l) { lang = l; localStorage.setItem('aoa_lang', l); document.ge
 function applyI18n() {
   document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.getAttribute('data-i18n')); });
   document.title = t('heroTitle') + ' — AI Architect Toolkit';
+  const statTools = document.getElementById('statToolsNum');
+  const statPhases = document.getElementById('statPhasesNum');
+  if (statTools) statTools.textContent = REGISTRY.reduce((sum, ph) => sum + ph.tools.length, 0);
+  if (statPhases) statPhases.textContent = REGISTRY.length;
 }
 
 // ── Registry: every tool's key, English title, and hub-relative link ──
