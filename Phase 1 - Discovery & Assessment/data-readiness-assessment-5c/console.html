@@ -23,6 +23,7 @@
   .wrap { max-width: 920px; margin: 0 auto; }
   .crumb { font-size: 13px; color: var(--accent); margin-bottom: 10px; }
   .crumb a { color: var(--accent); text-decoration: none; }
+  .crumb .next-nav a { font-weight: 700; }
   .hero-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; flex-wrap: wrap; }
   select#langSelect { font-family: var(--font-body); font-size: 13px; font-weight: 600; border: 1.5px solid rgba(255,255,255,0.4); background: rgba(255,255,255,0.08); color: #fff; border-radius: 8px; padding: 7px 10px; }
   select#langSelect option { color: var(--ink); }
@@ -76,7 +77,7 @@
 <body>
   <header class="hero"><div class="wrap">
     <div class="hero-top">
-      <div class="crumb"><a href="../../">AI Architect Toolkit</a> · Phase 1 · Data Readiness Assessment (5C)</div>
+      <div class="crumb"><a href="../../">AI Architect Toolkit</a> · Phase 1 · Data Readiness Assessment (5C) · <span class="next-nav">Next: <a href="../infrastructure-audit/">Infrastructure Audit →</a></span></div>
       <select id="langSelect" onchange="setLang(this.value)">
         <option value="en">English</option>
         <option value="da">Dansk</option>
