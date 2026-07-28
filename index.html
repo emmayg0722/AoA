@@ -26,6 +26,11 @@
     --line: #e4e4f0;
     --font-heading: 'Fraunces', Georgia, serif;
     --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    /* Layer scale. Only two layers exist on this page; keep it that way. */
+    --z-spotlight: 0;
+    --z-content: 1;
+    --z-skip-link: 10;
+    --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
@@ -38,7 +43,7 @@
   .hero :focus-visible { outline-color: #fff; }
   .skip-link {
     position: absolute; left: 12px; top: -60px;
-    z-index: 100;
+    z-index: var(--z-skip-link);
     font-size: 14px; font-weight: 600;
     color: var(--primary); background: #fff;
     padding: 10px 16px; border-radius: 8px;
@@ -62,6 +67,24 @@
     opacity: 0.18;
     border-radius: 50%;
   }
+  /* Pointer-reactive backdrop. --mx/--my are fed by a rAF-throttled
+     pointermove handler; opacity is driven by :hover so leaving the hero
+     fades it out with no JS involved. Paint-only, never layout. */
+  .hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+      460px circle at var(--mx, 78%) var(--my, 22%),
+      rgba(220, 221, 246, 0.20),
+      rgba(220, 221, 246, 0.06) 42%,
+      transparent 68%
+    );
+    opacity: 0;
+    transition: opacity 480ms cubic-bezier(0.22, 1, 0.36, 1);
+    pointer-events: none;
+  }
+  .hero:hover::before { opacity: 1; }
   .wrap { max-width: 960px; margin: 0 auto; position: relative; z-index: 1; }
   .hero-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; flex-wrap: wrap; }
   select#langSelect { font-family: var(--font-body); font-size: 13px; font-weight: 600; border: 1.5px solid rgba(255,255,255,0.4); background: rgba(255,255,255,0.08); color: #fff; border-radius: 8px; padding: 7px 10px; }
@@ -80,13 +103,18 @@
     font-weight: 700;
     font-size: 46px;
     line-height: 1.12;
-    max-width: 720px;
+    letter-spacing: -0.015em;
+    /* 880px keeps this headline to two balanced lines at desktop; at 720px
+       it broke to three. */
+    max-width: 880px;
+    text-wrap: balance;
   }
   .hero p {
     margin-top: 18px;
     font-size: 18px;
     color: #dcdcf2;
-    max-width: 620px;
+    max-width: 60ch;
+    text-wrap: pretty;
   }
   .hero-stats {
     display: flex;
@@ -141,6 +169,7 @@
     font-weight: 600;
     font-size: 28px;
     color: var(--primary);
+    text-wrap: balance;
   }
   .phase-tag {
     font-size: 12px;
@@ -152,19 +181,46 @@
     padding: 4px 10px;
     border-radius: 20px;
   }
-  .phase-sub { color: var(--muted); margin-bottom: 24px; }
+  .phase-sub { color: var(--muted); margin-bottom: 24px; max-width: 72ch; text-wrap: pretty; }
   .cards { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
   .card {
     display: flex;
     flex-direction: column;
+    position: relative;
+    isolation: isolate;
     background: #fff;
     border: 1px solid var(--line);
     border-radius: 14px;
     padding: 26px 26px 24px;
     text-decoration: none;
     color: inherit;
-    transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+    transition:
+      transform 260ms cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 260ms cubic-bezier(0.22, 1, 0.36, 1),
+      border-color 260ms cubic-bezier(0.22, 1, 0.36, 1);
   }
+  /* Pointer spotlight. Sits on its own layer below the card's content
+     (z-index 0 vs. 1) so it can never wash out the text, and fades via
+     opacity so there is nothing to animate on the layout. --cx/--cy are
+     fed by the same rAF-throttled handler that drives the hero. */
+  .card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    border-radius: inherit;
+    background: radial-gradient(
+      240px circle at var(--cx, 50%) var(--cy, 0%),
+      rgba(220, 221, 246, 0.55),
+      rgba(238, 238, 250, 0.28) 45%,
+      transparent 72%
+    );
+    opacity: 0;
+    transition: opacity 300ms cubic-bezier(0.22, 1, 0.36, 1);
+    pointer-events: none;
+  }
+  .card > * { position: relative; z-index: 1; }
+  .card:hover::before { opacity: 1; }
   .card:hover {
     transform: translateY(-3px);
     box-shadow: 0 12px 28px rgba(27, 20, 116, 0.12);
@@ -177,8 +233,9 @@
     font-size: 21px;
     color: var(--primary);
     margin-bottom: 8px;
+    text-wrap: balance;
   }
-  .card p { color: var(--muted); font-size: 15px; flex: 1; }
+  .card p { color: var(--muted); font-size: 15px; flex: 1; text-wrap: pretty; }
   .card .go {
     margin-top: 18px;
     font-weight: 600;
@@ -251,6 +308,16 @@
     .hero { padding: 56px 20px 48px; }
     .hero h1 { font-size: 34px; }
     .cards { grid-template-columns: 1fr; }
+  }
+  /* The pointer spotlights are decorative. Under reduced motion they stop
+     tracking entirely (the JS bails) and the lift/fade collapse to nothing,
+     leaving the plain hover state, which still reads as interactive via the
+     border colour change. */
+  @media (prefers-reduced-motion: reduce) {
+    .hero::before { display: none; }
+    .card::before { display: none; }
+    .card, .phase-nav a, .skip-link { transition: none; }
+    .card:hover { transform: none; }
   }
 </style>
 </head>
@@ -1116,6 +1183,51 @@ function applyI18n() {
   renderPhaseNav();
   renderPhaseCounts();
 }
+
+// ── Pointer-reactive spotlights (hero backdrop + tool cards) ──────────
+// Feeds --mx/--my and --cx/--cy as percentages; CSS owns all fading via
+// :hover, so this only ever writes two custom properties. Writes are
+// batched into one animation frame and touch no layout property, so there
+// is nothing here that can cause a reflow. Skipped entirely on coarse
+// pointers (touch) and under prefers-reduced-motion.
+(function pointerSpotlights() {
+  const fine = window.matchMedia('(hover: hover) and (pointer: fine)');
+  const calm = window.matchMedia('(prefers-reduced-motion: reduce)');
+  if (!fine.matches || calm.matches) return;
+
+  const queue = new Map();
+  let frame = 0;
+  function flush() {
+    frame = 0;
+    queue.forEach((pos, el) => {
+      el.style.setProperty(pos.px, pos.x + '%');
+      el.style.setProperty(pos.py, pos.y + '%');
+    });
+    queue.clear();
+  }
+  function track(el, e, px, py) {
+    const r = el.getBoundingClientRect();
+    if (!r.width || !r.height) return;
+    queue.set(el, {
+      px: px, py: py,
+      x: (((e.clientX - r.left) / r.width) * 100).toFixed(1),
+      y: (((e.clientY - r.top) / r.height) * 100).toFixed(1),
+    });
+    if (!frame) frame = requestAnimationFrame(flush);
+  }
+
+  const hero = document.querySelector('.hero');
+  if (hero) {
+    hero.addEventListener('pointermove', e => track(hero, e, '--mx', '--my'), { passive: true });
+  }
+  const main = document.querySelector('main');
+  if (main) {
+    main.addEventListener('pointermove', e => {
+      const card = e.target.closest && e.target.closest('a.card');
+      if (card) track(card, e, '--cx', '--cy');
+    }, { passive: true });
+  }
+})();
 
 (function init() {
   document.getElementById('langSelect').value = lang;
