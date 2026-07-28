@@ -34,6 +34,18 @@
     background: #fafaff;
     line-height: 1.6;
   }
+  :focus-visible { outline: 2px solid var(--primary); outline-offset: 3px; border-radius: 4px; }
+  .hero :focus-visible { outline-color: #fff; }
+  .skip-link {
+    position: absolute; left: 12px; top: -60px;
+    z-index: 100;
+    font-size: 14px; font-weight: 600;
+    color: var(--primary); background: #fff;
+    padding: 10px 16px; border-radius: 8px;
+    text-decoration: none;
+    transition: top 0.15s ease;
+  }
+  .skip-link:focus { top: 12px; }
   .hero {
     background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
     color: #fff;
@@ -243,6 +255,7 @@
 </style>
 </head>
 <body>
+  <a class="skip-link" href="#toolkit" data-i18n="skipLink"></a>
   <header class="hero">
     <div class="wrap">
       <div class="hero-top">
@@ -263,7 +276,7 @@
     </div>
   </header>
 
-  <main>
+  <main id="toolkit">
     <nav class="phase-nav" id="phaseNav" aria-label="Jump to phase"></nav>
 
     <div class="dash">
@@ -536,6 +549,7 @@ const STRINGS = {
     heroTitle: 'Practical tools for AI-architecture engagements, organized by delivery phase.',
     heroDesc: 'An evolving set of assessments and accelerators that mirror how an AI architect actually moves a client from discovery to production.',
     statTools: ' tools', statPhases: ' delivery phases', statPrivacy: 'Runs fully in your browser. Nothing is uploaded.',
+    skipLink: 'Skip to the toolkit',
     jumpToLabel: 'Jump to:',
     toolsCountLabel: (n) => `${n} tool${n === 1 ? '' : 's'}`,
     tagP1: 'Phase 1', tagP2: 'Phase 2', tagP3: 'Phase 3', tagP4: 'Phase 4', tagP5: 'Phase 5', tagP6: 'Phase 6',
@@ -648,6 +662,7 @@ const STRINGS = {
     heroTitle: 'Praktiske værktøjer til AI-arkitektur-engagementer, organiseret efter leveringsfase.',
     heroDesc: 'Et voksende sæt af vurderinger og accelleratorer, der afspejler hvordan en AI-arkitekt reelt flytter en kunde fra discovery til produktion.',
     statTools: ' værktøjer', statPhases: ' leveringsfaser', statPrivacy: 'Kører fuldt ud i din browser. Intet uploades.',
+    skipLink: 'Gå direkte til værktøjerne',
     jumpToLabel: 'Gå til:',
     toolsCountLabel: (n) => `${n} værktøj${n === 1 ? '' : 'er'}`,
     tagP1: 'Fase 1', tagP2: 'Fase 2', tagP3: 'Fase 3', tagP4: 'Fase 4', tagP5: 'Fase 5', tagP6: 'Fase 6',
@@ -760,6 +775,7 @@ const STRINGS = {
     heroTitle: 'Praktiska verktyg för AI-arkitekturuppdrag, organiserade efter leveransfas.',
     heroDesc: 'En växande uppsättning bedömningar och acceleratorer som speglar hur en AI-arkitekt faktiskt flyttar en kund från discovery till produktion.',
     statTools: ' verktyg', statPhases: ' leveransfaser', statPrivacy: 'Körs helt i din webbläsare. Inget laddas upp.',
+    skipLink: 'Hoppa till verktygen',
     jumpToLabel: 'Gå till:',
     toolsCountLabel: (n) => `${n} verktyg`,
     tagP1: 'Fas 1', tagP2: 'Fas 2', tagP3: 'Fas 3', tagP4: 'Fas 4', tagP5: 'Fas 5', tagP6: 'Fas 6',
