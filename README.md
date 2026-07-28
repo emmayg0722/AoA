@@ -14,7 +14,8 @@ its own subfolder. New phases and assets follow the same structure.
 ├── og-image.png                       # Social/link preview image
 ├── AI-Architect-Consulting-Work-Research.md   # The Phase 1–10 reference this toolkit follows
 ├── .claude/agents/                    # Claude Code agents (must live here to be loadable)
-│   └── dra-5c.md                      # Data Readiness Assessment (5C) agent
+│   ├── dra-5c.md                      # Data Readiness Assessment (5C) agent
+│   └── use-case-evaluator.md          # Use-case evaluation mentor (scores against Phase 1/4 rubrics)
 └── Phase 1 - Discovery & Assessment/
     ├── ai-maturity-assessment/        # Browser tool: 6-dimension AI maturity scoring
     │   ├── index.html

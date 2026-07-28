@@ -23,6 +23,7 @@
   .wrap { max-width: 1150px; margin: 0 auto; }
   .crumb { font-size: 13px; color: var(--accent); margin-bottom: 10px; }
   .crumb a { color: var(--accent); text-decoration: none; }
+  .crumb .next-nav a { font-weight: 700; }
   .hero-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; flex-wrap: wrap; }
   .hero h1 { font-family: var(--font-heading); font-weight: 700; font-size: 34px; line-height: 1.15; }
   .hero p { margin-top: 10px; font-size: 15.5px; color: #dcdcf2; max-width: 680px; }
@@ -88,7 +89,7 @@
 <body>
   <header class="hero"><div class="wrap">
     <div class="hero-top">
-      <div class="crumb"><a href="../">AI Architect Toolkit</a> · Phase 6 · Governance, Compliance &amp; Security</div>
+      <div class="crumb"><a href="../../">AI Architect Toolkit</a> · Phase 6 · Governance, Compliance &amp; Security · <span class="next-nav">End of the toolkit — <a href="../../engagement-report.html">view the master report →</a></span></div>
       <select id="langSelect" onchange="setLang(this.value)">
         <option value="en">English</option>
         <option value="da">Dansk</option>
@@ -138,7 +139,7 @@
     <div class="card">
       <h2 data-i18n="heatTitle"></h2>
       <p class="hint" data-i18n="heatHint"></p>
-      <div style="overflow-x:auto"><canvas id="riskHeat" width="540" height="400"></canvas></div>
+      <div style="overflow-x:auto"><canvas id="riskHeat" width="540" height="400" role="img" aria-label="Risk heatmap"></canvas></div>
     </div>
 
     <div class="card">
@@ -692,6 +693,10 @@ const HEAT_COLORS = { low: '#EEEEFA', medium: '#fdf3e3', high: '#fbe3d6', critic
 function drawRiskHeat() {
   const cv = document.getElementById('riskHeat');
   if (!cv) return;
+  const named = rows.filter(r => r.risk && r.risk.trim());
+  cv.setAttribute('aria-label', named.length
+    ? 'Risk heatmap. ' + named.map(r => `${r.risk}: likelihood ${r.likelihood}, impact ${r.impact}, ${severityLabel(severityOf(Number(r.likelihood) * Number(r.impact)))} severity`).join('; ') + '.'
+    : 'Risk heatmap. No risks added yet.');
   const ctx = cv.getContext('2d');
   const W = cv.width, H = cv.height;
   const mL = 64, mR = 16, mT = 16, mB = 52;

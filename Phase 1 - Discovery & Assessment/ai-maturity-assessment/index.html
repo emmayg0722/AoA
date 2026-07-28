@@ -60,6 +60,10 @@
   select#langSelect { font-family: var(--font-body); font-size: 13px; font-weight: 600; border: 1.5px solid rgba(255,255,255,0.4); background: rgba(255,255,255,0.08); color: #fff; border-radius: 8px; padding: 7px 10px; }
   select#langSelect option { color: var(--text); }
   .lang-scope-note { font-size: 0.85rem; color: var(--text-light); background: var(--powder); border: 1px solid var(--accent); border-radius: var(--radius); padding: 0.7rem 0.9rem; margin-bottom: 1rem; }
+  .crumb { font-size: 0.8rem; color: var(--blue); margin-bottom: 0.7rem; }
+  .crumb a { color: inherit; text-decoration: none; opacity: 0.85; }
+  .crumb a:hover { text-decoration: underline; }
+  .crumb .next-nav a { font-weight: 700; }
 
   /* Progress bar */
   .progress-wrap {
@@ -275,12 +279,25 @@
   .dim-grid .dim-item em { color: var(--text-light); font-size: 0.85rem; }
   .dim-grid .dim-item small { display: block; margin-top: 0.4rem; color: var(--text-light); font-size: 0.82rem; }
 
+  /* SOP checklist */
+  ol.sop { margin-left: 1.2rem; }
+  ol.sop li { margin-bottom: 0.6rem; font-size: 0.9rem; }
+  ol.sop li.done > label.sop-step > span { text-decoration: line-through; color: var(--text-light); }
+  label.sop-step { display: flex; gap: 0.5rem; align-items: flex-start; font-weight: 400; margin: 0; cursor: pointer; color: var(--text); }
+  label.sop-step input { width: auto; margin-top: 0.25rem; flex: none; }
+
+  /* Agent drafting */
+  .prompt-box { display: none; margin-top: 0.8rem; }
+  pre.prompt { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 0.9rem; font-size: 0.8rem; line-height: 1.5; white-space: pre-wrap; word-break: break-word; color: var(--text); max-height: 320px; overflow: auto; }
+  textarea#draftDoc { width: 100%; min-height: 110px; font-family: var(--font-body); font-size: 0.9rem; color: var(--text); border: 1px solid var(--border); border-radius: 8px; padding: 0.6rem 0.8rem; resize: vertical; }
+  textarea#draftDoc:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(27,20,116,0.15); }
+
   /* Page visibility */
   .page { display: none; }
   .page.active { display: block; }
 
   /* Responsive */
-  @media (max-width: 640px) {
+  @media (max-width: 720px) {
     .container { padding: 0.5rem; }
     .dim-score-row .dim-label { width: 120px; }
     .header h1 { font-size: 1.5rem; }
@@ -293,6 +310,7 @@
 <body>
 
 <div class="header">
+  <div class="crumb"><a href="../../">AI Architect Toolkit</a> · Phase 1 · Discovery &amp; Assessment · <span class="next-nav">Next: <a href="../data-readiness-assessment-5c/console.html">Data Readiness Assessment (5C) →</a></span></div>
   <div class="lang-row">
     <select id="langSelect" onchange="setLang(this.value)">
       <option value="en">English</option>
@@ -309,6 +327,12 @@
 <div class="page active" id="pageSetup">
   <div class="container">
     <div class="lang-scope-note" data-i18n="langScopeNote"></div>
+    <div class="card">
+      <h2 data-i18n="sopTitle"></h2>
+      <p style="color:var(--text-light);font-size:0.85rem;margin-bottom:0.8rem" data-i18n="sopHint"></p>
+      <ol class="sop" id="sopList"></ol>
+      <p style="color:var(--text-light);font-size:0.85rem;margin-top:0.6rem" id="sopProgress"></p>
+    </div>
     <div class="card">
       <h2 data-i18n="setupInfoTitle"></h2>
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
@@ -388,6 +412,18 @@ const STRINGS = {
   en: {
     headerTitle: 'AI Maturity Assessment', headerSubtitle: 'For Enterprise Consulting',
     langScopeNote: 'The UI is available in English, Danish, and Swedish. The assessment questions, answer options, and generated report content stay in English regardless of the language selected above.',
+    sopTitle: 'SOP — how this is usually done', sopHint: 'The order an architect actually works this exercise in.',
+    sop: [
+      'Before running the questionnaire, agree the assessment mode (Core vs. Comprehensive) and target maturity level with the sponsor — this frames how the gap analysis and recommendations read.',
+      'Treat the questions as a structured interview, not a self-service survey: for ambiguous answers, follow up with the person who actually owns that dimension rather than accepting a guess.',
+      'Score consistently across dimensions — resist inflating the ones the sponsor cares most about; the gap analysis is only useful if the baseline is honest.',
+      'Read the gap analysis alongside — not instead of — the Use Case Prioritization and Data Readiness (5C) results; a maturity gap in one dimension does not block every use case equally.',
+      'Sequence recommendations by the tool\'s own High/Medium/Low priority, not by what is technically interesting — low-priority gaps in dimensions the target use case barely touches can wait.',
+    ],
+    sopProgress: (n, total) => `${n} of ${total} steps done`,
+    draftTitle: 'Agent drafting', draftHint: 'Generate a prompt carrying this SOP, your scores, and the gap analysis; run it in Claude (or any capable model), then paste the drafted Markdown below. A pasted draft replaces the downloaded report text (both exports) — the scores, radar, and recommendations above always reflect your live answers. Clear it to go back to the computed report.',
+    btnGenDraft: '🤖 Generate drafting prompt', btnCopyDraft: '📋 Copy prompt', lblDraftDoc: 'Drafted report (Markdown, optional)',
+    draftCopied: '✅ Copied!', draftCopyFail: 'Copy failed — select the text manually.',
     setupInfoTitle: 'Assessment Info',
     lblCompany: 'Company Name', lblIndustry: 'Industry', lblAssessor: 'Assessor', lblMode: 'Assessment Mode',
     modeCore: 'Core (~21 questions, 10 min)', modeComprehensive: 'Comprehensive (~33 questions, 20 min)',
@@ -407,6 +443,18 @@ const STRINGS = {
   da: {
     headerTitle: 'AI-modenhedsvurdering', headerSubtitle: 'Til virksomhedskonsulentbrug',
     langScopeNote: 'Brugerfladen er tilgængelig på engelsk, dansk og svensk. Selve vurderingsspørgsmålene, svarmulighederne og det genererede rapportindhold forbliver på engelsk uanset det valgte sprog ovenfor.',
+    sopTitle: 'SOP — sådan gøres det normalt', sopHint: 'Rækkefølgen en arkitekt reelt arbejder denne øvelse igennem.',
+    sop: [
+      'Aftal vurderingstilstand (Kerne vs. Omfattende) og mål-modenhedsniveau med sponsoren, før spørgeskemaet køres — det rammesætter, hvordan gapanalysen og anbefalingerne læses.',
+      'Behandl spørgsmålene som et struktureret interview, ikke en selvbetjeningsundersøgelse: ved tvetydige svar, følg op med den person, der reelt ejer den dimension, i stedet for at acceptere et gæt.',
+      'Score konsekvent på tværs af dimensioner — modstå trangen til at oppuste dem, sponsoren bekymrer sig mest om; gapanalysen er kun nyttig, hvis baseline er ærlig.',
+      'Læs gapanalysen sammen med — ikke i stedet for — resultaterne fra Use Case-prioritering og Data Readiness (5C); et modenhedsgab i én dimension blokerer ikke alle use cases lige meget.',
+      'Sekvensér anbefalinger efter værktøjets egen Høj/Middel/Lav-prioritet, ikke efter hvad der er teknisk interessant — lavprioritetsgab i dimensioner, target use casen næppe berører, kan vente.',
+    ],
+    sopProgress: (n, total) => `${n} af ${total} trin fuldført`,
+    draftTitle: 'Agent-udkast', draftHint: 'Generér en prompt, der bærer denne SOP, dine scorer og gapanalysen; kør den i Claude (eller en anden kapabel model), og indsæt derefter det udkastede Markdown nedenfor. Et indsat udkast erstatter den downloadede rapporttekst (begge eksporter) — scorerne, radaren og anbefalingerne ovenfor afspejler altid dine live svar. Ryd det for at vende tilbage til den beregnede rapport.',
+    btnGenDraft: '🤖 Generér udkast-prompt', btnCopyDraft: '📋 Kopiér prompt', lblDraftDoc: 'Udkastet rapport (Markdown, valgfrit)',
+    draftCopied: '✅ Kopieret!', draftCopyFail: 'Kopiering mislykkedes — markér teksten manuelt.',
     setupInfoTitle: 'Vurderingsinfo',
     lblCompany: 'Virksomhedsnavn', lblIndustry: 'Branche', lblAssessor: 'Vurderingsmand', lblMode: 'Vurderingstilstand',
     modeCore: 'Kerne (~21 spørgsmål, 10 min)', modeComprehensive: 'Omfattende (~33 spørgsmål, 20 min)',
@@ -426,6 +474,18 @@ const STRINGS = {
   sv: {
     headerTitle: 'AI-mognadsbedömning', headerSubtitle: 'För företagskonsultation',
     langScopeNote: 'Användargränssnittet finns på engelska, danska och svenska. Själva bedömningsfrågorna, svarsalternativen och det genererade rapportinnehållet förblir på engelska oavsett valt språk ovan.',
+    sopTitle: 'SOP — så här görs det vanligtvis', sopHint: 'Ordningen en arkitekt faktiskt arbetar igenom denna övning.',
+    sop: [
+      'Kom överens om bedömningsläge (Kärna vs. Omfattande) och mål-mognadsnivå med sponsorn innan frågeformuläret körs — det ramar in hur gapanalysen och rekommendationerna läses.',
+      'Behandla frågorna som en strukturerad intervju, inte en självbetjäningsundersökning: vid tvetydiga svar, följ upp med personen som faktiskt äger den dimensionen istället för att acceptera en gissning.',
+      'Poängsätt konsekvent över dimensioner — motstå att blåsa upp de sponsorn bryr sig mest om; gapanalysen är bara användbar om baslinjen är ärlig.',
+      'Läs gapanalysen tillsammans med — inte istället för — resultaten från Use Case-prioritering och Data Readiness (5C); ett mognadsgap i en dimension blockerar inte alla användningsfall lika mycket.',
+      'Sekvensera rekommendationer efter verktygets egen Hög/Medel/Låg-prioritet, inte efter vad som är tekniskt intressant — lågprioritetsgap i dimensioner målanvändningsfallet knappt berör kan vänta.',
+    ],
+    sopProgress: (n, total) => `${n} av ${total} steg klara`,
+    draftTitle: 'Agent-utkast', draftHint: 'Generera en prompt som bär denna SOP, dina poäng och gapanalysen; kör den i Claude (eller annan kapabel modell), och klistra sedan in det utkastade Markdown nedan. Ett inklistrat utkast ersätter den nedladdade rapporttexten (båda exporter) — poängen, radarn och rekommendationerna ovan speglar alltid dina live-svar. Rensa det för att gå tillbaka till den beräknade rapporten.',
+    btnGenDraft: '🤖 Generera utkast-prompt', btnCopyDraft: '📋 Kopiera prompt', lblDraftDoc: 'Utkastad rapport (Markdown, valfritt)',
+    draftCopied: '✅ Kopierat!', draftCopyFail: 'Kopiering misslyckades — markera texten manuellt.',
     setupInfoTitle: 'Bedömningsinfo',
     lblCompany: 'Företagsnamn', lblIndustry: 'Bransch', lblAssessor: 'Bedömare', lblMode: 'Bedömningsläge',
     modeCore: 'Kärna (~21 frågor, 10 min)', modeComprehensive: 'Omfattande (~33 frågor, 20 min)',
@@ -458,7 +518,24 @@ function applyI18n() {
   document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.getAttribute('data-i18n')); });
   document.querySelectorAll('[data-i18n-opt]').forEach(el => { el.textContent = t(el.getAttribute('data-i18n-opt')); });
   document.title = t('headerTitle');
+  renderSop();
 }
+
+// ═══════════════════════════════════════════════════════════════════
+// SOP CHECKLIST (persisted alongside the rest of the tool's state)
+// ═══════════════════════════════════════════════════════════════════
+let sopDone = [];
+function renderSop() {
+  const list = document.getElementById('sopList');
+  if (!list) return;
+  const steps = t('sop');
+  list.innerHTML = steps.map((s, i) =>
+    `<li class="${sopDone[i] ? 'done' : ''}"><label class="sop-step"><input type="checkbox" ${sopDone[i] ? 'checked' : ''} onchange="toggleSop(${i}, this.checked)"><span>${s}</span></label></li>`
+  ).join('');
+  const pl = document.getElementById('sopProgress');
+  if (pl) pl.textContent = t('sopProgress')(sopDone.filter(Boolean).length, steps.length);
+}
+function toggleSop(i, v) { sopDone[i] = v; renderSop(); saveState(); }
 
 // ═══════════════════════════════════════════════════════════════════
 // DATA MODEL
@@ -896,6 +973,8 @@ let answers = {};
 let activeQuestions = [];
 let dimGroups = [];
 let currentDimIdx = 0;
+let draftDoc = '';
+function escHtml(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c])); }
 
 // ═══════════════════════════════════════════════════════════════════
 // INIT
@@ -913,7 +992,81 @@ function init() {
   document.getElementById('langSelect').value = lang;
   applyI18n();
   renderDimGrid();
-  loadFromShareLink();
+  if (location.hash.startsWith('#r=')) {
+    loadFromShareLink();
+  } else {
+    loadState();
+    prefillEngagement();
+  }
+  bindAutosave();
+}
+
+// ── Local autosave (survives refresh) + shared engagement profile ──
+const AOA_STATE_KEY = 'aoa_ai_maturity_v1';
+const ENG_KEY = 'aoa_engagement_v1';
+function buildStatePayload() {
+  return {
+    fields: {
+      company: document.getElementById('inputCompany').value,
+      industry: document.getElementById('inputIndustry').value,
+      assessor: document.getElementById('inputAssessor').value,
+      mode: document.getElementById('inputMode').value,
+      targetLevel: document.getElementById('inputTarget').value,
+    },
+    answers: answers,
+    sopDone: sopDone,
+    draftDoc: draftDoc,
+  };
+}
+function saveState() {
+  try { localStorage.setItem(AOA_STATE_KEY, JSON.stringify(buildStatePayload())); } catch (e) {}
+}
+function loadState() {
+  try {
+    const raw = localStorage.getItem(AOA_STATE_KEY);
+    if (!raw) return;
+    const payload = JSON.parse(raw);
+    const f = payload.fields || {};
+    if (f.company) document.getElementById('inputCompany').value = f.company;
+    if (f.industry) document.getElementById('inputIndustry').value = f.industry;
+    if (f.assessor) document.getElementById('inputAssessor').value = f.assessor;
+    if (f.mode) document.getElementById('inputMode').value = f.mode;
+    if (f.targetLevel) document.getElementById('inputTarget').value = f.targetLevel;
+    if (payload.answers && Object.keys(payload.answers).length) answers = payload.answers;
+    if (Array.isArray(payload.sopDone)) sopDone = payload.sopDone;
+    if (typeof payload.draftDoc === 'string') draftDoc = payload.draftDoc;
+    renderSop();
+  } catch (e) {}
+}
+function prefillEngagement() {
+  try {
+    const eng = JSON.parse(localStorage.getItem(ENG_KEY) || '{}');
+    const c = document.getElementById('inputCompany');
+    const a = document.getElementById('inputAssessor');
+    if (c && !c.value && eng.client) c.value = eng.client;
+    if (a && !a.value && eng.assessor) a.value = eng.assessor;
+  } catch (e) {}
+}
+function saveEngagementField(key, value) {
+  if (!value) return;
+  try {
+    const eng = JSON.parse(localStorage.getItem(ENG_KEY) || '{}');
+    eng[key] = value;
+    localStorage.setItem(ENG_KEY, JSON.stringify(eng));
+  } catch (e) {}
+}
+function bindAutosave() {
+  ['inputCompany', 'inputAssessor', 'inputIndustry', 'inputMode', 'inputTarget'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener('input', onSetupFieldChange);
+    el.addEventListener('change', onSetupFieldChange);
+  });
+}
+function onSetupFieldChange() {
+  saveState();
+  saveEngagementField('client', document.getElementById('inputCompany').value);
+  saveEngagementField('assessor', document.getElementById('inputAssessor').value);
 }
 
 function loadFromShareLink() {
@@ -1006,6 +1159,7 @@ function selectOption(qid, value) {
   });
   document.querySelector(`[data-qid="${qid}"]`).closest('.question-card').classList.add('answered');
   updateProgress();
+  saveState();
 }
 
 function renderDimension() {
@@ -1211,6 +1365,22 @@ function showResults() {
   });
   html += `</div>`;
 
+  // Agent drafting
+  html += `<div class="card"><h2>${t('draftTitle')}</h2>
+    <p style="color:var(--text-light);font-size:0.85rem;margin-bottom:0.8rem">${t('draftHint')}</p>
+    <div class="btn-group" style="justify-content:flex-start">
+      <button class="btn btn-primary" onclick="genDraftPrompt()">${t('btnGenDraft')}</button>
+    </div>
+    <div class="prompt-box" id="pbDraft"><pre class="prompt" id="ptDraft"></pre>
+      <div class="btn-group" style="justify-content:flex-start;margin-top:0.5rem">
+        <button class="btn btn-secondary" onclick="copyDraftPrompt()">${t('btnCopyDraft')}</button>
+      </div>
+    </div>
+    <label class="field" style="margin-top:0.8rem"><span>${t('lblDraftDoc')}</span>
+      <textarea id="draftDoc" placeholder="Paste the Markdown report the agent drafted&#8230;" oninput="onDraftDocChange(this.value)">${escHtml(draftDoc)}</textarea>
+    </label>
+  </div>`;
+
   // Downloads
   html += `<div class="card"><h2>${t('secDownload')}</h2>
     <div class="download-row">
@@ -1374,10 +1544,104 @@ function shareResults() {
 }
 
 // ═══════════════════════════════════════════════════════════════════
+// AGENT DRAFTING: prompt generation + Markdown paste-back.
+// A non-empty draftDoc replaces the computed report in both exports —
+// the on-screen scores/radar/recommendations always stay live-computed.
+// ═══════════════════════════════════════════════════════════════════
+
+function onDraftDocChange(value) {
+  draftDoc = value;
+  saveState();
+}
+
+function _mdInline(s) { return escHtml(s).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/`(.+?)`/g, '<code>$1</code>'); }
+function _mdRow(line) { return line.trim().replace(/^\|/, '').replace(/\|$/, '').split('|').map(c => c.trim()); }
+function mdToHtml(md) {
+  if (!md || !md.trim()) return '';
+  const L = md.replace(/\r/g, '').split('\n');
+  let html = '', i = 0;
+  while (i < L.length) {
+    const line = L[i];
+    if (/^\s*$/.test(line)) { i++; continue; }
+    if (/^```/.test(line.trim())) {
+      i++; const buf = [];
+      while (i < L.length && !/^```/.test(L[i].trim())) { buf.push(L[i]); i++; }
+      i++;
+      html += '<pre>' + escHtml(buf.join('\n')) + '</pre>';
+      continue;
+    }
+    if (line.includes('|') && i + 1 < L.length && /-/.test(L[i + 1]) && /^[\s:|-]+$/.test(L[i + 1].trim())) {
+      const head = _mdRow(line); i += 2; const body = [];
+      while (i < L.length && L[i].includes('|') && L[i].trim() !== '') { body.push(_mdRow(L[i])); i++; }
+      html += '<table><thead><tr>' + head.map(h => '<th>' + _mdInline(h) + '</th>').join('') + '</tr></thead><tbody>'
+            + body.map(r => '<tr>' + r.map(c => '<td>' + _mdInline(c) + '</td>').join('') + '</tr>').join('') + '</tbody></table>';
+      continue;
+    }
+    let m;
+    if (m = line.match(/^(#{1,4})\s+(.*)/)) { const lv = m[1].length; html += '<h' + lv + '>' + _mdInline(m[2]) + '</h' + lv + '>'; i++; continue; }
+    if (/^\s*[-*]\s+/.test(line)) { const it = []; while (i < L.length && /^\s*[-*]\s+/.test(L[i])) { it.push(L[i].replace(/^\s*[-*]\s+/, '')); i++; } html += '<ul>' + it.map(x => '<li>' + _mdInline(x) + '</li>').join('') + '</ul>'; continue; }
+    if (/^\s*\d+\.\s+/.test(line)) { const it = []; while (i < L.length && /^\s*\d+\.\s+/.test(L[i])) { it.push(L[i].replace(/^\s*\d+\.\s+/, '')); i++; } html += '<ol>' + it.map(x => '<li>' + _mdInline(x) + '</li>').join('') + '</ol>'; continue; }
+    const para = [line]; i++;
+    while (i < L.length && !/^\s*$/.test(L[i]) && !/^(#{1,4}\s|[-*]\s|\d+\.\s)/.test(L[i]) && !L[i].includes('|')) { para.push(L[i]); i++; }
+    html += '<p>' + _mdInline(para.join(' ')) + '</p>';
+  }
+  return html;
+}
+
+function buildDraftPrompt() {
+  const result = computeScores();
+  const target = parseInt(document.getElementById('inputTarget').value);
+  const company = document.getElementById('inputCompany').value || '[client]';
+  const industry = document.getElementById('inputIndustry').value;
+  const assessor = document.getElementById('inputAssessor').value || '[assessor]';
+  const gaps = result.dims
+    .map(ds => ({ ...ds, gap: Math.round((target - ds.raw) * 100) / 100 }))
+    .filter(g => g.gap > 0)
+    .sort((a, b) => b.gap - a.gap)
+    .map(g => ({ ...g, priority: g.gap >= 2 ? 'High' : g.gap >= 1 ? 'Medium' : 'Low' }));
+
+  let p = 'You are an expert AI-architecture consultant. Draft the complete "AI Maturity Assessment Report" deliverable for the engagement below as clean, client-ready Markdown.\n\n';
+  p += "Methodology to follow (this tool's SOP):\n";
+  STRINGS.en.sop.forEach((s, i) => { p += (i + 1) + '. ' + s + '\n'; });
+  p += '\nConsultant intake:\n';
+  p += `- Company: ${company}\n- Industry: ${industry}\n- Assessor: ${assessor}\n- Target maturity level: Level ${target} (${LEVELS[target].en})\n`;
+  p += `\nComputed scores (JSON — do not recompute, use as ground truth):\n`;
+  p += JSON.stringify({
+    overall: result.overall,
+    overallLevel: result.overallLevel,
+    dimensions: result.dims.map(d => ({ dimension: d.en, score: d.raw, level: d.level })),
+    gaps: gaps.map(g => ({ dimension: g.en, gap: g.gap, priority: g.priority })),
+  }, null, 2) + '\n';
+  p += '\nRequirements: professional consulting tone; expand the gap analysis and recommendations into complete, specific narrative sections grounded in the scores above; never invent client facts beyond what is given — where more context would help, add it to a final "Open questions for the client" section; structure with clear Markdown headings; output only the document.';
+  return p;
+}
+function genDraftPrompt() {
+  document.getElementById('ptDraft').textContent = buildDraftPrompt();
+  document.getElementById('pbDraft').style.display = 'block';
+}
+function copyDraftPrompt() {
+  const txt = document.getElementById('ptDraft').textContent;
+  navigator.clipboard.writeText(txt).then(() => {
+    const btn = event.target; const orig = btn.textContent;
+    btn.textContent = t('draftCopied'); setTimeout(() => { btn.textContent = orig; }, 1800);
+  }).catch(() => alert(t('draftCopyFail')));
+}
+
+// ═══════════════════════════════════════════════════════════════════
 // DOWNLOAD
 // ═══════════════════════════════════════════════════════════════════
 
 function downloadMarkdown() {
+  if (draftDoc && draftDoc.trim()) {
+    const company0 = document.getElementById('inputCompany').value || 'Assessment Target';
+    const date0 = new Date().toISOString().split('T')[0];
+    const blob0 = new Blob([draftDoc], { type: 'text/markdown' });
+    const a0 = document.createElement('a');
+    a0.href = URL.createObjectURL(blob0);
+    a0.download = `AI_Maturity_${company0.replace(/\s/g, '_')}_${date0}.md`;
+    a0.click();
+    return;
+  }
   const result = computeScores();
   const target = parseInt(document.getElementById('inputTarget').value);
   const company = document.getElementById('inputCompany').value || 'Assessment Target';
@@ -1436,6 +1700,21 @@ function downloadMarkdown() {
 }
 
 function downloadHTML() {
+  if (draftDoc && draftDoc.trim()) {
+    const company0 = document.getElementById('inputCompany').value || 'Assessment Target';
+    const date0 = new Date().toISOString().split('T')[0];
+    const html0 = `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>AI Maturity Assessment Report — ${escHtml(company0)}</title>
+<style>body{font-family:'Segoe UI',Arial,sans-serif;color:#222;line-height:1.6;max-width:860px;margin:0 auto;padding:2rem 1.5rem}
+h1,h2,h3,h4{color:#1B1474}h2{border-bottom:2px solid #DCDDF6;padding-bottom:0.3rem;margin-top:2rem}
+table{width:100%;border-collapse:collapse;margin:1rem 0}th,td{text-align:left;padding:0.5rem 0.7rem;border-bottom:1px solid #d8d4cf;font-size:0.95rem}th{background:#F8F6F3}
+code{background:#F8F6F3;padding:1px 5px;border-radius:4px}pre{background:#F8F6F3;border-radius:6px;padding:1rem;overflow:auto}</style></head><body>${mdToHtml(draftDoc)}</body></html>`;
+    const blob0 = new Blob([html0], { type: 'text/html' });
+    const a0 = document.createElement('a');
+    a0.href = URL.createObjectURL(blob0);
+    a0.download = `AI_Maturity_${company0.replace(/\s/g, '_')}_${date0}.html`;
+    a0.click();
+    return;
+  }
   const result = computeScores();
   const target = parseInt(document.getElementById('inputTarget').value);
   const company = document.getElementById('inputCompany').value || 'Assessment Target';
