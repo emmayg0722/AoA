@@ -85,6 +85,8 @@
   .principle-card a { font-size: 12.5px; color: var(--primary); font-weight: 600; text-decoration: none; }
   .principle-card a:hover { text-decoration: underline; }
 
+  .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .table-scroll table { min-width: 720px; }
   @media (max-width: 720px) {
     .grid2 { grid-template-columns: 1fr; }
     table.compare { font-size: 12.5px; }
@@ -139,10 +141,12 @@
           <select id="layerFilter" onchange="renderTable()"><option value="" data-i18n-opt="allLayers"></option></select>
         </div>
       </div>
+      <div class="table-scroll">
       <table class="compare" id="compareTable">
         <thead><tr><th data-i18n="colPick"></th><th data-i18n="colOption"></th><th data-i18n="colUpside"></th><th data-i18n="colDownside"></th><th data-i18n="colBestFit"></th></tr></thead>
         <tbody id="compareBody"></tbody>
       </table>
+      </div>
     </div>
 
     <div class="card">

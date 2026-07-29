@@ -84,6 +84,14 @@
   .preview th { background: var(--powder); color: var(--primary); }
   textarea[data-eng="draftDoc"] { min-height: 110px; }
   .saved { font-size: 12.5px; color: var(--green); margin-left: 8px; }
+  /* Wide tracker tables scroll inside their own container so the page body
+     never scrolls horizontally on narrow viewports. min-width keeps the
+     input columns usable rather than squeezing them to unusable widths. */
+  .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .table-scroll table { min-width: 560px; }
+  /* The generated document preview can contain a wide table once rows
+     exist; scroll it here rather than letting the page body scroll. */
+  .preview, .report { overflow-x: auto; }
   @media (max-width: 720px) { .grid2 { grid-template-columns: 1fr; } .hero h1 { font-size: 27px; } table.matrix { font-size: 12px; } }
 </style>
 </head>
@@ -122,10 +130,12 @@
     <div class="card">
       <h2 data-i18n="tableTitle"></h2>
       <p class="hint" data-i18n="tableHint"></p>
+      <div class="table-scroll">
       <table class="matrix">
         <thead><tr><th data-i18n="colDocument"></th><th data-i18n="colOwner"></th><th data-i18n="colLocation"></th><th data-i18n="colStatus"></th><th></th></tr></thead>
         <tbody id="matrixBody"></tbody>
       </table>
+      </div>
       <div class="btn-row"><button class="btn btn-secondary" onclick="addRow()" data-i18n="btnAddRow"></button></div>
     </div>
 

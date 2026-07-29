@@ -71,6 +71,9 @@
   .preview th { background: var(--powder); color: var(--primary); }
   textarea[data-eng="draftDoc"] { min-height: 110px; }
   .saved { font-size: 12.5px; color: var(--green); margin-left: 8px; }
+  /* The generated document preview can contain a wide table once rows
+     exist; scroll it here rather than letting the page body scroll. */
+  .preview, .report { overflow-x: auto; }
   @media (max-width: 720px) { .grid2 { grid-template-columns: 1fr; } .hero h1 { font-size: 27px; } }
 </style>
 </head>
