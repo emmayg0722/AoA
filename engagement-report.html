@@ -19,6 +19,8 @@
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { font-family: var(--font-body); color: var(--ink); background: #fafaff; line-height: 1.6; }
+  :focus-visible { outline: 2px solid var(--primary); outline-offset: 3px; border-radius: 4px; }
+  .hero :focus-visible { outline-color: #fff; }
   .hero { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: #fff; padding: 44px 24px 36px; }
   .wrap { max-width: 1000px; margin: 0 auto; }
   .crumb { font-size: 13px; color: var(--accent); margin-bottom: 10px; }
@@ -28,6 +30,9 @@
   select#langSelect option { color: var(--ink); }
   .hero h1 { font-family: var(--font-heading); font-weight: 700; font-size: 34px; line-height: 1.15; }
   .hero p { margin-top: 10px; font-size: 15.5px; color: #dcdcf2; max-width: 680px; }
+  .hero-stats { display: flex; flex-wrap: wrap; gap: 20px; margin-top: 20px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.18); }
+  .hero-stats span { font-size: 13.5px; color: #dcdcf2; }
+  .hero-stats strong { font-family: var(--font-heading); font-size: 18px; color: #fff; margin-right: 5px; }
   main { max-width: 1000px; margin: 0 auto; padding: 28px 24px 80px; }
   .note { background: var(--powder); border: 1px solid var(--accent); border-radius: 12px; padding: 14px 16px; font-size: 14px; color: var(--muted); margin-bottom: 26px; }
   .note strong { color: var(--primary); }
@@ -71,21 +76,15 @@
     </div>
     <h1 data-i18n="heroTitle"></h1>
     <p data-i18n="heroDesc"></p>
+    <div class="hero-stats">
+      <span><strong id="statToolsNum"></strong><span data-i18n="statTools"></span></span>
+      <span><strong id="statPhasesNum"></strong><span data-i18n="statPhases"></span></span>
+      <span data-i18n="statPrivacy"></span>
+    </div>
   </div></header>
 
   <main>
     <div class="note"><strong data-i18n="noteLabel"></strong> <span data-i18n="noteBody"></span></div>
-
-    <div class="card">
-      <h2 data-i18n="manageTitle"></h2>
-      <p class="hint" data-i18n="manageHint"></p>
-      <div class="btn-row">
-        <button class="btn btn-secondary" onclick="exportAll()" data-i18n="btnExportAll"></button>
-        <button class="btn btn-secondary" onclick="document.getElementById('importFile').click()" data-i18n="btnImportAll"></button>
-        <input type="file" id="importFile" accept=".json" style="display:none">
-      </div>
-      <div id="importErr"></div>
-    </div>
 
     <div class="card">
       <h2 data-i18n="reportTitle"></h2>
@@ -96,6 +95,17 @@
         <button class="btn btn-primary" onclick="exportDoc('md')" data-i18n="btnExportMd"></button>
         <button class="btn btn-secondary" onclick="renderReport()" data-i18n="btnRefresh"></button>
       </div>
+    </div>
+
+    <div class="card">
+      <h2 data-i18n="manageTitle"></h2>
+      <p class="hint" data-i18n="manageHint"></p>
+      <div class="btn-row">
+        <button class="btn btn-secondary" onclick="exportAll()" data-i18n="btnExportAll"></button>
+        <button class="btn btn-secondary" onclick="document.getElementById('importFile').click()" data-i18n="btnImportAll"></button>
+        <input type="file" id="importFile" accept=".json" style="display:none">
+      </div>
+      <div id="importErr"></div>
     </div>
   </main>
 
@@ -113,6 +123,7 @@ const STRINGS = {
     crumbLabel: 'Master Engagement Report',
     heroTitle: 'Master Engagement Report',
     heroDesc: "Assembles every tool's saved work for the current engagement into one combined report — and saves or restores the whole engagement as a single file.",
+    statTools: ' tools', statPhases: ' phases', statPrivacy: 'Reads only this browser. Nothing is uploaded.',
     noteLabel: 'How this works.',
     noteBody: 'This page reads the locally saved state of every toolkit tool in this browser and assembles it below. Nothing is uploaded; report section labels are auto-generated in English regardless of the language selected above.',
     manageTitle: 'Whole-engagement save & restore',
@@ -126,7 +137,7 @@ const STRINGS = {
     btnExportHtml: '🌐 Export HTML',
     btnExportMd: '📄 Export Markdown',
     btnRefresh: '🔄 Refresh',
-    emptyReport: 'No tool data found in this browser yet. Open any tool from the hub, fill it in, and come back — or import a saved engagement above.',
+    emptyReport: 'No tool data found in this browser yet. Open any tool from the hub, fill it in, and come back — or import a saved engagement below.',
     docFor: 'Engagement', docUseCase: 'Use case', docAssessor: 'Assessor', docDate: 'Date',
     noData: '(no saved data)',
   },
@@ -134,6 +145,7 @@ const STRINGS = {
     crumbLabel: 'Samlet engagementsrapport',
     heroTitle: 'Samlet engagementsrapport',
     heroDesc: 'Samler hvert værktøjs gemte arbejde for det aktuelle engagement i én kombineret rapport — og gemmer eller genskaber hele engagementet som én fil.',
+    statTools: ' værktøjer', statPhases: ' faser', statPrivacy: 'Læser kun denne browser. Intet uploades.',
     noteLabel: 'Sådan virker det.',
     noteBody: 'Denne side læser den lokalt gemte tilstand for hvert værktøj i denne browser og samler den nedenfor. Intet uploades; rapportens sektionsetiketter auto-genereres på engelsk uanset det valgte sprog ovenfor.',
     manageTitle: 'Gem & genskab hele engagementet',
@@ -147,7 +159,7 @@ const STRINGS = {
     btnExportHtml: '🌐 Eksportér HTML',
     btnExportMd: '📄 Eksportér Markdown',
     btnRefresh: '🔄 Opdatér',
-    emptyReport: 'Ingen værktøjsdata fundet i denne browser endnu. Åbn et værktøj fra forsiden, udfyld det, og kom tilbage — eller importér et gemt engagement ovenfor.',
+    emptyReport: 'Ingen værktøjsdata fundet i denne browser endnu. Åbn et værktøj fra forsiden, udfyld det, og kom tilbage — eller importér et gemt engagement nedenfor.',
     docFor: 'Engagement', docUseCase: 'Use case', docAssessor: 'Vurderingsmand', docDate: 'Dato',
     noData: '(ingen gemte data)',
   },
@@ -155,6 +167,7 @@ const STRINGS = {
     crumbLabel: 'Samlad uppdragsrapport',
     heroTitle: 'Samlad uppdragsrapport',
     heroDesc: 'Sammanställer varje verktygs sparade arbete för det aktuella uppdraget i en kombinerad rapport — och sparar eller återställer hela uppdraget som en enda fil.',
+    statTools: ' verktyg', statPhases: ' faser', statPrivacy: 'Läser bara denna webbläsare. Inget laddas upp.',
     noteLabel: 'Så här fungerar det.',
     noteBody: 'Denna sida läser det lokalt sparade tillståndet för varje verktyg i denna webbläsare och sammanställer det nedan. Inget laddas upp; rapportens sektionsetiketter auto-genereras på engelska oavsett valt språk ovan.',
     manageTitle: 'Spara & återställ hela uppdraget',
@@ -168,7 +181,7 @@ const STRINGS = {
     btnExportHtml: '🌐 Exportera HTML',
     btnExportMd: '📄 Exportera Markdown',
     btnRefresh: '🔄 Uppdatera',
-    emptyReport: 'Ingen verktygsdata hittades i denna webbläsare än. Öppna ett verktyg från startsidan, fyll i det, och kom tillbaka — eller importera ett sparat uppdrag ovan.',
+    emptyReport: 'Ingen verktygsdata hittades i denna webbläsare än. Öppna ett verktyg från startsidan, fyll i det, och kom tillbaka — eller importera ett sparat uppdrag nedan.',
     docFor: 'Uppdrag', docUseCase: 'Användningsfall', docAssessor: 'Bedömare', docDate: 'Datum',
     noData: '(ingen sparad data)',
   },
@@ -178,8 +191,13 @@ let lang = localStorage.getItem('aoa_lang') || 'en';
 function t(key) { const v = (STRINGS[lang] && STRINGS[lang][key] !== undefined) ? STRINGS[lang][key] : STRINGS.en[key]; return v; }
 function setLang(l) { lang = l; localStorage.setItem('aoa_lang', l); document.getElementById('langSelect').value = l; applyI18n(); renderReport(); }
 function applyI18n() {
+  document.documentElement.lang = lang;
   document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.getAttribute('data-i18n')); });
   document.title = t('heroTitle') + ' — AI Architect Toolkit';
+  const statTools = document.getElementById('statToolsNum');
+  const statPhases = document.getElementById('statPhasesNum');
+  if (statTools) statTools.textContent = REGISTRY.reduce((sum, ph) => sum + ph.tools.length, 0);
+  if (statPhases) statPhases.textContent = REGISTRY.length;
 }
 
 // ── Registry: every tool's key, English title, and hub-relative link ──
@@ -223,9 +241,16 @@ const REGISTRY = [
     { key: 'aoa_responsible_ai_v1', title: 'Responsible AI & Bias Audit', href: 'Phase%206%20-%20Governance%2C%20Compliance%20%26%20Security/responsible-ai/' },
     { key: 'aoa_risk_management_v1', title: 'AI Risk Register', href: 'Phase%206%20-%20Governance%2C%20Compliance%20%26%20Security/risk-management/' },
   ]},
+  { phase: 'Phase 7 — MLOps & Operations', tools: [
+    { key: 'aoa_mlops_platform_v1', title: 'MLOps Platform Architecture', href: 'Phase%207%20-%20MLOps%20%26%20Operations/mlops-platform-design/' },
+    { key: 'aoa_model_monitoring_v1', title: 'Model Monitoring & Drift Detection Plan', href: 'Phase%207%20-%20MLOps%20%26%20Operations/model-monitoring/' },
+    { key: 'aoa_retraining_strategy_v1', title: 'Model Retraining Strategy', href: 'Phase%207%20-%20MLOps%20%26%20Operations/retraining-strategy/' },
+    { key: 'aoa_operations_runbook_v1', title: 'Operations Runbook & On-Call Plan', href: 'Phase%207%20-%20MLOps%20%26%20Operations/operations-runbook/' },
+    { key: 'aoa_cost_optimization_v1', title: 'Inference Cost Optimization Report', href: 'Phase%207%20-%20MLOps%20%26%20Operations/cost-optimization/' },
+  ]},
 ];
 
-function esc(s) { return String(s === undefined || s === null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function esc(s) { return String(s === undefined || s === null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
 // data-eng keys → readable English labels: camelCase and snake_case → Title Case.
 function humanize(k) {
@@ -258,7 +283,7 @@ function normalize(o) {
   Object.keys(o).forEach(k => {
     const v = o[k];
     if (Array.isArray(v) && v.length && typeof v[0] === 'object') {
-      const rows = v.filter(r => Object.keys(r).some(c => c !== 'id' && typeof r[c] === 'string' && r[c].trim() !== '' && !/^\d+$/.test(r[c].trim())));
+      const rows = v.filter(r => Object.keys(r).some(c => c !== 'id' && c !== 'status' && typeof r[c] === 'string' && r[c].trim() !== '' && !/^\d+$/.test(r[c].trim())));
       if (rows.length) out.lists.push({ name: k, rows });
     }
   });

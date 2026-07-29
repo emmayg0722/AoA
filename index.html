@@ -26,6 +26,11 @@
     --line: #e4e4f0;
     --font-heading: 'Fraunces', Georgia, serif;
     --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    /* Layer scale. Only two layers exist on this page; keep it that way. */
+    --z-spotlight: 0;
+    --z-content: 1;
+    --z-skip-link: 10;
+    --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
@@ -34,6 +39,18 @@
     background: #fafaff;
     line-height: 1.6;
   }
+  :focus-visible { outline: 2px solid var(--primary); outline-offset: 3px; border-radius: 4px; }
+  .hero :focus-visible { outline-color: #fff; }
+  .skip-link {
+    position: absolute; left: 12px; top: -60px;
+    z-index: var(--z-skip-link);
+    font-size: 14px; font-weight: 600;
+    color: var(--primary); background: #fff;
+    padding: 10px 16px; border-radius: 8px;
+    text-decoration: none;
+    transition: top 0.15s ease;
+  }
+  .skip-link:focus { top: 12px; }
   .hero {
     background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
     color: #fff;
@@ -50,6 +67,24 @@
     opacity: 0.18;
     border-radius: 50%;
   }
+  /* Pointer-reactive backdrop. --mx/--my are fed by a rAF-throttled
+     pointermove handler; opacity is driven by :hover so leaving the hero
+     fades it out with no JS involved. Paint-only, never layout. */
+  .hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+      460px circle at var(--mx, 78%) var(--my, 22%),
+      rgba(220, 221, 246, 0.20),
+      rgba(220, 221, 246, 0.06) 42%,
+      transparent 68%
+    );
+    opacity: 0;
+    transition: opacity 480ms cubic-bezier(0.22, 1, 0.36, 1);
+    pointer-events: none;
+  }
+  .hero:hover::before { opacity: 1; }
   .wrap { max-width: 960px; margin: 0 auto; position: relative; z-index: 1; }
   .hero-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; flex-wrap: wrap; }
   select#langSelect { font-family: var(--font-body); font-size: 13px; font-weight: 600; border: 1.5px solid rgba(255,255,255,0.4); background: rgba(255,255,255,0.08); color: #fff; border-radius: 8px; padding: 7px 10px; }
@@ -68,15 +103,61 @@
     font-weight: 700;
     font-size: 46px;
     line-height: 1.12;
-    max-width: 720px;
+    letter-spacing: -0.015em;
+    /* 880px keeps this headline to two balanced lines at desktop; at 720px
+       it broke to three. */
+    max-width: 880px;
+    text-wrap: balance;
   }
   .hero p {
     margin-top: 18px;
     font-size: 18px;
     color: #dcdcf2;
-    max-width: 620px;
+    max-width: 60ch;
+    text-wrap: pretty;
+  }
+  .hero-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 22px;
+    margin-top: 26px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255,255,255,0.18);
+  }
+  .hero-stats span {
+    font-size: 14px;
+    color: #dcdcf2;
+  }
+  .hero-stats strong {
+    font-family: var(--font-heading);
+    font-size: 20px;
+    color: #fff;
+    margin-right: 6px;
   }
   main { max-width: 960px; margin: 0 auto; padding: 48px 24px 72px; }
+  .phase-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 36px;
+  }
+  .phase-nav a {
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--primary);
+    background: var(--powder);
+    border: 1px solid var(--line);
+    padding: 7px 13px;
+    border-radius: 20px;
+    text-decoration: none;
+    transition: background 0.15s ease, border-color 0.15s ease;
+  }
+  .phase-nav a:hover { background: var(--accent); border-color: var(--accent); }
+  .phase-count {
+    font-size: 12px;
+    color: var(--muted);
+    font-weight: 500;
+  }
   .phase-head {
     display: flex;
     align-items: baseline;
@@ -88,6 +169,7 @@
     font-weight: 600;
     font-size: 28px;
     color: var(--primary);
+    text-wrap: balance;
   }
   .phase-tag {
     font-size: 12px;
@@ -99,19 +181,46 @@
     padding: 4px 10px;
     border-radius: 20px;
   }
-  .phase-sub { color: var(--muted); margin-bottom: 24px; }
+  .phase-sub { color: var(--muted); margin-bottom: 24px; max-width: 72ch; text-wrap: pretty; }
   .cards { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
   .card {
     display: flex;
     flex-direction: column;
+    position: relative;
+    isolation: isolate;
     background: #fff;
     border: 1px solid var(--line);
     border-radius: 14px;
     padding: 26px 26px 24px;
     text-decoration: none;
     color: inherit;
-    transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+    transition:
+      transform 260ms cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 260ms cubic-bezier(0.22, 1, 0.36, 1),
+      border-color 260ms cubic-bezier(0.22, 1, 0.36, 1);
   }
+  /* Pointer spotlight. Sits on its own layer below the card's content
+     (z-index 0 vs. 1) so it can never wash out the text, and fades via
+     opacity so there is nothing to animate on the layout. --cx/--cy are
+     fed by the same rAF-throttled handler that drives the hero. */
+  .card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    border-radius: inherit;
+    background: radial-gradient(
+      240px circle at var(--cx, 50%) var(--cy, 0%),
+      rgba(220, 221, 246, 0.55),
+      rgba(238, 238, 250, 0.28) 45%,
+      transparent 72%
+    );
+    opacity: 0;
+    transition: opacity 300ms cubic-bezier(0.22, 1, 0.36, 1);
+    pointer-events: none;
+  }
+  .card > * { position: relative; z-index: 1; }
+  .card:hover::before { opacity: 1; }
   .card:hover {
     transform: translateY(-3px);
     box-shadow: 0 12px 28px rgba(27, 20, 116, 0.12);
@@ -124,8 +233,9 @@
     font-size: 21px;
     color: var(--primary);
     margin-bottom: 8px;
+    text-wrap: balance;
   }
-  .card p { color: var(--muted); font-size: 15px; flex: 1; }
+  .card p { color: var(--muted); font-size: 15px; flex: 1; text-wrap: pretty; }
   .card .go {
     margin-top: 18px;
     font-weight: 600;
@@ -199,9 +309,20 @@
     .hero h1 { font-size: 34px; }
     .cards { grid-template-columns: 1fr; }
   }
+  /* The pointer spotlights are decorative. Under reduced motion they stop
+     tracking entirely (the JS bails) and the lift/fade collapse to nothing,
+     leaving the plain hover state, which still reads as interactive via the
+     border colour change. */
+  @media (prefers-reduced-motion: reduce) {
+    .hero::before { display: none; }
+    .card::before { display: none; }
+    .card, .phase-nav a, .skip-link { transition: none; }
+    .card:hover { transform: none; }
+  }
 </style>
 </head>
 <body>
+  <a class="skip-link" href="#toolkit" data-i18n="skipLink"></a>
   <header class="hero">
     <div class="wrap">
       <div class="hero-top">
@@ -214,10 +335,17 @@
       </div>
       <h1 data-i18n="heroTitle"></h1>
       <p data-i18n="heroDesc"></p>
+      <div class="hero-stats">
+        <span><strong id="statToolsNum"></strong><span data-i18n="statTools"></span></span>
+        <span><strong id="statPhasesNum"></strong><span data-i18n="statPhases"></span></span>
+        <span data-i18n="statPrivacy"></span>
+      </div>
     </div>
   </header>
 
-  <main>
+  <main id="toolkit">
+    <nav class="phase-nav" id="phaseNav" aria-label="Jump to phase"></nav>
+
     <div class="dash">
       <div class="dash-head">
         <h2 data-i18n="dashTitle"></h2>
@@ -227,9 +355,10 @@
       <div class="dash-grid" id="dashGrid"></div>
     </div>
 
-    <div class="phase-head">
+    <div class="phase-head" id="phase-1">
       <h2 data-i18n="p1Title"></h2>
       <span class="phase-tag" data-i18n="tagP1"></span>
+      <span class="phase-count"></span>
     </div>
     <p class="phase-sub" data-i18n="p1Sub"></p>
 
@@ -270,9 +399,10 @@
       </a>
     </div>
 
-    <div class="phase-head" style="margin-top:44px">
+    <div class="phase-head" id="phase-2" style="margin-top:44px">
       <h2 data-i18n="p2Title"></h2>
       <span class="phase-tag" data-i18n="tagP2"></span>
+      <span class="phase-count"></span>
     </div>
     <p class="phase-sub" data-i18n="p2Sub"></p>
 
@@ -306,9 +436,10 @@
       </a>
     </div>
 
-    <div class="phase-head" style="margin-top:44px">
+    <div class="phase-head" id="phase-3" style="margin-top:44px">
       <h2 data-i18n="p3Title"></h2>
       <span class="phase-tag" data-i18n="tagP3"></span>
+      <span class="phase-count"></span>
     </div>
     <p class="phase-sub" data-i18n="p3Sub"></p>
 
@@ -356,9 +487,10 @@
       </a>
     </div>
 
-    <div class="phase-head" style="margin-top:44px">
+    <div class="phase-head" id="phase-4" style="margin-top:44px">
       <h2 data-i18n="p4Title"></h2>
       <span class="phase-tag" data-i18n="tagP4"></span>
+      <span class="phase-count"></span>
     </div>
     <p class="phase-sub" data-i18n="p4Sub"></p>
 
@@ -385,9 +517,10 @@
       </a>
     </div>
 
-    <div class="phase-head" style="margin-top:44px">
+    <div class="phase-head" id="phase-5" style="margin-top:44px">
       <h2 data-i18n="p5Title"></h2>
       <span class="phase-tag" data-i18n="tagP5"></span>
+      <span class="phase-count"></span>
     </div>
     <p class="phase-sub" data-i18n="p5Sub"></p>
 
@@ -428,9 +561,10 @@
       </a>
     </div>
 
-    <div class="phase-head" style="margin-top:44px">
+    <div class="phase-head" id="phase-6" style="margin-top:44px">
       <h2 data-i18n="p6Title"></h2>
       <span class="phase-tag" data-i18n="tagP6"></span>
+      <span class="phase-count"></span>
     </div>
     <p class="phase-sub" data-i18n="p6Sub"></p>
 
@@ -464,11 +598,57 @@
       </a>
     </div>
 
+    <div class="phase-head" id="phase-7" style="margin-top:44px">
+      <h2 data-i18n="p7Title"></h2>
+      <span class="phase-tag" data-i18n="tagP7"></span>
+      <span class="phase-count"></span>
+    </div>
+    <p class="phase-sub" data-i18n="p7Sub"></p>
+
+    <div class="cards">
+      <a class="card" href="Phase%207%20-%20MLOps%20%26%20Operations/mlops-platform-design/">
+        <div class="icon">⚙️</div>
+        <h3 data-i18n="c_mlops_t"></h3>
+        <p data-i18n="c_mlops_d"></p>
+        <span class="go" data-i18n="c_mlops_c"></span>
+      </a>
+
+      <a class="card" href="Phase%207%20-%20MLOps%20%26%20Operations/model-monitoring/">
+        <div class="icon">📡</div>
+        <h3 data-i18n="c_monitor_t"></h3>
+        <p data-i18n="c_monitor_d"></p>
+        <span class="go" data-i18n="c_monitor_c"></span>
+      </a>
+
+      <a class="card" href="Phase%207%20-%20MLOps%20%26%20Operations/retraining-strategy/">
+        <div class="icon">🔁</div>
+        <h3 data-i18n="c_retrain_t"></h3>
+        <p data-i18n="c_retrain_d"></p>
+        <span class="go" data-i18n="c_retrain_c"></span>
+      </a>
+
+      <a class="card" href="Phase%207%20-%20MLOps%20%26%20Operations/operations-runbook/">
+        <div class="icon">📕</div>
+        <h3 data-i18n="c_runbook_t"></h3>
+        <p data-i18n="c_runbook_d"></p>
+        <span class="go" data-i18n="c_runbook_c"></span>
+      </a>
+
+      <a class="card" href="Phase%207%20-%20MLOps%20%26%20Operations/cost-optimization/">
+        <div class="icon">💸</div>
+        <h3 data-i18n="c_cost_t"></h3>
+        <p data-i18n="c_cost_d"></p>
+        <span class="go" data-i18n="c_cost_c"></span>
+      </a>
+    </div>
+
     <div class="future">
       <h2 data-i18n="futureTitle"></h2>
       <p data-i18n="futureDesc"></p>
       <div class="pills">
-        <span class="pill" data-i18n="pillPhase7"></span>
+        <span class="pill" data-i18n="pillPhase8"></span>
+        <span class="pill" data-i18n="pillPhase9"></span>
+        <span class="pill" data-i18n="pillPhase10"></span>
       </div>
     </div>
   </main>
@@ -481,6 +661,10 @@ const STRINGS = {
     heroEyebrow: 'AI Architecture · Consulting Toolkit',
     heroTitle: 'Practical tools for AI-architecture engagements, organized by delivery phase.',
     heroDesc: 'An evolving set of assessments and accelerators that mirror how an AI architect actually moves a client from discovery to production.',
+    statTools: ' tools', statPhases: ' delivery phases', statPrivacy: 'Runs fully in your browser. Nothing is uploaded.',
+    skipLink: 'Skip to the toolkit',
+    jumpToLabel: 'Jump to:',
+    toolsCountLabel: (n) => `${n} tool${n === 1 ? '' : 's'}`,
     tagP1: 'Phase 1', tagP2: 'Phase 2', tagP3: 'Phase 3', tagP4: 'Phase 4', tagP5: 'Phase 5', tagP6: 'Phase 6',
     p1Title: 'Discovery & Assessment',
     p1Sub: "Understand the client's starting point: where they sit on the AI maturity curve, and whether their data is actually ready for the use cases they have in mind.",
@@ -575,9 +759,29 @@ const STRINGS = {
     c_risk_t: 'AI Risk Register',
     c_risk_d: 'SOP plus a scored risk register (likelihood × impact, severity, mitigation, owner), auto-generating a risk assessment report. EN / DA / SV.',
     c_risk_c: 'Open register →',
+    tagP7: 'Phase 7',
+    p7Title: 'MLOps & Operations',
+    p7Sub: 'Keep the deployed solution working: the platform that retrains and redeploys it, the monitoring that catches drift before users do, and the runbook the client\'s own on-call team will run on.',
+    c_mlops_t: 'MLOps Platform Architecture',
+    c_mlops_d: 'SOP, client intake, and a platform-component tracker covering CI/CD pipelines, model registry, feature store, and experiment tracking, auto-generating an MLOps platform architecture document. EN / DA / SV.',
+    c_mlops_c: 'Open architecture →',
+    c_monitor_t: 'Model Monitoring & Drift Detection Plan',
+    c_monitor_d: 'SOP, client intake, and a monitored-signal tracker (signal, detection method, threshold) spanning data drift, concept drift, model decay, hallucination and data-leakage checks, auto-generating a monitoring plan. EN / DA / SV.',
+    c_monitor_c: 'Open plan →',
+    c_retrain_t: 'Model Retraining Strategy',
+    c_retrain_d: 'SOP, client intake, and a retraining-trigger tracker tying each trigger to a monitored signal, plus A/B, shadow, canary and rollback approach, auto-generating a retraining strategy document. EN / DA / SV.',
+    c_retrain_c: 'Open strategy →',
+    c_runbook_t: 'Operations Runbook & On-Call Plan',
+    c_runbook_d: 'SOP, client intake, and an incident-playbook tracker (scenario, first response, escalation) covering on-call rotation and incident response, auto-generating an operations runbook. EN / DA / SV.',
+    c_runbook_c: 'Open runbook →',
+    c_cost_t: 'Inference Cost Optimization Report',
+    c_cost_d: 'SOP, client intake, and an optimization-lever tracker ranked by saving against effort, covering cost attribution, utilization, compression and caching, auto-generating a cost optimization report. EN / DA / SV.',
+    c_cost_c: 'Open report →',
     futureTitle: 'Further phases',
-    futureDesc: 'The toolkit follows the full AI-architect delivery lifecycle. These phases are scaffolded and will be filled in over time.',
-    pillPhase7: 'Phase 7 · MLOps & Operations',
+    futureDesc: 'The toolkit follows the full AI-architect delivery lifecycle. Phases 1 through 7 are built; these remaining phases will be added over time.',
+    pillPhase8: 'Phase 8 · Change Management & Enablement',
+    pillPhase9: 'Phase 9 · Vendor Evaluation & Technology Selection',
+    pillPhase10: 'Phase 10 · ROI Analysis & Cost Optimization',
     footerText: 'Built as an independent AI-architecture consulting portfolio. All assessment tools run fully client-side — no data leaves your browser.',
     dashTitle: 'Engagement dashboard',
     dashReport: 'Open master report →',
@@ -590,6 +794,10 @@ const STRINGS = {
     heroEyebrow: 'AI-arkitektur · Konsulentværktøjer',
     heroTitle: 'Praktiske værktøjer til AI-arkitektur-engagementer, organiseret efter leveringsfase.',
     heroDesc: 'Et voksende sæt af vurderinger og accelleratorer, der afspejler hvordan en AI-arkitekt reelt flytter en kunde fra discovery til produktion.',
+    statTools: ' værktøjer', statPhases: ' leveringsfaser', statPrivacy: 'Kører fuldt ud i din browser. Intet uploades.',
+    skipLink: 'Gå direkte til værktøjerne',
+    jumpToLabel: 'Gå til:',
+    toolsCountLabel: (n) => `${n} værktøj${n === 1 ? '' : 'er'}`,
     tagP1: 'Fase 1', tagP2: 'Fase 2', tagP3: 'Fase 3', tagP4: 'Fase 4', tagP5: 'Fase 5', tagP6: 'Fase 6',
     p1Title: 'Discovery & Vurdering',
     p1Sub: 'Forstå kundens udgangspunkt: hvor de befinder sig på AI-modenhedskurven, og om deres data reelt er klar til de use cases, de har i tankerne.',
@@ -684,9 +892,29 @@ const STRINGS = {
     c_risk_t: 'AI-risikoregister',
     c_risk_d: 'SOP plus et scoret risikoregister (sandsynlighed × konsekvens, alvorlighed, afhjælpning, ejer), der automatisk genererer en risikovurderingsrapport. EN / DA / SV.',
     c_risk_c: 'Åbn register →',
+    tagP7: 'Fase 7',
+    p7Title: 'MLOps & Drift',
+    p7Sub: 'Hold den udrullede løsning kørende: platformen der gentræner og genudruller den, monitoreringen der fanger drift før brugerne gør, og håndbogen kundens eget vagtteam kommer til at køre på.',
+    c_mlops_t: 'MLOps-platformarkitektur',
+    c_mlops_d: 'SOP, kundeoptag, og en platformkomponent-tracker der dækker CI/CD-pipelines, modelregister, feature store og experiment tracking, og automatisk genererer et MLOps-platformarkitekturdokument. EN / DA / SV.',
+    c_mlops_c: 'Åbn arkitektur →',
+    c_monitor_t: 'Modelmonitorering & driftdetektionsplan',
+    c_monitor_d: 'SOP, kundeoptag, og en overvåget-signal-tracker (signal, detektionsmetode, tærskel) der spænder over datadrift, konceptdrift, modelforringelse, hallucinations- og datalækagetjek, og automatisk genererer en monitoreringsplan. EN / DA / SV.',
+    c_monitor_c: 'Åbn plan →',
+    c_retrain_t: 'Model-gentræningsstrategi',
+    c_retrain_d: 'SOP, kundeoptag, og en gentræningstrigger-tracker der binder hver trigger til et overvåget signal, plus A/B-, shadow-, canary- og rollback-tilgang, og automatisk genererer et gentræningsstrategidokument. EN / DA / SV.',
+    c_retrain_c: 'Åbn strategi →',
+    c_runbook_t: 'Driftshåndbog & vagtplan',
+    c_runbook_d: 'SOP, kundeoptag, og en hændelses-playbook-tracker (scenarie, første reaktion, eskalation) der dækker vagtrotation og hændelsesrespons, og automatisk genererer en driftshåndbog. EN / DA / SV.',
+    c_runbook_c: 'Åbn håndbog →',
+    c_cost_t: 'Rapport om optimering af inferensomkostninger',
+    c_cost_d: 'SOP, kundeoptag, og en optimeringsgreb-tracker rangeret efter besparelse mod indsats, der dækker omkostningsattribuering, udnyttelse, kompression og caching, og automatisk genererer en omkostningsoptimeringsrapport. EN / DA / SV.',
+    c_cost_c: 'Åbn rapport →',
     futureTitle: 'Kommende faser',
     futureDesc: 'Værktøjssættet følger hele AI-arkitektens leveringslivscyklus. Disse faser er skitseret og vil blive udfyldt over tid.',
-    pillPhase7: 'Fase 7 · MLOps & Drift',
+    pillPhase8: 'Fase 8 · Organisationsforandring & Enablement',
+    pillPhase9: 'Fase 9 · Leverandørvurdering & Teknologivalg',
+    pillPhase10: 'Fase 10 · ROI-analyse & Omkostningsoptimering',
     footerText: 'Bygget som en uafhængig AI-arkitektur-konsulentportefølje. Alle vurderingsværktøjer kører fuldt klient-side — ingen data forlader din browser.',
     dashTitle: 'Engagementsoverblik',
     dashReport: 'Åbn samlet rapport →',
@@ -699,6 +927,10 @@ const STRINGS = {
     heroEyebrow: 'AI-arkitektur · Konsultverktyg',
     heroTitle: 'Praktiska verktyg för AI-arkitekturuppdrag, organiserade efter leveransfas.',
     heroDesc: 'En växande uppsättning bedömningar och acceleratorer som speglar hur en AI-arkitekt faktiskt flyttar en kund från discovery till produktion.',
+    statTools: ' verktyg', statPhases: ' leveransfaser', statPrivacy: 'Körs helt i din webbläsare. Inget laddas upp.',
+    skipLink: 'Hoppa till verktygen',
+    jumpToLabel: 'Gå till:',
+    toolsCountLabel: (n) => `${n} verktyg`,
     tagP1: 'Fas 1', tagP2: 'Fas 2', tagP3: 'Fas 3', tagP4: 'Fas 4', tagP5: 'Fas 5', tagP6: 'Fas 6',
     p1Title: 'Discovery & Bedömning',
     p1Sub: 'Förstå kundens utgångsläge: var de befinner sig på AI-mognadskurvan, och om deras data faktiskt är redo för de användningsfall de har i åtanke.',
@@ -793,9 +1025,29 @@ const STRINGS = {
     c_risk_t: 'AI-riskregister',
     c_risk_d: 'SOP plus ett poängsatt riskregister (sannolikhet × påverkan, allvarlighetsgrad, åtgärd, ägare), som automatiskt genererar en riskbedömningsrapport. EN / DA / SV.',
     c_risk_c: 'Öppna register →',
+    tagP7: 'Fas 7',
+    p7Title: 'MLOps & Drift',
+    p7Sub: 'Håll den driftsatta lösningen fungerande: plattformen som omtränar och driftsätter om den, monitoreringen som fångar drift före användarna, och handboken kundens eget jourteam kommer att köra på.',
+    c_mlops_t: 'MLOps-plattformsarkitektur',
+    c_mlops_d: 'SOP, kundintag, och en plattformskomponent-spårare som täcker CI/CD-pipelines, modellregister, feature store och experiment tracking, och automatiskt genererar ett MLOps-plattformsarkitekturdokument. EN / DA / SV.',
+    c_mlops_c: 'Öppna arkitektur →',
+    c_monitor_t: 'Modellmonitorering & driftdetekteringsplan',
+    c_monitor_d: 'SOP, kundintag, och en övervakat-signal-spårare (signal, detekteringsmetod, tröskel) som spänner över datadrift, konceptdrift, modellförsämring, hallucinations- och dataläckagekontroller, och automatiskt genererar en monitoreringsplan. EN / DA / SV.',
+    c_monitor_c: 'Öppna plan →',
+    c_retrain_t: 'Modellomträningsstrategi',
+    c_retrain_d: 'SOP, kundintag, och en omträningstrigger-spårare som binder varje trigger till en övervakad signal, plus A/B-, shadow-, canary- och rollback-ansats, och automatiskt genererar ett omträningsstrategidokument. EN / DA / SV.',
+    c_retrain_c: 'Öppna strategi →',
+    c_runbook_t: 'Driftshandbok & jourplan',
+    c_runbook_d: 'SOP, kundintag, och en incident-playbook-spårare (scenario, första åtgärd, eskalering) som täcker jourrotation och incidentrespons, och automatiskt genererar en driftshandbok. EN / DA / SV.',
+    c_runbook_c: 'Öppna handbok →',
+    c_cost_t: 'Rapport om optimering av inferenskostnader',
+    c_cost_d: 'SOP, kundintag, och en optimeringsspak-spårare rangordnad efter besparing mot insats, som täcker kostnadsattribuering, utnyttjande, kompression och caching, och automatiskt genererar en kostnadsoptimeringsrapport. EN / DA / SV.',
+    c_cost_c: 'Öppna rapport →',
     futureTitle: 'Kommande faser',
     futureDesc: 'Verktygssamlingen följer AI-arkitektens hela leveranslivscykel. Dessa faser är skisserade och kommer fyllas i över tid.',
-    pillPhase7: 'Fas 7 · MLOps & Drift',
+    pillPhase8: 'Fas 8 · Organisationsförändring & Enablement',
+    pillPhase9: 'Fas 9 · Leverantörsbedömning & Teknikval',
+    pillPhase10: 'Fas 10 · ROI-analys & Kostnadsoptimering',
     footerText: 'Byggd som en oberoende AI-arkitektur-konsultportfölj. Alla bedömningsverktyg körs helt klient-sidan — ingen data lämnar din webbläsare.',
     dashTitle: 'Uppdragsöversikt',
     dashReport: 'Öppna samlad rapport →',
@@ -835,16 +1087,23 @@ const TOOL_REGISTRY = [
   { key: 'aoa_compliance_assessment_v1', titleKey: 'c_comp_t', href: 'Phase%206%20-%20Governance%2C%20Compliance%20%26%20Security/compliance-assessment/' },
   { key: 'aoa_responsible_ai_v1', titleKey: 'c_resp_t', href: 'Phase%206%20-%20Governance%2C%20Compliance%20%26%20Security/responsible-ai/' },
   { key: 'aoa_risk_management_v1', titleKey: 'c_risk_t', href: 'Phase%206%20-%20Governance%2C%20Compliance%20%26%20Security/risk-management/' },
+  { key: 'aoa_mlops_platform_v1', titleKey: 'c_mlops_t', href: 'Phase%207%20-%20MLOps%20%26%20Operations/mlops-platform-design/' },
+  { key: 'aoa_model_monitoring_v1', titleKey: 'c_monitor_t', href: 'Phase%207%20-%20MLOps%20%26%20Operations/model-monitoring/' },
+  { key: 'aoa_retraining_strategy_v1', titleKey: 'c_retrain_t', href: 'Phase%207%20-%20MLOps%20%26%20Operations/retraining-strategy/' },
+  { key: 'aoa_operations_runbook_v1', titleKey: 'c_runbook_t', href: 'Phase%207%20-%20MLOps%20%26%20Operations/operations-runbook/' },
+  { key: 'aoa_cost_optimization_v1', titleKey: 'c_cost_t', href: 'Phase%207%20-%20MLOps%20%26%20Operations/cost-optimization/' },
 ];
 
 function _numOnly(s) { return /^\d+(\.\d+)?$/.test(s.trim()); }
 function _hasContent(v) {
   if (typeof v === 'string') return v.trim() !== '' && !_numOnly(v);
   if (Array.isArray(v)) return v.some(_hasContent);
-  if (v && typeof v === 'object') return Object.keys(v).some(k => ['lang', 'nextId', 'id'].indexOf(k) === -1 && _hasContent(v[k]));
+  if (v && typeof v === 'object') return Object.keys(v).some(k => ['lang', 'nextId', 'id', 'status'].indexOf(k) === -1 && _hasContent(v[k]));
   return false;
 }
 // "Started" = has content beyond the shared client/assessor/useCase prefill.
+// `status` is excluded because every tracker seeds one blank row with a
+// default status; counting that string would mark an untouched tool started.
 function toolStarted(key) {
   try {
     const raw = localStorage.getItem(key);
@@ -863,7 +1122,10 @@ function toolStarted(key) {
   } catch (e) { return false; }
 }
 
-function esc(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function esc(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+// Markdown table cells: a raw | or newline in a tracker value would otherwise
+// invent columns or rows in the exported deliverable.
+function mdCell(v) { return String(v === undefined || v === null ? '' : v).replace(/\|/g, '\\|').replace(/\r?\n/g, ' '); }
 
 function renderDashboard() {
   let eng = {};
@@ -888,10 +1150,89 @@ function renderDashboard() {
 let lang = localStorage.getItem('aoa_lang') || 'en';
 function t(key) { return (STRINGS[lang] && STRINGS[lang][key] !== undefined) ? STRINGS[lang][key] : (STRINGS.en[key] !== undefined ? STRINGS.en[key] : key); }
 function setLang(l) { lang = l; localStorage.setItem('aoa_lang', l); document.getElementById('langSelect').value = l; applyI18n(); renderDashboard(); }
+const PHASE_NAV = [
+  { id: 'phase-1', titleKey: 'p1Title', tagKey: 'tagP1' },
+  { id: 'phase-2', titleKey: 'p2Title', tagKey: 'tagP2' },
+  { id: 'phase-3', titleKey: 'p3Title', tagKey: 'tagP3' },
+  { id: 'phase-4', titleKey: 'p4Title', tagKey: 'tagP4' },
+  { id: 'phase-5', titleKey: 'p5Title', tagKey: 'tagP5' },
+  { id: 'phase-6', titleKey: 'p6Title', tagKey: 'tagP6' },
+  { id: 'phase-7', titleKey: 'p7Title', tagKey: 'tagP7' },
+];
+function renderPhaseNav() {
+  const nav = document.getElementById('phaseNav');
+  if (!nav) return;
+  nav.innerHTML = PHASE_NAV.map(p => `<a href="#${p.id}">${esc(t(p.tagKey))} · ${esc(t(p.titleKey))}</a>`).join('');
+}
+function renderPhaseCounts() {
+  document.querySelectorAll('.phase-head').forEach(head => {
+    const countEl = head.querySelector('.phase-count');
+    if (!countEl) return;
+    let cardsEl = head.nextElementSibling;
+    while (cardsEl && !cardsEl.classList.contains('cards')) cardsEl = cardsEl.nextElementSibling;
+    if (!cardsEl) return;
+    const n = cardsEl.querySelectorAll('a.card').length;
+    if (n) countEl.textContent = t('toolsCountLabel')(n);
+  });
+  const totalTools = document.querySelectorAll('main .cards a.card').length;
+  const totalPhases = document.querySelectorAll('.phase-head').length;
+  const statTools = document.getElementById('statToolsNum');
+  const statPhases = document.getElementById('statPhasesNum');
+  if (statTools) statTools.textContent = totalTools;
+  if (statPhases) statPhases.textContent = totalPhases;
+}
+
 function applyI18n() {
   document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.getAttribute('data-i18n')); });
   document.documentElement.lang = lang;
+  renderPhaseNav();
+  renderPhaseCounts();
 }
+
+// ── Pointer-reactive spotlights (hero backdrop + tool cards) ──────────
+// Feeds --mx/--my and --cx/--cy as percentages; CSS owns all fading via
+// :hover, so this only ever writes two custom properties. Writes are
+// batched into one animation frame and touch no layout property, so there
+// is nothing here that can cause a reflow. Skipped entirely on coarse
+// pointers (touch) and under prefers-reduced-motion.
+(function pointerSpotlights() {
+  const fine = window.matchMedia('(hover: hover) and (pointer: fine)');
+  const calm = window.matchMedia('(prefers-reduced-motion: reduce)');
+  if (!fine.matches || calm.matches) return;
+
+  const queue = new Map();
+  let frame = 0;
+  function flush() {
+    frame = 0;
+    queue.forEach((pos, el) => {
+      el.style.setProperty(pos.px, pos.x + '%');
+      el.style.setProperty(pos.py, pos.y + '%');
+    });
+    queue.clear();
+  }
+  function track(el, e, px, py) {
+    const r = el.getBoundingClientRect();
+    if (!r.width || !r.height) return;
+    queue.set(el, {
+      px: px, py: py,
+      x: (((e.clientX - r.left) / r.width) * 100).toFixed(1),
+      y: (((e.clientY - r.top) / r.height) * 100).toFixed(1),
+    });
+    if (!frame) frame = requestAnimationFrame(flush);
+  }
+
+  const hero = document.querySelector('.hero');
+  if (hero) {
+    hero.addEventListener('pointermove', e => track(hero, e, '--mx', '--my'), { passive: true });
+  }
+  const main = document.querySelector('main');
+  if (main) {
+    main.addEventListener('pointermove', e => {
+      const card = e.target.closest && e.target.closest('a.card');
+      if (card) track(card, e, '--cx', '--cy');
+    }, { passive: true });
+  }
+})();
 
 (function init() {
   document.getElementById('langSelect').value = lang;

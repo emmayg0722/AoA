@@ -43,6 +43,8 @@
     line-height: 1.65;
     letter-spacing: 0.01em;
   }
+  :focus-visible { outline: 2px solid var(--primary); outline-offset: 3px; border-radius: 4px; }
+  .hero :focus-visible, .header :focus-visible { outline-color: #fff; }
   .container { max-width: 960px; margin: 0 auto; padding: 1rem; }
 
   /* Header */
@@ -515,6 +517,7 @@ function setLang(l) {
   if (document.getElementById('pageResults').classList.contains('active')) showResults();
 }
 function applyI18n() {
+  document.documentElement.lang = lang;
   document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.getAttribute('data-i18n')); });
   document.querySelectorAll('[data-i18n-opt]').forEach(el => { el.textContent = t(el.getAttribute('data-i18n-opt')); });
   document.title = t('headerTitle');

@@ -19,6 +19,8 @@
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { font-family: var(--font-body); color: var(--ink); background: #fafaff; line-height: 1.6; }
+  :focus-visible { outline: 2px solid var(--primary); outline-offset: 3px; border-radius: 4px; }
+  .hero :focus-visible, .header :focus-visible { outline-color: #fff; }
   .hero { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: #fff; padding: 44px 24px 36px; }
   .wrap { max-width: 1100px; margin: 0 auto; }
   .crumb { font-size: 13px; color: var(--accent); margin-bottom: 10px; }
@@ -43,7 +45,8 @@
   label { display: block; font-size: 13px; font-weight: 600; color: var(--ink); margin: 10px 0 5px; }
   input[type=text], textarea, select.field { width: 100%; font-family: var(--font-body); font-size: 14px; color: var(--ink); border: 1.5px solid var(--line); border-radius: 8px; padding: 9px 11px; background: #fff; }
   textarea { resize: vertical; min-height: 70px; }
-  input:focus, textarea:focus, select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(27,20,116,0.12); }
+  input:focus, textarea:focus, select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(27,20,116,0.12); }
+  input:focus:not(:focus-visible), textarea:focus:not(:focus-visible), select:focus:not(:focus-visible) { outline: none; }
   .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; }
   .btn { font-family: var(--font-body); font-size: 13.5px; font-weight: 600; padding: 9px 16px; border-radius: 8px; border: none; cursor: pointer; transition: all 0.15s; }
   .btn-primary { background: var(--accent); color: var(--primary); }
@@ -356,7 +359,10 @@ const STRINGS = {
 
 let lang = localStorage.getItem('aoa_lang') || 'en';
 function t(key) { return (STRINGS[lang] && STRINGS[lang][key] !== undefined) ? STRINGS[lang][key] : (STRINGS.en[key] !== undefined ? STRINGS.en[key] : key); }
-function esc(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function esc(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+// Markdown table cells: a raw | or newline in a tracker value would otherwise
+// invent columns or rows in the exported deliverable.
+function mdCell(v) { return String(v === undefined || v === null ? '' : v).replace(/\|/g, '\\|').replace(/\r?\n/g, ' '); }
 
 let rows = []; // { id, testType, scope, status }
 let nextId = 1;
@@ -371,6 +377,7 @@ function setLang(l) {
   save();
 }
 function applyI18n() {
+  document.documentElement.lang = lang;
   document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.getAttribute('data-i18n')); });
   document.title = t('heroTitle') + ' — Phase 5';
   document.getElementById('sopList').innerHTML = t('sop').map(s => `<li>${esc(s)}</li>`).join('');
@@ -447,7 +454,7 @@ function docMarkdown() {
   m += `## ${t('secTests')}\n\n`;
   if (filled.length) {
     m += `| ${t('colTestType')} | ${t('colScope')} | ${t('colStatus')} |\n|---|---|---|\n`;
-    m += filled.map(r => `| ${r.testType} | ${r.scope} | ${t(STATUS_KEYS[r.status] || 'statusNotStarted')} |`).join('\n') + '\n';
+    m += filled.map(r => `| ${mdCell(r.testType)} | ${mdCell(r.scope)} | ${t(STATUS_KEYS[r.status] || 'statusNotStarted')} |`).join('\n') + '\n';
   } else {
     m += `${t('noRows')}\n`;
   }
@@ -618,7 +625,19 @@ function loadSample() {
   if (errEl) errEl.style.display = 'none';
   fetch(SAMPLE_URL)
     .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
-    .then(o => { localStorage.setItem(KEY, JSON.stringify(o)); location.reload(); })
+    .then(o => {
+      localStorage.setItem(KEY, JSON.stringify(o));
+      // Carry the sample's client/assessor/use case into the shared profile
+      // too, so the hub dashboard and master report show this engagement
+      // instead of staying blank or naming the previous client.
+      try {
+        const f = (o && o.fields) || {};
+        const eng = JSON.parse(localStorage.getItem(ENG_KEY) || '{}');
+        ENG_FIELDS.forEach(k => { if (f[k]) eng[k] = f[k]; });
+        localStorage.setItem(ENG_KEY, JSON.stringify(eng));
+      } catch (e) {}
+      location.reload();
+    })
     .catch(err => {
       if (errEl) { errEl.textContent = t('sampleLoadError2')(err.message); errEl.style.display = 'block'; }
     });

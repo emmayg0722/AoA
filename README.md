@@ -62,6 +62,12 @@ its own subfolder. New phases and assets follow the same structure.
     ├── compliance-assessment/         # SOP + scorable gap-analysis matrix + legal disclaimer (EN/DA/SV)
     ├── responsible-ai/                # SOP + intake + bias/fairness audit matrix (EN/DA/SV)
     └── risk-management/               # SOP + scored risk register (likelihood x impact) (EN/DA/SV)
+└── Phase 7 - MLOps & Operations/
+    ├── mlops-platform-design/         # SOP + intake (CI/CD, registry, feature store, tracking) + component tracker (EN/DA/SV)
+    ├── model-monitoring/              # SOP + intake (drift, decay, hallucination) + monitored-signal tracker (EN/DA/SV)
+    ├── retraining-strategy/           # SOP + intake (triggers, canary, rollback) + trigger tracker (EN/DA/SV)
+    ├── operations-runbook/            # SOP + intake (rotation, escalation, incidents) + playbook tracker (EN/DA/SV)
+    └── cost-optimization/             # SOP + intake (attribution, utilization, caching) + lever tracker (EN/DA/SV)
 ```
 
 ## Phase 1 — Discovery & Assessment
@@ -196,8 +202,46 @@ All four new Phase 6 tools follow the same established pattern (SOP card,
 autosaved client intake, live document preview, HTML/Markdown export,
 English/Danish/Swedish language selector).
 
-Phase 7 (MLOps & Operations) follows the same folder pattern and will be
-added over time.
+## Phase 7 — MLOps & Operations
+
+Phase 5 ships the solution; this phase keeps it working. A model does not fail
+like ordinary software — it keeps returning confident answers while quietly
+getting worse — so these tools are built around detecting silent degradation
+rather than outages.
+
+- **MLOps Platform Architecture** — SOP + intake covering CI/CD pipeline design
+  (data, training, deployment as three separable pipelines), model registry and
+  version management, feature store (including the rationale for not having
+  one), and experiment tracking, plus a platform-component tracker, auto-
+  generating an MLOps platform architecture document.
+- **Model Monitoring & Drift Detection Plan** — SOP + intake covering the
+  performance dashboard and SLOs, data drift vs. concept drift detection, model
+  decay alerting with threshold rationale, and hallucination/data-leakage
+  protection, plus a monitored-signal tracker (signal, detection method,
+  threshold and the action a breach obliges), auto-generating a monitoring plan.
+- **Model Retraining Strategy** — SOP + intake covering retraining trigger
+  conditions, the reproducible automated pipeline, A/B, shadow and canary
+  release, and a tested rollback procedure, plus a trigger tracker tying each
+  trigger to a monitored signal that actually exists, auto-generating a
+  retraining strategy document.
+- **Operations Runbook & On-Call Plan** — SOP + intake covering runbook scope and
+  intended reader, on-call rotation and handover to the client's own team,
+  escalation path and decision authority, and incident response, plus an
+  incident-playbook tracker (scenario, first response, escalation), auto-
+  generating an operations runbook.
+- **Inference Cost Optimization Report** — SOP + intake covering cost monitoring
+  and attribution, compute utilization findings, compression and distillation
+  assessment, and caching strategy, plus an optimization-lever tracker ranked by
+  saving against effort that also records rejected levers with the reason,
+  auto-generating a cost optimization report.
+
+All five tools follow the same established pattern (checkable SOP card, autosaved
+client intake, tracker matrix, live document preview, HTML/Markdown export, agent
+drafting, sample engagement, English/Danish/Swedish language selector).
+
+Phases 8-10 (Change Management & Enablement, Vendor Evaluation & Technology
+Selection, ROI Analysis & Cost Optimization) follow the same folder pattern and
+will be added over time.
 
 ## SOP checklists & the Nordkap sample engagement
 
@@ -224,7 +268,7 @@ hub dashboard and master report — can be demoed end-to-end in a few clicks.
   quick-win 2×2 matrix (feasibility × value, quick wins highlighted); the
   Risk Register draws a likelihood × impact heatmap colored by severity.
 
-## Agent drafting (all 24 deliverable tools)
+## Agent drafting (all 29 deliverable tools)
 
 Every deliverable tool has an **"Agent drafting"** card: one click generates a
 prompt that carries the tool's SOP methodology and your full intake (including
@@ -241,7 +285,7 @@ Client, assessor, and use case are entered **once** and carry across the whole
 toolkit: every tool prefills those fields from a shared browser-local profile
 (`localStorage` key `aoa_engagement_v1`) and writes changes back to it. The hub
 shows an **engagement dashboard** — the current engagement plus a started/empty
-chip for each of the 26 stateful tools. A root-level **`engagement-report.html`**
+chip for each of the 32 stateful tools. A root-level **`engagement-report.html`**
 assembles every tool's saved work into one combined report (HTML/Markdown
 export) and can save or restore the *entire* engagement — all tools at once —
 as a single JSON file. Like everything else here, all of it is browser-local:
@@ -249,7 +293,7 @@ nothing is uploaded anywhere.
 
 ## Site-wide language selector
 
-Every tool in the toolkit — the 24 new Phase 1–6 tools above plus the 5 tools
+Every tool in the toolkit — the 29 new Phase 1–7 tools above plus the 5 tools
 that predate them (this hub, AI Maturity Assessment, DRA-5C console and
 profiler, and the Design Layers Architecture Builder) — has an
 English/Danish/Swedish language selector in the top-right of its header. The

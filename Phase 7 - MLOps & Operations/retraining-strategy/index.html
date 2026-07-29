@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Compliance Gap Analysis — Phase 6</title>
-<meta name="description" content="Compliance assessment SOP, client intake, a scorable compliance gap-analysis matrix, and an auto-generated compliance gap analysis report.">
+<title>Model Retraining Strategy — Phase 7</title>
+<meta name="description" content="SOP, client intake, a retraining-trigger tracker, and an auto-generated model retraining strategy document.">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='16' fill='%231B1474'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -32,10 +32,8 @@
   select#langSelect { font-family: var(--font-body); font-size: 13px; font-weight: 600; border: 1.5px solid rgba(255,255,255,0.4); background: rgba(255,255,255,0.08); color: #fff; border-radius: 8px; padding: 7px 10px; }
   select#langSelect option { color: var(--ink); }
   main { max-width: 1100px; margin: 0 auto; padding: 28px 24px 80px; }
-  .note { background: var(--powder); border: 1px solid var(--accent); border-radius: 12px; padding: 14px 16px; font-size: 14px; color: var(--muted); margin-bottom: 16px; }
+  .note { background: var(--powder); border: 1px solid var(--accent); border-radius: 12px; padding: 14px 16px; font-size: 14px; color: var(--muted); margin-bottom: 26px; }
   .note strong { color: var(--primary); }
-  .note.warn { background: #fdf3e3; border-color: #f0d9ab; margin-bottom: 26px; }
-  .note.warn strong { color: var(--amber); }
   .card { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 22px 24px; margin-bottom: 20px; }
   .card > h2 { font-family: var(--font-heading); font-weight: 600; font-size: 21px; color: var(--primary); margin-bottom: 4px; }
   .card .hint { font-size: 13.5px; color: var(--muted); margin-bottom: 14px; }
@@ -63,10 +61,10 @@
   table.matrix select { padding: 6px 6px; font-size: 13px; }
   .rm-btn { background: none; border: none; color: var(--red); cursor: pointer; font-size: 15px; }
   .status-badge { display: inline-block; font-size: 10.5px; font-weight: 700; padding: 2px 8px; border-radius: 10px; white-space: nowrap; }
-  .status-compliant { background: #e7f5ee; color: var(--green); }
-  .status-partial { background: #fdf3e3; color: var(--amber); }
-  .status-gap { background: #fbeaea; color: var(--red); }
-  .status-notassessed { background: var(--powder); color: var(--muted); }
+  .status-proposed { background: var(--powder); color: var(--muted); }
+  .status-agreed { background: #fdf3e3; color: var(--amber); }
+  .status-automated { background: #e7f5ee; color: var(--green); }
+  .status-blocked { background: #fbeaea; color: var(--red); }
   .preview { border: 1px dashed var(--line); border-radius: 10px; padding: 18px 20px; background: #fcfcff; font-size: 14px; }
   .preview h3 { font-family: var(--font-heading); color: var(--primary); font-size: 16px; margin: 14px 0 6px; }
   .preview h3:first-child { margin-top: 0; }
@@ -93,7 +91,7 @@
 <body>
   <header class="hero"><div class="wrap">
     <div class="hero-top">
-      <div class="crumb"><a href="../../">AI Architect Toolkit</a> · Phase 6 · Governance, Compliance &amp; Security · <span class="next-nav">Next: <a href="../responsible-ai/">Responsible AI & Bias Audit →</a></span></div>
+      <div class="crumb"><a href="../../">AI Architect Toolkit</a> · Phase 7 · MLOps &amp; Operations · <span class="next-nav">Next: <a href="../operations-runbook/">Operations Runbook &amp; On-Call Plan →</a></span></div>
       <select id="langSelect" onchange="setLang(this.value)">
         <option value="en">English</option>
         <option value="da">Dansk</option>
@@ -106,7 +104,6 @@
 
   <main>
     <div class="note"><strong data-i18n="noteLabel"></strong> <span data-i18n="noteBody"></span></div>
-    <div class="note warn"><strong data-i18n="warnLabel"></strong> <span data-i18n="warnBody"></span></div>
 
     <div class="card">
       <h2 data-i18n="sopTitle"></h2>
@@ -116,20 +113,26 @@
     </div>
 
     <div class="card">
-      <h2 data-i18n="clientTitle"></h2>
+      <h2 data-i18n="intakeTitle"></h2>
       <div class="grid2">
         <div><label data-i18n="lblClient"></label><input type="text" data-eng="client" placeholder="Acme Corp"></div>
         <div><label data-i18n="lblAssessor"></label><input type="text" data-eng="assessor"></div>
       </div>
-      <label data-i18n="lblRiskClass"></label>
-      <textarea data-eng="riskClass" placeholder="Which regulatory framework(s) apply, and what is this system's preliminary risk classification under each (architect's current understanding, not legal determination)"></textarea>
+      <label data-i18n="lblTriggerNotes"></label>
+      <textarea data-eng="triggerNotes"></textarea>
+      <label data-i18n="lblPipelineNotes"></label>
+      <textarea data-eng="pipelineNotes"></textarea>
+      <label data-i18n="lblReleaseNotes"></label>
+      <textarea data-eng="releaseNotes"></textarea>
+      <label data-i18n="lblRollbackNotes"></label>
+      <textarea data-eng="rollbackNotes"></textarea>
     </div>
 
     <div class="card">
-      <h2 data-i18n="matrixTitle"></h2>
-      <p class="hint" data-i18n="matrixHint"></p>
+      <h2 data-i18n="tableTitle"></h2>
+      <p class="hint" data-i18n="tableHint"></p>
       <table class="matrix">
-        <thead><tr><th data-i18n="colRequirement"></th><th data-i18n="colFramework"></th><th data-i18n="colStatus"></th><th data-i18n="colNotes"></th><th></th></tr></thead>
+        <thead><tr><th data-i18n="colA"></th><th data-i18n="colB"></th><th data-i18n="colC"></th><th data-i18n="colStatus"></th><th></th></tr></thead>
         <tbody id="matrixBody"></tbody>
       </table>
       <div class="btn-row"><button class="btn btn-secondary" onclick="addRow()" data-i18n="btnAddRow"></button></div>
@@ -161,153 +164,165 @@
   </main>
 
 <script>
-const KEY = 'aoa_compliance_assessment_v1';
-const STATUS_KEYS = { compliant: 'statusCompliant', partial: 'statusPartial', gap: 'statusGap', notassessed: 'statusNotAssessed' };
+const KEY = 'aoa_retraining_strategy_v1';
+const STATUS_KEYS = { proposed: 'statusProposed', agreed: 'statusAgreed', automated: 'statusAutomated', blocked: 'statusBlocked' };
 
 const STRINGS = {
   en: {
-    heroTitle: 'Compliance Gap Analysis',
-    heroDesc: 'SOP, client intake, a scorable compliance gap-analysis matrix, and an auto-generated compliance gap analysis report.',
-    noteLabel: 'How this works.',
-    noteBody: 'Fill in the intake fields and gap-analysis matrix below; the report preview builds live. No API calls — everything autosaves locally.',
-    warnLabel: 'Regulatory content note.',
-    warnBody: 'AI regulation changes fast — the EU AI Act, NIST AI RMF, ISO/IEC 42001, and regional/state laws are all still evolving. This tool structures the assessment but does not track live legal changes. Treat every framework reference as the architect\'s current understanding at time of writing, and have qualified legal counsel verify applicability, obligations, and deadlines before any client-facing compliance claim — this is not legal advice.',
-    sopTitle: 'SOP — how this is usually done',
-    sopHint: 'The order an architect actually works this exercise in.',
+    heroTitle: "Model Retraining Strategy",
+    heroDesc: "SOP, client intake, a retraining-trigger tracker, and an auto-generated model retraining strategy document.",
+    noteLabel: "How this works.",
+    noteBody: "Fill in the intake fields and trigger tracker below; the strategy document builds live. No API calls — everything autosaves locally.",
+    sopTitle: "SOP — how this is usually done",
+    sopHint: "The order an architect actually works this exercise in.",
     sop: [
-      'Identify which regulatory frameworks actually apply — by jurisdiction, sector, and system risk tier (e.g. EU AI Act high-risk classification, sector-specific US state laws, China AI regulations) — with legal counsel, not by assumption.',
-      'For each applicable requirement, assess current state: compliant, partially compliant, a clear gap, or not yet assessed.',
-      'Prioritize gaps by severity and deadline pressure — a requirement with an imminent enforcement date outranks a lower-risk one with more runway.',
-      'Note the technical documentation, monitoring, or process changes each gap requires to close — this feeds directly into Phase 6 governance and risk-management work.',
-      'Package the assessment as a compliance gap analysis report and a remediation roadmap the client can act on and their counsel can review.',
+      "Define retraining triggers before automating anything — a scheduled monthly retrain is a decision about cost and risk, not a default, and often retrains a model that has not degraded.",
+      "Tie each trigger to a monitored signal that actually exists: a trigger that depends on a metric nobody collects will never fire.",
+      "Make the retraining pipeline reproducible end to end (pinned data snapshot, pinned code commit, logged evaluation) so a retrained model can be compared honestly against the one it replaces.",
+      "Never let a retrained model reach all traffic on the strength of offline metrics alone — shadow, canary, or A/B it against the incumbent, and define the win condition before starting.",
+      "Write the rollback procedure before the first automated retrain, and test it — the moment you need it is the moment nobody has time to work out how it should behave.",
     ],
-    clientTitle: 'Client',
-    lblClient: 'Client / engagement',
-    lblAssessor: 'Assessor',
-    lblRiskClass: 'Applicable frameworks & preliminary risk classification',
-    matrixTitle: 'Compliance gap-analysis matrix',
-    matrixHint: 'Add each requirement being assessed, which framework it comes from, and its current status.',
-    colRequirement: 'Requirement',
-    colFramework: 'Framework',
-    colStatus: 'Status',
-    colNotes: 'Notes',
-    btnAddRow: '+ Add requirement',
-    statusCompliant: 'Compliant',
-    statusPartial: 'Partial',
-    statusGap: 'Gap',
-    statusNotAssessed: 'Not assessed',
-    previewTitle: 'Compliance gap analysis report',
-    previewHint: 'This is the actual deliverable — auto-generated and customized for this client.',
-    btnExportHtml: '🌐 Export HTML',
-    btnExportMd: '📄 Export Markdown',
-    btnReset: '🔄 Reset',
-    docTitle: 'Compliance Gap Analysis Report',
-    docFor: 'Prepared for',
-    docAssessor: 'Assessor',
-    docDate: 'Date',
-    secRiskClass: '1. Applicable Frameworks & Risk Classification',
-    secMatrix: '2. Gap Analysis',
-    noRows: 'No requirements added yet.',
-    placeholderRequirement: 'e.g. High-risk system technical documentation',
-    placeholderFramework: 'e.g. EU AI Act',
-    placeholderNotes: 'e.g. Draft exists, needs legal review',
-    emptyNote: '(not yet documented)',
+    intakeTitle: "Client & retraining intake",
+    lblClient: "Client / engagement",
+    lblAssessor: "Assessor",
+    lblTriggerNotes: "Retraining trigger conditions & rationale",
+    lblPipelineNotes: "Automated retraining pipeline & reproducibility",
+    lblReleaseNotes: "A/B testing, shadow & canary release approach",
+    lblRollbackNotes: "Model rollback strategy & tested procedure",
+    tableTitle: "Retraining triggers",
+    tableHint: "Add one row per trigger, the monitored signal behind it, and what firing actually does.",
+    colA: "Trigger",
+    colB: "Monitored signal",
+    colC: "Action on fire",
+    colStatus: "Status",
+    btnAddRow: "+ Add trigger",
+    statusProposed: "Proposed",
+    statusAgreed: "Agreed",
+    statusAutomated: "Automated",
+    statusBlocked: "Blocked",
+    previewTitle: "Model retraining strategy",
+    previewHint: "This is the actual deliverable — auto-generated and customized for this client.",
+    btnExportHtml: "🌐 Export HTML",
+    btnExportMd: "📄 Export Markdown",
+    btnReset: "🔄 Reset",
+    docTitle: "Model Retraining Strategy",
+    docFor: "Prepared for",
+    docAssessor: "Assessor",
+    docDate: "Date",
+    secA: "1. Retraining Trigger Conditions",
+    secB: "2. Automated Retraining Pipeline",
+    secC: "3. A/B Testing & Canary Release",
+    secD: "4. Model Rollback Strategy",
+    secE: "5. Retraining Triggers",
+    noRows: "No retraining triggers added yet.",
+    phA: "e.g. Performance decay",
+    phB: "e.g. Rolling 90-day AUC",
+    phC: "e.g. Auto-run pipeline, notify model owner",
+    emptyNote: "(not yet documented)",
   },
   da: {
-    heroTitle: 'Compliance-gapanalyse',
-    heroDesc: 'SOP, kundeoptag, en scorbar compliance-gapanalysematrix, og en automatisk genereret compliance-gapanalyserapport.',
-    noteLabel: 'Sådan virker det.',
-    noteBody: 'Udfyld optagsfelterne og gapanalysematrixen nedenfor; rapporten opbygges live. Ingen API-kald — alt gemmes automatisk lokalt.',
-    warnLabel: 'Bemærkning om lovgivningsindhold.',
-    warnBody: 'AI-lovgivning ændrer sig hurtigt — EU AI Act, NIST AI RMF, ISO/IEC 42001, og regionale/statslige love er alle stadig under udvikling. Dette værktøj strukturerer vurderingen, men følger ikke live lovændringer. Betragt enhver rammereference som arkitektens aktuelle forståelse på skrivetidspunktet, og lad kvalificeret juridisk rådgivning verificere anvendelighed, forpligtelser og frister, før noget kundevendt compliance-udsagn fremsættes — dette er ikke juridisk rådgivning.',
-    sopTitle: 'SOP — sådan gøres det normalt',
-    sopHint: 'Rækkefølgen en arkitekt reelt arbejder denne øvelse igennem.',
+    heroTitle: "Model-gentræningsstrategi",
+    heroDesc: "SOP, kundeoptag, en gentræningstrigger-tracker, og et automatisk genereret model-gentræningsstrategidokument.",
+    noteLabel: "Sådan virker det.",
+    noteBody: "Udfyld optagsfelterne og triggertrackeren nedenfor; strategidokumentet opbygges live. Ingen API-kald — alt gemmes automatisk lokalt.",
+    sopTitle: "SOP — sådan gøres det normalt",
+    sopHint: "Rækkefølgen en arkitekt reelt arbejder denne øvelse igennem.",
     sop: [
-      'Identificér hvilke lovgivningsrammer der reelt gælder — efter jurisdiktion, sektor, og systemrisikoniveau (fx EU AI Act høj-risiko-klassificering, sektorspecifikke amerikanske statslove, kinesiske AI-regler) — sammen med juridisk rådgivning, ikke ud fra antagelser.',
-      'Vurdér for hvert gældende krav den aktuelle tilstand: compliant, delvist compliant, en klar gap, eller endnu ikke vurderet.',
-      'Prioritér gaps efter alvorlighed og fristpres — et krav med en nært forestående håndhævelsesdato rangerer over et lavere-risiko-krav med mere tid.',
-      'Notér de tekniske dokumentations-, overvågnings- eller procesændringer, hver gap kræver for at lukkes — dette fodrer direkte ind i Fase 6-governance- og risikostyringsarbejdet.',
-      'Pak vurderingen som en compliance-gapanalyserapport og en afhjælpningsroadmap, kunden kan handle på, og deres jurister kan gennemgå.',
+      "Definer gentræningstriggere før noget automatiseres — en planlagt månedlig gentræning er en beslutning om omkostning og risiko, ikke en standard, og gentræner ofte en model, der ikke er forringet.",
+      "Bind hver trigger til et overvåget signal, der reelt findes: en trigger, der afhænger af en metrik, ingen indsamler, vil aldrig udløses.",
+      "Gør gentræningspipelinen reproducerbar fra ende til ende (fastlåst datasnapshot, fastlåst kode-commit, logget evaluering), så en gentrænet model kan sammenlignes ærligt med den, den erstatter.",
+      "Lad aldrig en gentrænet model nå al trafik alene på styrken af offline-metrikker — kør den som shadow, canary eller A/B mod den siddende model, og definer sejrsbetingelsen før start.",
+      "Skriv rollback-proceduren før den første automatiserede gentræning, og test den — det øjeblik du har brug for den, er det øjeblik ingen har tid til at regne ud, hvordan den skal opføre sig.",
     ],
-    clientTitle: 'Kunde',
-    lblClient: 'Kunde / engagement',
-    lblAssessor: 'Vurderingsmand',
-    lblRiskClass: 'Gældende rammer & foreløbig risikoklassificering',
-    matrixTitle: 'Compliance-gapanalysematrix',
-    matrixHint: 'Tilføj hvert krav, der vurderes, hvilken ramme det kommer fra, og dets aktuelle status.',
-    colRequirement: 'Krav',
-    colFramework: 'Ramme',
-    colStatus: 'Status',
-    colNotes: 'Noter',
-    btnAddRow: '+ Tilføj krav',
-    statusCompliant: 'Compliant',
-    statusPartial: 'Delvis',
-    statusGap: 'Gap',
-    statusNotAssessed: 'Ikke vurderet',
-    previewTitle: 'Compliance-gapanalyserapport',
-    previewHint: 'Dette er selve leverancen — automatisk genereret og tilpasset denne kunde.',
-    btnExportHtml: '🌐 Eksportér HTML',
-    btnExportMd: '📄 Eksportér Markdown',
-    btnReset: '🔄 Nulstil',
-    docTitle: 'Compliance-gapanalyserapport',
-    docFor: 'Udarbejdet for',
-    docAssessor: 'Vurderingsmand',
-    docDate: 'Dato',
-    secRiskClass: '1. Gældende rammer & risikoklassificering',
-    secMatrix: '2. Gapanalyse',
-    noRows: 'Ingen krav tilføjet endnu.',
-    placeholderRequirement: 'fx Teknisk dokumentation for højrisikosystem',
-    placeholderFramework: 'fx EU AI Act',
-    placeholderNotes: 'fx Udkast findes, kræver juridisk gennemgang',
-    emptyNote: '(endnu ikke dokumenteret)',
+    intakeTitle: "Kunde- og gentræningsoptag",
+    lblClient: "Kunde / engagement",
+    lblAssessor: "Vurderingsmand",
+    lblTriggerNotes: "Gentræningstrigger-betingelser og begrundelse",
+    lblPipelineNotes: "Automatiseret gentræningspipeline og reproducerbarhed",
+    lblReleaseNotes: "Tilgang til A/B-test, shadow og canary-release",
+    lblRollbackNotes: "Model-rollbackstrategi og testet procedure",
+    tableTitle: "Gentræningstriggere",
+    tableHint: "Tilføj en række pr. trigger, det overvågede signal bag den, og hvad en udløsning reelt gør.",
+    colA: "Trigger",
+    colB: "Overvåget signal",
+    colC: "Handling ved udløsning",
+    colStatus: "Status",
+    btnAddRow: "+ Tilføj trigger",
+    statusProposed: "Foreslået",
+    statusAgreed: "Aftalt",
+    statusAutomated: "Automatiseret",
+    statusBlocked: "Blokeret",
+    previewTitle: "Model-gentræningsstrategi",
+    previewHint: "Dette er selve leverancen — automatisk genereret og tilpasset denne kunde.",
+    btnExportHtml: "🌐 Eksportér HTML",
+    btnExportMd: "📄 Eksportér Markdown",
+    btnReset: "🔄 Nulstil",
+    docTitle: "Model-gentræningsstrategi",
+    docFor: "Udarbejdet for",
+    docAssessor: "Vurderingsmand",
+    docDate: "Dato",
+    secA: "1. Gentræningstrigger-betingelser",
+    secB: "2. Automatiseret gentræningspipeline",
+    secC: "3. A/B-test og canary-release",
+    secD: "4. Model-rollbackstrategi",
+    secE: "5. Gentræningstriggere",
+    noRows: "Ingen gentræningstriggere tilføjet endnu.",
+    phA: "fx Performance-forringelse",
+    phB: "fx Rullende 90-dages AUC",
+    phC: "fx Kør pipeline automatisk, notificér modelejer",
+    emptyNote: "(endnu ikke dokumenteret)",
   },
   sv: {
-    heroTitle: 'Compliance-gapanalys',
-    heroDesc: 'SOP, kundintag, en poängsatt compliance-gapanalysmatris, och en automatiskt genererad compliance-gapanalysrapport.',
-    noteLabel: 'Så här fungerar det.',
-    noteBody: 'Fyll i intagsfälten och gapanalysmatrisen nedan; rapporten byggs upp live. Inga API-anrop — allt sparas automatiskt lokalt.',
-    warnLabel: 'Anmärkning om regelverksinnehåll.',
-    warnBody: 'AI-reglering förändras snabbt — EU AI Act, NIST AI RMF, ISO/IEC 42001, och regionala/delstatliga lagar är alla fortfarande under utveckling. Detta verktyg strukturerar bedömningen men följer inte levande lagändringar. Betrakta varje ramverksreferens som arkitektens aktuella förståelse vid skrivandet, och låt kvalificerad juridisk rådgivning verifiera tillämplighet, skyldigheter och deadlines innan något kundriktat compliance-påstående görs — detta är inte juridisk rådgivning.',
-    sopTitle: 'SOP — så här görs det vanligtvis',
-    sopHint: 'Ordningen en arkitekt faktiskt arbetar igenom denna övning.',
+    heroTitle: "Modellomträningsstrategi",
+    heroDesc: "SOP, kundintag, en omträningstrigger-spårare, och ett automatiskt genererat modellomträningsstrategidokument.",
+    noteLabel: "Så här fungerar det.",
+    noteBody: "Fyll i intagsfälten och triggerspåraren nedan; strategidokumentet byggs upp live. Inga API-anrop — allt sparas automatiskt lokalt.",
+    sopTitle: "SOP — så här görs det vanligtvis",
+    sopHint: "Ordningen en arkitekt faktiskt arbetar igenom denna övning.",
     sop: [
-      'Identifiera vilka regelverk som faktiskt gäller — efter jurisdiktion, sektor, och systemets risknivå (t.ex. EU AI Act högrisk-klassificering, sektorspecifika amerikanska delstatslagar, kinesiska AI-regler) — tillsammans med juridisk rådgivning, inte utifrån antaganden.',
-      'Bedöm för varje tillämpligt krav det aktuella läget: uppfyllt, delvis uppfyllt, en tydlig brist, eller ännu inte bedömt.',
-      'Prioritera brister efter allvarlighetsgrad och deadline-press — ett krav med ett nära förestående efterlevnadsdatum rankas högre än ett lägre-risk-krav med mer tid kvar.',
-      'Notera de tekniska dokumentations-, övervaknings- eller processförändringar varje brist kräver för att stängas — detta matar direkt in i Fas 6-styrnings- och riskhanteringsarbetet.',
-      'Paketera bedömningen som en compliance-gapanalysrapport och en åtgärdsplan kunden kan agera på och deras jurister kan granska.',
+      "Definiera omträningstriggers innan något automatiseras — en schemalagd månatlig omträning är ett beslut om kostnad och risk, inte en standard, och omtränar ofta en modell som inte försämrats.",
+      "Bind varje trigger till en övervakad signal som faktiskt finns: en trigger som beror på ett mått ingen samlar in kommer aldrig att utlösas.",
+      "Gör omträningspipelinen reproducerbar från ände till ände (låst datasnapshot, låst kod-commit, loggad utvärdering) så att en omtränad modell kan jämföras ärligt med den den ersätter.",
+      "Låt aldrig en omtränad modell nå all trafik enbart på styrkan av offline-mått — kör den som shadow, canary eller A/B mot den sittande modellen, och definiera vinstvillkoret innan start.",
+      "Skriv rollback-proceduren innan första automatiserade omträningen, och testa den — stunden du behöver den är stunden ingen har tid att räkna ut hur den ska bete sig.",
     ],
-    clientTitle: 'Kund',
-    lblClient: 'Kund / uppdrag',
-    lblAssessor: 'Bedömare',
-    lblRiskClass: 'Tillämpliga ramverk & preliminär riskklassificering',
-    matrixTitle: 'Compliance-gapanalysmatris',
-    matrixHint: 'Lägg till varje krav som bedöms, vilket ramverk det kommer från, och dess aktuella status.',
-    colRequirement: 'Krav',
-    colFramework: 'Ramverk',
-    colStatus: 'Status',
-    colNotes: 'Anteckningar',
-    btnAddRow: '+ Lägg till krav',
-    statusCompliant: 'Uppfyllt',
-    statusPartial: 'Delvis',
-    statusGap: 'Brist',
-    statusNotAssessed: 'Ej bedömt',
-    previewTitle: 'Compliance-gapanalysrapport',
-    previewHint: 'Detta är själva leveransen — automatiskt genererad och anpassad för denna kund.',
-    btnExportHtml: '🌐 Exportera HTML',
-    btnExportMd: '📄 Exportera Markdown',
-    btnReset: '🔄 Återställ',
-    docTitle: 'Compliance-gapanalysrapport',
-    docFor: 'Framtagen för',
-    docAssessor: 'Bedömare',
-    docDate: 'Datum',
-    secRiskClass: '1. Tillämpliga ramverk & riskklassificering',
-    secMatrix: '2. Gapanalys',
-    noRows: 'Inga krav tillagda än.',
-    placeholderRequirement: 't.ex. Teknisk dokumentation för högriskssystem',
-    placeholderFramework: 't.ex. EU AI Act',
-    placeholderNotes: 't.ex. Utkast finns, behöver juridisk granskning',
-    emptyNote: '(ännu inte dokumenterat)',
+    intakeTitle: "Kund- och omträningsintag",
+    lblClient: "Kund / uppdrag",
+    lblAssessor: "Bedömare",
+    lblTriggerNotes: "Omträningstriggervillkor och motivering",
+    lblPipelineNotes: "Automatiserad omträningspipeline och reproducerbarhet",
+    lblReleaseNotes: "Ansats för A/B-test, shadow och canary-release",
+    lblRollbackNotes: "Modellrollbackstrategi och testad procedur",
+    tableTitle: "Omträningstriggers",
+    tableHint: "Lägg till en rad per trigger, den övervakade signalen bakom den, och vad en utlösning faktiskt gör.",
+    colA: "Trigger",
+    colB: "Övervakad signal",
+    colC: "Åtgärd vid utlösning",
+    colStatus: "Status",
+    btnAddRow: "+ Lägg till trigger",
+    statusProposed: "Föreslagen",
+    statusAgreed: "Överenskommen",
+    statusAutomated: "Automatiserad",
+    statusBlocked: "Blockerad",
+    previewTitle: "Modellomträningsstrategi",
+    previewHint: "Detta är själva leveransen — automatiskt genererad och anpassad för denna kund.",
+    btnExportHtml: "🌐 Exportera HTML",
+    btnExportMd: "📄 Exportera Markdown",
+    btnReset: "🔄 Återställ",
+    docTitle: "Modellomträningsstrategi",
+    docFor: "Framtagen för",
+    docAssessor: "Bedömare",
+    docDate: "Datum",
+    secA: "1. Omträningstriggervillkor",
+    secB: "2. Automatiserad omträningspipeline",
+    secC: "3. A/B-test och canary-release",
+    secD: "4. Modellrollbackstrategi",
+    secE: "5. Omträningstriggers",
+    noRows: "Inga omträningstriggers tillagda än.",
+    phA: "t.ex. Prestandaförsämring",
+    phB: "t.ex. Rullande 90-dagars AUC",
+    phC: "t.ex. Kör pipeline automatiskt, notifiera modellägare",
+    emptyNote: "(ännu inte dokumenterat)",
   },
 };
 
@@ -379,7 +394,7 @@ function esc(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt
 // invent columns or rows in the exported deliverable.
 function mdCell(v) { return String(v === undefined || v === null ? '' : v).replace(/\|/g, '\\|').replace(/\r?\n/g, ' '); }
 
-let rows = []; // { id, requirement, framework, status, notes }
+let rows = []; // { id, trigger, signal, action, status }
 let nextId = 1;
 
 function setLang(l) {
@@ -394,7 +409,7 @@ function setLang(l) {
 function applyI18n() {
   document.documentElement.lang = lang;
   document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.getAttribute('data-i18n')); });
-  document.title = t('heroTitle') + ' — Phase 6';
+  document.title = t('heroTitle') + ' — Phase 7';
   document.getElementById('sopList').innerHTML = t('sop').map(s => `<li>${esc(s)}</li>`).join('');
 }
 
@@ -416,7 +431,7 @@ function loadSaved() {
   } catch (e) {}
 }
 
-function addRow() { rows.push({ id: nextId++, requirement: '', framework: '', status: 'notassessed', notes: '' }); renderMatrix(); renderPreview(); save(); }
+function addRow() { rows.push({ id: nextId++, trigger: '', signal: '', action: '', status: 'proposed' }); renderMatrix(); renderPreview(); save(); }
 function removeRow(id) { rows = rows.filter(r => r.id !== id); renderMatrix(); renderPreview(); save(); }
 function updateRow(id, field, value) { const r = rows.find(r => r.id === id); if (r) r[field] = value; renderPreview(); save(); if (field === 'status') renderMatrix(); }
 
@@ -424,25 +439,28 @@ function renderMatrix() {
   const body = document.getElementById('matrixBody');
   if (!rows.length) { body.innerHTML = `<tr><td colspan="5" style="color:var(--muted);font-style:italic;padding:14px 8px">${esc(t('noRows'))}</td></tr>`; return; }
   body.innerHTML = rows.map(r => `<tr>
-      <td><input type="text" value="${esc(r.requirement)}" placeholder="${esc(t('placeholderRequirement'))}" oninput="updateRow(${r.id},'requirement',this.value)"></td>
-      <td><input type="text" value="${esc(r.framework)}" placeholder="${esc(t('placeholderFramework'))}" oninput="updateRow(${r.id},'framework',this.value)"></td>
+      <td><input type="text" value="${esc(r.trigger)}" placeholder="${esc(t('phA'))}" oninput="updateRow(${r.id},'trigger',this.value)"></td>
+      <td><input type="text" value="${esc(r.signal)}" placeholder="${esc(t('phB'))}" oninput="updateRow(${r.id},'signal',this.value)"></td>
+      <td><input type="text" value="${esc(r.action)}" placeholder="${esc(t('phC'))}" oninput="updateRow(${r.id},'action',this.value)"></td>
       <td><select onchange="updateRow(${r.id},'status',this.value)">
         ${Object.entries(STATUS_KEYS).map(([v, k]) => `<option value="${v}" ${r.status === v ? 'selected' : ''}>${esc(t(k))}</option>`).join('')}
       </select></td>
-      <td><input type="text" value="${esc(r.notes)}" placeholder="${esc(t('placeholderNotes'))}" oninput="updateRow(${r.id},'notes',this.value)"></td>
       <td><button class="rm-btn" onclick="removeRow(${r.id})" title="remove">✕</button></td>
     </tr>`).join('');
 }
 
 function renderPreview() {
   const date = new Date().toISOString().slice(0, 10);
-  const filled = rows.filter(r => r.requirement.trim());
+  const filled = rows.filter(r => r.trigger.trim());
   let h = `<div class="meta"><strong>${esc(t('docFor'))}:</strong> ${esc(val('client')) || '—'} &nbsp;·&nbsp; <strong>${esc(t('docAssessor'))}:</strong> ${esc(val('assessor')) || '—'} &nbsp;·&nbsp; <strong>${esc(t('docDate'))}:</strong> ${date}</div>`;
-  h += `<h3>${esc(t('secRiskClass'))}</h3><p>${orEmpty(val('riskClass'))}</p>`;
-  h += `<h3>${esc(t('secMatrix'))}</h3>`;
+  h += `<h3>${esc(t('secA'))}</h3><p>${orEmpty(val('triggerNotes'))}</p>`;
+  h += `<h3>${esc(t('secB'))}</h3><p>${orEmpty(val('pipelineNotes'))}</p>`;
+  h += `<h3>${esc(t('secC'))}</h3><p>${orEmpty(val('releaseNotes'))}</p>`;
+  h += `<h3>${esc(t('secD'))}</h3><p>${orEmpty(val('rollbackNotes'))}</p>`;
+  h += `<h3>${esc(t('secE'))}</h3>`;
   if (filled.length) {
-    h += `<table><thead><tr><th>${esc(t('colRequirement'))}</th><th>${esc(t('colFramework'))}</th><th>${esc(t('colStatus'))}</th><th>${esc(t('colNotes'))}</th></tr></thead><tbody>`;
-    h += filled.map(r => `<tr><td>${esc(r.requirement)}</td><td>${esc(r.framework)}</td><td><span class="status-badge status-${r.status}">${esc(t(STATUS_KEYS[r.status] || 'statusNotAssessed'))}</span></td><td>${esc(r.notes) || '—'}</td></tr>`).join('');
+    h += `<table><thead><tr><th>${esc(t('colA'))}</th><th>${esc(t('colB'))}</th><th>${esc(t('colC'))}</th><th>${esc(t('colStatus'))}</th></tr></thead><tbody>`;
+    h += filled.map(r => `<tr><td>${esc(r.trigger)}</td><td>${esc(r.signal)}</td><td>${esc(r.action)}</td><td><span class="status-badge status-${r.status}">${esc(t(STATUS_KEYS[r.status] || 'statusProposed'))}</span></td></tr>`).join('');
     h += '</tbody></table>';
   } else {
     h += `<p><em>${esc(t('noRows'))}</em></p>`;
@@ -460,17 +478,20 @@ function resetAll() {
   renderMatrix(); renderPreview(); save();
 }
 
-function slug() { return (val('client') || 'compliance_gap_analysis').replace(/\W+/g, '_'); }
+function slug() { return (val('client') || 'retraining_strategy').replace(/\W+/g, '_'); }
 function docMarkdown() {
   const date = new Date().toISOString().slice(0, 10);
-  const filled = rows.filter(r => r.requirement.trim());
+  const filled = rows.filter(r => r.trigger.trim());
   let m = `# ${t('docTitle')} — ${val('client') || '[client]'}\n\n`;
   m += `**${t('docFor')}:** ${val('client') || '—'}  \n**${t('docAssessor')}:** ${val('assessor') || '—'}  \n**${t('docDate')}:** ${date}\n\n`;
-  m += `## ${t('secRiskClass')}\n${val('riskClass') || t('emptyNote')}\n\n`;
-  m += `## ${t('secMatrix')}\n\n`;
+  m += `## ${t('secA')}\n${val('triggerNotes') || t('emptyNote')}\n\n`;
+  m += `## ${t('secB')}\n${val('pipelineNotes') || t('emptyNote')}\n\n`;
+  m += `## ${t('secC')}\n${val('releaseNotes') || t('emptyNote')}\n\n`;
+  m += `## ${t('secD')}\n${val('rollbackNotes') || t('emptyNote')}\n\n`;
+  m += `## ${t('secE')}\n\n`;
   if (filled.length) {
-    m += `| ${t('colRequirement')} | ${t('colFramework')} | ${t('colStatus')} | ${t('colNotes')} |\n|---|---|---|---|\n`;
-    m += filled.map(r => `| ${mdCell(r.requirement)} | ${mdCell(r.framework)} | ${t(STATUS_KEYS[r.status] || 'statusNotAssessed')} | ${r.notes || '—'} |`).join('\n') + '\n';
+    m += `| ${t('colA')} | ${t('colB')} | ${t('colC')} | ${t('colStatus')} |\n|---|---|---|---|\n`;
+    m += filled.map(r => `| ${mdCell(r.trigger)} | ${mdCell(r.signal)} | ${mdCell(r.action)} | ${t(STATUS_KEYS[r.status] || 'statusProposed')} |`).join('\n') + '\n';
   } else {
     m += `${t('noRows')}\n`;
   }
@@ -490,8 +511,8 @@ function download(text, fname, mime) {
   URL.revokeObjectURL(a.href);
 }
 function exportDoc(fmt) {
-  if (fmt === 'md') download(docMarkdown(), 'compliance_gap_analysis_' + slug() + '.md', 'text/markdown');
-  else download(docHtml(), 'compliance_gap_analysis_' + slug() + '.html', 'text/html');
+  if (fmt === 'md') download(docMarkdown(), 'retraining_strategy_' + slug() + '.md', 'text/markdown');
+  else download(docHtml(), 'retraining_strategy_' + slug() + '.html', 'text/html');
 }
 
 // ── Shared engagement profile (site-wide prefill of client/assessor/use case) ──
@@ -634,7 +655,7 @@ save = function () {
 };
 const _sopApplyI18n = applyI18n;
 applyI18n = function () { _sopApplyI18n(); renderSop(); };
-const SAMPLE_URL = '../../Phase%201%20-%20Discovery%20%26%20Assessment/sample-data/engagement-nordkap/compliance-assessment.json';
+const SAMPLE_URL = '../../Phase%201%20-%20Discovery%20%26%20Assessment/sample-data/engagement-nordkap/retraining-strategy.json';
 function loadSample() {
   if (!confirm(t('sampleConfirm'))) return;
   const errEl = document.getElementById('sampleError');
@@ -664,24 +685,7 @@ function loadSample() {
   loadSaved();
   prefillEngagement();
   applyI18n();
-  if (!rows.length) {
-    // Starter requirement set spanning the major frameworks. These are
-    // starting points reflecting current understanding, not legal advice --
-    // verify applicability and completeness with qualified counsel.
-    [
-      ['Determine system risk classification (prohibited / high-risk / limited / minimal)', 'EU AI Act'],
-      ['Technical documentation prepared and maintained (Annex IV)', 'EU AI Act'],
-      ['Automatic logging and record-keeping across the system lifecycle', 'EU AI Act'],
-      ['Human oversight measures designed and documented', 'EU AI Act'],
-      ['Transparency: users informed of AI interaction; AI-generated content marked', 'EU AI Act'],
-      ['Accuracy, robustness and cybersecurity testing evidence', 'EU AI Act'],
-      ['Govern: AI policies, roles and accountability established', 'NIST AI RMF'],
-      ['Map: context, intended use and risks identified', 'NIST AI RMF'],
-      ['Measure: risks analyzed and tracked with defined metrics', 'NIST AI RMF'],
-      ['Manage: risk responses prioritized, implemented and monitored', 'NIST AI RMF'],
-      ['AI management system scope, leadership and continual improvement', 'ISO/IEC 42001'],
-    ].forEach(([req, fw]) => rows.push({ id: nextId++, requirement: req, framework: fw, status: 'notassessed', notes: '' }));
-  }
+  if (!rows.length) { rows.push({ id: nextId++, trigger: '', signal: '', action: '', status: 'proposed' }); }
   renderMatrix();
   renderPreview();
 })();

@@ -1,0 +1,63 @@
+{
+  "fields": {
+    "client": "Nordkap Insurance",
+    "assessor": "Emma Gao",
+    "dashboardNotes": "Grafana dashboard fed from the scoring service and the claims warehouse. Two tiers: an operational tier (latency p99, error rate, throughput, reviewed weekly by the platform team) and an outcome tier (fraud caught per 1000 claims, false-positive rate on legitimate claims, analyst override rate, reviewed monthly with the claims-operations owner). SLO: p99 scoring latency under 400 ms, availability 99.5% during business hours.",
+    "driftNotes": "Data drift: Population Stability Index per feature, computed weekly against the training-snapshot baseline. Concept drift: rolling 90-day AUC on claims that have since reached a confirmed fraud/not-fraud disposition, which lags scoring by roughly 60 days as investigations close. The lag is the reason drift alerting cannot be the only safeguard, and why the analyst override rate is watched as a leading indicator.",
+    "decayNotes": "Two thresholds, both set from the pilot baseline rather than from a target. PSI above 0.2 on any of the six highest-weight features opens a review ticket. Rolling AUC dropping more than 0.03 below the registered model's holdout AUC triggers the retraining pipeline and notifies the model owner. Thresholds are reviewed quarterly; the first review is scheduled 90 days after go-live because the initial values are estimates.",
+    "safetyNotes": "The fraud model is not generative, so hallucination monitoring does not apply to scoring. It does apply to the analyst-facing explanation summaries generated alongside each score: those are checked against the underlying feature contributions, and a summary citing a factor absent from the model's inputs is flagged. Data-leakage guard: outputs are scanned for policyholder names, addresses, and national ID patterns before being written to the analyst queue."
+  },
+  "rows": [
+    {
+      "id": 1,
+      "signal": "Feature distribution shift",
+      "method": "Population Stability Index, weekly per feature",
+      "threshold": "PSI > 0.2 on a top-6 feature opens a review ticket",
+      "status": "alerting"
+    },
+    {
+      "id": 2,
+      "signal": "Predictive performance decay",
+      "method": "Rolling 90-day AUC on dispositioned claims",
+      "threshold": "AUC drop > 0.03 vs. registered holdout triggers retraining",
+      "status": "instrumented"
+    },
+    {
+      "id": 3,
+      "signal": "Analyst override rate",
+      "method": "Share of scores overturned by an investigator",
+      "threshold": "Above 25% for two consecutive weeks escalates to model owner",
+      "status": "alerting"
+    },
+    {
+      "id": 4,
+      "signal": "Scoring latency",
+      "method": "p99 from the scoring service",
+      "threshold": "p99 > 400 ms for 15 min pages the on-call engineer",
+      "status": "alerting"
+    },
+    {
+      "id": 5,
+      "signal": "Explanation grounding",
+      "method": "Summary factors cross-checked against feature contributions",
+      "threshold": "Any ungrounded factor flags the summary for review",
+      "status": "planned"
+    },
+    {
+      "id": 6,
+      "signal": "PII in outputs",
+      "method": "Pattern scan on analyst-queue payloads",
+      "threshold": "Any match blocks the write and raises an incident",
+      "status": "instrumented"
+    }
+  ],
+  "nextId": 7,
+  "sopDone": [
+    true,
+    true,
+    true,
+    false,
+    false
+  ],
+  "lang": "en"
+}
