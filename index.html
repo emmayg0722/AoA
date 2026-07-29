@@ -153,6 +153,27 @@
     transition: background 0.15s ease, border-color 0.15s ease;
   }
   .phase-nav a:hover { background: var(--accent); border-color: var(--accent); }
+  /* Find-a-tool filter: 32 cards is too many to scan, so offer a direct
+     text path alongside browsing by phase. */
+  .tool-find { margin-bottom: 14px; }
+  #toolFilter {
+    width: 100%;
+    max-width: 420px;
+    font-family: var(--font-body);
+    font-size: 15px;
+    color: var(--ink);
+    background: #fff;
+    border: 1.5px solid var(--line);
+    border-radius: 10px;
+    padding: 11px 14px;
+  }
+  #toolFilter::placeholder { color: var(--muted); }
+  .filter-status { font-size: 13px; color: var(--muted); margin-top: 8px; min-height: 1.2em; }
+  .phase-head[hidden], .phase-sub[hidden], .cards[hidden], .card[hidden] { display: none; }
+  .no-results {
+    background: #fff; border: 1px solid var(--line); border-radius: 14px;
+    padding: 26px; color: var(--muted); font-size: 15px;
+  }
   .phase-count {
     font-size: 12px;
     color: var(--muted);
@@ -274,6 +295,11 @@
   .dash-item .dot { width: 9px; height: 9px; border-radius: 50%; flex: none; box-sizing: border-box; }
   .dash-item .dot.started { background: var(--primary); }
   .dash-item .dot.empty { background: none; border: 1.5px solid var(--line); }
+  /* Collapsed first-run state: no chip grid, tighter box, so the tool
+     listings sit closer to the top of the page. */
+  .dash.is-empty { padding: 16px 20px; }
+  .dash.is-empty .dash-sub { margin-bottom: 0; }
+  .dash.is-empty .dash-grid { display: none; }
   .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
   .future {
     margin-top: 44px;
@@ -308,6 +334,37 @@
     .hero { padding: 56px 20px 48px; }
     .hero h1 { font-size: 34px; }
     .cards { grid-template-columns: 1fr; }
+    /* The seven phase pills stacked into seven rows on a phone, which read
+       as a wall rather than a navigation aid. One swipeable row instead. */
+    .phase-nav {
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scroll-snap-type: x proximity;
+      margin-inline: -20px;
+      padding-inline: 20px;
+      padding-bottom: 4px;
+      scrollbar-width: none;
+    }
+    .phase-nav::-webkit-scrollbar { display: none; }
+    .phase-nav a { flex: none; white-space: nowrap; scroll-snap-align: start; }
+    /* Touch targets: all of these measured 33-41px, under the 44px minimum.
+       16px on the inputs also stops iOS auto-zooming the page on focus. */
+    .phase-nav a, .dash-report-link {
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+    }
+    #toolFilter { min-height: 44px; font-size: 16px; }
+    select#langSelect { min-height: 44px; font-size: 16px; }
+    /* Card copy is written for desktop scanning; on a phone it made the page
+       ~18 screens tall. Trim to a readable summary, full text is on the tool. */
+    .card p {
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
   }
   /* The pointer spotlights are decorative. Under reduced motion they stop
      tracking entirely (the JS bails) and the lift/fade collapse to nothing,
@@ -344,6 +401,12 @@
   </header>
 
   <main id="toolkit">
+    <div class="tool-find">
+      <label class="sr-only" for="toolFilter" data-i18n="filterLabel"></label>
+      <input type="search" id="toolFilter" autocomplete="off" oninput="filterTools(this.value)">
+      <p class="filter-status" id="filterStatus" role="status" aria-live="polite"></p>
+    </div>
+
     <nav class="phase-nav" id="phaseNav" aria-label="Jump to phase"></nav>
 
     <div class="dash">
@@ -665,6 +728,10 @@ const STRINGS = {
     skipLink: 'Skip to the toolkit',
     jumpToLabel: 'Jump to:',
     toolsCountLabel: (n) => `${n} tool${n === 1 ? '' : 's'}`,
+    filterLabel: 'Find a tool',
+    filterPlaceholder: 'Find a tool by name or keyword…',
+    filterCount: (n, total) => n === total ? `${total} tools` : `${n} of ${total} tools match`,
+    filterNone: 'No tool matches that. Try a shorter word, or browse by phase above.',
     tagP1: 'Phase 1', tagP2: 'Phase 2', tagP3: 'Phase 3', tagP4: 'Phase 4', tagP5: 'Phase 5', tagP6: 'Phase 6',
     p1Title: 'Discovery & Assessment',
     p1Sub: "Understand the client's starting point: where they sit on the AI maturity curve, and whether their data is actually ready for the use cases they have in mind.",
@@ -798,6 +865,10 @@ const STRINGS = {
     skipLink: 'Gå direkte til værktøjerne',
     jumpToLabel: 'Gå til:',
     toolsCountLabel: (n) => `${n} værktøj${n === 1 ? '' : 'er'}`,
+    filterLabel: 'Find et værktøj',
+    filterPlaceholder: 'Find et værktøj efter navn eller nøgleord…',
+    filterCount: (n, total) => n === total ? `${total} værktøjer` : `${n} af ${total} værktøjer matcher`,
+    filterNone: 'Intet værktøj matcher det. Prøv et kortere ord, eller browse efter fase ovenfor.',
     tagP1: 'Fase 1', tagP2: 'Fase 2', tagP3: 'Fase 3', tagP4: 'Fase 4', tagP5: 'Fase 5', tagP6: 'Fase 6',
     p1Title: 'Discovery & Vurdering',
     p1Sub: 'Forstå kundens udgangspunkt: hvor de befinder sig på AI-modenhedskurven, og om deres data reelt er klar til de use cases, de har i tankerne.',
@@ -931,6 +1002,10 @@ const STRINGS = {
     skipLink: 'Hoppa till verktygen',
     jumpToLabel: 'Gå till:',
     toolsCountLabel: (n) => `${n} verktyg`,
+    filterLabel: 'Hitta ett verktyg',
+    filterPlaceholder: 'Hitta ett verktyg efter namn eller nyckelord…',
+    filterCount: (n, total) => n === total ? `${total} verktyg` : `${n} av ${total} verktyg matchar`,
+    filterNone: 'Inget verktyg matchar det. Prova ett kortare ord, eller bläddra efter fas ovan.',
     tagP1: 'Fas 1', tagP2: 'Fas 2', tagP3: 'Fas 3', tagP4: 'Fas 4', tagP5: 'Fas 5', tagP6: 'Fas 6',
     p1Title: 'Discovery & Bedömning',
     p1Sub: 'Förstå kundens utgångsläge: var de befinner sig på AI-mognadskurvan, och om deras data faktiskt är redo för de användningsfall de har i åtanke.',
@@ -1132,9 +1207,19 @@ function renderDashboard() {
   try { eng = JSON.parse(localStorage.getItem('aoa_engagement_v1') || '{}'); } catch (e) {}
   const started = TOOL_REGISTRY.filter(tl => toolStarted(tl.key)).length;
   const summary = document.getElementById('dashSummary');
-  if (!eng.client && started === 0) {
+  const dash = document.querySelector('.dash');
+  // Progressive disclosure: with no engagement yet, the 32 progress chips are
+  // 32 identical empty dots and the tool listings are what a first-time
+  // visitor actually needs. Collapse to a single line until there is
+  // something to track.
+  const isEmpty = !eng.client && started === 0;
+  if (dash) dash.classList.toggle('is-empty', isEmpty);
+  if (isEmpty) {
     summary.textContent = t('dashNoEngagement');
-  } else {
+    document.getElementById('dashGrid').innerHTML = '';
+    return;
+  }
+  {
     const parts = [];
     if (eng.client) parts.push(t('dashClientPrefix') + ' ' + eng.client + (eng.useCase ? ' — ' + eng.useCase : ''));
     parts.push(t('dashProgress')(started, TOOL_REGISTRY.length));
@@ -1182,11 +1267,60 @@ function renderPhaseCounts() {
   if (statPhases) statPhases.textContent = totalPhases;
 }
 
+// ── Find-a-tool filter ────────────────────────────────────────────────
+// Filters the card grid in place and hides any phase whose cards all drop
+// out, so the page never shows a heading above an empty grid.
+function filterTools(q) {
+  const query = String(q || '').trim().toLowerCase();
+  const heads = Array.from(document.querySelectorAll('main .phase-head'));
+  let shown = 0, total = 0;
+
+  heads.forEach(head => {
+    let sub = head.nextElementSibling;
+    while (sub && !sub.classList.contains('phase-sub')) sub = sub.nextElementSibling;
+    let grid = head.nextElementSibling;
+    while (grid && !grid.classList.contains('cards')) grid = grid.nextElementSibling;
+    if (!grid) return;
+
+    let visibleHere = 0;
+    grid.querySelectorAll('a.card').forEach(card => {
+      total++;
+      const hay = card.textContent.toLowerCase();
+      const match = !query || hay.indexOf(query) !== -1;
+      card.hidden = !match;
+      if (match) { visibleHere++; shown++; }
+    });
+    head.hidden = visibleHere === 0;
+    if (sub) sub.hidden = visibleHere === 0;
+    grid.hidden = visibleHere === 0;
+  });
+
+  const status = document.getElementById('filterStatus');
+  if (status) status.textContent = query ? (shown === 0 ? t('filterNone') : t('filterCount')(shown, total)) : '';
+  // A search that matches nothing should not leave the page looking broken.
+  let none = document.getElementById('noResults');
+  if (query && shown === 0) {
+    if (!none) {
+      none = document.createElement('p');
+      none.id = 'noResults';
+      none.className = 'no-results';
+      document.querySelector('main .phase-head').parentNode.insertBefore(none, document.querySelector('main .phase-head'));
+    }
+    none.textContent = t('filterNone');
+    none.hidden = false;
+  } else if (none) {
+    none.hidden = true;
+  }
+}
+
 function applyI18n() {
   document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.getAttribute('data-i18n')); });
   document.documentElement.lang = lang;
+  const f = document.getElementById('toolFilter');
+  if (f) f.placeholder = t('filterPlaceholder');
   renderPhaseNav();
   renderPhaseCounts();
+  if (f && f.value) filterTools(f.value);
 }
 
 // ── Pointer-reactive spotlights (hero backdrop + tool cards) ──────────
