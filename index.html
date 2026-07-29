@@ -210,7 +210,12 @@
     border-radius: 20px;
   }
   .phase-sub { color: var(--muted); margin-bottom: 24px; max-width: 72ch; text-wrap: pretty; }
-  .cards { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  /* minmax(0, 1fr) instead of 1fr: a 1fr track floors at min-content, which
+     for Danish and Swedish compounds ("Implementeringsstyrningsplan",
+     "Kvalitetssäkringstestplan") is wider than a phone, so the grid pushed
+     the whole page sideways. Paired with the wrapping rules below. */
+  .cards { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; }
+  .card h3, .card p, .phase-head h2, .hero h1 { overflow-wrap: break-word; hyphens: auto; }
   .card {
     display: flex;
     flex-direction: column;
@@ -351,20 +356,22 @@
     font-size: 13px;
   }
   @media (max-width: 480px) {
-    .hero-stats { gap: 14px; }
+    /* Measured with Inter actually loaded, the full three-item strip needs
+       ~546-564px depending on language. Even with compact labels the Danish
+       and Swedish wordings need 385px and 428px, so they still wrapped on
+       most phones. The two counts are the part worth keeping at this size;
+       the browser-only claim is already in the footer and on every tool
+       page, so it drops out here rather than forcing a second row or type
+       below the readable minimum. */
+    .hero-stats { gap: 16px; }
     .hero-stats .lbl-long { display: none; }
     .hero-stats .lbl-short { display: inline; }
-  }
-  @media (max-width: 400px) {
-    /* Tighten just enough to keep all three stats on one row down to 320px. */
-    .hero { padding-left: 16px; padding-right: 16px; }
-    .hero-stats { gap: 10px; }
-    .hero-stats span { font-size: 13px; }
+    .hero-stats .stat-privacy { display: none; }
   }
   @media (max-width: 720px) {
     .hero { padding: 56px 20px 48px; }
     .hero h1 { font-size: 34px; }
-    .cards { grid-template-columns: 1fr; }
+    .cards { grid-template-columns: minmax(0, 1fr); }
     /* The seven phase pills stacked into seven rows on a phone, which read
        as a wall rather than a navigation aid. One swipeable row instead. */
     .phase-nav {
@@ -426,7 +433,7 @@
       <div class="hero-stats">
         <span><strong id="statToolsNum"></strong><span data-i18n="statTools"></span></span>
         <span><strong id="statPhasesNum"></strong><span class="lbl-long" data-i18n="statPhases"></span><span class="lbl-short" data-i18n="statPhasesShort"></span></span>
-        <span><span class="lbl-long" data-i18n="statPrivacy"></span><span class="lbl-short" data-i18n="statPrivacyShort"></span></span>
+        <span class="stat-privacy" data-i18n="statPrivacy"></span>
       </div>
     </div>
   </header>
@@ -767,7 +774,6 @@ const STRINGS = {
     filterCount: (n, total) => n === total ? `${total} tools` : `${n} of ${total} tools match`,
     filterNone: 'No tool matches that. Try a shorter word, or browse by phase above.',
     statPhasesShort: ' phases',
-    statPrivacyShort: 'Browser-only. No uploads.',
     dashReset: '\u21ba Reset engagement',
     dashResetConfirm: 'Clear every tool\u2019s saved work in this browser, plus the shared client / assessor / use case? This cannot be undone. Export the engagement from the master report first if you want a copy.',
     dashResetDone: 'Engagement cleared. Every tool in this browser is now empty.',
@@ -909,7 +915,6 @@ const STRINGS = {
     filterCount: (n, total) => n === total ? `${total} værktøjer` : `${n} af ${total} værktøjer matcher`,
     filterNone: 'Intet værktøj matcher det. Prøv et kortere ord, eller browse efter fase ovenfor.',
     statPhasesShort: ' faser',
-    statPrivacyShort: 'Kun browser. Intet uploades.',
     dashReset: '\u21ba Nulstil engagement',
     dashResetConfirm: 'Ryd hvert v\u00e6rkt\u00f8js gemte arbejde i denne browser samt den delte kunde / vurderingsmand / use case? Dette kan ikke fortrydes. Eksport\u00e9r engagementet fra den samlede rapport f\u00f8rst, hvis du vil have en kopi.',
     dashResetDone: 'Engagement ryddet. Alle v\u00e6rkt\u00f8jer i denne browser er nu tomme.',
@@ -1051,7 +1056,6 @@ const STRINGS = {
     filterCount: (n, total) => n === total ? `${total} verktyg` : `${n} av ${total} verktyg matchar`,
     filterNone: 'Inget verktyg matchar det. Prova ett kortare ord, eller bläddra efter fas ovan.',
     statPhasesShort: ' faser',
-    statPrivacyShort: 'Endast webbl\u00e4sare. Inget laddas upp.',
     dashReset: '\u21ba \u00c5terst\u00e4ll uppdrag',
     dashResetConfirm: 'Rensa varje verktygs sparade arbete i denna webbl\u00e4sare, plus den delade kunden / bed\u00f6maren / anv\u00e4ndningsfallet? Detta kan inte \u00e5ngras. Exportera uppdraget fr\u00e5n den samlade rapporten f\u00f6rst om du vill ha en kopia.',
     dashResetDone: 'Uppdrag rensat. Alla verktyg i denna webbl\u00e4sare \u00e4r nu tomma.',

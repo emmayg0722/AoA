@@ -64,6 +64,11 @@
   /* The generated document preview can contain a wide table once rows
      exist; scroll it here rather than letting the page body scroll. */
   .preview, .report { overflow-x: auto; }
+  /* Danish and Swedish compounds ("Implementeringsstyrningsplan",
+     "Kvalitetssaekringstestplan") are single words wider than a phone; without
+     these they force the page to scroll sideways. minmax(0,1fr) also lets grid
+     tracks shrink below their min-content floor. */
+  h1, h2, h3, h4, p, label, dt, dd, th, td, span, .hint, .crumb { overflow-wrap: break-word; hyphens: auto; }
   @media (max-width: 720px) { .report dl { grid-template-columns: 1fr; } .hero h1 { font-size: 27px; } }
 </style>
 </head>

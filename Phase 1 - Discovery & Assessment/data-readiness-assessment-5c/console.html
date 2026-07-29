@@ -35,7 +35,12 @@
   .note { background: var(--powder); border: 1px solid var(--accent); border-radius: 12px; padding: 14px 16px; font-size: 14px; color: var(--muted); margin-bottom: 26px; }
   .note strong { color: var(--primary); }
   .card { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 22px 24px; margin-bottom: 20px; }
-  .card > h2 { font-family: var(--font-heading); font-weight: 600; font-size: 21px; color: var(--primary); display: flex; align-items: baseline; gap: 10px; margin-bottom: 4px; }
+  .card > h2 { font-family: var(--font-heading); font-weight: 600; font-size: 21px; color: var(--primary); display: flex; align-items: baseline; flex-wrap: wrap; gap: 10px; margin-bottom: 4px; }
+  /* Flex children floor at min-content; long Danish/Swedish compounds in a
+     step title ('Dokument- & metadata-gennemgangschecklisten') could not
+     shrink and pushed the page wide on the narrowest screens. */
+  .card > h2 > span { min-width: 0; }
+  .step-no { flex: none; }
   .step-no { font-size: 12px; font-weight: 700; letter-spacing: 0.06em; color: var(--primary); background: var(--accent); padding: 3px 9px; border-radius: 20px; }
   .card .hint { font-size: 13.5px; color: var(--muted); margin-bottom: 16px; }
   label { display: block; font-size: 13px; font-weight: 600; color: var(--ink); margin: 12px 0 5px; }
@@ -46,7 +51,7 @@
   textarea { resize: vertical; min-height: 90px; }
   input:focus, textarea:focus, select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(27,20,116,0.12); }
   input:focus:not(:focus-visible), textarea:focus:not(:focus-visible), select:focus:not(:focus-visible) { outline: none; }
-  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; }
+  .grid2 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 0 16px; }
   .btn { font-family: var(--font-body); font-size: 13.5px; font-weight: 600; padding: 9px 16px; border-radius: 8px; border: none; cursor: pointer; transition: all 0.15s; }
   .btn-primary { background: var(--accent); color: var(--primary); }
   .btn-primary:hover { background: #C3C5EC; }
@@ -77,6 +82,11 @@
   /* The generated document preview can contain a wide table once rows
      exist; scroll it here rather than letting the page body scroll. */
   .preview, .report { overflow-x: auto; }
+  /* Danish and Swedish compounds ("Implementeringsstyrningsplan",
+     "Kvalitetssaekringstestplan") are single words wider than a phone; without
+     these they force the page to scroll sideways. minmax(0,1fr) also lets grid
+     tracks shrink below their min-content floor. */
+  h1, h2, h3, h4, p, label, dt, dd, th, td, span, .hint, .crumb { overflow-wrap: break-word; hyphens: auto; }
   @media (max-width: 720px) { .grid2, .sc-grid { grid-template-columns: 1fr; } .hero h1 { font-size: 27px; } }
 </style>
 </head>
