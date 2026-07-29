@@ -6,6 +6,9 @@ phase. Live site: https://emmayg0722.github.io/AoA/
 Each consulting phase has its own folder; within a phase, each deliverable/tool has
 its own subfolder. New phases and assets follow the same structure.
 
+All **ten phases** of the delivery lifecycle are built — 43 browser-local tools
+from first discovery interview through to the quarterly value review after go-live.
+
 ## Structure
 
 ```
@@ -68,6 +71,20 @@ its own subfolder. New phases and assets follow the same structure.
     ├── retraining-strategy/           # SOP + intake (triggers, canary, rollback) + trigger tracker (EN/DA/SV)
     ├── operations-runbook/            # SOP + intake (rotation, escalation, incidents) + playbook tracker (EN/DA/SV)
     └── cost-optimization/             # SOP + intake (attribution, utilization, caching) + lever tracker (EN/DA/SV)
+└── Phase 8 - Change Management & Enablement/
+    ├── change-management-plan/        # SOP + intake (impact, comms, resistance, adoption) + stakeholder tracker (EN/DA/SV)
+    ├── training-curriculum/           # SOP + intake (literacy, technical, tool, leadership tracks) + module tracker (EN/DA/SV)
+    ├── ai-coe-design/                 # SOP + intake (mandate, roles, processes, KPIs) + responsibilities tracker (EN/DA/SV)
+    └── knowledge-transfer/            # SOP + intake (approach, docs, best practice, community) + handover tracker (EN/DA/SV)
+└── Phase 9 - Vendor Evaluation & Technology Selection/
+    ├── rfp-builder/                   # SOP + intake (scope, scoring model, process, deal-breakers) + weighted criteria (EN/DA/SV)
+    ├── vendor-evaluation-matrix/      # SOP + intake (shortlist, capability, support, stability) + per-vendor scoring (EN/DA/SV)
+    ├── build-vs-buy/                  # SOP + intake (options, cost, technical debt, lock-in) + decision-factor tracker (EN/DA/SV)
+    └── platform-shortlist/            # SOP + intake (ML platform, model, data, observability) + per-category selections (EN/DA/SV)
+└── Phase 10 - ROI Analysis & Cost Optimization/
+    ├── roi-analysis/                  # SOP + intake (quantification, model, attribution, sensitivity) + value drivers (EN/DA/SV)
+    ├── tco-analysis/                  # SOP + intake (scope, run costs, people costs, levers) + cost-line tracker (EN/DA/SV)
+    └── value-tracking/                # SOP + intake (KPIs, dashboard, review cadence, actions) + KPI tracker (EN/DA/SV)
 ```
 
 ## Phase 1 — Discovery & Assessment
@@ -239,9 +256,79 @@ All five tools follow the same established pattern (checkable SOP card, autosave
 client intake, tracker matrix, live document preview, HTML/Markdown export, agent
 drafting, sample engagement, English/Danish/Swedish language selector).
 
-Phases 8-10 (Change Management & Enablement, Vendor Evaluation & Technology
-Selection, ROI Analysis & Cost Optimization) follow the same folder pattern and
-will be added over time.
+## Phase 8 — Change Management & Enablement
+
+Phase 7 keeps the system running; this phase makes the *organization* able to run
+it. Most AI resistance is rational rather than ignorant — someone's judgement is
+being partly automated, or their workload is about to be measured differently — so
+these tools start from who loses something and work outward.
+
+- **Change Management Plan** — SOP + intake covering change impact assessed per
+  group rather than per department, the communication strategy and cadence,
+  anticipated resistance and how it will be addressed, and the adoption tracking
+  loop, plus a stakeholder-group tracker (group, impact, action).
+- **Training Curriculum** — SOP + intake covering four tracks (AI literacy for
+  non-technical staff, a technical track for engineering and data teams, tool
+  training for the people who use the system daily, and a leadership track on
+  decision-making with AI), plus a curriculum-module tracker.
+- **AI Centre of Excellence Design** — SOP + intake covering the CoE mandate and
+  organizational model (central, federated, hub-and-spoke), roles, headcount and
+  funding, operating processes and decision authority, and the KPI framework, plus
+  a roles-and-responsibilities tracker.
+- **Knowledge Transfer Plan** — SOP + intake covering the transfer approach and its
+  definition of done, the documentation set and where it lives, the best-practice
+  library and standards, and the internal community that keeps knowledge alive
+  after handover, plus a handover-area tracker.
+
+## Phase 9 — Vendor Evaluation & Technology Selection
+
+Phase 3 decided the architecture; this phase decides who and what supplies it —
+deliberately, rather than by whoever gave the best demo. Vendor demos run on the
+vendor's data, and for AI products that gap can stretch a long way, so every tool
+here pushes the evaluation onto the client's own data.
+
+- **RFP / RFI Builder** — SOP + intake covering the requirement and scope
+  statement, the evaluation approach and scoring model, process, timeline and
+  vendor communication rules, and constraints, must-haves and deal-breakers, plus
+  a weighted evaluation-criteria tracker, auto-generating an RFP/RFI document.
+- **Vendor Evaluation Matrix** — SOP + intake covering the shortlist and how it was
+  arrived at, technical capability findings tested on the client's own data,
+  implementation and ongoing support, and company stability, roadmap and lock-in
+  risk, plus a per-vendor scoring matrix.
+- **Build vs. Buy Analysis** — SOP + intake covering the options being compared and
+  the horizon, cost comparison over that horizon, technical debt and maintenance
+  burden, and strategic flexibility versus lock-in, plus a decision-factor tracker
+  weighing each option.
+- **Platform & Model Shortlist** — SOP + intake covering ML platform and MLOps
+  tooling, model selection (LLM, embeddings) and the evaluation basis, data
+  platform and vector store, and observability and evaluation tooling, plus a
+  per-category selection tracker.
+
+## Phase 10 — ROI Analysis & Cost Optimization
+
+Phase 2 built the business case on estimates; this phase is where they meet
+reality. The hard part is attribution — a model deployed alongside a new process
+and a fresh analyst cohort cannot claim the whole improvement — so these tools ask
+for confounders and the downside case in the same breath as the headline number.
+
+- **ROI Analysis** — SOP + intake covering the value quantification approach, the
+  ROI model, horizon and payback, the attribution method and confounders, and
+  sensitivity and downside case, plus a value-driver tracker that records each
+  driver's confidence rather than presenting all of them as equally solid.
+- **Total Cost of Ownership** — SOP + intake covering TCO scope, horizon and
+  allocation basis, run costs (platform, inference, licences), people costs to
+  operate, maintain and review, and the optimization levers already applied or
+  still available, plus a cost-line tracker.
+- **Value Tracking & Quarterly Review** — SOP + intake covering the KPI set with
+  baselines and named owners, dashboard design and where it lives, review cadence,
+  attendees and decision rights (including the right to recommend stopping), and
+  actions from the latest review, plus a KPI tracker showing baseline against
+  current.
+
+All eleven Phase 8–10 tools follow the same established pattern (checkable SOP
+card, autosaved client intake, tracker matrix, live document preview, HTML/Markdown
+export, agent drafting, sample engagement, English/Danish/Swedish language
+selector). With these, all ten phases of the delivery lifecycle are built.
 
 ## SOP checklists & the Nordkap sample engagement
 
@@ -268,7 +355,7 @@ hub dashboard and master report — can be demoed end-to-end in a few clicks.
   quick-win 2×2 matrix (feasibility × value, quick wins highlighted); the
   Risk Register draws a likelihood × impact heatmap colored by severity.
 
-## Agent drafting (all 29 deliverable tools)
+## Agent drafting (all 40 deliverable tools)
 
 Every deliverable tool has an **"Agent drafting"** card: one click generates a
 prompt that carries the tool's SOP methodology and your full intake (including
@@ -285,7 +372,7 @@ Client, assessor, and use case are entered **once** and carry across the whole
 toolkit: every tool prefills those fields from a shared browser-local profile
 (`localStorage` key `aoa_engagement_v1`) and writes changes back to it. The hub
 shows an **engagement dashboard** — the current engagement plus a started/empty
-chip for each of the 32 stateful tools. A root-level **`engagement-report.html`**
+chip for each of the 43 stateful tools. A root-level **`engagement-report.html`**
 assembles every tool's saved work into one combined report (HTML/Markdown
 export) and can save or restore the *entire* engagement — all tools at once —
 as a single JSON file. Like everything else here, all of it is browser-local:
@@ -293,7 +380,7 @@ nothing is uploaded anywhere.
 
 ## Site-wide language selector
 
-Every tool in the toolkit — the 29 new Phase 1–7 tools above plus the 5 tools
+Every tool in the toolkit — the 40 Phase 1–10 tools above plus the 5 tools
 that predate them (this hub, AI Maturity Assessment, DRA-5C console and
 profiler, and the Design Layers Architecture Builder) — has an
 English/Danish/Swedish language selector in the top-right of its header. The

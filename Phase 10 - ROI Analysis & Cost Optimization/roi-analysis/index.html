@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Inference Cost Optimization Report — Phase 7</title>
-<meta name="description" content="SOP, client intake, an optimization-lever tracker, and an auto-generated inference cost optimization report.">
+<title>ROI Analysis — Phase 10</title>
+<meta name="description" content="SOP, client intake, a value-driver tracker, and an auto-generated ROI analysis report.">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='16' fill='%231B1474'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -64,10 +64,10 @@
   table.matrix select { padding: 6px 6px; font-size: 13px; }
   .rm-btn { background: none; border: none; color: var(--red); cursor: pointer; font-size: 15px; }
   .status-badge { display: inline-block; font-size: 10.5px; font-weight: 700; padding: 2px 8px; border-radius: 10px; white-space: nowrap; }
-  .status-identified { background: var(--powder); color: var(--muted); }
-  .status-agreed { background: #fdf3e3; color: var(--amber); }
-  .status-implemented { background: #e7f5ee; color: var(--green); }
-  .status-rejected { background: #fbeaea; color: var(--red); }
+  .status-measured { background: var(--powder); color: var(--muted); }
+  .status-estimated { background: #fdf3e3; color: var(--amber); }
+  .status-assumed { background: #e7f5ee; color: var(--green); }
+  .status-excluded { background: #fbeaea; color: var(--red); }
   .preview { border: 1px dashed var(--line); border-radius: 10px; padding: 18px 20px; background: #fcfcff; font-size: 14px; }
   .preview h3 { font-family: var(--font-heading); color: var(--primary); font-size: 16px; margin: 14px 0 6px; }
   .preview h3:first-child { margin-top: 0; }
@@ -107,7 +107,7 @@
 <body>
   <header class="hero"><div class="wrap">
     <div class="hero-top">
-      <div class="crumb"><a href="../../">AI Architect Toolkit</a> · Phase 7 · MLOps &amp; Operations · <span class="next-nav">Next: <a href="../../Phase%208%20-%20Change%20Management%20%26%20Enablement/change-management-plan/">Change Management Plan →</a></span></div>
+      <div class="crumb"><a href="../../">AI Architect Toolkit</a> · Phase 10 · ROI Analysis &amp; Cost Optimization · <span class="next-nav">Next: <a href="../tco-analysis/">Total Cost of Ownership →</a></span></div>
       <select id="langSelect" onchange="setLang(this.value)">
         <option value="en">English</option>
         <option value="da">Dansk</option>
@@ -134,14 +134,14 @@
         <div><label data-i18n="lblClient"></label><input type="text" data-eng="client" placeholder="Acme Corp"></div>
         <div><label data-i18n="lblAssessor"></label><input type="text" data-eng="assessor"></div>
       </div>
-      <label data-i18n="lblMonitoringNotes"></label>
-      <textarea data-eng="monitoringNotes"></textarea>
-      <label data-i18n="lblUtilizationNotes"></label>
-      <textarea data-eng="utilizationNotes"></textarea>
-      <label data-i18n="lblCompressionNotes"></label>
-      <textarea data-eng="compressionNotes"></textarea>
-      <label data-i18n="lblCachingNotes"></label>
-      <textarea data-eng="cachingNotes"></textarea>
+      <label data-i18n="lblValueNotes"></label>
+      <textarea data-eng="valueNotes"></textarea>
+      <label data-i18n="lblModelNotes"></label>
+      <textarea data-eng="modelNotes"></textarea>
+      <label data-i18n="lblAttributionNotes"></label>
+      <textarea data-eng="attributionNotes"></textarea>
+      <label data-i18n="lblSensitivityNotes"></label>
+      <textarea data-eng="sensitivityNotes"></textarea>
     </div>
 
     <div class="card">
@@ -182,164 +182,164 @@
   </main>
 
 <script>
-const KEY = 'aoa_cost_optimization_v1';
-const STATUS_KEYS = { identified: 'statusIdentified', agreed: 'statusAgreed', implemented: 'statusImplemented', rejected: 'statusRejected' };
+const KEY = 'aoa_roi_analysis_v1';
+const STATUS_KEYS = { measured: 'statusMeasured', estimated: 'statusEstimated', assumed: 'statusAssumed', excluded: 'statusExcluded' };
 
 const STRINGS = {
   en: {
-    heroTitle: "Inference Cost Optimization Report",
-    heroDesc: "SOP, client intake, an optimization-lever tracker, and an auto-generated inference cost optimization report.",
+    heroTitle: "ROI Analysis",
+    heroDesc: "SOP, client intake, a value-driver tracker, and an auto-generated ROI analysis report.",
     noteLabel: "How this works.",
-    noteBody: "Fill in the intake fields and lever tracker below; the report builds live. No API calls — everything autosaves locally.",
+    noteBody: "Fill in the intake fields and value-driver tracker below; the analysis builds live. No API calls — everything autosaves locally.",
     sopTitle: "SOP — how this is usually done",
     sopHint: "The order an architect actually works this exercise in.",
     sop: [
-      "Get cost attribution working before optimizing anything — a total inference bill nobody can break down per model, per feature, or per tenant cannot be reduced deliberately.",
-      "Measure utilization before buying efficiency: idle accelerators and oversized instances usually cost more than an unoptimized model does, and cost nothing but scheduling work to fix.",
-      "Treat compression and distillation as an accuracy trade to be measured, not a free win — quantify the quality loss on the same evaluation set used to accept the model.",
-      "Look at caching and request shaping early, since repeated or near-duplicate requests are common in production and cache hits are the cheapest saving available.",
-      "Rank levers by saving against effort and risk, and record the ones you rejected with the reason — the rejected list is what stops the same suggestion returning every quarter.",
+      "Label every number as measured, estimated or assumed, and keep the labels in the final report. An ROI case where the reader cannot tell which is which gets discounted entirely once one figure is questioned.",
+      "Attribute carefully. If anything else changed in the same period, a before-and-after comparison is not attribution, and claiming it is will not survive the first serious finance review.",
+      "Count the costs the business will actually feel, including the analyst time spent reviewing model output and the change effort, not just cloud and licences.",
+      "Show the case at a pessimistic setting as well as the expected one. A single-point ROI invites the reader to test the assumption they distrust most; showing the downside first makes the case harder to dismiss.",
+      "Agree who owns the number after the engagement. An ROI report nobody is accountable for stops being checked the month after it is presented.",
     ],
-    intakeTitle: "Client & cost intake",
+    intakeTitle: "Client & value intake",
     lblClient: "Client / engagement",
     lblAssessor: "Assessor",
-    lblMonitoringNotes: "Inference cost monitoring & attribution",
-    lblUtilizationNotes: "GPU / compute utilization findings",
-    lblCompressionNotes: "Model compression & distillation assessment",
-    lblCachingNotes: "Caching & request-shaping strategy",
-    tableTitle: "Optimization levers",
-    tableHint: "Add one row per lever, its expected saving, and the effort to implement it.",
-    colA: "Lever",
-    colB: "Expected saving",
-    colC: "Effort / risk",
-    colStatus: "Status",
-    btnAddRow: "+ Add lever",
-    statusIdentified: "Identified",
-    statusAgreed: "Agreed",
-    statusImplemented: "Implemented",
-    statusRejected: "Rejected",
-    previewTitle: "Inference cost optimization report",
+    lblValueNotes: "Value quantification approach",
+    lblModelNotes: "ROI model, horizon & payback",
+    lblAttributionNotes: "Attribution method & confounders",
+    lblSensitivityNotes: "Sensitivity & downside case",
+    tableTitle: "Value drivers",
+    tableHint: "Add one row per driver, the basis for the figure, and the annual value.",
+    colA: "Value driver",
+    colB: "Basis",
+    colC: "Annual value",
+    colStatus: "Confidence",
+    btnAddRow: "+ Add driver",
+    statusMeasured: "Measured",
+    statusEstimated: "Estimated",
+    statusAssumed: "Assumed",
+    statusExcluded: "Excluded",
+    previewTitle: "ROI analysis report",
     previewHint: "This is the actual deliverable — auto-generated and customized for this client.",
     btnExportHtml: "🌐 Export HTML",
     btnExportMd: "📄 Export Markdown",
     btnReset: "🔄 Reset",
-    docTitle: "Inference Cost Optimization Report",
+    docTitle: "ROI Analysis Report",
     docFor: "Prepared for",
     docAssessor: "Assessor",
     docDate: "Date",
-    secA: "1. Inference Cost Monitoring & Attribution",
-    secB: "2. Compute Utilization",
-    secC: "3. Model Compression & Distillation",
-    secD: "4. Caching & Request Shaping",
-    secE: "5. Optimization Levers",
-    noRows: "No optimization levers added yet.",
-    phA: "e.g. Right-size inference nodes",
-    phB: "e.g. ~30% of monthly compute",
-    phC: "e.g. Low effort, no accuracy impact",
+    secA: "1. Value Quantification Approach",
+    secB: "2. ROI Model & Payback",
+    secC: "3. Attribution & Confounders",
+    secD: "4. Sensitivity & Downside",
+    secE: "5. Value Drivers",
+    noRows: "No value drivers added yet.",
+    phA: "e.g. Fraud recovered",
+    phB: "e.g. Pilot A/B, 6 months, measured",
+    phC: "e.g. 1.9M DKK",
     emptyNote: "(not yet documented)",
   },
   da: {
-    heroTitle: "Rapport om optimering af inferensomkostninger",
-    heroDesc: "SOP, kundeoptag, en optimeringsgreb-tracker, og en automatisk genereret rapport om optimering af inferensomkostninger.",
+    heroTitle: "ROI-analyse",
+    heroDesc: "SOP, kundeoptag, en værdidriver-tracker, og en automatisk genereret ROI-analyserapport.",
     noteLabel: "Sådan virker det.",
-    noteBody: "Udfyld optagsfelterne og greb-trackeren nedenfor; rapporten opbygges live. Ingen API-kald — alt gemmes automatisk lokalt.",
+    noteBody: "Udfyld optagsfelterne og værdidriver-trackeren nedenfor; analysen opbygges live. Ingen API-kald — alt gemmes automatisk lokalt.",
     sopTitle: "SOP — sådan gøres det normalt",
     sopHint: "Rækkefølgen en arkitekt reelt arbejder denne øvelse igennem.",
     sop: [
-      "Få omkostningsattribuering til at virke før noget optimeres — en samlet inferensregning, ingen kan bryde ned pr. model, pr. feature eller pr. lejer, kan ikke reduceres bevidst.",
-      "Mål udnyttelse før du køber effektivitet: tomgangs-acceleratorer og overdimensionerede instanser koster oftest mere end en uoptimeret model, og koster kun planlægningsarbejde at rette.",
-      "Behandl kompression og destillation som en nøjagtighedshandel, der skal måles, ikke en gratis gevinst — kvantificér kvalitetstabet på det samme evalueringssæt, der blev brugt til at godkende modellen.",
-      "Se på caching og request-formning tidligt, da gentagne eller nær-identiske forespørgsler er almindelige i produktion, og cache-hits er den billigste besparelse, der findes.",
-      "Rangér greb efter besparelse mod indsats og risiko, og notér dem du afviste med begrundelsen — afvisningslisten er det, der stopper samme forslag fra at vende tilbage hvert kvartal.",
+      "Mærk hvert tal som målt, estimeret eller antaget, og bevar mærkerne i den endelige rapport. En ROI-case hvor læseren ikke kan se hvad der er hvad, bliver diskonteret helt, så snart ét tal udfordres.",
+      "Attribuér omhyggeligt. Hvis noget andet ændrede sig i samme periode, er en før-og-efter-sammenligning ikke attribution, og at hævde det vil ikke overleve den første seriøse finansgennemgang.",
+      "Medregn de omkostninger forretningen reelt mærker, inklusive den analytikertid der bruges på at gennemgå modeloutput og forandringsindsatsen, ikke kun cloud og licenser.",
+      "Vis casen ved en pessimistisk indstilling såvel som den forventede. En enkeltpunkts-ROI inviterer læseren til at teste den antagelse de mistror mest; at vise nedsiden først gør casen sværere at afvise.",
+      "Aftal hvem der ejer tallet efter engagementet. En ROI-rapport ingen er ansvarlig for, holder op med at blive tjekket måneden efter den er præsenteret.",
     ],
-    intakeTitle: "Kunde- og omkostningsoptag",
+    intakeTitle: "Kunde- og værdioptag",
     lblClient: "Kunde / engagement",
     lblAssessor: "Vurderingsmand",
-    lblMonitoringNotes: "Overvågning og attribuering af inferensomkostninger",
-    lblUtilizationNotes: "Fund om GPU-/compute-udnyttelse",
-    lblCompressionNotes: "Vurdering af modelkompression og destillation",
-    lblCachingNotes: "Caching- og request-formningsstrategi",
-    tableTitle: "Optimeringsgreb",
-    tableHint: "Tilføj en række pr. greb, dets forventede besparelse, og indsatsen for at implementere det.",
-    colA: "Greb",
-    colB: "Forventet besparelse",
-    colC: "Indsats / risiko",
-    colStatus: "Status",
-    btnAddRow: "+ Tilføj greb",
-    statusIdentified: "Identificeret",
-    statusAgreed: "Aftalt",
-    statusImplemented: "Implementeret",
-    statusRejected: "Afvist",
-    previewTitle: "Rapport om optimering af inferensomkostninger",
+    lblValueNotes: "Tilgang til værdikvantificering",
+    lblModelNotes: "ROI-model, horisont og tilbagebetaling",
+    lblAttributionNotes: "Attributionsmetode og konfundere",
+    lblSensitivityNotes: "Sensitivitet og nedside-case",
+    tableTitle: "Værdidrivere",
+    tableHint: "Tilføj en række pr. driver, grundlaget for tallet, og den årlige værdi.",
+    colA: "Værdidriver",
+    colB: "Grundlag",
+    colC: "Årlig værdi",
+    colStatus: "Sikkerhed",
+    btnAddRow: "+ Tilføj driver",
+    statusMeasured: "Målt",
+    statusEstimated: "Estimeret",
+    statusAssumed: "Antaget",
+    statusExcluded: "Udeladt",
+    previewTitle: "ROI-analyserapport",
     previewHint: "Dette er selve leverancen — automatisk genereret og tilpasset denne kunde.",
     btnExportHtml: "🌐 Eksportér HTML",
     btnExportMd: "📄 Eksportér Markdown",
     btnReset: "🔄 Nulstil",
-    docTitle: "Rapport om optimering af inferensomkostninger",
+    docTitle: "ROI-analyserapport",
     docFor: "Udarbejdet for",
     docAssessor: "Vurderingsmand",
     docDate: "Dato",
-    secA: "1. Overvågning og attribuering af inferensomkostninger",
-    secB: "2. Compute-udnyttelse",
-    secC: "3. Modelkompression og destillation",
-    secD: "4. Caching og request-formning",
-    secE: "5. Optimeringsgreb",
-    noRows: "Ingen optimeringsgreb tilføjet endnu.",
-    phA: "fx Ret-dimensioner inferensnoder",
-    phB: "fx ~30% af månedlig compute",
-    phC: "fx Lav indsats, ingen nøjagtighedspåvirkning",
+    secA: "1. Tilgang til værdikvantificering",
+    secB: "2. ROI-model og tilbagebetaling",
+    secC: "3. Attribution og konfundere",
+    secD: "4. Sensitivitet og nedside",
+    secE: "5. Værdidrivere",
+    noRows: "Ingen værdidrivere tilføjet endnu.",
+    phA: "fx Inddrevet svindel",
+    phB: "fx Pilot A/B, 6 måneder, målt",
+    phC: "fx 1,9 mio. DKK",
     emptyNote: "(endnu ikke dokumenteret)",
   },
   sv: {
-    heroTitle: "Rapport om optimering av inferenskostnader",
-    heroDesc: "SOP, kundintag, en optimeringsspak-spårare, och en automatiskt genererad rapport om optimering av inferenskostnader.",
+    heroTitle: "ROI-analys",
+    heroDesc: "SOP, kundintag, en värdedrivare-spårare, och en automatiskt genererad ROI-analysrapport.",
     noteLabel: "Så här fungerar det.",
-    noteBody: "Fyll i intagsfälten och spakspåraren nedan; rapporten byggs upp live. Inga API-anrop — allt sparas automatiskt lokalt.",
+    noteBody: "Fyll i intagsfälten och värdedrivare-spåraren nedan; analysen byggs upp live. Inga API-anrop — allt sparas automatiskt lokalt.",
     sopTitle: "SOP — så här görs det vanligtvis",
     sopHint: "Ordningen en arkitekt faktiskt arbetar igenom denna övning.",
     sop: [
-      "Få kostnadsattribuering att fungera innan något optimeras — en total inferensräkning ingen kan bryta ned per modell, per feature eller per tenant kan inte minskas medvetet.",
-      "Mät utnyttjande innan ni köper effektivitet: tomgångsacceleratorer och överdimensionerade instanser kostar oftast mer än en ooptimerad modell, och kostar bara schemaläggningsarbete att rätta.",
-      "Behandla kompression och destillation som en träffsäkerhetsaffär som ska mätas, inte en gratis vinst — kvantifiera kvalitetsförlusten på samma utvärderingsuppsättning som användes för att godkänna modellen.",
-      "Titta på caching och request-formning tidigt, eftersom upprepade eller nära-identiska förfrågningar är vanliga i produktion och cache-träffar är den billigaste besparingen som finns.",
-      "Rangordna spakar efter besparing mot insats och risk, och anteckna de ni avvisade med skälet — avvisningslistan är vad som stoppar samma förslag från att återkomma varje kvartal.",
+      "Märk varje tal som mätt, uppskattat eller antaget, och behåll märkningen i slutrapporten. Ett ROI-fall där läsaren inte kan se vad som är vad diskonteras helt så snart ett tal ifrågasätts.",
+      "Attribuera noggrant. Om något annat förändrades under samma period är en före-och-efter-jämförelse inte attribution, och att hävda det överlever inte den första seriösa finansgranskningen.",
+      "Räkna in de kostnader verksamheten faktiskt känner, inklusive den analytikertid som går till att granska modellutdata och förändringsarbetet, inte bara moln och licenser.",
+      "Visa fallet vid en pessimistisk inställning såväl som den förväntade. En enpunkts-ROI inbjuder läsaren att testa det antagande de misstror mest; att visa nedsidan först gör fallet svårare att avvisa.",
+      "Kom överens om vem som äger talet efter uppdraget. En ROI-rapport ingen är ansvarig för slutar granskas månaden efter att den presenterats.",
     ],
-    intakeTitle: "Kund- och kostnadsintag",
+    intakeTitle: "Kund- och värdeintag",
     lblClient: "Kund / uppdrag",
     lblAssessor: "Bedömare",
-    lblMonitoringNotes: "Övervakning och attribuering av inferenskostnader",
-    lblUtilizationNotes: "Fynd om GPU-/compute-utnyttjande",
-    lblCompressionNotes: "Bedömning av modellkompression och destillation",
-    lblCachingNotes: "Caching- och request-formningsstrategi",
-    tableTitle: "Optimeringsspakar",
-    tableHint: "Lägg till en rad per spak, dess förväntade besparing, och insatsen för att implementera den.",
-    colA: "Spak",
-    colB: "Förväntad besparing",
-    colC: "Insats / risk",
-    colStatus: "Status",
-    btnAddRow: "+ Lägg till spak",
-    statusIdentified: "Identifierad",
-    statusAgreed: "Överenskommen",
-    statusImplemented: "Implementerad",
-    statusRejected: "Avvisad",
-    previewTitle: "Rapport om optimering av inferenskostnader",
+    lblValueNotes: "Ansats för värdekvantifiering",
+    lblModelNotes: "ROI-modell, horisont och återbetalning",
+    lblAttributionNotes: "Attributionsmetod och störfaktorer",
+    lblSensitivityNotes: "Sensitivitet och nedsidesfall",
+    tableTitle: "Värdedrivare",
+    tableHint: "Lägg till en rad per drivare, grunden för talet, och det årliga värdet.",
+    colA: "Värdedrivare",
+    colB: "Grund",
+    colC: "Årligt värde",
+    colStatus: "Säkerhet",
+    btnAddRow: "+ Lägg till drivare",
+    statusMeasured: "Mätt",
+    statusEstimated: "Uppskattat",
+    statusAssumed: "Antaget",
+    statusExcluded: "Utesluten",
+    previewTitle: "ROI-analysrapport",
     previewHint: "Detta är själva leveransen — automatiskt genererad och anpassad för denna kund.",
     btnExportHtml: "🌐 Exportera HTML",
     btnExportMd: "📄 Exportera Markdown",
     btnReset: "🔄 Återställ",
-    docTitle: "Rapport om optimering av inferenskostnader",
+    docTitle: "ROI-analysrapport",
     docFor: "Framtagen för",
     docAssessor: "Bedömare",
     docDate: "Datum",
-    secA: "1. Övervakning och attribuering av inferenskostnader",
-    secB: "2. Compute-utnyttjande",
-    secC: "3. Modellkompression och destillation",
-    secD: "4. Caching och request-formning",
-    secE: "5. Optimeringsspakar",
-    noRows: "Inga optimeringsspakar tillagda än.",
-    phA: "t.ex. Rätt-dimensionera inferensnoder",
-    phB: "t.ex. ~30% av månatlig compute",
-    phC: "t.ex. Låg insats, ingen träffsäkerhetspåverkan",
+    secA: "1. Ansats för värdekvantifiering",
+    secB: "2. ROI-modell och återbetalning",
+    secC: "3. Attribution och störfaktorer",
+    secD: "4. Sensitivitet och nedsida",
+    secE: "5. Värdedrivare",
+    noRows: "Inga värdedrivare tillagda än.",
+    phA: "t.ex. Återvunnen bedrägeri",
+    phB: "t.ex. Pilot A/B, 6 månader, mätt",
+    phC: "t.ex. 1,9 MDKK",
     emptyNote: "(ännu inte dokumenterat)",
   },
 };
@@ -412,7 +412,7 @@ function esc(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt
 // invent columns or rows in the exported deliverable.
 function mdCell(v) { return String(v === undefined || v === null ? '' : v).replace(/\|/g, '\\|').replace(/\r?\n/g, ' '); }
 
-let rows = []; // { id, lever, saving, effort, status }
+let rows = []; // { id, driver, basis, annual, status }
 let nextId = 1;
 
 function setLang(l) {
@@ -427,7 +427,7 @@ function setLang(l) {
 function applyI18n() {
   document.documentElement.lang = lang;
   document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.getAttribute('data-i18n')); });
-  document.title = t('heroTitle') + ' — Phase 7';
+  document.title = t('heroTitle') + ' — Phase 10';
   document.getElementById('sopList').innerHTML = t('sop').map(s => `<li>${esc(s)}</li>`).join('');
 }
 
@@ -449,7 +449,7 @@ function loadSaved() {
   } catch (e) {}
 }
 
-function addRow() { rows.push({ id: nextId++, lever: '', saving: '', effort: '', status: 'identified' }); renderMatrix(); renderPreview(); save(); }
+function addRow() { rows.push({ id: nextId++, driver: '', basis: '', annual: '', status: 'measured' }); renderMatrix(); renderPreview(); save(); }
 function removeRow(id) { rows = rows.filter(r => r.id !== id); renderMatrix(); renderPreview(); save(); }
 function updateRow(id, field, value) { const r = rows.find(r => r.id === id); if (r) r[field] = value; renderPreview(); save(); if (field === 'status') renderMatrix(); }
 
@@ -457,9 +457,9 @@ function renderMatrix() {
   const body = document.getElementById('matrixBody');
   if (!rows.length) { body.innerHTML = `<tr><td colspan="5" style="color:var(--muted);font-style:italic;padding:14px 8px">${esc(t('noRows'))}</td></tr>`; return; }
   body.innerHTML = rows.map(r => `<tr>
-      <td><input type="text" value="${esc(r.lever)}" placeholder="${esc(t('phA'))}" oninput="updateRow(${r.id},'lever',this.value)"></td>
-      <td><input type="text" value="${esc(r.saving)}" placeholder="${esc(t('phB'))}" oninput="updateRow(${r.id},'saving',this.value)"></td>
-      <td><input type="text" value="${esc(r.effort)}" placeholder="${esc(t('phC'))}" oninput="updateRow(${r.id},'effort',this.value)"></td>
+      <td><input type="text" value="${esc(r.driver)}" placeholder="${esc(t('phA'))}" oninput="updateRow(${r.id},'driver',this.value)"></td>
+      <td><input type="text" value="${esc(r.basis)}" placeholder="${esc(t('phB'))}" oninput="updateRow(${r.id},'basis',this.value)"></td>
+      <td><input type="text" value="${esc(r.annual)}" placeholder="${esc(t('phC'))}" oninput="updateRow(${r.id},'annual',this.value)"></td>
       <td><select onchange="updateRow(${r.id},'status',this.value)">
         ${Object.entries(STATUS_KEYS).map(([v, k]) => `<option value="${v}" ${r.status === v ? 'selected' : ''}>${esc(t(k))}</option>`).join('')}
       </select></td>
@@ -469,16 +469,16 @@ function renderMatrix() {
 
 function renderPreview() {
   const date = new Date().toISOString().slice(0, 10);
-  const filled = rows.filter(r => r.lever.trim());
+  const filled = rows.filter(r => r.driver.trim());
   let h = `<div class="meta"><strong>${esc(t('docFor'))}:</strong> ${esc(val('client')) || '—'} &nbsp;·&nbsp; <strong>${esc(t('docAssessor'))}:</strong> ${esc(val('assessor')) || '—'} &nbsp;·&nbsp; <strong>${esc(t('docDate'))}:</strong> ${date}</div>`;
-  h += `<h3>${esc(t('secA'))}</h3><p>${orEmpty(val('monitoringNotes'))}</p>`;
-  h += `<h3>${esc(t('secB'))}</h3><p>${orEmpty(val('utilizationNotes'))}</p>`;
-  h += `<h3>${esc(t('secC'))}</h3><p>${orEmpty(val('compressionNotes'))}</p>`;
-  h += `<h3>${esc(t('secD'))}</h3><p>${orEmpty(val('cachingNotes'))}</p>`;
+  h += `<h3>${esc(t('secA'))}</h3><p>${orEmpty(val('valueNotes'))}</p>`;
+  h += `<h3>${esc(t('secB'))}</h3><p>${orEmpty(val('modelNotes'))}</p>`;
+  h += `<h3>${esc(t('secC'))}</h3><p>${orEmpty(val('attributionNotes'))}</p>`;
+  h += `<h3>${esc(t('secD'))}</h3><p>${orEmpty(val('sensitivityNotes'))}</p>`;
   h += `<h3>${esc(t('secE'))}</h3>`;
   if (filled.length) {
     h += `<table><thead><tr><th>${esc(t('colA'))}</th><th>${esc(t('colB'))}</th><th>${esc(t('colC'))}</th><th>${esc(t('colStatus'))}</th></tr></thead><tbody>`;
-    h += filled.map(r => `<tr><td>${esc(r.lever)}</td><td>${esc(r.saving)}</td><td>${esc(r.effort)}</td><td><span class="status-badge status-${r.status}">${esc(t(STATUS_KEYS[r.status] || 'statusIdentified'))}</span></td></tr>`).join('');
+    h += filled.map(r => `<tr><td>${esc(r.driver)}</td><td>${esc(r.basis)}</td><td>${esc(r.annual)}</td><td><span class="status-badge status-${r.status}">${esc(t(STATUS_KEYS[r.status] || 'statusMeasured'))}</span></td></tr>`).join('');
     h += '</tbody></table>';
   } else {
     h += `<p><em>${esc(t('noRows'))}</em></p>`;
@@ -496,20 +496,20 @@ function resetAll() {
   renderMatrix(); renderPreview(); save();
 }
 
-function slug() { return (val('client') || 'cost_optimization').replace(/\W+/g, '_'); }
+function slug() { return (val('client') || 'roi_analysis').replace(/\W+/g, '_'); }
 function docMarkdown() {
   const date = new Date().toISOString().slice(0, 10);
-  const filled = rows.filter(r => r.lever.trim());
+  const filled = rows.filter(r => r.driver.trim());
   let m = `# ${t('docTitle')} — ${val('client') || '[client]'}\n\n`;
   m += `**${t('docFor')}:** ${val('client') || '—'}  \n**${t('docAssessor')}:** ${val('assessor') || '—'}  \n**${t('docDate')}:** ${date}\n\n`;
-  m += `## ${t('secA')}\n${val('monitoringNotes') || t('emptyNote')}\n\n`;
-  m += `## ${t('secB')}\n${val('utilizationNotes') || t('emptyNote')}\n\n`;
-  m += `## ${t('secC')}\n${val('compressionNotes') || t('emptyNote')}\n\n`;
-  m += `## ${t('secD')}\n${val('cachingNotes') || t('emptyNote')}\n\n`;
+  m += `## ${t('secA')}\n${val('valueNotes') || t('emptyNote')}\n\n`;
+  m += `## ${t('secB')}\n${val('modelNotes') || t('emptyNote')}\n\n`;
+  m += `## ${t('secC')}\n${val('attributionNotes') || t('emptyNote')}\n\n`;
+  m += `## ${t('secD')}\n${val('sensitivityNotes') || t('emptyNote')}\n\n`;
   m += `## ${t('secE')}\n\n`;
   if (filled.length) {
     m += `| ${t('colA')} | ${t('colB')} | ${t('colC')} | ${t('colStatus')} |\n|---|---|---|---|\n`;
-    m += filled.map(r => `| ${mdCell(r.lever)} | ${mdCell(r.saving)} | ${mdCell(r.effort)} | ${t(STATUS_KEYS[r.status] || 'statusIdentified')} |`).join('\n') + '\n';
+    m += filled.map(r => `| ${mdCell(r.driver)} | ${mdCell(r.basis)} | ${mdCell(r.annual)} | ${t(STATUS_KEYS[r.status] || 'statusMeasured')} |`).join('\n') + '\n';
   } else {
     m += `${t('noRows')}\n`;
   }
@@ -529,8 +529,8 @@ function download(text, fname, mime) {
   URL.revokeObjectURL(a.href);
 }
 function exportDoc(fmt) {
-  if (fmt === 'md') download(docMarkdown(), 'cost_optimization_' + slug() + '.md', 'text/markdown');
-  else download(docHtml(), 'cost_optimization_' + slug() + '.html', 'text/html');
+  if (fmt === 'md') download(docMarkdown(), 'roi_analysis_' + slug() + '.md', 'text/markdown');
+  else download(docHtml(), 'roi_analysis_' + slug() + '.html', 'text/html');
 }
 
 // ── Shared engagement profile (site-wide prefill of client/assessor/use case) ──
@@ -673,7 +673,7 @@ save = function () {
 };
 const _sopApplyI18n = applyI18n;
 applyI18n = function () { _sopApplyI18n(); renderSop(); };
-const SAMPLE_URL = '../../Phase%201%20-%20Discovery%20%26%20Assessment/sample-data/engagement-nordkap/cost-optimization.json';
+const SAMPLE_URL = '../../Phase%201%20-%20Discovery%20%26%20Assessment/sample-data/engagement-nordkap/roi-analysis.json';
 function loadSample() {
   if (!confirm(t('sampleConfirm'))) return;
   const errEl = document.getElementById('sampleError');
@@ -703,7 +703,7 @@ function loadSample() {
   loadSaved();
   prefillEngagement();
   applyI18n();
-  if (!rows.length) { rows.push({ id: nextId++, lever: '', saving: '', effort: '', status: 'identified' }); }
+  if (!rows.length) { rows.push({ id: nextId++, driver: '', basis: '', annual: '', status: 'measured' }); }
   renderMatrix();
   renderPreview();
 })();

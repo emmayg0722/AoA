@@ -1,0 +1,77 @@
+{
+  "fields": {
+    "client": "Nordkap Insurance",
+    "assessor": "Emma Gao",
+    "scopeNotes": "A managed vector database and retrieval layer for the claims-document assistant, the second use case after fraud detection. In scope: hosting, index management, hybrid search, access control per claims team, and EU data residency. Out of scope: the embedding model itself and the LLM, both already selected. Volume is modest by vendor standards, roughly 4 million document chunks growing 15% a year, which matters because most vendor pricing and reference architectures assume an order of magnitude more.",
+    "criteriaNotes": "Weighted scoring, weights published in the RFP. Each criterion is scored 1-5 against required evidence, not against the narrative. A score of 1 on any must-have is disqualifying regardless of total, which is stated up front so a strong overall score cannot carry a fatal gap. Two evaluators score independently and reconcile; the reconciliation notes are kept because that is what gets asked for if the decision is challenged.",
+    "processNotes": "RFI to five vendors first to filter on data residency and pricing model, then RFP to three. Four weeks for responses, a single written Q&A round published to all respondents so nobody gets a private clarification, then 90-minute technical sessions with a fixed agenda. All vendor contact goes through one named person at Nordkap procurement; direct approaches to the claims team are grounds for exclusion, which has already had to be said once.",
+    "constraintNotes": "Must-haves: EU-only data residency with a named region, SSO against Nordkap's existing IdP, a signed DPA covering sub-processors, and documented index export in a non-proprietary format. Deal-breakers: training on customer data by default, no way to delete a document and its embeddings on request, and per-query pricing with no cap, which makes the cost of a bad retrieval loop unbounded."
+  },
+  "rows": [
+    {
+      "id": 1,
+      "criterion": "EU data residency (must-have)",
+      "weight": "15",
+      "evidence": "Named region, DPA, sub-processor list",
+      "status": "issued"
+    },
+    {
+      "id": 2,
+      "criterion": "Retrieval quality at our volume",
+      "weight": "20",
+      "evidence": "Benchmark on our sample set, not theirs",
+      "status": "issued"
+    },
+    {
+      "id": 3,
+      "criterion": "Index export & portability (must-have)",
+      "weight": "10",
+      "evidence": "Documented non-proprietary export",
+      "status": "issued"
+    },
+    {
+      "id": 4,
+      "criterion": "Cost at 4M chunks, 3-year",
+      "weight": "20",
+      "evidence": "Priced model with a query cap",
+      "status": "issued"
+    },
+    {
+      "id": 5,
+      "criterion": "Operational maturity",
+      "weight": "15",
+      "evidence": "Incident history, status page, SLA",
+      "status": "issued"
+    },
+    {
+      "id": 6,
+      "criterion": "Reference at comparable volume",
+      "weight": "10",
+      "evidence": "Named, contactable, EU insurer preferred",
+      "status": "issued"
+    },
+    {
+      "id": 7,
+      "criterion": "Roadmap & company stability",
+      "weight": "10",
+      "evidence": "Funding, ownership, acquisition clause",
+      "status": "agreed"
+    },
+    {
+      "id": 8,
+      "criterion": "Professional services depth",
+      "weight": "0",
+      "evidence": "Dropped: we are not buying implementation",
+      "status": "dropped"
+    }
+  ],
+  "nextId": 9,
+  "sopDone": [
+    true,
+    true,
+    true,
+    true,
+    false
+  ],
+  "lang": "en"
+}

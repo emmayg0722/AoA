@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Inference Cost Optimization Report — Phase 7</title>
-<meta name="description" content="SOP, client intake, an optimization-lever tracker, and an auto-generated inference cost optimization report.">
+<title>Platform & Model Shortlist — Phase 9</title>
+<meta name="description" content="SOP, client intake, a per-category selection tracker, and an auto-generated platform selection report.">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='16' fill='%231B1474'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -22,7 +22,7 @@
   :focus-visible { outline: 2px solid var(--primary); outline-offset: 3px; border-radius: 4px; }
   .hero :focus-visible, .header :focus-visible { outline-color: #fff; }
   .hero { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: #fff; padding: 44px 24px 36px; }
-  .wrap { max-width: 1100px; margin: 0 auto; }
+  .wrap { max-width: 1150px; margin: 0 auto; }
   .crumb { font-size: 13px; color: var(--accent); margin-bottom: 10px; }
   .crumb a { color: var(--accent); text-decoration: none; }
   .crumb .next-nav a { font-weight: 700; }
@@ -31,7 +31,7 @@
   .hero p { margin-top: 10px; font-size: 15.5px; color: #dcdcf2; max-width: 680px; }
   select#langSelect { font-family: var(--font-body); font-size: 13px; font-weight: 600; border: 1.5px solid rgba(255,255,255,0.4); background: rgba(255,255,255,0.08); color: #fff; border-radius: 8px; padding: 7px 10px; }
   select#langSelect option { color: var(--ink); }
-  main { max-width: 1100px; margin: 0 auto; padding: 28px 24px 80px; }
+  main { max-width: 1150px; margin: 0 auto; padding: 28px 24px 80px; }
   .note { background: var(--powder); border: 1px solid var(--accent); border-radius: 12px; padding: 14px 16px; font-size: 14px; color: var(--muted); margin-bottom: 26px; }
   .note strong { color: var(--primary); }
   .card { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 22px 24px; margin-bottom: 20px; }
@@ -64,9 +64,9 @@
   table.matrix select { padding: 6px 6px; font-size: 13px; }
   .rm-btn { background: none; border: none; color: var(--red); cursor: pointer; font-size: 15px; }
   .status-badge { display: inline-block; font-size: 10.5px; font-weight: 700; padding: 2px 8px; border-radius: 10px; white-space: nowrap; }
-  .status-identified { background: var(--powder); color: var(--muted); }
-  .status-agreed { background: #fdf3e3; color: var(--amber); }
-  .status-implemented { background: #e7f5ee; color: var(--green); }
+  .status-evaluating { background: var(--powder); color: var(--muted); }
+  .status-selected { background: #fdf3e3; color: var(--amber); }
+  .status-deferred { background: #e7f5ee; color: var(--green); }
   .status-rejected { background: #fbeaea; color: var(--red); }
   .preview { border: 1px dashed var(--line); border-radius: 10px; padding: 18px 20px; background: #fcfcff; font-size: 14px; }
   .preview h3 { font-family: var(--font-heading); color: var(--primary); font-size: 16px; margin: 14px 0 6px; }
@@ -107,7 +107,7 @@
 <body>
   <header class="hero"><div class="wrap">
     <div class="hero-top">
-      <div class="crumb"><a href="../../">AI Architect Toolkit</a> · Phase 7 · MLOps &amp; Operations · <span class="next-nav">Next: <a href="../../Phase%208%20-%20Change%20Management%20%26%20Enablement/change-management-plan/">Change Management Plan →</a></span></div>
+      <div class="crumb"><a href="../../">AI Architect Toolkit</a> · Phase 9 · Vendor Evaluation &amp; Technology Selection · <span class="next-nav">Next: <a href="../../Phase%2010%20-%20ROI%20Analysis%20%26%20Cost%20Optimization/roi-analysis/">ROI Analysis →</a></span></div>
       <select id="langSelect" onchange="setLang(this.value)">
         <option value="en">English</option>
         <option value="da">Dansk</option>
@@ -134,14 +134,14 @@
         <div><label data-i18n="lblClient"></label><input type="text" data-eng="client" placeholder="Acme Corp"></div>
         <div><label data-i18n="lblAssessor"></label><input type="text" data-eng="assessor"></div>
       </div>
-      <label data-i18n="lblMonitoringNotes"></label>
-      <textarea data-eng="monitoringNotes"></textarea>
-      <label data-i18n="lblUtilizationNotes"></label>
-      <textarea data-eng="utilizationNotes"></textarea>
-      <label data-i18n="lblCompressionNotes"></label>
-      <textarea data-eng="compressionNotes"></textarea>
-      <label data-i18n="lblCachingNotes"></label>
-      <textarea data-eng="cachingNotes"></textarea>
+      <label data-i18n="lblMlPlatformNotes"></label>
+      <textarea data-eng="mlPlatformNotes"></textarea>
+      <label data-i18n="lblLlmNotes"></label>
+      <textarea data-eng="llmNotes"></textarea>
+      <label data-i18n="lblDataNotes"></label>
+      <textarea data-eng="dataNotes"></textarea>
+      <label data-i18n="lblObservabilityNotes"></label>
+      <textarea data-eng="observabilityNotes"></textarea>
     </div>
 
     <div class="card">
@@ -182,164 +182,164 @@
   </main>
 
 <script>
-const KEY = 'aoa_cost_optimization_v1';
-const STATUS_KEYS = { identified: 'statusIdentified', agreed: 'statusAgreed', implemented: 'statusImplemented', rejected: 'statusRejected' };
+const KEY = 'aoa_platform_shortlist_v1';
+const STATUS_KEYS = { evaluating: 'statusEvaluating', selected: 'statusSelected', deferred: 'statusDeferred', rejected: 'statusRejected' };
 
 const STRINGS = {
   en: {
-    heroTitle: "Inference Cost Optimization Report",
-    heroDesc: "SOP, client intake, an optimization-lever tracker, and an auto-generated inference cost optimization report.",
+    heroTitle: "Platform & Model Shortlist",
+    heroDesc: "SOP, client intake, a per-category selection tracker, and an auto-generated platform selection report.",
     noteLabel: "How this works.",
-    noteBody: "Fill in the intake fields and lever tracker below; the report builds live. No API calls — everything autosaves locally.",
+    noteBody: "Fill in the intake fields and category tracker below; the report builds live. No API calls — everything autosaves locally.",
     sopTitle: "SOP — how this is usually done",
     sopHint: "The order an architect actually works this exercise in.",
     sop: [
-      "Get cost attribution working before optimizing anything — a total inference bill nobody can break down per model, per feature, or per tenant cannot be reduced deliberately.",
-      "Measure utilization before buying efficiency: idle accelerators and oversized instances usually cost more than an unoptimized model does, and cost nothing but scheduling work to fix.",
-      "Treat compression and distillation as an accuracy trade to be measured, not a free win — quantify the quality loss on the same evaluation set used to accept the model.",
-      "Look at caching and request shaping early, since repeated or near-duplicate requests are common in production and cache hits are the cheapest saving available.",
-      "Rank levers by saving against effort and risk, and record the ones you rejected with the reason — the rejected list is what stops the same suggestion returning every quarter.",
+      "Decide the categories you actually need before filling them in. A shortlist with a row for every fashionable component produces a stack nobody can operate; leaving a category deliberately empty is a valid, defensible outcome.",
+      "Constrain by what the client already runs. A technically better platform in a cloud they have no contract, skills or security review for is usually the worse choice, and saying so early avoids a procurement dead end.",
+      "For model choices, separate capability from commercial terms. Pick on evaluation against your own task, then negotiate; picking on price first tends to lock in a model that fails the task.",
+      "Write the rationale next to the choice while the alternatives are still fresh. In six months the question will be why not the obvious other one, and nobody will remember.",
+      "Record what would make you revisit each choice. Model and platform decisions age faster than any other part of the architecture, so a selection with no review trigger is a decision that will quietly expire.",
     ],
-    intakeTitle: "Client & cost intake",
+    intakeTitle: "Client & platform intake",
     lblClient: "Client / engagement",
     lblAssessor: "Assessor",
-    lblMonitoringNotes: "Inference cost monitoring & attribution",
-    lblUtilizationNotes: "GPU / compute utilization findings",
-    lblCompressionNotes: "Model compression & distillation assessment",
-    lblCachingNotes: "Caching & request-shaping strategy",
-    tableTitle: "Optimization levers",
-    tableHint: "Add one row per lever, its expected saving, and the effort to implement it.",
-    colA: "Lever",
-    colB: "Expected saving",
-    colC: "Effort / risk",
+    lblMlPlatformNotes: "ML platform & MLOps tooling",
+    lblLlmNotes: "Model selection (LLM, embeddings) & evaluation basis",
+    lblDataNotes: "Data platform & vector store",
+    lblObservabilityNotes: "Observability & evaluation tooling",
+    tableTitle: "Selections by category",
+    tableHint: "Add one row per category, the choice made, and why.",
+    colA: "Category",
+    colB: "Choice",
+    colC: "Rationale",
     colStatus: "Status",
-    btnAddRow: "+ Add lever",
-    statusIdentified: "Identified",
-    statusAgreed: "Agreed",
-    statusImplemented: "Implemented",
+    btnAddRow: "+ Add category",
+    statusEvaluating: "Evaluating",
+    statusSelected: "Selected",
+    statusDeferred: "Deferred",
     statusRejected: "Rejected",
-    previewTitle: "Inference cost optimization report",
+    previewTitle: "Platform selection report",
     previewHint: "This is the actual deliverable — auto-generated and customized for this client.",
     btnExportHtml: "🌐 Export HTML",
     btnExportMd: "📄 Export Markdown",
     btnReset: "🔄 Reset",
-    docTitle: "Inference Cost Optimization Report",
+    docTitle: "Platform & Model Selection Report",
     docFor: "Prepared for",
     docAssessor: "Assessor",
     docDate: "Date",
-    secA: "1. Inference Cost Monitoring & Attribution",
-    secB: "2. Compute Utilization",
-    secC: "3. Model Compression & Distillation",
-    secD: "4. Caching & Request Shaping",
-    secE: "5. Optimization Levers",
-    noRows: "No optimization levers added yet.",
-    phA: "e.g. Right-size inference nodes",
-    phB: "e.g. ~30% of monthly compute",
-    phC: "e.g. Low effort, no accuracy impact",
+    secA: "1. ML Platform & MLOps Tooling",
+    secB: "2. Model Selection",
+    secC: "3. Data Platform & Vector Store",
+    secD: "4. Observability & Evaluation",
+    secE: "5. Selections by Category",
+    noRows: "No categories added yet.",
+    phA: "e.g. Vector store",
+    phB: "e.g. Halden Retrieval (managed)",
+    phC: "e.g. Named support at our tier; DA/SV handling",
     emptyNote: "(not yet documented)",
   },
   da: {
-    heroTitle: "Rapport om optimering af inferensomkostninger",
-    heroDesc: "SOP, kundeoptag, en optimeringsgreb-tracker, og en automatisk genereret rapport om optimering af inferensomkostninger.",
+    heroTitle: "Platform- og modelshortlist",
+    heroDesc: "SOP, kundeoptag, en valgtracker pr. kategori, og en automatisk genereret platformvalgsrapport.",
     noteLabel: "Sådan virker det.",
-    noteBody: "Udfyld optagsfelterne og greb-trackeren nedenfor; rapporten opbygges live. Ingen API-kald — alt gemmes automatisk lokalt.",
+    noteBody: "Udfyld optagsfelterne og kategoritrackeren nedenfor; rapporten opbygges live. Ingen API-kald — alt gemmes automatisk lokalt.",
     sopTitle: "SOP — sådan gøres det normalt",
     sopHint: "Rækkefølgen en arkitekt reelt arbejder denne øvelse igennem.",
     sop: [
-      "Få omkostningsattribuering til at virke før noget optimeres — en samlet inferensregning, ingen kan bryde ned pr. model, pr. feature eller pr. lejer, kan ikke reduceres bevidst.",
-      "Mål udnyttelse før du køber effektivitet: tomgangs-acceleratorer og overdimensionerede instanser koster oftest mere end en uoptimeret model, og koster kun planlægningsarbejde at rette.",
-      "Behandl kompression og destillation som en nøjagtighedshandel, der skal måles, ikke en gratis gevinst — kvantificér kvalitetstabet på det samme evalueringssæt, der blev brugt til at godkende modellen.",
-      "Se på caching og request-formning tidligt, da gentagne eller nær-identiske forespørgsler er almindelige i produktion, og cache-hits er den billigste besparelse, der findes.",
-      "Rangér greb efter besparelse mod indsats og risiko, og notér dem du afviste med begrundelsen — afvisningslisten er det, der stopper samme forslag fra at vende tilbage hvert kvartal.",
+      "Beslut de kategorier du reelt har brug for, før du udfylder dem. En shortlist med en række for hver moderigtig komponent producerer en stak ingen kan drive; at lade en kategori stå bevidst tom er et gyldigt og forsvarligt udfald.",
+      "Begræns ud fra hvad kunden allerede driver. En teknisk bedre platform i en cloud de ikke har kontrakt, kompetencer eller sikkerhedsgodkendelse til, er oftest det dårligere valg, og at sige det tidligt undgår en indkøbsmæssig blindgyde.",
+      "For modelvalg: adskil kapabilitet fra kommercielle vilkår. Vælg ud fra evaluering mod din egen opgave, forhandl derefter; at vælge på pris først låser typisk en model fast der fejler på opgaven.",
+      "Skriv begrundelsen ved siden af valget, mens alternativerne stadig er friske. Om seks måneder er spørgsmålet hvorfor ikke det åbenlyse alternativ, og ingen vil kunne huske.",
+      "Notér hvad der ville få dig til at genbesøge hvert valg. Model- og platformbeslutninger ældes hurtigere end nogen anden del af arkitekturen, så et valg uden gennemgangstrigger er en beslutning der stille udløber.",
     ],
-    intakeTitle: "Kunde- og omkostningsoptag",
+    intakeTitle: "Kunde- og platformoptag",
     lblClient: "Kunde / engagement",
     lblAssessor: "Vurderingsmand",
-    lblMonitoringNotes: "Overvågning og attribuering af inferensomkostninger",
-    lblUtilizationNotes: "Fund om GPU-/compute-udnyttelse",
-    lblCompressionNotes: "Vurdering af modelkompression og destillation",
-    lblCachingNotes: "Caching- og request-formningsstrategi",
-    tableTitle: "Optimeringsgreb",
-    tableHint: "Tilføj en række pr. greb, dets forventede besparelse, og indsatsen for at implementere det.",
-    colA: "Greb",
-    colB: "Forventet besparelse",
-    colC: "Indsats / risiko",
+    lblMlPlatformNotes: "ML-platform og MLOps-værktøj",
+    lblLlmNotes: "Modelvalg (LLM, embeddings) og evalueringsgrundlag",
+    lblDataNotes: "Dataplatform og vector store",
+    lblObservabilityNotes: "Observability og evalueringsværktøj",
+    tableTitle: "Valg pr. kategori",
+    tableHint: "Tilføj en række pr. kategori, det valg der er truffet, og hvorfor.",
+    colA: "Kategori",
+    colB: "Valg",
+    colC: "Begrundelse",
     colStatus: "Status",
-    btnAddRow: "+ Tilføj greb",
-    statusIdentified: "Identificeret",
-    statusAgreed: "Aftalt",
-    statusImplemented: "Implementeret",
+    btnAddRow: "+ Tilføj kategori",
+    statusEvaluating: "Evaluerer",
+    statusSelected: "Valgt",
+    statusDeferred: "Udskudt",
     statusRejected: "Afvist",
-    previewTitle: "Rapport om optimering af inferensomkostninger",
+    previewTitle: "Platformvalgsrapport",
     previewHint: "Dette er selve leverancen — automatisk genereret og tilpasset denne kunde.",
     btnExportHtml: "🌐 Eksportér HTML",
     btnExportMd: "📄 Eksportér Markdown",
     btnReset: "🔄 Nulstil",
-    docTitle: "Rapport om optimering af inferensomkostninger",
+    docTitle: "Platform- og modelvalgsrapport",
     docFor: "Udarbejdet for",
     docAssessor: "Vurderingsmand",
     docDate: "Dato",
-    secA: "1. Overvågning og attribuering af inferensomkostninger",
-    secB: "2. Compute-udnyttelse",
-    secC: "3. Modelkompression og destillation",
-    secD: "4. Caching og request-formning",
-    secE: "5. Optimeringsgreb",
-    noRows: "Ingen optimeringsgreb tilføjet endnu.",
-    phA: "fx Ret-dimensioner inferensnoder",
-    phB: "fx ~30% af månedlig compute",
-    phC: "fx Lav indsats, ingen nøjagtighedspåvirkning",
+    secA: "1. ML-platform og MLOps-værktøj",
+    secB: "2. Modelvalg",
+    secC: "3. Dataplatform og vector store",
+    secD: "4. Observability og evaluering",
+    secE: "5. Valg pr. kategori",
+    noRows: "Ingen kategorier tilføjet endnu.",
+    phA: "fx Vector store",
+    phB: "fx Halden Retrieval (managed)",
+    phC: "fx Navngivet support på vores niveau; DA/SV-håndtering",
     emptyNote: "(endnu ikke dokumenteret)",
   },
   sv: {
-    heroTitle: "Rapport om optimering av inferenskostnader",
-    heroDesc: "SOP, kundintag, en optimeringsspak-spårare, och en automatiskt genererad rapport om optimering av inferenskostnader.",
+    heroTitle: "Plattform- och modellshortlist",
+    heroDesc: "SOP, kundintag, en valspårare per kategori, och en automatiskt genererad plattformsvalsrapport.",
     noteLabel: "Så här fungerar det.",
-    noteBody: "Fyll i intagsfälten och spakspåraren nedan; rapporten byggs upp live. Inga API-anrop — allt sparas automatiskt lokalt.",
+    noteBody: "Fyll i intagsfälten och kategorispåraren nedan; rapporten byggs upp live. Inga API-anrop — allt sparas automatiskt lokalt.",
     sopTitle: "SOP — så här görs det vanligtvis",
     sopHint: "Ordningen en arkitekt faktiskt arbetar igenom denna övning.",
     sop: [
-      "Få kostnadsattribuering att fungera innan något optimeras — en total inferensräkning ingen kan bryta ned per modell, per feature eller per tenant kan inte minskas medvetet.",
-      "Mät utnyttjande innan ni köper effektivitet: tomgångsacceleratorer och överdimensionerade instanser kostar oftast mer än en ooptimerad modell, och kostar bara schemaläggningsarbete att rätta.",
-      "Behandla kompression och destillation som en träffsäkerhetsaffär som ska mätas, inte en gratis vinst — kvantifiera kvalitetsförlusten på samma utvärderingsuppsättning som användes för att godkänna modellen.",
-      "Titta på caching och request-formning tidigt, eftersom upprepade eller nära-identiska förfrågningar är vanliga i produktion och cache-träffar är den billigaste besparingen som finns.",
-      "Rangordna spakar efter besparing mot insats och risk, och anteckna de ni avvisade med skälet — avvisningslistan är vad som stoppar samma förslag från att återkomma varje kvartal.",
+      "Bestäm de kategorier du faktiskt behöver innan du fyller dem. En shortlist med en rad för varje modern komponent producerar en stack ingen kan driva; att lämna en kategori medvetet tom är ett giltigt och försvarbart utfall.",
+      "Begränsa utifrån vad kunden redan driver. En tekniskt bättre plattform i ett moln de inte har avtal, kompetens eller säkerhetsgranskning för är oftast det sämre valet, och att säga det tidigt undviker en upphandlingsmässig återvändsgränd.",
+      "För modellval: skilj förmåga från kommersiella villkor. Välj utifrån utvärdering mot din egen uppgift, förhandla sedan; att välja på pris först låser typiskt in en modell som misslyckas med uppgiften.",
+      "Skriv motiveringen vid sidan av valet medan alternativen fortfarande är färska. Om sex månader är frågan varför inte det uppenbara alternativet, och ingen kommer att minnas.",
+      "Anteckna vad som skulle få dig att återbesöka varje val. Modell- och plattformsbeslut åldras snabbare än någon annan del av arkitekturen, så ett val utan granskningstrigger är ett beslut som tyst löper ut.",
     ],
-    intakeTitle: "Kund- och kostnadsintag",
+    intakeTitle: "Kund- och plattformsintag",
     lblClient: "Kund / uppdrag",
     lblAssessor: "Bedömare",
-    lblMonitoringNotes: "Övervakning och attribuering av inferenskostnader",
-    lblUtilizationNotes: "Fynd om GPU-/compute-utnyttjande",
-    lblCompressionNotes: "Bedömning av modellkompression och destillation",
-    lblCachingNotes: "Caching- och request-formningsstrategi",
-    tableTitle: "Optimeringsspakar",
-    tableHint: "Lägg till en rad per spak, dess förväntade besparing, och insatsen för att implementera den.",
-    colA: "Spak",
-    colB: "Förväntad besparing",
-    colC: "Insats / risk",
+    lblMlPlatformNotes: "ML-plattform och MLOps-verktyg",
+    lblLlmNotes: "Modellval (LLM, embeddings) och utvärderingsgrund",
+    lblDataNotes: "Dataplattform och vector store",
+    lblObservabilityNotes: "Observability och utvärderingsverktyg",
+    tableTitle: "Val per kategori",
+    tableHint: "Lägg till en rad per kategori, valet som gjorts, och varför.",
+    colA: "Kategori",
+    colB: "Val",
+    colC: "Motivering",
     colStatus: "Status",
-    btnAddRow: "+ Lägg till spak",
-    statusIdentified: "Identifierad",
-    statusAgreed: "Överenskommen",
-    statusImplemented: "Implementerad",
-    statusRejected: "Avvisad",
-    previewTitle: "Rapport om optimering av inferenskostnader",
+    btnAddRow: "+ Lägg till kategori",
+    statusEvaluating: "Utvärderas",
+    statusSelected: "Valt",
+    statusDeferred: "Uppskjutet",
+    statusRejected: "Avvisat",
+    previewTitle: "Plattformsvalsrapport",
     previewHint: "Detta är själva leveransen — automatiskt genererad och anpassad för denna kund.",
     btnExportHtml: "🌐 Exportera HTML",
     btnExportMd: "📄 Exportera Markdown",
     btnReset: "🔄 Återställ",
-    docTitle: "Rapport om optimering av inferenskostnader",
+    docTitle: "Plattform- och modellvalsrapport",
     docFor: "Framtagen för",
     docAssessor: "Bedömare",
     docDate: "Datum",
-    secA: "1. Övervakning och attribuering av inferenskostnader",
-    secB: "2. Compute-utnyttjande",
-    secC: "3. Modellkompression och destillation",
-    secD: "4. Caching och request-formning",
-    secE: "5. Optimeringsspakar",
-    noRows: "Inga optimeringsspakar tillagda än.",
-    phA: "t.ex. Rätt-dimensionera inferensnoder",
-    phB: "t.ex. ~30% av månatlig compute",
-    phC: "t.ex. Låg insats, ingen träffsäkerhetspåverkan",
+    secA: "1. ML-plattform och MLOps-verktyg",
+    secB: "2. Modellval",
+    secC: "3. Dataplattform och vector store",
+    secD: "4. Observability och utvärdering",
+    secE: "5. Val per kategori",
+    noRows: "Inga kategorier tillagda än.",
+    phA: "t.ex. Vector store",
+    phB: "t.ex. Halden Retrieval (managed)",
+    phC: "t.ex. Namngiven support på vår nivå; DA/SV-hantering",
     emptyNote: "(ännu inte dokumenterat)",
   },
 };
@@ -412,7 +412,7 @@ function esc(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt
 // invent columns or rows in the exported deliverable.
 function mdCell(v) { return String(v === undefined || v === null ? '' : v).replace(/\|/g, '\\|').replace(/\r?\n/g, ' '); }
 
-let rows = []; // { id, lever, saving, effort, status }
+let rows = []; // { id, category, choice, rationale, status }
 let nextId = 1;
 
 function setLang(l) {
@@ -427,7 +427,7 @@ function setLang(l) {
 function applyI18n() {
   document.documentElement.lang = lang;
   document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.getAttribute('data-i18n')); });
-  document.title = t('heroTitle') + ' — Phase 7';
+  document.title = t('heroTitle') + ' — Phase 9';
   document.getElementById('sopList').innerHTML = t('sop').map(s => `<li>${esc(s)}</li>`).join('');
 }
 
@@ -449,7 +449,7 @@ function loadSaved() {
   } catch (e) {}
 }
 
-function addRow() { rows.push({ id: nextId++, lever: '', saving: '', effort: '', status: 'identified' }); renderMatrix(); renderPreview(); save(); }
+function addRow() { rows.push({ id: nextId++, category: '', choice: '', rationale: '', status: 'evaluating' }); renderMatrix(); renderPreview(); save(); }
 function removeRow(id) { rows = rows.filter(r => r.id !== id); renderMatrix(); renderPreview(); save(); }
 function updateRow(id, field, value) { const r = rows.find(r => r.id === id); if (r) r[field] = value; renderPreview(); save(); if (field === 'status') renderMatrix(); }
 
@@ -457,9 +457,9 @@ function renderMatrix() {
   const body = document.getElementById('matrixBody');
   if (!rows.length) { body.innerHTML = `<tr><td colspan="5" style="color:var(--muted);font-style:italic;padding:14px 8px">${esc(t('noRows'))}</td></tr>`; return; }
   body.innerHTML = rows.map(r => `<tr>
-      <td><input type="text" value="${esc(r.lever)}" placeholder="${esc(t('phA'))}" oninput="updateRow(${r.id},'lever',this.value)"></td>
-      <td><input type="text" value="${esc(r.saving)}" placeholder="${esc(t('phB'))}" oninput="updateRow(${r.id},'saving',this.value)"></td>
-      <td><input type="text" value="${esc(r.effort)}" placeholder="${esc(t('phC'))}" oninput="updateRow(${r.id},'effort',this.value)"></td>
+      <td><input type="text" value="${esc(r.category)}" placeholder="${esc(t('phA'))}" oninput="updateRow(${r.id},'category',this.value)"></td>
+      <td><input type="text" value="${esc(r.choice)}" placeholder="${esc(t('phB'))}" oninput="updateRow(${r.id},'choice',this.value)"></td>
+      <td><input type="text" value="${esc(r.rationale)}" placeholder="${esc(t('phC'))}" oninput="updateRow(${r.id},'rationale',this.value)"></td>
       <td><select onchange="updateRow(${r.id},'status',this.value)">
         ${Object.entries(STATUS_KEYS).map(([v, k]) => `<option value="${v}" ${r.status === v ? 'selected' : ''}>${esc(t(k))}</option>`).join('')}
       </select></td>
@@ -469,16 +469,16 @@ function renderMatrix() {
 
 function renderPreview() {
   const date = new Date().toISOString().slice(0, 10);
-  const filled = rows.filter(r => r.lever.trim());
+  const filled = rows.filter(r => r.category.trim());
   let h = `<div class="meta"><strong>${esc(t('docFor'))}:</strong> ${esc(val('client')) || '—'} &nbsp;·&nbsp; <strong>${esc(t('docAssessor'))}:</strong> ${esc(val('assessor')) || '—'} &nbsp;·&nbsp; <strong>${esc(t('docDate'))}:</strong> ${date}</div>`;
-  h += `<h3>${esc(t('secA'))}</h3><p>${orEmpty(val('monitoringNotes'))}</p>`;
-  h += `<h3>${esc(t('secB'))}</h3><p>${orEmpty(val('utilizationNotes'))}</p>`;
-  h += `<h3>${esc(t('secC'))}</h3><p>${orEmpty(val('compressionNotes'))}</p>`;
-  h += `<h3>${esc(t('secD'))}</h3><p>${orEmpty(val('cachingNotes'))}</p>`;
+  h += `<h3>${esc(t('secA'))}</h3><p>${orEmpty(val('mlPlatformNotes'))}</p>`;
+  h += `<h3>${esc(t('secB'))}</h3><p>${orEmpty(val('llmNotes'))}</p>`;
+  h += `<h3>${esc(t('secC'))}</h3><p>${orEmpty(val('dataNotes'))}</p>`;
+  h += `<h3>${esc(t('secD'))}</h3><p>${orEmpty(val('observabilityNotes'))}</p>`;
   h += `<h3>${esc(t('secE'))}</h3>`;
   if (filled.length) {
     h += `<table><thead><tr><th>${esc(t('colA'))}</th><th>${esc(t('colB'))}</th><th>${esc(t('colC'))}</th><th>${esc(t('colStatus'))}</th></tr></thead><tbody>`;
-    h += filled.map(r => `<tr><td>${esc(r.lever)}</td><td>${esc(r.saving)}</td><td>${esc(r.effort)}</td><td><span class="status-badge status-${r.status}">${esc(t(STATUS_KEYS[r.status] || 'statusIdentified'))}</span></td></tr>`).join('');
+    h += filled.map(r => `<tr><td>${esc(r.category)}</td><td>${esc(r.choice)}</td><td>${esc(r.rationale)}</td><td><span class="status-badge status-${r.status}">${esc(t(STATUS_KEYS[r.status] || 'statusEvaluating'))}</span></td></tr>`).join('');
     h += '</tbody></table>';
   } else {
     h += `<p><em>${esc(t('noRows'))}</em></p>`;
@@ -496,20 +496,20 @@ function resetAll() {
   renderMatrix(); renderPreview(); save();
 }
 
-function slug() { return (val('client') || 'cost_optimization').replace(/\W+/g, '_'); }
+function slug() { return (val('client') || 'platform_shortlist').replace(/\W+/g, '_'); }
 function docMarkdown() {
   const date = new Date().toISOString().slice(0, 10);
-  const filled = rows.filter(r => r.lever.trim());
+  const filled = rows.filter(r => r.category.trim());
   let m = `# ${t('docTitle')} — ${val('client') || '[client]'}\n\n`;
   m += `**${t('docFor')}:** ${val('client') || '—'}  \n**${t('docAssessor')}:** ${val('assessor') || '—'}  \n**${t('docDate')}:** ${date}\n\n`;
-  m += `## ${t('secA')}\n${val('monitoringNotes') || t('emptyNote')}\n\n`;
-  m += `## ${t('secB')}\n${val('utilizationNotes') || t('emptyNote')}\n\n`;
-  m += `## ${t('secC')}\n${val('compressionNotes') || t('emptyNote')}\n\n`;
-  m += `## ${t('secD')}\n${val('cachingNotes') || t('emptyNote')}\n\n`;
+  m += `## ${t('secA')}\n${val('mlPlatformNotes') || t('emptyNote')}\n\n`;
+  m += `## ${t('secB')}\n${val('llmNotes') || t('emptyNote')}\n\n`;
+  m += `## ${t('secC')}\n${val('dataNotes') || t('emptyNote')}\n\n`;
+  m += `## ${t('secD')}\n${val('observabilityNotes') || t('emptyNote')}\n\n`;
   m += `## ${t('secE')}\n\n`;
   if (filled.length) {
     m += `| ${t('colA')} | ${t('colB')} | ${t('colC')} | ${t('colStatus')} |\n|---|---|---|---|\n`;
-    m += filled.map(r => `| ${mdCell(r.lever)} | ${mdCell(r.saving)} | ${mdCell(r.effort)} | ${t(STATUS_KEYS[r.status] || 'statusIdentified')} |`).join('\n') + '\n';
+    m += filled.map(r => `| ${mdCell(r.category)} | ${mdCell(r.choice)} | ${mdCell(r.rationale)} | ${t(STATUS_KEYS[r.status] || 'statusEvaluating')} |`).join('\n') + '\n';
   } else {
     m += `${t('noRows')}\n`;
   }
@@ -529,8 +529,8 @@ function download(text, fname, mime) {
   URL.revokeObjectURL(a.href);
 }
 function exportDoc(fmt) {
-  if (fmt === 'md') download(docMarkdown(), 'cost_optimization_' + slug() + '.md', 'text/markdown');
-  else download(docHtml(), 'cost_optimization_' + slug() + '.html', 'text/html');
+  if (fmt === 'md') download(docMarkdown(), 'platform_shortlist_' + slug() + '.md', 'text/markdown');
+  else download(docHtml(), 'platform_shortlist_' + slug() + '.html', 'text/html');
 }
 
 // ── Shared engagement profile (site-wide prefill of client/assessor/use case) ──
@@ -673,7 +673,7 @@ save = function () {
 };
 const _sopApplyI18n = applyI18n;
 applyI18n = function () { _sopApplyI18n(); renderSop(); };
-const SAMPLE_URL = '../../Phase%201%20-%20Discovery%20%26%20Assessment/sample-data/engagement-nordkap/cost-optimization.json';
+const SAMPLE_URL = '../../Phase%201%20-%20Discovery%20%26%20Assessment/sample-data/engagement-nordkap/platform-shortlist.json';
 function loadSample() {
   if (!confirm(t('sampleConfirm'))) return;
   const errEl = document.getElementById('sampleError');
@@ -703,7 +703,7 @@ function loadSample() {
   loadSaved();
   prefillEngagement();
   applyI18n();
-  if (!rows.length) { rows.push({ id: nextId++, lever: '', saving: '', effort: '', status: 'identified' }); }
+  if (!rows.length) { rows.push({ id: nextId++, category: '', choice: '', rationale: '', status: 'evaluating' }); }
   renderMatrix();
   renderPreview();
 })();

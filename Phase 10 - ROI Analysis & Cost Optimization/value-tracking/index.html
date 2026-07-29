@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Inference Cost Optimization Report — Phase 7</title>
-<meta name="description" content="SOP, client intake, an optimization-lever tracker, and an auto-generated inference cost optimization report.">
+<title>Value Tracking & Quarterly Review — Phase 10</title>
+<meta name="description" content="SOP, client intake, a KPI tracker against baseline, and an auto-generated quarterly value review.">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='16' fill='%231B1474'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -64,10 +64,10 @@
   table.matrix select { padding: 6px 6px; font-size: 13px; }
   .rm-btn { background: none; border: none; color: var(--red); cursor: pointer; font-size: 15px; }
   .status-badge { display: inline-block; font-size: 10.5px; font-weight: 700; padding: 2px 8px; border-radius: 10px; white-space: nowrap; }
-  .status-identified { background: var(--powder); color: var(--muted); }
-  .status-agreed { background: #fdf3e3; color: var(--amber); }
-  .status-implemented { background: #e7f5ee; color: var(--green); }
-  .status-rejected { background: #fbeaea; color: var(--red); }
+  .status-ontrack { background: var(--powder); color: var(--muted); }
+  .status-watch { background: #fdf3e3; color: var(--amber); }
+  .status-behind { background: #e7f5ee; color: var(--green); }
+  .status-retired { background: #fbeaea; color: var(--red); }
   .preview { border: 1px dashed var(--line); border-radius: 10px; padding: 18px 20px; background: #fcfcff; font-size: 14px; }
   .preview h3 { font-family: var(--font-heading); color: var(--primary); font-size: 16px; margin: 14px 0 6px; }
   .preview h3:first-child { margin-top: 0; }
@@ -107,7 +107,7 @@
 <body>
   <header class="hero"><div class="wrap">
     <div class="hero-top">
-      <div class="crumb"><a href="../../">AI Architect Toolkit</a> · Phase 7 · MLOps &amp; Operations · <span class="next-nav">Next: <a href="../../Phase%208%20-%20Change%20Management%20%26%20Enablement/change-management-plan/">Change Management Plan →</a></span></div>
+      <div class="crumb"><a href="../../">AI Architect Toolkit</a> · Phase 10 · ROI Analysis &amp; Cost Optimization · <span class="next-nav">End of the toolkit — <a href="../../engagement-report.html">view the master report →</a></span></div>
       <select id="langSelect" onchange="setLang(this.value)">
         <option value="en">English</option>
         <option value="da">Dansk</option>
@@ -134,14 +134,14 @@
         <div><label data-i18n="lblClient"></label><input type="text" data-eng="client" placeholder="Acme Corp"></div>
         <div><label data-i18n="lblAssessor"></label><input type="text" data-eng="assessor"></div>
       </div>
-      <label data-i18n="lblMonitoringNotes"></label>
-      <textarea data-eng="monitoringNotes"></textarea>
-      <label data-i18n="lblUtilizationNotes"></label>
-      <textarea data-eng="utilizationNotes"></textarea>
-      <label data-i18n="lblCompressionNotes"></label>
-      <textarea data-eng="compressionNotes"></textarea>
-      <label data-i18n="lblCachingNotes"></label>
-      <textarea data-eng="cachingNotes"></textarea>
+      <label data-i18n="lblKpiNotes"></label>
+      <textarea data-eng="kpiNotes"></textarea>
+      <label data-i18n="lblDashboardNotes"></label>
+      <textarea data-eng="dashboardNotes"></textarea>
+      <label data-i18n="lblReviewNotes"></label>
+      <textarea data-eng="reviewNotes"></textarea>
+      <label data-i18n="lblActionNotes"></label>
+      <textarea data-eng="actionNotes"></textarea>
     </div>
 
     <div class="card">
@@ -182,164 +182,164 @@
   </main>
 
 <script>
-const KEY = 'aoa_cost_optimization_v1';
-const STATUS_KEYS = { identified: 'statusIdentified', agreed: 'statusAgreed', implemented: 'statusImplemented', rejected: 'statusRejected' };
+const KEY = 'aoa_value_tracking_v1';
+const STATUS_KEYS = { ontrack: 'statusOntrack', watch: 'statusWatch', behind: 'statusBehind', retired: 'statusRetired' };
 
 const STRINGS = {
   en: {
-    heroTitle: "Inference Cost Optimization Report",
-    heroDesc: "SOP, client intake, an optimization-lever tracker, and an auto-generated inference cost optimization report.",
+    heroTitle: "Value Tracking & Quarterly Review",
+    heroDesc: "SOP, client intake, a KPI tracker against baseline, and an auto-generated quarterly value review.",
     noteLabel: "How this works.",
-    noteBody: "Fill in the intake fields and lever tracker below; the report builds live. No API calls — everything autosaves locally.",
+    noteBody: "Fill in the intake fields and KPI tracker below; the review builds live. No API calls — everything autosaves locally.",
     sopTitle: "SOP — how this is usually done",
     sopHint: "The order an architect actually works this exercise in.",
     sop: [
-      "Get cost attribution working before optimizing anything — a total inference bill nobody can break down per model, per feature, or per tenant cannot be reduced deliberately.",
-      "Measure utilization before buying efficiency: idle accelerators and oversized instances usually cost more than an unoptimized model does, and cost nothing but scheduling work to fix.",
-      "Treat compression and distillation as an accuracy trade to be measured, not a free win — quantify the quality loss on the same evaluation set used to accept the model.",
-      "Look at caching and request shaping early, since repeated or near-duplicate requests are common in production and cache hits are the cheapest saving available.",
-      "Rank levers by saving against effort and risk, and record the ones you rejected with the reason — the rejected list is what stops the same suggestion returning every quarter.",
+      "Fix the baseline before go-live and write it down. A value programme that reconstructs its baseline afterwards produces numbers nobody outside the project believes, and reconstructing it is the most common reason value tracking is abandoned.",
+      "Track the outcome the use case was bought to move, alongside the model metrics. A dashboard of accuracy and latency can be entirely green while the business case quietly fails.",
+      "Keep the KPI set small enough that someone reads all of it. Six numbers reviewed monthly beats thirty reviewed never, and the thirty-number dashboard is what gets built by default.",
+      "Give each KPI an owner who can act on it. A metric with no owner becomes decoration on the second review, and the review becomes a status meeting.",
+      "Make the quarterly review able to conclude that this is not working. A value process that can only report progress is a reporting exercise, and the option to stop is the one that gives the rest of it credibility.",
     ],
-    intakeTitle: "Client & cost intake",
+    intakeTitle: "Client & KPI intake",
     lblClient: "Client / engagement",
     lblAssessor: "Assessor",
-    lblMonitoringNotes: "Inference cost monitoring & attribution",
-    lblUtilizationNotes: "GPU / compute utilization findings",
-    lblCompressionNotes: "Model compression & distillation assessment",
-    lblCachingNotes: "Caching & request-shaping strategy",
-    tableTitle: "Optimization levers",
-    tableHint: "Add one row per lever, its expected saving, and the effort to implement it.",
-    colA: "Lever",
-    colB: "Expected saving",
-    colC: "Effort / risk",
+    lblKpiNotes: "KPI set, baselines & owners",
+    lblDashboardNotes: "Dashboard design & where it lives",
+    lblReviewNotes: "Review cadence, attendees & decision rights",
+    lblActionNotes: "Actions from the latest review",
+    tableTitle: "KPIs",
+    tableHint: "Add one row per KPI, its baseline, and the current value.",
+    colA: "KPI",
+    colB: "Baseline (pre go-live)",
+    colC: "Current",
     colStatus: "Status",
-    btnAddRow: "+ Add lever",
-    statusIdentified: "Identified",
-    statusAgreed: "Agreed",
-    statusImplemented: "Implemented",
-    statusRejected: "Rejected",
-    previewTitle: "Inference cost optimization report",
+    btnAddRow: "+ Add KPI",
+    statusOntrack: "On track",
+    statusWatch: "Watch",
+    statusBehind: "Behind",
+    statusRetired: "Retired",
+    previewTitle: "Quarterly value review",
     previewHint: "This is the actual deliverable — auto-generated and customized for this client.",
     btnExportHtml: "🌐 Export HTML",
     btnExportMd: "📄 Export Markdown",
     btnReset: "🔄 Reset",
-    docTitle: "Inference Cost Optimization Report",
+    docTitle: "Quarterly Value Review",
     docFor: "Prepared for",
     docAssessor: "Assessor",
     docDate: "Date",
-    secA: "1. Inference Cost Monitoring & Attribution",
-    secB: "2. Compute Utilization",
-    secC: "3. Model Compression & Distillation",
-    secD: "4. Caching & Request Shaping",
-    secE: "5. Optimization Levers",
-    noRows: "No optimization levers added yet.",
-    phA: "e.g. Right-size inference nodes",
-    phB: "e.g. ~30% of monthly compute",
-    phC: "e.g. Low effort, no accuracy impact",
+    secA: "1. KPI Set, Baselines & Owners",
+    secB: "2. Dashboard Design",
+    secC: "3. Review Cadence & Decision Rights",
+    secD: "4. Actions from This Review",
+    secE: "5. KPIs",
+    noRows: "No KPIs added yet.",
+    phA: "e.g. Fraud caught per 1000 claims",
+    phB: "e.g. 4.1",
+    phC: "e.g. 6.8",
     emptyNote: "(not yet documented)",
   },
   da: {
-    heroTitle: "Rapport om optimering af inferensomkostninger",
-    heroDesc: "SOP, kundeoptag, en optimeringsgreb-tracker, og en automatisk genereret rapport om optimering af inferensomkostninger.",
+    heroTitle: "Værdisporing og kvartalsgennemgang",
+    heroDesc: "SOP, kundeoptag, en KPI-tracker mod baseline, og en automatisk genereret kvartalsvis værdigennemgang.",
     noteLabel: "Sådan virker det.",
-    noteBody: "Udfyld optagsfelterne og greb-trackeren nedenfor; rapporten opbygges live. Ingen API-kald — alt gemmes automatisk lokalt.",
+    noteBody: "Udfyld optagsfelterne og KPI-trackeren nedenfor; gennemgangen opbygges live. Ingen API-kald — alt gemmes automatisk lokalt.",
     sopTitle: "SOP — sådan gøres det normalt",
     sopHint: "Rækkefølgen en arkitekt reelt arbejder denne øvelse igennem.",
     sop: [
-      "Få omkostningsattribuering til at virke før noget optimeres — en samlet inferensregning, ingen kan bryde ned pr. model, pr. feature eller pr. lejer, kan ikke reduceres bevidst.",
-      "Mål udnyttelse før du køber effektivitet: tomgangs-acceleratorer og overdimensionerede instanser koster oftest mere end en uoptimeret model, og koster kun planlægningsarbejde at rette.",
-      "Behandl kompression og destillation som en nøjagtighedshandel, der skal måles, ikke en gratis gevinst — kvantificér kvalitetstabet på det samme evalueringssæt, der blev brugt til at godkende modellen.",
-      "Se på caching og request-formning tidligt, da gentagne eller nær-identiske forespørgsler er almindelige i produktion, og cache-hits er den billigste besparelse, der findes.",
-      "Rangér greb efter besparelse mod indsats og risiko, og notér dem du afviste med begrundelsen — afvisningslisten er det, der stopper samme forslag fra at vende tilbage hvert kvartal.",
+      "Fastlås baseline før go-live og skriv den ned. Et værdiprogram der rekonstruerer sin baseline bagefter, producerer tal ingen uden for projektet tror på, og rekonstruktionen er den mest almindelige årsag til at værdisporing opgives.",
+      "Følg det udfald use casen blev købt for at flytte, sammen med modelmetrikkerne. Et dashboard af nøjagtighed og latenstid kan være helt grønt, mens business casen stille fejler.",
+      "Hold KPI-sættet lille nok til at nogen læser det hele. Seks tal gennemgået månedligt slår tredive gennemgået aldrig, og dashboardet med tredive tal er det der bygges som standard.",
+      "Giv hver KPI en ejer der kan handle på den. En metrik uden ejer bliver dekoration ved anden gennemgang, og gennemgangen bliver et statusmøde.",
+      "Gør kvartalsgennemgangen i stand til at konkludere, at dette ikke virker. En værdiproces der kun kan rapportere fremgang, er en rapporteringsøvelse, og muligheden for at stoppe er den der giver resten troværdighed.",
     ],
-    intakeTitle: "Kunde- og omkostningsoptag",
+    intakeTitle: "Kunde- og KPI-optag",
     lblClient: "Kunde / engagement",
     lblAssessor: "Vurderingsmand",
-    lblMonitoringNotes: "Overvågning og attribuering af inferensomkostninger",
-    lblUtilizationNotes: "Fund om GPU-/compute-udnyttelse",
-    lblCompressionNotes: "Vurdering af modelkompression og destillation",
-    lblCachingNotes: "Caching- og request-formningsstrategi",
-    tableTitle: "Optimeringsgreb",
-    tableHint: "Tilføj en række pr. greb, dets forventede besparelse, og indsatsen for at implementere det.",
-    colA: "Greb",
-    colB: "Forventet besparelse",
-    colC: "Indsats / risiko",
+    lblKpiNotes: "KPI-sæt, baselines og ejere",
+    lblDashboardNotes: "Dashboard-design og hvor det bor",
+    lblReviewNotes: "Gennemgangskadence, deltagere og beslutningsret",
+    lblActionNotes: "Handlinger fra seneste gennemgang",
+    tableTitle: "KPI'er",
+    tableHint: "Tilføj en række pr. KPI, dens baseline, og den aktuelle værdi.",
+    colA: "KPI",
+    colB: "Baseline (før go-live)",
+    colC: "Aktuel",
     colStatus: "Status",
-    btnAddRow: "+ Tilføj greb",
-    statusIdentified: "Identificeret",
-    statusAgreed: "Aftalt",
-    statusImplemented: "Implementeret",
-    statusRejected: "Afvist",
-    previewTitle: "Rapport om optimering af inferensomkostninger",
+    btnAddRow: "+ Tilføj KPI",
+    statusOntrack: "På sporet",
+    statusWatch: "Observeres",
+    statusBehind: "Bagud",
+    statusRetired: "Udfaset",
+    previewTitle: "Kvartalsvis værdigennemgang",
     previewHint: "Dette er selve leverancen — automatisk genereret og tilpasset denne kunde.",
     btnExportHtml: "🌐 Eksportér HTML",
     btnExportMd: "📄 Eksportér Markdown",
     btnReset: "🔄 Nulstil",
-    docTitle: "Rapport om optimering af inferensomkostninger",
+    docTitle: "Kvartalsvis værdigennemgang",
     docFor: "Udarbejdet for",
     docAssessor: "Vurderingsmand",
     docDate: "Dato",
-    secA: "1. Overvågning og attribuering af inferensomkostninger",
-    secB: "2. Compute-udnyttelse",
-    secC: "3. Modelkompression og destillation",
-    secD: "4. Caching og request-formning",
-    secE: "5. Optimeringsgreb",
-    noRows: "Ingen optimeringsgreb tilføjet endnu.",
-    phA: "fx Ret-dimensioner inferensnoder",
-    phB: "fx ~30% af månedlig compute",
-    phC: "fx Lav indsats, ingen nøjagtighedspåvirkning",
+    secA: "1. KPI-sæt, baselines og ejere",
+    secB: "2. Dashboard-design",
+    secC: "3. Gennemgangskadence og beslutningsret",
+    secD: "4. Handlinger fra denne gennemgang",
+    secE: "5. KPI'er",
+    noRows: "Ingen KPI'er tilføjet endnu.",
+    phA: "fx Svindel fanget pr. 1000 sager",
+    phB: "fx 4,1",
+    phC: "fx 6,8",
     emptyNote: "(endnu ikke dokumenteret)",
   },
   sv: {
-    heroTitle: "Rapport om optimering av inferenskostnader",
-    heroDesc: "SOP, kundintag, en optimeringsspak-spårare, och en automatiskt genererad rapport om optimering av inferenskostnader.",
+    heroTitle: "Värdespårning och kvartalsgranskning",
+    heroDesc: "SOP, kundintag, en KPI-spårare mot baslinje, och en automatiskt genererad kvartalsvis värdegranskning.",
     noteLabel: "Så här fungerar det.",
-    noteBody: "Fyll i intagsfälten och spakspåraren nedan; rapporten byggs upp live. Inga API-anrop — allt sparas automatiskt lokalt.",
+    noteBody: "Fyll i intagsfälten och KPI-spåraren nedan; granskningen byggs upp live. Inga API-anrop — allt sparas automatiskt lokalt.",
     sopTitle: "SOP — så här görs det vanligtvis",
     sopHint: "Ordningen en arkitekt faktiskt arbetar igenom denna övning.",
     sop: [
-      "Få kostnadsattribuering att fungera innan något optimeras — en total inferensräkning ingen kan bryta ned per modell, per feature eller per tenant kan inte minskas medvetet.",
-      "Mät utnyttjande innan ni köper effektivitet: tomgångsacceleratorer och överdimensionerade instanser kostar oftast mer än en ooptimerad modell, och kostar bara schemaläggningsarbete att rätta.",
-      "Behandla kompression och destillation som en träffsäkerhetsaffär som ska mätas, inte en gratis vinst — kvantifiera kvalitetsförlusten på samma utvärderingsuppsättning som användes för att godkänna modellen.",
-      "Titta på caching och request-formning tidigt, eftersom upprepade eller nära-identiska förfrågningar är vanliga i produktion och cache-träffar är den billigaste besparingen som finns.",
-      "Rangordna spakar efter besparing mot insats och risk, och anteckna de ni avvisade med skälet — avvisningslistan är vad som stoppar samma förslag från att återkomma varje kvartal.",
+      "Lås baslinjen före go-live och skriv ned den. Ett värdeprogram som rekonstruerar sin baslinje efteråt producerar tal ingen utanför projektet tror på, och rekonstruktionen är det vanligaste skälet till att värdespårning överges.",
+      "Följ det utfall användningsfallet köptes för att flytta, jämte modellmåtten. En dashboard av träffsäkerhet och latens kan vara helt grön medan affärsfallet tyst misslyckas.",
+      "Håll KPI-uppsättningen liten nog att någon läser allt. Sex tal granskade månadsvis slår trettio granskade aldrig, och dashboarden med trettio tal är den som byggs som standard.",
+      "Ge varje KPI en ägare som kan agera på den. Ett mått utan ägare blir dekoration vid andra granskningen, och granskningen blir ett statusmöte.",
+      "Gör kvartalsgranskningen kapabel att dra slutsatsen att detta inte fungerar. En värdeprocess som bara kan rapportera framsteg är en rapporteringsövning, och möjligheten att stoppa är den som ger resten trovärdighet.",
     ],
-    intakeTitle: "Kund- och kostnadsintag",
+    intakeTitle: "Kund- och KPI-intag",
     lblClient: "Kund / uppdrag",
     lblAssessor: "Bedömare",
-    lblMonitoringNotes: "Övervakning och attribuering av inferenskostnader",
-    lblUtilizationNotes: "Fynd om GPU-/compute-utnyttjande",
-    lblCompressionNotes: "Bedömning av modellkompression och destillation",
-    lblCachingNotes: "Caching- och request-formningsstrategi",
-    tableTitle: "Optimeringsspakar",
-    tableHint: "Lägg till en rad per spak, dess förväntade besparing, och insatsen för att implementera den.",
-    colA: "Spak",
-    colB: "Förväntad besparing",
-    colC: "Insats / risk",
+    lblKpiNotes: "KPI-uppsättning, baslinjer och ägare",
+    lblDashboardNotes: "Dashboard-design och var den bor",
+    lblReviewNotes: "Granskningskadens, deltagare och beslutsrätt",
+    lblActionNotes: "Åtgärder från senaste granskningen",
+    tableTitle: "KPI:er",
+    tableHint: "Lägg till en rad per KPI, dess baslinje, och det aktuella värdet.",
+    colA: "KPI",
+    colB: "Baslinje (före go-live)",
+    colC: "Aktuell",
     colStatus: "Status",
-    btnAddRow: "+ Lägg till spak",
-    statusIdentified: "Identifierad",
-    statusAgreed: "Överenskommen",
-    statusImplemented: "Implementerad",
-    statusRejected: "Avvisad",
-    previewTitle: "Rapport om optimering av inferenskostnader",
+    btnAddRow: "+ Lägg till KPI",
+    statusOntrack: "På spåret",
+    statusWatch: "Bevakas",
+    statusBehind: "Efter",
+    statusRetired: "Utfasad",
+    previewTitle: "Kvartalsvis värdegranskning",
     previewHint: "Detta är själva leveransen — automatiskt genererad och anpassad för denna kund.",
     btnExportHtml: "🌐 Exportera HTML",
     btnExportMd: "📄 Exportera Markdown",
     btnReset: "🔄 Återställ",
-    docTitle: "Rapport om optimering av inferenskostnader",
+    docTitle: "Kvartalsvis värdegranskning",
     docFor: "Framtagen för",
     docAssessor: "Bedömare",
     docDate: "Datum",
-    secA: "1. Övervakning och attribuering av inferenskostnader",
-    secB: "2. Compute-utnyttjande",
-    secC: "3. Modellkompression och destillation",
-    secD: "4. Caching och request-formning",
-    secE: "5. Optimeringsspakar",
-    noRows: "Inga optimeringsspakar tillagda än.",
-    phA: "t.ex. Rätt-dimensionera inferensnoder",
-    phB: "t.ex. ~30% av månatlig compute",
-    phC: "t.ex. Låg insats, ingen träffsäkerhetspåverkan",
+    secA: "1. KPI-uppsättning, baslinjer och ägare",
+    secB: "2. Dashboard-design",
+    secC: "3. Granskningskadens och beslutsrätt",
+    secD: "4. Åtgärder från denna granskning",
+    secE: "5. KPI:er",
+    noRows: "Inga KPI:er tillagda än.",
+    phA: "t.ex. Bedrägeri fångat per 1000 ärenden",
+    phB: "t.ex. 4,1",
+    phC: "t.ex. 6,8",
     emptyNote: "(ännu inte dokumenterat)",
   },
 };
@@ -412,7 +412,7 @@ function esc(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt
 // invent columns or rows in the exported deliverable.
 function mdCell(v) { return String(v === undefined || v === null ? '' : v).replace(/\|/g, '\\|').replace(/\r?\n/g, ' '); }
 
-let rows = []; // { id, lever, saving, effort, status }
+let rows = []; // { id, kpi, baseline, current, status }
 let nextId = 1;
 
 function setLang(l) {
@@ -427,7 +427,7 @@ function setLang(l) {
 function applyI18n() {
   document.documentElement.lang = lang;
   document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.getAttribute('data-i18n')); });
-  document.title = t('heroTitle') + ' — Phase 7';
+  document.title = t('heroTitle') + ' — Phase 10';
   document.getElementById('sopList').innerHTML = t('sop').map(s => `<li>${esc(s)}</li>`).join('');
 }
 
@@ -449,7 +449,7 @@ function loadSaved() {
   } catch (e) {}
 }
 
-function addRow() { rows.push({ id: nextId++, lever: '', saving: '', effort: '', status: 'identified' }); renderMatrix(); renderPreview(); save(); }
+function addRow() { rows.push({ id: nextId++, kpi: '', baseline: '', current: '', status: 'ontrack' }); renderMatrix(); renderPreview(); save(); }
 function removeRow(id) { rows = rows.filter(r => r.id !== id); renderMatrix(); renderPreview(); save(); }
 function updateRow(id, field, value) { const r = rows.find(r => r.id === id); if (r) r[field] = value; renderPreview(); save(); if (field === 'status') renderMatrix(); }
 
@@ -457,9 +457,9 @@ function renderMatrix() {
   const body = document.getElementById('matrixBody');
   if (!rows.length) { body.innerHTML = `<tr><td colspan="5" style="color:var(--muted);font-style:italic;padding:14px 8px">${esc(t('noRows'))}</td></tr>`; return; }
   body.innerHTML = rows.map(r => `<tr>
-      <td><input type="text" value="${esc(r.lever)}" placeholder="${esc(t('phA'))}" oninput="updateRow(${r.id},'lever',this.value)"></td>
-      <td><input type="text" value="${esc(r.saving)}" placeholder="${esc(t('phB'))}" oninput="updateRow(${r.id},'saving',this.value)"></td>
-      <td><input type="text" value="${esc(r.effort)}" placeholder="${esc(t('phC'))}" oninput="updateRow(${r.id},'effort',this.value)"></td>
+      <td><input type="text" value="${esc(r.kpi)}" placeholder="${esc(t('phA'))}" oninput="updateRow(${r.id},'kpi',this.value)"></td>
+      <td><input type="text" value="${esc(r.baseline)}" placeholder="${esc(t('phB'))}" oninput="updateRow(${r.id},'baseline',this.value)"></td>
+      <td><input type="text" value="${esc(r.current)}" placeholder="${esc(t('phC'))}" oninput="updateRow(${r.id},'current',this.value)"></td>
       <td><select onchange="updateRow(${r.id},'status',this.value)">
         ${Object.entries(STATUS_KEYS).map(([v, k]) => `<option value="${v}" ${r.status === v ? 'selected' : ''}>${esc(t(k))}</option>`).join('')}
       </select></td>
@@ -469,16 +469,16 @@ function renderMatrix() {
 
 function renderPreview() {
   const date = new Date().toISOString().slice(0, 10);
-  const filled = rows.filter(r => r.lever.trim());
+  const filled = rows.filter(r => r.kpi.trim());
   let h = `<div class="meta"><strong>${esc(t('docFor'))}:</strong> ${esc(val('client')) || '—'} &nbsp;·&nbsp; <strong>${esc(t('docAssessor'))}:</strong> ${esc(val('assessor')) || '—'} &nbsp;·&nbsp; <strong>${esc(t('docDate'))}:</strong> ${date}</div>`;
-  h += `<h3>${esc(t('secA'))}</h3><p>${orEmpty(val('monitoringNotes'))}</p>`;
-  h += `<h3>${esc(t('secB'))}</h3><p>${orEmpty(val('utilizationNotes'))}</p>`;
-  h += `<h3>${esc(t('secC'))}</h3><p>${orEmpty(val('compressionNotes'))}</p>`;
-  h += `<h3>${esc(t('secD'))}</h3><p>${orEmpty(val('cachingNotes'))}</p>`;
+  h += `<h3>${esc(t('secA'))}</h3><p>${orEmpty(val('kpiNotes'))}</p>`;
+  h += `<h3>${esc(t('secB'))}</h3><p>${orEmpty(val('dashboardNotes'))}</p>`;
+  h += `<h3>${esc(t('secC'))}</h3><p>${orEmpty(val('reviewNotes'))}</p>`;
+  h += `<h3>${esc(t('secD'))}</h3><p>${orEmpty(val('actionNotes'))}</p>`;
   h += `<h3>${esc(t('secE'))}</h3>`;
   if (filled.length) {
     h += `<table><thead><tr><th>${esc(t('colA'))}</th><th>${esc(t('colB'))}</th><th>${esc(t('colC'))}</th><th>${esc(t('colStatus'))}</th></tr></thead><tbody>`;
-    h += filled.map(r => `<tr><td>${esc(r.lever)}</td><td>${esc(r.saving)}</td><td>${esc(r.effort)}</td><td><span class="status-badge status-${r.status}">${esc(t(STATUS_KEYS[r.status] || 'statusIdentified'))}</span></td></tr>`).join('');
+    h += filled.map(r => `<tr><td>${esc(r.kpi)}</td><td>${esc(r.baseline)}</td><td>${esc(r.current)}</td><td><span class="status-badge status-${r.status}">${esc(t(STATUS_KEYS[r.status] || 'statusOntrack'))}</span></td></tr>`).join('');
     h += '</tbody></table>';
   } else {
     h += `<p><em>${esc(t('noRows'))}</em></p>`;
@@ -496,20 +496,20 @@ function resetAll() {
   renderMatrix(); renderPreview(); save();
 }
 
-function slug() { return (val('client') || 'cost_optimization').replace(/\W+/g, '_'); }
+function slug() { return (val('client') || 'value_tracking').replace(/\W+/g, '_'); }
 function docMarkdown() {
   const date = new Date().toISOString().slice(0, 10);
-  const filled = rows.filter(r => r.lever.trim());
+  const filled = rows.filter(r => r.kpi.trim());
   let m = `# ${t('docTitle')} — ${val('client') || '[client]'}\n\n`;
   m += `**${t('docFor')}:** ${val('client') || '—'}  \n**${t('docAssessor')}:** ${val('assessor') || '—'}  \n**${t('docDate')}:** ${date}\n\n`;
-  m += `## ${t('secA')}\n${val('monitoringNotes') || t('emptyNote')}\n\n`;
-  m += `## ${t('secB')}\n${val('utilizationNotes') || t('emptyNote')}\n\n`;
-  m += `## ${t('secC')}\n${val('compressionNotes') || t('emptyNote')}\n\n`;
-  m += `## ${t('secD')}\n${val('cachingNotes') || t('emptyNote')}\n\n`;
+  m += `## ${t('secA')}\n${val('kpiNotes') || t('emptyNote')}\n\n`;
+  m += `## ${t('secB')}\n${val('dashboardNotes') || t('emptyNote')}\n\n`;
+  m += `## ${t('secC')}\n${val('reviewNotes') || t('emptyNote')}\n\n`;
+  m += `## ${t('secD')}\n${val('actionNotes') || t('emptyNote')}\n\n`;
   m += `## ${t('secE')}\n\n`;
   if (filled.length) {
     m += `| ${t('colA')} | ${t('colB')} | ${t('colC')} | ${t('colStatus')} |\n|---|---|---|---|\n`;
-    m += filled.map(r => `| ${mdCell(r.lever)} | ${mdCell(r.saving)} | ${mdCell(r.effort)} | ${t(STATUS_KEYS[r.status] || 'statusIdentified')} |`).join('\n') + '\n';
+    m += filled.map(r => `| ${mdCell(r.kpi)} | ${mdCell(r.baseline)} | ${mdCell(r.current)} | ${t(STATUS_KEYS[r.status] || 'statusOntrack')} |`).join('\n') + '\n';
   } else {
     m += `${t('noRows')}\n`;
   }
@@ -529,8 +529,8 @@ function download(text, fname, mime) {
   URL.revokeObjectURL(a.href);
 }
 function exportDoc(fmt) {
-  if (fmt === 'md') download(docMarkdown(), 'cost_optimization_' + slug() + '.md', 'text/markdown');
-  else download(docHtml(), 'cost_optimization_' + slug() + '.html', 'text/html');
+  if (fmt === 'md') download(docMarkdown(), 'value_tracking_' + slug() + '.md', 'text/markdown');
+  else download(docHtml(), 'value_tracking_' + slug() + '.html', 'text/html');
 }
 
 // ── Shared engagement profile (site-wide prefill of client/assessor/use case) ──
@@ -673,7 +673,7 @@ save = function () {
 };
 const _sopApplyI18n = applyI18n;
 applyI18n = function () { _sopApplyI18n(); renderSop(); };
-const SAMPLE_URL = '../../Phase%201%20-%20Discovery%20%26%20Assessment/sample-data/engagement-nordkap/cost-optimization.json';
+const SAMPLE_URL = '../../Phase%201%20-%20Discovery%20%26%20Assessment/sample-data/engagement-nordkap/value-tracking.json';
 function loadSample() {
   if (!confirm(t('sampleConfirm'))) return;
   const errEl = document.getElementById('sampleError');
@@ -703,7 +703,7 @@ function loadSample() {
   loadSaved();
   prefillEngagement();
   applyI18n();
-  if (!rows.length) { rows.push({ id: nextId++, lever: '', saving: '', effort: '', status: 'identified' }); }
+  if (!rows.length) { rows.push({ id: nextId++, kpi: '', baseline: '', current: '', status: 'ontrack' }); }
   renderMatrix();
   renderPreview();
 })();

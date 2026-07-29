@@ -1,0 +1,56 @@
+{
+  "fields": {
+    "client": "Nordkap Insurance",
+    "assessor": "Emma Gao",
+    "impactNotes": "Three groups, very different exposure. Claims investigators (14 people) see the largest change: fraud triage is now model-first, so their queue arrives pre-ranked and their day shifts from finding candidates to investigating them. FNOL call handlers (40+) see almost nothing, one extra field on a screen. Claims managers get a new dashboard and a new question at monthly review, which is a reporting change rather than a workflow one. The investigators are the group that decides whether this succeeds, and they were not in the room for the PoC.",
+    "commsNotes": "Sequenced by exposure, not by seniority. Investigators first and in person, before any all-hands, because hearing it second-hand from a company-wide email is how this goes wrong. Then managers, then a short written note to call handlers. Fortnightly during rollout, then folded into the existing monthly claims meeting rather than kept as a separate AI update, which signals it is normal work now.",
+    "resistanceNotes": "Two expected objections, both reasonable. First, that the model will be used to measure investigator productivity: addressed by a written commitment that model agreement is not an individual performance metric, agreed with the claims director before rollout. Second, that a missed fraud will be blamed on the person who overrode the model: addressed by making override an explicitly supported action with a one-line reason field, and by reviewing overrides in aggregate rather than by name.",
+    "adoptionNotes": "Behavioural, not survey-based. Primary measure is override rate with reasons, reviewed monthly: a high rate means the model or the thresholds are wrong, not that the team is non-compliant, and that framing is stated to the team. Secondary is time-to-first-action on ranked claims. A satisfaction pulse runs quarterly but is treated as a lagging indicator."
+  },
+  "rows": [
+    {
+      "id": 1,
+      "group": "Claims investigators",
+      "impact": "Fraud triage becomes model-first; queue arrives pre-ranked",
+      "action": "In-person briefing first; two join threshold setting",
+      "status": "engaged"
+    },
+    {
+      "id": 2,
+      "group": "Claims managers",
+      "impact": "New dashboard and a new question at monthly review",
+      "action": "Walkthrough of the outcome tier, agree the review question",
+      "status": "onboard"
+    },
+    {
+      "id": 3,
+      "group": "FNOL call handlers",
+      "impact": "One extra field on the intake screen",
+      "action": "Short written note, no training needed",
+      "status": "onboard"
+    },
+    {
+      "id": 4,
+      "group": "Data platform team",
+      "impact": "Owns a new nightly pipeline and its alerts",
+      "action": "Runbook handover plus two shadowed on-call rotations",
+      "status": "engaged"
+    },
+    {
+      "id": 5,
+      "group": "Works council",
+      "impact": "Consultation on measurement of individual performance",
+      "action": "Written commitment that model agreement is not a KPI",
+      "status": "identified"
+    }
+  ],
+  "nextId": 6,
+  "sopDone": [
+    true,
+    true,
+    true,
+    false,
+    false
+  ],
+  "lang": "en"
+}

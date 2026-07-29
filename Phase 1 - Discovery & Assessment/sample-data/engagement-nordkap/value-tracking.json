@@ -1,0 +1,77 @@
+{
+  "fields": {
+    "client": "Nordkap Insurance",
+    "assessor": "Emma Gao",
+    "kpiNotes": "Six KPIs, fixed and written down four weeks before go-live rather than reconstructed afterwards, which is what makes the current figures arguable at all. Two outcome measures owned by the claims director, two operational measures owned by the platform lead, one fairness measure owned jointly with the DPO, and one cost measure owned by the head of claims analytics. Deliberately not thirty: the first draft dashboard had nineteen and nobody could say which three mattered.",
+    "dashboardNotes": "Same Grafana instance as the Phase 7 monitoring, one folder up, so there is one place to look rather than an executive dashboard that diverges from the operational one. Outcome tier refreshes daily but is read monthly; the operational tier is the one on-call watches. The quarterly review uses exactly this dashboard rather than a separate deck, which stops the review becoming a slide-writing exercise and keeps the numbers honest.",
+    "reviewNotes": "Monthly operational review with the platform lead and model owner; quarterly value review with the claims director, head of claims analytics, platform lead and DPO. The quarterly has explicit decision rights: continue, adjust thresholds, expand scope, or stop. That last option is written into the terms of reference because a review that cannot recommend stopping tends to produce optimistic readings of flat numbers.",
+    "actionNotes": "From the Q2 review: (1) analyst override rate is above the 25% threshold in one team, so investigate whether the thresholds are wrong for their claim mix rather than treating it as non-compliance, owned by model owner, due before Q3. (2) Reinsurance benefit remains unverified and is now excluded from the reported value until the broker confirms in writing, owned by head of claims analytics. (3) Renewal increase on the managed service is still uncapped; procurement to reopen before the year-two renewal."
+  },
+  "rows": [
+    {
+      "id": 1,
+      "kpi": "Fraud caught per 1000 claims",
+      "baseline": "4.1",
+      "current": "6.8",
+      "status": "ontrack"
+    },
+    {
+      "id": 2,
+      "kpi": "False positives on legitimate claims",
+      "baseline": "11%",
+      "current": "9%",
+      "status": "ontrack"
+    },
+    {
+      "id": 3,
+      "kpi": "Analyst minutes per scored claim",
+      "baseline": "18",
+      "current": "12",
+      "status": "ontrack"
+    },
+    {
+      "id": 4,
+      "kpi": "Analyst override rate",
+      "baseline": "n/a",
+      "current": "27% in one team",
+      "status": "watch"
+    },
+    {
+      "id": 5,
+      "kpi": "Protected-group outcome gap",
+      "baseline": "Within threshold",
+      "current": "Within threshold",
+      "status": "ontrack"
+    },
+    {
+      "id": 6,
+      "kpi": "Cost per claim scored",
+      "baseline": "n/a",
+      "current": "1.9 DKK",
+      "status": "ontrack"
+    },
+    {
+      "id": 7,
+      "kpi": "Reinsurance benefit realised",
+      "baseline": "0",
+      "current": "Unverified, excluded",
+      "status": "behind"
+    },
+    {
+      "id": 8,
+      "kpi": "Time to first action on ranked claim",
+      "baseline": "n/a",
+      "current": "Retired, duplicated KPI 3",
+      "status": "retired"
+    }
+  ],
+  "nextId": 9,
+  "sopDone": [
+    true,
+    true,
+    true,
+    true,
+    true
+  ],
+  "lang": "en"
+}

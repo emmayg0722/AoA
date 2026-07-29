@@ -1,0 +1,70 @@
+{
+  "fields": {
+    "client": "Nordkap Insurance",
+    "assessor": "Emma Gao",
+    "optionNotes": "Whether to self-host an open-source vector store on Nordkap's existing Kubernetes footprint, or buy the managed service recommended in the vendor evaluation. Three-year horizon, chosen deliberately because a one-year comparison makes build look cheap: the first renewal and the first major version upgrade both land in year two. A third option, extending the existing PostgreSQL with pgvector, is included because it is the one the platform team raised and it deserves a real answer rather than being dismissed.",
+    "costNotes": "Over three years the managed service is roughly 1.6 times the direct infrastructure cost of self-hosting, and about 0.6 times the total once engineering time is loaded in at Nordkap's own internal rate. The build case only wins if the platform team's time is treated as free, which it is not, since the same two people are the ones handed the fraud model's on-call rotation. pgvector is materially cheapest on both measures but caps out on recall at our corpus size, which the benchmark showed rather than assumed.",
+    "debtNotes": "Self-hosting adds a stateful service with its own upgrade path to a team of five that currently runs no stateful services of its own. The realistic burden is not the install, it is the index rebuild after a version upgrade, the backup and restore drill nobody has run, and being the only people who understand it when the engineer who set it up moves teams. This is the factor that decides the analysis, and it is a staffing fact rather than a technical one.",
+    "flexibilityNotes": "The recommended vendor documents a non-proprietary index export, so exit is a re-index into another store rather than a rebuild from source documents; we costed that at roughly three weeks of one engineer. Self-hosting has no lock-in but also no floor: if the team cannot operate it, the fallback is an emergency migration under pressure, which is a worse position than a planned exit. pgvector keeps everything inside a database Nordkap already operates well, which is the strongest flexibility story of the three."
+  },
+  "rows": [
+    {
+      "id": 1,
+      "factor": "Time to first value",
+      "build": "4-5 months incl. ops readiness",
+      "buy": "3 weeks",
+      "status": "favoursbuy"
+    },
+    {
+      "id": 2,
+      "factor": "3-year direct infra cost",
+      "build": "Lower",
+      "buy": "~1.6x build",
+      "status": "favoursbuild"
+    },
+    {
+      "id": 3,
+      "factor": "3-year cost with loaded eng time",
+      "build": "~1.7x buy",
+      "buy": "Lower",
+      "status": "favoursbuy"
+    },
+    {
+      "id": 4,
+      "factor": "Ops burden on a 5-person team",
+      "build": "First stateful service they own",
+      "buy": "None beyond integration",
+      "status": "blocking"
+    },
+    {
+      "id": 5,
+      "factor": "Recall at our corpus size",
+      "build": "Equivalent (same engine)",
+      "buy": "Equivalent",
+      "status": "neutral"
+    },
+    {
+      "id": 6,
+      "factor": "Exit cost",
+      "build": "None, but no operable fallback",
+      "buy": "~3 weeks re-index, documented export",
+      "status": "neutral"
+    },
+    {
+      "id": 7,
+      "factor": "Is this our differentiator?",
+      "build": "No, retrieval plumbing",
+      "buy": "No",
+      "status": "favoursbuy"
+    }
+  ],
+  "nextId": 8,
+  "sopDone": [
+    true,
+    true,
+    true,
+    true,
+    true
+  ],
+  "lang": "en"
+}

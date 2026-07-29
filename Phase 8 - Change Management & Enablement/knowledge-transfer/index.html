@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Inference Cost Optimization Report — Phase 7</title>
-<meta name="description" content="SOP, client intake, an optimization-lever tracker, and an auto-generated inference cost optimization report.">
+<title>Knowledge Transfer Plan — Phase 8</title>
+<meta name="description" content="SOP, client intake, a handover tracker per area, and an auto-generated knowledge transfer plan.">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='16' fill='%231B1474'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -64,10 +64,10 @@
   table.matrix select { padding: 6px 6px; font-size: 13px; }
   .rm-btn { background: none; border: none; color: var(--red); cursor: pointer; font-size: 15px; }
   .status-badge { display: inline-block; font-size: 10.5px; font-weight: 700; padding: 2px 8px; border-radius: 10px; white-space: nowrap; }
-  .status-identified { background: var(--powder); color: var(--muted); }
-  .status-agreed { background: #fdf3e3; color: var(--amber); }
-  .status-implemented { background: #e7f5ee; color: var(--green); }
-  .status-rejected { background: #fbeaea; color: var(--red); }
+  .status-notstarted { background: var(--powder); color: var(--muted); }
+  .status-shadowing { background: #fdf3e3; color: var(--amber); }
+  .status-leading { background: #e7f5ee; color: var(--green); }
+  .status-signedoff { background: #fbeaea; color: var(--red); }
   .preview { border: 1px dashed var(--line); border-radius: 10px; padding: 18px 20px; background: #fcfcff; font-size: 14px; }
   .preview h3 { font-family: var(--font-heading); color: var(--primary); font-size: 16px; margin: 14px 0 6px; }
   .preview h3:first-child { margin-top: 0; }
@@ -107,7 +107,7 @@
 <body>
   <header class="hero"><div class="wrap">
     <div class="hero-top">
-      <div class="crumb"><a href="../../">AI Architect Toolkit</a> · Phase 7 · MLOps &amp; Operations · <span class="next-nav">Next: <a href="../../Phase%208%20-%20Change%20Management%20%26%20Enablement/change-management-plan/">Change Management Plan →</a></span></div>
+      <div class="crumb"><a href="../../">AI Architect Toolkit</a> · Phase 8 · Change Management &amp; Enablement · <span class="next-nav">Next: <a href="../../Phase%209%20-%20Vendor%20Evaluation%20%26%20Technology%20Selection/rfp-builder/">RFP / RFI Builder →</a></span></div>
       <select id="langSelect" onchange="setLang(this.value)">
         <option value="en">English</option>
         <option value="da">Dansk</option>
@@ -134,14 +134,14 @@
         <div><label data-i18n="lblClient"></label><input type="text" data-eng="client" placeholder="Acme Corp"></div>
         <div><label data-i18n="lblAssessor"></label><input type="text" data-eng="assessor"></div>
       </div>
-      <label data-i18n="lblMonitoringNotes"></label>
-      <textarea data-eng="monitoringNotes"></textarea>
-      <label data-i18n="lblUtilizationNotes"></label>
-      <textarea data-eng="utilizationNotes"></textarea>
-      <label data-i18n="lblCompressionNotes"></label>
-      <textarea data-eng="compressionNotes"></textarea>
-      <label data-i18n="lblCachingNotes"></label>
-      <textarea data-eng="cachingNotes"></textarea>
+      <label data-i18n="lblTransferNotes"></label>
+      <textarea data-eng="transferNotes"></textarea>
+      <label data-i18n="lblDocsNotes"></label>
+      <textarea data-eng="docsNotes"></textarea>
+      <label data-i18n="lblPracticeNotes"></label>
+      <textarea data-eng="practiceNotes"></textarea>
+      <label data-i18n="lblCommunityNotes"></label>
+      <textarea data-eng="communityNotes"></textarea>
     </div>
 
     <div class="card">
@@ -182,164 +182,164 @@
   </main>
 
 <script>
-const KEY = 'aoa_cost_optimization_v1';
-const STATUS_KEYS = { identified: 'statusIdentified', agreed: 'statusAgreed', implemented: 'statusImplemented', rejected: 'statusRejected' };
+const KEY = 'aoa_knowledge_transfer_v1';
+const STATUS_KEYS = { notstarted: 'statusNotstarted', shadowing: 'statusShadowing', leading: 'statusLeading', signedoff: 'statusSignedoff' };
 
 const STRINGS = {
   en: {
-    heroTitle: "Inference Cost Optimization Report",
-    heroDesc: "SOP, client intake, an optimization-lever tracker, and an auto-generated inference cost optimization report.",
+    heroTitle: "Knowledge Transfer Plan",
+    heroDesc: "SOP, client intake, a handover tracker per area, and an auto-generated knowledge transfer plan.",
     noteLabel: "How this works.",
-    noteBody: "Fill in the intake fields and lever tracker below; the report builds live. No API calls — everything autosaves locally.",
+    noteBody: "Fill in the intake fields and handover tracker below; the plan builds live. No API calls — everything autosaves locally.",
     sopTitle: "SOP — how this is usually done",
     sopHint: "The order an architect actually works this exercise in.",
     sop: [
-      "Get cost attribution working before optimizing anything — a total inference bill nobody can break down per model, per feature, or per tenant cannot be reduced deliberately.",
-      "Measure utilization before buying efficiency: idle accelerators and oversized instances usually cost more than an unoptimized model does, and cost nothing but scheduling work to fix.",
-      "Treat compression and distillation as an accuracy trade to be measured, not a free win — quantify the quality loss on the same evaluation set used to accept the model.",
-      "Look at caching and request shaping early, since repeated or near-duplicate requests are common in production and cache hits are the cheapest saving available.",
-      "Rank levers by saving against effort and risk, and record the ones you rejected with the reason — the rejected list is what stops the same suggestion returning every quarter.",
+      "Define done as the client doing the task unaided while you watch, not as a document delivered or a session run. Anything weaker leaves you as the dependency after the invoice.",
+      "Transfer in the order things will break: the on-call playbooks and the retraining pipeline first, the architectural reasoning later. A team that cannot restore service does not benefit from understanding your design rationale.",
+      "Shadow, then reverse. Two rounds where they watch you, two where you watch them and only speak when asked. The second half is where the gaps actually surface.",
+      "Write the reasoning down where the decision lives, not in a separate handover pack. ADRs and runbook entries get read; a bespoke transfer document is read once and never updated.",
+      "Name the sign-off person per area and get an explicit yes. Handover without a named acceptance is where knowledge quietly stays with the consultant.",
     ],
-    intakeTitle: "Client & cost intake",
+    intakeTitle: "Client & transfer intake",
     lblClient: "Client / engagement",
     lblAssessor: "Assessor",
-    lblMonitoringNotes: "Inference cost monitoring & attribution",
-    lblUtilizationNotes: "GPU / compute utilization findings",
-    lblCompressionNotes: "Model compression & distillation assessment",
-    lblCachingNotes: "Caching & request-shaping strategy",
-    tableTitle: "Optimization levers",
-    tableHint: "Add one row per lever, its expected saving, and the effort to implement it.",
-    colA: "Lever",
-    colB: "Expected saving",
-    colC: "Effort / risk",
+    lblTransferNotes: "Transfer approach & definition of done",
+    lblDocsNotes: "Documentation set & where it lives",
+    lblPracticeNotes: "Best-practice library & standards",
+    lblCommunityNotes: "Internal community & ongoing knowledge sharing",
+    tableTitle: "Handover areas",
+    tableHint: "Add one row per area being handed over, from whom to whom.",
+    colA: "Area",
+    colB: "From",
+    colC: "To (named)",
     colStatus: "Status",
-    btnAddRow: "+ Add lever",
-    statusIdentified: "Identified",
-    statusAgreed: "Agreed",
-    statusImplemented: "Implemented",
-    statusRejected: "Rejected",
-    previewTitle: "Inference cost optimization report",
+    btnAddRow: "+ Add area",
+    statusNotstarted: "Not started",
+    statusShadowing: "Shadowing us",
+    statusLeading: "Leading, we watch",
+    statusSignedoff: "Signed off",
+    previewTitle: "Knowledge transfer plan",
     previewHint: "This is the actual deliverable — auto-generated and customized for this client.",
     btnExportHtml: "🌐 Export HTML",
     btnExportMd: "📄 Export Markdown",
     btnReset: "🔄 Reset",
-    docTitle: "Inference Cost Optimization Report",
+    docTitle: "Knowledge Transfer Plan",
     docFor: "Prepared for",
     docAssessor: "Assessor",
     docDate: "Date",
-    secA: "1. Inference Cost Monitoring & Attribution",
-    secB: "2. Compute Utilization",
-    secC: "3. Model Compression & Distillation",
-    secD: "4. Caching & Request Shaping",
-    secE: "5. Optimization Levers",
-    noRows: "No optimization levers added yet.",
-    phA: "e.g. Right-size inference nodes",
-    phB: "e.g. ~30% of monthly compute",
-    phC: "e.g. Low effort, no accuracy impact",
+    secA: "1. Transfer Approach & Definition of Done",
+    secB: "2. Documentation Set",
+    secC: "3. Best-Practice Library",
+    secD: "4. Internal Community",
+    secE: "5. Handover Areas",
+    noRows: "No handover areas added yet.",
+    phA: "e.g. Retraining pipeline",
+    phB: "e.g. Our ML engineer",
+    phC: "e.g. Nordkap ML engineer",
     emptyNote: "(not yet documented)",
   },
   da: {
-    heroTitle: "Rapport om optimering af inferensomkostninger",
-    heroDesc: "SOP, kundeoptag, en optimeringsgreb-tracker, og en automatisk genereret rapport om optimering af inferensomkostninger.",
+    heroTitle: "Plan for videnoverførsel",
+    heroDesc: "SOP, kundeoptag, en overdragelsestracker pr. område, og en automatisk genereret plan for videnoverførsel.",
     noteLabel: "Sådan virker det.",
-    noteBody: "Udfyld optagsfelterne og greb-trackeren nedenfor; rapporten opbygges live. Ingen API-kald — alt gemmes automatisk lokalt.",
+    noteBody: "Udfyld optagsfelterne og overdragelsestrackeren nedenfor; planen opbygges live. Ingen API-kald — alt gemmes automatisk lokalt.",
     sopTitle: "SOP — sådan gøres det normalt",
     sopHint: "Rækkefølgen en arkitekt reelt arbejder denne øvelse igennem.",
     sop: [
-      "Få omkostningsattribuering til at virke før noget optimeres — en samlet inferensregning, ingen kan bryde ned pr. model, pr. feature eller pr. lejer, kan ikke reduceres bevidst.",
-      "Mål udnyttelse før du køber effektivitet: tomgangs-acceleratorer og overdimensionerede instanser koster oftest mere end en uoptimeret model, og koster kun planlægningsarbejde at rette.",
-      "Behandl kompression og destillation som en nøjagtighedshandel, der skal måles, ikke en gratis gevinst — kvantificér kvalitetstabet på det samme evalueringssæt, der blev brugt til at godkende modellen.",
-      "Se på caching og request-formning tidligt, da gentagne eller nær-identiske forespørgsler er almindelige i produktion, og cache-hits er den billigste besparelse, der findes.",
-      "Rangér greb efter besparelse mod indsats og risiko, og notér dem du afviste med begrundelsen — afvisningslisten er det, der stopper samme forslag fra at vende tilbage hvert kvartal.",
+      "Definér færdig som at kunden udfører opgaven uden hjælp, mens du ser på, ikke som et leveret dokument eller en afholdt session. Alt svagere efterlader dig som afhængigheden efter fakturaen.",
+      "Overfør i den rækkefølge tingene går i stykker: vagt-playbooks og gentræningspipelinen først, den arkitektoniske begrundelse senere. Et team der ikke kan genoprette driften, får intet ud af at forstå dit designrationale.",
+      "Skygge, derefter omvendt. To runder hvor de ser dig, to hvor du ser dem og kun taler når du bliver spurgt. Anden halvdel er hvor hullerne reelt viser sig.",
+      "Skriv begrundelsen ned dér hvor beslutningen bor, ikke i en separat overdragelsespakke. ADR'er og runbook-poster bliver læst; et skræddersyet overdragelsesdokument læses én gang og opdateres aldrig.",
+      "Navngiv godkenderen pr. område og få et eksplicit ja. Overdragelse uden navngivet accept er dér hvor viden stille forbliver hos konsulenten.",
     ],
-    intakeTitle: "Kunde- og omkostningsoptag",
+    intakeTitle: "Kunde- og overførselsoptag",
     lblClient: "Kunde / engagement",
     lblAssessor: "Vurderingsmand",
-    lblMonitoringNotes: "Overvågning og attribuering af inferensomkostninger",
-    lblUtilizationNotes: "Fund om GPU-/compute-udnyttelse",
-    lblCompressionNotes: "Vurdering af modelkompression og destillation",
-    lblCachingNotes: "Caching- og request-formningsstrategi",
-    tableTitle: "Optimeringsgreb",
-    tableHint: "Tilføj en række pr. greb, dets forventede besparelse, og indsatsen for at implementere det.",
-    colA: "Greb",
-    colB: "Forventet besparelse",
-    colC: "Indsats / risiko",
+    lblTransferNotes: "Overførselstilgang og definition af færdig",
+    lblDocsNotes: "Dokumentationssæt og hvor det bor",
+    lblPracticeNotes: "Best practice-bibliotek og standarder",
+    lblCommunityNotes: "Internt fællesskab og løbende videndeling",
+    tableTitle: "Overdragelsesområder",
+    tableHint: "Tilføj en række pr. område der overdrages, fra hvem til hvem.",
+    colA: "Område",
+    colB: "Fra",
+    colC: "Til (navngivet)",
     colStatus: "Status",
-    btnAddRow: "+ Tilføj greb",
-    statusIdentified: "Identificeret",
-    statusAgreed: "Aftalt",
-    statusImplemented: "Implementeret",
-    statusRejected: "Afvist",
-    previewTitle: "Rapport om optimering af inferensomkostninger",
+    btnAddRow: "+ Tilføj område",
+    statusNotstarted: "Ikke startet",
+    statusShadowing: "Skygger os",
+    statusLeading: "Fører, vi ser på",
+    statusSignedoff: "Godkendt",
+    previewTitle: "Plan for videnoverførsel",
     previewHint: "Dette er selve leverancen — automatisk genereret og tilpasset denne kunde.",
     btnExportHtml: "🌐 Eksportér HTML",
     btnExportMd: "📄 Eksportér Markdown",
     btnReset: "🔄 Nulstil",
-    docTitle: "Rapport om optimering af inferensomkostninger",
+    docTitle: "Plan for videnoverførsel",
     docFor: "Udarbejdet for",
     docAssessor: "Vurderingsmand",
     docDate: "Dato",
-    secA: "1. Overvågning og attribuering af inferensomkostninger",
-    secB: "2. Compute-udnyttelse",
-    secC: "3. Modelkompression og destillation",
-    secD: "4. Caching og request-formning",
-    secE: "5. Optimeringsgreb",
-    noRows: "Ingen optimeringsgreb tilføjet endnu.",
-    phA: "fx Ret-dimensioner inferensnoder",
-    phB: "fx ~30% af månedlig compute",
-    phC: "fx Lav indsats, ingen nøjagtighedspåvirkning",
+    secA: "1. Overførselstilgang og definition af færdig",
+    secB: "2. Dokumentationssæt",
+    secC: "3. Best practice-bibliotek",
+    secD: "4. Internt fællesskab",
+    secE: "5. Overdragelsesområder",
+    noRows: "Ingen overdragelsesområder tilføjet endnu.",
+    phA: "fx Gentræningspipeline",
+    phB: "fx Vores ML-ingeniør",
+    phC: "fx Nordkaps ML-ingeniør",
     emptyNote: "(endnu ikke dokumenteret)",
   },
   sv: {
-    heroTitle: "Rapport om optimering av inferenskostnader",
-    heroDesc: "SOP, kundintag, en optimeringsspak-spårare, och en automatiskt genererad rapport om optimering av inferenskostnader.",
+    heroTitle: "Plan för kunskapsöverföring",
+    heroDesc: "SOP, kundintag, en överlämningsspårare per område, och en automatiskt genererad plan för kunskapsöverföring.",
     noteLabel: "Så här fungerar det.",
-    noteBody: "Fyll i intagsfälten och spakspåraren nedan; rapporten byggs upp live. Inga API-anrop — allt sparas automatiskt lokalt.",
+    noteBody: "Fyll i intagsfälten och överlämningsspåraren nedan; planen byggs upp live. Inga API-anrop — allt sparas automatiskt lokalt.",
     sopTitle: "SOP — så här görs det vanligtvis",
     sopHint: "Ordningen en arkitekt faktiskt arbetar igenom denna övning.",
     sop: [
-      "Få kostnadsattribuering att fungera innan något optimeras — en total inferensräkning ingen kan bryta ned per modell, per feature eller per tenant kan inte minskas medvetet.",
-      "Mät utnyttjande innan ni köper effektivitet: tomgångsacceleratorer och överdimensionerade instanser kostar oftast mer än en ooptimerad modell, och kostar bara schemaläggningsarbete att rätta.",
-      "Behandla kompression och destillation som en träffsäkerhetsaffär som ska mätas, inte en gratis vinst — kvantifiera kvalitetsförlusten på samma utvärderingsuppsättning som användes för att godkänna modellen.",
-      "Titta på caching och request-formning tidigt, eftersom upprepade eller nära-identiska förfrågningar är vanliga i produktion och cache-träffar är den billigaste besparingen som finns.",
-      "Rangordna spakar efter besparing mot insats och risk, och anteckna de ni avvisade med skälet — avvisningslistan är vad som stoppar samma förslag från att återkomma varje kvartal.",
+      "Definiera klar som att kunden utför uppgiften utan hjälp medan du ser på, inte som ett levererat dokument eller en genomförd session. Allt svagare lämnar dig som beroendet efter fakturan.",
+      "Överför i den ordning saker går sönder: jour-playbooks och omträningspipelinen först, det arkitektoniska resonemanget senare. Ett team som inte kan återställa driften får inget av att förstå din designmotivering.",
+      "Skugga, sedan omvänt. Två rundor där de ser dig, två där du ser dem och bara talar när du blir tillfrågad. Andra halvan är där luckorna faktiskt visar sig.",
+      "Skriv ned resonemanget där beslutet bor, inte i ett separat överlämningspaket. ADR:er och runbook-poster blir lästa; ett skräddarsytt överlämningsdokument läses en gång och uppdateras aldrig.",
+      "Namnge godkännaren per område och få ett explicit ja. Överlämning utan namngivet godkännande är där kunskap tyst stannar hos konsulten.",
     ],
-    intakeTitle: "Kund- och kostnadsintag",
+    intakeTitle: "Kund- och överföringsintag",
     lblClient: "Kund / uppdrag",
     lblAssessor: "Bedömare",
-    lblMonitoringNotes: "Övervakning och attribuering av inferenskostnader",
-    lblUtilizationNotes: "Fynd om GPU-/compute-utnyttjande",
-    lblCompressionNotes: "Bedömning av modellkompression och destillation",
-    lblCachingNotes: "Caching- och request-formningsstrategi",
-    tableTitle: "Optimeringsspakar",
-    tableHint: "Lägg till en rad per spak, dess förväntade besparing, och insatsen för att implementera den.",
-    colA: "Spak",
-    colB: "Förväntad besparing",
-    colC: "Insats / risk",
+    lblTransferNotes: "Överföringsansats och definition av klar",
+    lblDocsNotes: "Dokumentationsuppsättning och var den bor",
+    lblPracticeNotes: "Best practice-bibliotek och standarder",
+    lblCommunityNotes: "Intern gemenskap och löpande kunskapsdelning",
+    tableTitle: "Överlämningsområden",
+    tableHint: "Lägg till en rad per område som överlämnas, från vem till vem.",
+    colA: "Område",
+    colB: "Från",
+    colC: "Till (namngiven)",
     colStatus: "Status",
-    btnAddRow: "+ Lägg till spak",
-    statusIdentified: "Identifierad",
-    statusAgreed: "Överenskommen",
-    statusImplemented: "Implementerad",
-    statusRejected: "Avvisad",
-    previewTitle: "Rapport om optimering av inferenskostnader",
+    btnAddRow: "+ Lägg till område",
+    statusNotstarted: "Ej startat",
+    statusShadowing: "Skuggar oss",
+    statusLeading: "Leder, vi ser på",
+    statusSignedoff: "Godkänt",
+    previewTitle: "Plan för kunskapsöverföring",
     previewHint: "Detta är själva leveransen — automatiskt genererad och anpassad för denna kund.",
     btnExportHtml: "🌐 Exportera HTML",
     btnExportMd: "📄 Exportera Markdown",
     btnReset: "🔄 Återställ",
-    docTitle: "Rapport om optimering av inferenskostnader",
+    docTitle: "Plan för kunskapsöverföring",
     docFor: "Framtagen för",
     docAssessor: "Bedömare",
     docDate: "Datum",
-    secA: "1. Övervakning och attribuering av inferenskostnader",
-    secB: "2. Compute-utnyttjande",
-    secC: "3. Modellkompression och destillation",
-    secD: "4. Caching och request-formning",
-    secE: "5. Optimeringsspakar",
-    noRows: "Inga optimeringsspakar tillagda än.",
-    phA: "t.ex. Rätt-dimensionera inferensnoder",
-    phB: "t.ex. ~30% av månatlig compute",
-    phC: "t.ex. Låg insats, ingen träffsäkerhetspåverkan",
+    secA: "1. Överföringsansats och definition av klar",
+    secB: "2. Dokumentationsuppsättning",
+    secC: "3. Best practice-bibliotek",
+    secD: "4. Intern gemenskap",
+    secE: "5. Överlämningsområden",
+    noRows: "Inga överlämningsområden tillagda än.",
+    phA: "t.ex. Omträningspipeline",
+    phB: "t.ex. Vår ML-ingenjör",
+    phC: "t.ex. Nordkaps ML-ingenjör",
     emptyNote: "(ännu inte dokumenterat)",
   },
 };
@@ -412,7 +412,7 @@ function esc(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt
 // invent columns or rows in the exported deliverable.
 function mdCell(v) { return String(v === undefined || v === null ? '' : v).replace(/\|/g, '\\|').replace(/\r?\n/g, ' '); }
 
-let rows = []; // { id, lever, saving, effort, status }
+let rows = []; // { id, area, from, to, status }
 let nextId = 1;
 
 function setLang(l) {
@@ -427,7 +427,7 @@ function setLang(l) {
 function applyI18n() {
   document.documentElement.lang = lang;
   document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.getAttribute('data-i18n')); });
-  document.title = t('heroTitle') + ' — Phase 7';
+  document.title = t('heroTitle') + ' — Phase 8';
   document.getElementById('sopList').innerHTML = t('sop').map(s => `<li>${esc(s)}</li>`).join('');
 }
 
@@ -449,7 +449,7 @@ function loadSaved() {
   } catch (e) {}
 }
 
-function addRow() { rows.push({ id: nextId++, lever: '', saving: '', effort: '', status: 'identified' }); renderMatrix(); renderPreview(); save(); }
+function addRow() { rows.push({ id: nextId++, area: '', from: '', to: '', status: 'notstarted' }); renderMatrix(); renderPreview(); save(); }
 function removeRow(id) { rows = rows.filter(r => r.id !== id); renderMatrix(); renderPreview(); save(); }
 function updateRow(id, field, value) { const r = rows.find(r => r.id === id); if (r) r[field] = value; renderPreview(); save(); if (field === 'status') renderMatrix(); }
 
@@ -457,9 +457,9 @@ function renderMatrix() {
   const body = document.getElementById('matrixBody');
   if (!rows.length) { body.innerHTML = `<tr><td colspan="5" style="color:var(--muted);font-style:italic;padding:14px 8px">${esc(t('noRows'))}</td></tr>`; return; }
   body.innerHTML = rows.map(r => `<tr>
-      <td><input type="text" value="${esc(r.lever)}" placeholder="${esc(t('phA'))}" oninput="updateRow(${r.id},'lever',this.value)"></td>
-      <td><input type="text" value="${esc(r.saving)}" placeholder="${esc(t('phB'))}" oninput="updateRow(${r.id},'saving',this.value)"></td>
-      <td><input type="text" value="${esc(r.effort)}" placeholder="${esc(t('phC'))}" oninput="updateRow(${r.id},'effort',this.value)"></td>
+      <td><input type="text" value="${esc(r.area)}" placeholder="${esc(t('phA'))}" oninput="updateRow(${r.id},'area',this.value)"></td>
+      <td><input type="text" value="${esc(r.from)}" placeholder="${esc(t('phB'))}" oninput="updateRow(${r.id},'from',this.value)"></td>
+      <td><input type="text" value="${esc(r.to)}" placeholder="${esc(t('phC'))}" oninput="updateRow(${r.id},'to',this.value)"></td>
       <td><select onchange="updateRow(${r.id},'status',this.value)">
         ${Object.entries(STATUS_KEYS).map(([v, k]) => `<option value="${v}" ${r.status === v ? 'selected' : ''}>${esc(t(k))}</option>`).join('')}
       </select></td>
@@ -469,16 +469,16 @@ function renderMatrix() {
 
 function renderPreview() {
   const date = new Date().toISOString().slice(0, 10);
-  const filled = rows.filter(r => r.lever.trim());
+  const filled = rows.filter(r => r.area.trim());
   let h = `<div class="meta"><strong>${esc(t('docFor'))}:</strong> ${esc(val('client')) || '—'} &nbsp;·&nbsp; <strong>${esc(t('docAssessor'))}:</strong> ${esc(val('assessor')) || '—'} &nbsp;·&nbsp; <strong>${esc(t('docDate'))}:</strong> ${date}</div>`;
-  h += `<h3>${esc(t('secA'))}</h3><p>${orEmpty(val('monitoringNotes'))}</p>`;
-  h += `<h3>${esc(t('secB'))}</h3><p>${orEmpty(val('utilizationNotes'))}</p>`;
-  h += `<h3>${esc(t('secC'))}</h3><p>${orEmpty(val('compressionNotes'))}</p>`;
-  h += `<h3>${esc(t('secD'))}</h3><p>${orEmpty(val('cachingNotes'))}</p>`;
+  h += `<h3>${esc(t('secA'))}</h3><p>${orEmpty(val('transferNotes'))}</p>`;
+  h += `<h3>${esc(t('secB'))}</h3><p>${orEmpty(val('docsNotes'))}</p>`;
+  h += `<h3>${esc(t('secC'))}</h3><p>${orEmpty(val('practiceNotes'))}</p>`;
+  h += `<h3>${esc(t('secD'))}</h3><p>${orEmpty(val('communityNotes'))}</p>`;
   h += `<h3>${esc(t('secE'))}</h3>`;
   if (filled.length) {
     h += `<table><thead><tr><th>${esc(t('colA'))}</th><th>${esc(t('colB'))}</th><th>${esc(t('colC'))}</th><th>${esc(t('colStatus'))}</th></tr></thead><tbody>`;
-    h += filled.map(r => `<tr><td>${esc(r.lever)}</td><td>${esc(r.saving)}</td><td>${esc(r.effort)}</td><td><span class="status-badge status-${r.status}">${esc(t(STATUS_KEYS[r.status] || 'statusIdentified'))}</span></td></tr>`).join('');
+    h += filled.map(r => `<tr><td>${esc(r.area)}</td><td>${esc(r.from)}</td><td>${esc(r.to)}</td><td><span class="status-badge status-${r.status}">${esc(t(STATUS_KEYS[r.status] || 'statusNotstarted'))}</span></td></tr>`).join('');
     h += '</tbody></table>';
   } else {
     h += `<p><em>${esc(t('noRows'))}</em></p>`;
@@ -496,20 +496,20 @@ function resetAll() {
   renderMatrix(); renderPreview(); save();
 }
 
-function slug() { return (val('client') || 'cost_optimization').replace(/\W+/g, '_'); }
+function slug() { return (val('client') || 'knowledge_transfer').replace(/\W+/g, '_'); }
 function docMarkdown() {
   const date = new Date().toISOString().slice(0, 10);
-  const filled = rows.filter(r => r.lever.trim());
+  const filled = rows.filter(r => r.area.trim());
   let m = `# ${t('docTitle')} — ${val('client') || '[client]'}\n\n`;
   m += `**${t('docFor')}:** ${val('client') || '—'}  \n**${t('docAssessor')}:** ${val('assessor') || '—'}  \n**${t('docDate')}:** ${date}\n\n`;
-  m += `## ${t('secA')}\n${val('monitoringNotes') || t('emptyNote')}\n\n`;
-  m += `## ${t('secB')}\n${val('utilizationNotes') || t('emptyNote')}\n\n`;
-  m += `## ${t('secC')}\n${val('compressionNotes') || t('emptyNote')}\n\n`;
-  m += `## ${t('secD')}\n${val('cachingNotes') || t('emptyNote')}\n\n`;
+  m += `## ${t('secA')}\n${val('transferNotes') || t('emptyNote')}\n\n`;
+  m += `## ${t('secB')}\n${val('docsNotes') || t('emptyNote')}\n\n`;
+  m += `## ${t('secC')}\n${val('practiceNotes') || t('emptyNote')}\n\n`;
+  m += `## ${t('secD')}\n${val('communityNotes') || t('emptyNote')}\n\n`;
   m += `## ${t('secE')}\n\n`;
   if (filled.length) {
     m += `| ${t('colA')} | ${t('colB')} | ${t('colC')} | ${t('colStatus')} |\n|---|---|---|---|\n`;
-    m += filled.map(r => `| ${mdCell(r.lever)} | ${mdCell(r.saving)} | ${mdCell(r.effort)} | ${t(STATUS_KEYS[r.status] || 'statusIdentified')} |`).join('\n') + '\n';
+    m += filled.map(r => `| ${mdCell(r.area)} | ${mdCell(r.from)} | ${mdCell(r.to)} | ${t(STATUS_KEYS[r.status] || 'statusNotstarted')} |`).join('\n') + '\n';
   } else {
     m += `${t('noRows')}\n`;
   }
@@ -529,8 +529,8 @@ function download(text, fname, mime) {
   URL.revokeObjectURL(a.href);
 }
 function exportDoc(fmt) {
-  if (fmt === 'md') download(docMarkdown(), 'cost_optimization_' + slug() + '.md', 'text/markdown');
-  else download(docHtml(), 'cost_optimization_' + slug() + '.html', 'text/html');
+  if (fmt === 'md') download(docMarkdown(), 'knowledge_transfer_' + slug() + '.md', 'text/markdown');
+  else download(docHtml(), 'knowledge_transfer_' + slug() + '.html', 'text/html');
 }
 
 // ── Shared engagement profile (site-wide prefill of client/assessor/use case) ──
@@ -673,7 +673,7 @@ save = function () {
 };
 const _sopApplyI18n = applyI18n;
 applyI18n = function () { _sopApplyI18n(); renderSop(); };
-const SAMPLE_URL = '../../Phase%201%20-%20Discovery%20%26%20Assessment/sample-data/engagement-nordkap/cost-optimization.json';
+const SAMPLE_URL = '../../Phase%201%20-%20Discovery%20%26%20Assessment/sample-data/engagement-nordkap/knowledge-transfer.json';
 function loadSample() {
   if (!confirm(t('sampleConfirm'))) return;
   const errEl = document.getElementById('sampleError');
@@ -703,7 +703,7 @@ function loadSample() {
   loadSaved();
   prefillEngagement();
   applyI18n();
-  if (!rows.length) { rows.push({ id: nextId++, lever: '', saving: '', effort: '', status: 'identified' }); }
+  if (!rows.length) { rows.push({ id: nextId++, area: '', from: '', to: '', status: 'notstarted' }); }
   renderMatrix();
   renderPreview();
 })();

@@ -1,0 +1,70 @@
+{
+  "fields": {
+    "client": "Nordkap Insurance",
+    "assessor": "Emma Gao",
+    "valueNotes": "Every figure carries a confidence label and the labels stay in the report. Only two drivers are measured: fraud recovered and analyst time per claim, both from the six-month pilot A/B where half of FNOL volume was scored and half was not. Everything else is estimated or assumed and is presented as such. The A/B split is what makes the fraud figure defensible; without it this would be a before-and-after comparison across a period in which Nordkap also changed its claims intake script.",
+    "modelNotes": "Three-year model, payback at month 11 on the expected case. Year one is negative because build and change costs land before the recovery does, which is stated plainly rather than smoothed by annualising. Costs included: platform and inference, the ML engineer hire, our fees, analyst review time at Nordkap's loaded rate, and the training and change effort from Phase 8. Excluded: group IT overhead allocation, on the basis that it does not change with this project.",
+    "attributionNotes": "The pilot A/B is the attribution basis for fraud recovered and analyst time. Two confounders are named and handled: the claims intake script changed in month three, applied to both arms so it cancels; and a seasonal fraud peak in month five sits inside both arms. Not attributed: the reduction in complaint volume over the same period, which coincided with a separate service-desk change and is therefore excluded rather than claimed at a discount.",
+    "sensitivityNotes": "Two settings shown. Expected: fraud detection holds at pilot performance and analyst time per claim stays down. Pessimistic: recovery degrades 30% as fraud patterns adapt, analyst time returns halfway to baseline, and inference cost grows with the second use case. The pessimistic case still pays back inside two years, which is the number the CFO asked for first and the reason the case survived review. If detection degraded 50% the project would not pay back inside the horizon, and that threshold is stated."
+  },
+  "rows": [
+    {
+      "id": 1,
+      "driver": "Fraud recovered",
+      "basis": "Pilot A/B, 6 months, measured",
+      "annual": "1.9M DKK",
+      "status": "measured"
+    },
+    {
+      "id": 2,
+      "driver": "Analyst time per claim",
+      "basis": "Pilot A/B, measured, loaded rate",
+      "annual": "740k DKK",
+      "status": "measured"
+    },
+    {
+      "id": 3,
+      "driver": "Faster legitimate claim settlement",
+      "basis": "Modelled from queue times",
+      "annual": "310k DKK",
+      "status": "estimated"
+    },
+    {
+      "id": 4,
+      "driver": "Reinsurance position improvement",
+      "basis": "Broker indication, not contracted",
+      "annual": "400k DKK",
+      "status": "assumed"
+    },
+    {
+      "id": 5,
+      "driver": "Complaint volume reduction",
+      "basis": "Confounded with service-desk change",
+      "annual": "Not claimed",
+      "status": "excluded"
+    },
+    {
+      "id": 6,
+      "driver": "Platform, inference & licences",
+      "basis": "Vendor pricing, 3-year",
+      "annual": "-620k DKK",
+      "status": "measured"
+    },
+    {
+      "id": 7,
+      "driver": "ML engineer + analyst review time",
+      "basis": "Nordkap loaded rates",
+      "annual": "-1.1M DKK",
+      "status": "estimated"
+    }
+  ],
+  "nextId": 8,
+  "sopDone": [
+    true,
+    true,
+    true,
+    true,
+    false
+  ],
+  "lang": "en"
+}
