@@ -191,6 +191,7 @@ let lang = localStorage.getItem('aoa_lang') || 'en';
 function t(key) { const v = (STRINGS[lang] && STRINGS[lang][key] !== undefined) ? STRINGS[lang][key] : STRINGS.en[key]; return v; }
 function setLang(l) { lang = l; localStorage.setItem('aoa_lang', l); document.getElementById('langSelect').value = l; applyI18n(); renderReport(); }
 function applyI18n() {
+  document.documentElement.lang = lang;
   document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.getAttribute('data-i18n')); });
   document.title = t('heroTitle') + ' — AI Architect Toolkit';
   const statTools = document.getElementById('statToolsNum');
@@ -249,7 +250,7 @@ const REGISTRY = [
   ]},
 ];
 
-function esc(s) { return String(s === undefined || s === null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function esc(s) { return String(s === undefined || s === null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
 // data-eng keys → readable English labels: camelCase and snake_case → Title Case.
 function humanize(k) {
@@ -282,7 +283,7 @@ function normalize(o) {
   Object.keys(o).forEach(k => {
     const v = o[k];
     if (Array.isArray(v) && v.length && typeof v[0] === 'object') {
-      const rows = v.filter(r => Object.keys(r).some(c => c !== 'id' && typeof r[c] === 'string' && r[c].trim() !== '' && !/^\d+$/.test(r[c].trim())));
+      const rows = v.filter(r => Object.keys(r).some(c => c !== 'id' && c !== 'status' && typeof r[c] === 'string' && r[c].trim() !== '' && !/^\d+$/.test(r[c].trim())));
       if (rows.length) out.lists.push({ name: k, rows });
     }
   });

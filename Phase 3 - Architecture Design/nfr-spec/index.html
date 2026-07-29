@@ -44,7 +44,8 @@
   label.sop-step input { width: auto; margin-top: 4px; flex: none; }
   label { display: block; font-size: 13px; font-weight: 600; color: var(--ink); margin: 10px 0 5px; }
   input[type=text], select.field { width: 100%; font-family: var(--font-body); font-size: 14px; color: var(--ink); border: 1.5px solid var(--line); border-radius: 8px; padding: 9px 11px; background: #fff; }
-  input:focus, select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(27,20,116,0.12); }
+  input:focus, select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(27,20,116,0.12); }
+  input:focus:not(:focus-visible), select:focus:not(:focus-visible) { outline: none; }
   .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; }
   .btn { font-family: var(--font-body); font-size: 13.5px; font-weight: 600; padding: 9px 16px; border-radius: 8px; border: none; cursor: pointer; transition: all 0.15s; }
   .btn-primary { background: var(--accent); color: var(--primary); }
@@ -345,13 +346,17 @@ const STRINGS = {
 
 let lang = localStorage.getItem('aoa_lang') || 'en';
 function t(key) { return (STRINGS[lang] && STRINGS[lang][key] !== undefined) ? STRINGS[lang][key] : (STRINGS.en[key] !== undefined ? STRINGS.en[key] : key); }
-function esc(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function esc(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+// Markdown table cells: a raw | or newline in a tracker value would otherwise
+// invent columns or rows in the exported deliverable.
+function mdCell(v) { return String(v === undefined || v === null ? '' : v).replace(/\|/g, '\\|').replace(/\r?\n/g, ' '); }
 
 let rows = [];
 let nextId = 1;
 
 function setLang(l) { lang = l; localStorage.setItem('aoa_lang', l); document.getElementById('langSelect').value = l; applyI18n(); renderMatrix(); renderPreview(); save(); }
 function applyI18n() {
+  document.documentElement.lang = lang;
   document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.getAttribute('data-i18n')); });
   document.title = t('heroTitle') + ' — Phase 3';
   document.getElementById('sopList').innerHTML = t('sop').map(s => `<li>${esc(s)}</li>`).join('');
@@ -420,7 +425,7 @@ function docMarkdown() {
   m += `**${t('docFor')}:** ${val('client') || '—'}  \n**${t('docAssessor')}:** ${val('assessor') || '—'}  \n**${t('docDate')}:** ${date}\n\n`;
   if (filled.length) {
     m += `| ${t('colCategory')} | ${t('colRequirement')} | ${t('colTarget')} | ${t('colPriority')} |\n|---|---|---|---|\n`;
-    m += filled.map(r => `| ${r.category} | ${r.requirement} | ${r.target} | ${t(PRIORITIES[r.priority])} |`).join('\n') + '\n';
+    m += filled.map(r => `| ${mdCell(r.category)} | ${mdCell(r.requirement)} | ${mdCell(r.target)} | ${t(PRIORITIES[r.priority])} |`).join('\n') + '\n';
   } else { m += `${t('noRows')}\n`; }
   return m;
 }
@@ -589,7 +594,19 @@ function loadSample() {
   if (errEl) errEl.style.display = 'none';
   fetch(SAMPLE_URL)
     .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
-    .then(o => { localStorage.setItem(KEY, JSON.stringify(o)); location.reload(); })
+    .then(o => {
+      localStorage.setItem(KEY, JSON.stringify(o));
+      // Carry the sample's client/assessor/use case into the shared profile
+      // too, so the hub dashboard and master report show this engagement
+      // instead of staying blank or naming the previous client.
+      try {
+        const f = (o && o.fields) || {};
+        const eng = JSON.parse(localStorage.getItem(ENG_KEY) || '{}');
+        ENG_FIELDS.forEach(k => { if (f[k]) eng[k] = f[k]; });
+        localStorage.setItem(ENG_KEY, JSON.stringify(eng));
+      } catch (e) {}
+      location.reload();
+    })
     .catch(err => {
       if (errEl) { errEl.textContent = t('sampleLoadError2')(err.message); errEl.style.display = 'block'; }
     });

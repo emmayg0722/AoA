@@ -39,7 +39,8 @@
   .card .hint { font-size: 13.5px; color: var(--muted); margin-bottom: 14px; }
   label { display: block; font-size: 13px; font-weight: 600; color: var(--ink); margin: 10px 0 5px; }
   input[type=text], textarea { width: 100%; font-family: var(--font-body); font-size: 14px; color: var(--ink); border: 1.5px solid var(--line); border-radius: 8px; padding: 9px 11px; background: #fff; }
-  input:focus, textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(27,20,116,0.12); }
+  input:focus, textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(27,20,116,0.12); }
+  input:focus:not(:focus-visible), textarea:focus:not(:focus-visible) { outline: none; }
   .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; }
   .constraints { display: flex; flex-wrap: wrap; gap: 10px 18px; margin-top: 6px; }
   .constraints label { display: flex; align-items: center; gap: 7px; font-weight: 500; margin: 0; cursor: pointer; }
@@ -316,6 +317,7 @@ function setLang(l) {
   renderPrinciples();
 }
 function applyI18n() {
+  document.documentElement.lang = lang;
   document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.getAttribute('data-i18n')); });
   document.querySelectorAll('[data-i18n-opt]').forEach(el => { el.textContent = t(el.getAttribute('data-i18n-opt')); });
   document.title = t('heroTitle') + ' — Design Layers';

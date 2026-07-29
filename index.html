@@ -1098,10 +1098,12 @@ function _numOnly(s) { return /^\d+(\.\d+)?$/.test(s.trim()); }
 function _hasContent(v) {
   if (typeof v === 'string') return v.trim() !== '' && !_numOnly(v);
   if (Array.isArray(v)) return v.some(_hasContent);
-  if (v && typeof v === 'object') return Object.keys(v).some(k => ['lang', 'nextId', 'id'].indexOf(k) === -1 && _hasContent(v[k]));
+  if (v && typeof v === 'object') return Object.keys(v).some(k => ['lang', 'nextId', 'id', 'status'].indexOf(k) === -1 && _hasContent(v[k]));
   return false;
 }
 // "Started" = has content beyond the shared client/assessor/useCase prefill.
+// `status` is excluded because every tracker seeds one blank row with a
+// default status; counting that string would mark an untouched tool started.
 function toolStarted(key) {
   try {
     const raw = localStorage.getItem(key);
@@ -1120,7 +1122,10 @@ function toolStarted(key) {
   } catch (e) { return false; }
 }
 
-function esc(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function esc(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+// Markdown table cells: a raw | or newline in a tracker value would otherwise
+// invent columns or rows in the exported deliverable.
+function mdCell(v) { return String(v === undefined || v === null ? '' : v).replace(/\|/g, '\\|').replace(/\r?\n/g, ' '); }
 
 function renderDashboard() {
   let eng = {};
