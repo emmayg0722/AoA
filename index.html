@@ -128,6 +128,12 @@
     font-size: 14px;
     color: #dcdcf2;
   }
+  /* Each stat is one unbreakable unit, so a number never separates from its
+     label. Narrow screens swap to compact labels (see the 480px query) so
+     all three still share a single row instead of the privacy note wrapping
+     onto its own line. */
+  .hero-stats > span { white-space: nowrap; }
+  .hero-stats .lbl-short { display: none; }
   .hero-stats strong {
     font-family: var(--font-heading);
     font-size: 20px;
@@ -182,7 +188,8 @@
   .phase-head {
     display: flex;
     align-items: baseline;
-    gap: 14px;
+    flex-wrap: wrap;
+    gap: 6px 14px;
     margin: 8px 0 6px;
   }
   .phase-head h2 {
@@ -288,6 +295,19 @@
   .dash-head h2 { font-family: var(--font-heading); font-weight: 600; font-size: 24px; color: var(--primary); }
   .dash-report-link { font-size: 13.5px; font-weight: 600; color: var(--primary); background: var(--accent); padding: 7px 13px; border-radius: 8px; text-decoration: none; }
   .dash-report-link:hover { background: #C3C5EC; }
+  .dash-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  /* Destructive, so it stays visually subordinate to the report link and is
+     hidden entirely while there is nothing stored to clear. */
+  .dash-reset {
+    font-family: var(--font-body);
+    font-size: 13.5px; font-weight: 600;
+    color: var(--red); background: #fff;
+    border: 1.5px solid var(--line);
+    padding: 7px 13px; border-radius: 8px; cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease;
+  }
+  .dash-reset:hover { background: #fbeaea; border-color: var(--red); }
+  .dash.is-empty .dash-reset { display: none; }
   .dash-sub { color: var(--muted); font-size: 14px; margin: 6px 0 14px; }
   .dash-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 7px 14px; }
   .dash-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--ink); text-decoration: none; padding: 3px 2px; border-radius: 6px; }
@@ -329,6 +349,17 @@
     padding: 0 24px 56px;
     color: var(--muted);
     font-size: 13px;
+  }
+  @media (max-width: 480px) {
+    .hero-stats { gap: 14px; }
+    .hero-stats .lbl-long { display: none; }
+    .hero-stats .lbl-short { display: inline; }
+  }
+  @media (max-width: 400px) {
+    /* Tighten just enough to keep all three stats on one row down to 320px. */
+    .hero { padding-left: 16px; padding-right: 16px; }
+    .hero-stats { gap: 10px; }
+    .hero-stats span { font-size: 13px; }
   }
   @media (max-width: 720px) {
     .hero { padding: 56px 20px 48px; }
@@ -394,8 +425,8 @@
       <p data-i18n="heroDesc"></p>
       <div class="hero-stats">
         <span><strong id="statToolsNum"></strong><span data-i18n="statTools"></span></span>
-        <span><strong id="statPhasesNum"></strong><span data-i18n="statPhases"></span></span>
-        <span data-i18n="statPrivacy"></span>
+        <span><strong id="statPhasesNum"></strong><span class="lbl-long" data-i18n="statPhases"></span><span class="lbl-short" data-i18n="statPhasesShort"></span></span>
+        <span><span class="lbl-long" data-i18n="statPrivacy"></span><span class="lbl-short" data-i18n="statPrivacyShort"></span></span>
       </div>
     </div>
   </header>
@@ -412,7 +443,10 @@
     <div class="dash">
       <div class="dash-head">
         <h2 data-i18n="dashTitle"></h2>
-        <a class="dash-report-link" href="engagement-report.html" data-i18n="dashReport"></a>
+        <div class="dash-actions">
+          <button type="button" class="dash-reset" id="dashReset" onclick="resetEngagement()" data-i18n="dashReset"></button>
+          <a class="dash-report-link" href="engagement-report.html" data-i18n="dashReport"></a>
+        </div>
       </div>
       <p class="dash-sub" id="dashSummary"></p>
       <div class="dash-grid" id="dashGrid"></div>
@@ -732,6 +766,11 @@ const STRINGS = {
     filterPlaceholder: 'Find a tool by name or keyword…',
     filterCount: (n, total) => n === total ? `${total} tools` : `${n} of ${total} tools match`,
     filterNone: 'No tool matches that. Try a shorter word, or browse by phase above.',
+    statPhasesShort: ' phases',
+    statPrivacyShort: 'Browser-only. No uploads.',
+    dashReset: '\u21ba Reset engagement',
+    dashResetConfirm: 'Clear every tool\u2019s saved work in this browser, plus the shared client / assessor / use case? This cannot be undone. Export the engagement from the master report first if you want a copy.',
+    dashResetDone: 'Engagement cleared. Every tool in this browser is now empty.',
     tagP1: 'Phase 1', tagP2: 'Phase 2', tagP3: 'Phase 3', tagP4: 'Phase 4', tagP5: 'Phase 5', tagP6: 'Phase 6',
     p1Title: 'Discovery & Assessment',
     p1Sub: "Understand the client's starting point: where they sit on the AI maturity curve, and whether their data is actually ready for the use cases they have in mind.",
@@ -869,6 +908,11 @@ const STRINGS = {
     filterPlaceholder: 'Find et værktøj efter navn eller nøgleord…',
     filterCount: (n, total) => n === total ? `${total} værktøjer` : `${n} af ${total} værktøjer matcher`,
     filterNone: 'Intet værktøj matcher det. Prøv et kortere ord, eller browse efter fase ovenfor.',
+    statPhasesShort: ' faser',
+    statPrivacyShort: 'Kun browser. Intet uploades.',
+    dashReset: '\u21ba Nulstil engagement',
+    dashResetConfirm: 'Ryd hvert v\u00e6rkt\u00f8js gemte arbejde i denne browser samt den delte kunde / vurderingsmand / use case? Dette kan ikke fortrydes. Eksport\u00e9r engagementet fra den samlede rapport f\u00f8rst, hvis du vil have en kopi.',
+    dashResetDone: 'Engagement ryddet. Alle v\u00e6rkt\u00f8jer i denne browser er nu tomme.',
     tagP1: 'Fase 1', tagP2: 'Fase 2', tagP3: 'Fase 3', tagP4: 'Fase 4', tagP5: 'Fase 5', tagP6: 'Fase 6',
     p1Title: 'Discovery & Vurdering',
     p1Sub: 'Forstå kundens udgangspunkt: hvor de befinder sig på AI-modenhedskurven, og om deres data reelt er klar til de use cases, de har i tankerne.',
@@ -1006,6 +1050,11 @@ const STRINGS = {
     filterPlaceholder: 'Hitta ett verktyg efter namn eller nyckelord…',
     filterCount: (n, total) => n === total ? `${total} verktyg` : `${n} av ${total} verktyg matchar`,
     filterNone: 'Inget verktyg matchar det. Prova ett kortare ord, eller bläddra efter fas ovan.',
+    statPhasesShort: ' faser',
+    statPrivacyShort: 'Endast webbl\u00e4sare. Inget laddas upp.',
+    dashReset: '\u21ba \u00c5terst\u00e4ll uppdrag',
+    dashResetConfirm: 'Rensa varje verktygs sparade arbete i denna webbl\u00e4sare, plus den delade kunden / bed\u00f6maren / anv\u00e4ndningsfallet? Detta kan inte \u00e5ngras. Exportera uppdraget fr\u00e5n den samlade rapporten f\u00f6rst om du vill ha en kopia.',
+    dashResetDone: 'Uppdrag rensat. Alla verktyg i denna webbl\u00e4sare \u00e4r nu tomma.',
     tagP1: 'Fas 1', tagP2: 'Fas 2', tagP3: 'Fas 3', tagP4: 'Fas 4', tagP5: 'Fas 5', tagP6: 'Fas 6',
     p1Title: 'Discovery & Bedömning',
     p1Sub: 'Förstå kundens utgångsläge: var de befinner sig på AI-mognadskurvan, och om deras data faktiskt är redo för de användningsfall de har i åtanke.',
@@ -1265,6 +1314,21 @@ function renderPhaseCounts() {
   const statPhases = document.getElementById('statPhasesNum');
   if (statTools) statTools.textContent = totalTools;
   if (statPhases) statPhases.textContent = totalPhases;
+}
+
+// ── Reset the engagement ──────────────────────────────────────────────
+// Clears every tool's saved state in this browser plus the shared
+// client / assessor / use case, then re-renders. Destructive and
+// irreversible, so it confirms first and points at the export path.
+function resetEngagement() {
+  if (!confirm(t('dashResetConfirm'))) return;
+  try {
+    TOOL_REGISTRY.forEach(tl => localStorage.removeItem(tl.key));
+    localStorage.removeItem('aoa_engagement_v1');
+  } catch (e) {}
+  renderDashboard();
+  const summary = document.getElementById('dashSummary');
+  if (summary) summary.textContent = t('dashResetDone');
 }
 
 // ── Find-a-tool filter ────────────────────────────────────────────────
