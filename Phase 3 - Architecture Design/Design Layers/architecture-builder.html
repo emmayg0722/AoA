@@ -53,7 +53,12 @@
   .btn-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px; }
 
   .toolbar-row { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; justify-content: space-between; margin-bottom: 4px; }
-  select#layerFilter { font-family: var(--font-body); font-size: 13.5px; border: 1.5px solid var(--line); border-radius: 8px; padding: 7px 10px; }
+  /* Flex items default to min-width:auto, so this one refused to shrink below
+     the select's longest option and pushed the page wide on small screens. */
+  .toolbar-row > div { min-width: 0; }
+  /* max-width lets this shrink instead of sizing to its longest option
+     ("Layer 18 · Agent Types…"), which overflowed the page below ~340px. */
+  select#layerFilter { font-family: var(--font-body); font-size: 13.5px; border: 1.5px solid var(--line); border-radius: 8px; padding: 7px 10px; max-width: 100%; }
   .saved { font-size: 12.5px; color: var(--green); }
 
   table.compare { width: 100%; border-collapse: collapse; font-size: 13.5px; margin-top: 10px; }
@@ -85,6 +90,8 @@
   .principle-card a { font-size: 12.5px; color: var(--primary); font-weight: 600; text-decoration: none; }
   .principle-card a:hover { text-decoration: underline; }
 
+  .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .table-scroll table { min-width: 720px; }
   @media (max-width: 720px) {
     .grid2 { grid-template-columns: 1fr; }
     table.compare { font-size: 12.5px; }
@@ -139,10 +146,12 @@
           <select id="layerFilter" onchange="renderTable()"><option value="" data-i18n-opt="allLayers"></option></select>
         </div>
       </div>
+      <div class="table-scroll">
       <table class="compare" id="compareTable">
         <thead><tr><th data-i18n="colPick"></th><th data-i18n="colOption"></th><th data-i18n="colUpside"></th><th data-i18n="colDownside"></th><th data-i18n="colBestFit"></th></tr></thead>
         <tbody id="compareBody"></tbody>
       </table>
+      </div>
     </div>
 
     <div class="card">

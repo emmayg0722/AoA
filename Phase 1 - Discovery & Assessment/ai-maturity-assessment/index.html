@@ -17,23 +17,32 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
+    /* Canonical toolkit tokens, matching every other page in the repo.
+       This tool used to carry a warm cream/greige set (#F8F6F3 bg,
+       #d8d4cf borders, 6px radii) left over from its original styling,
+       which made it the one page that visibly did not belong. */
     --primary: #1B1474;
     --primary-dark: #120D52;
     --accent: #DCDDF6;
-    --bg: #F8F6F3;
-    --card: #ffffff;
-    --text: #222222;
-    --text-light: #5a6872;
-    --border: #d8d4cf;
     --powder: #EEEEFA;
+    --ink: #1c1c28;
+    --muted: #5b5b6b;
+    --line: #e4e4f0;
     --red: #c0392b;
     --orange: #d4790e;
     --yellow: #d4a017;
     --green: #1a8a5c;
-    --blue: #DCDDF6;
     --font-heading: 'Fraunces', Georgia, serif;
-    --font-body: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
-    --radius: 6px;
+    --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    /* Local aliases kept so this file's older rules keep resolving; they
+       now point at the canonical values above rather than their own. */
+    --bg: #fafaff;
+    --card: #ffffff;
+    --text: var(--ink);
+    --text-light: var(--muted);
+    --border: var(--line);
+    --blue: var(--accent);
+    --radius: 14px;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
@@ -44,26 +53,30 @@
     letter-spacing: 0.01em;
   }
   :focus-visible { outline: 2px solid var(--primary); outline-offset: 3px; border-radius: 4px; }
-  .hero :focus-visible, .header :focus-visible { outline-color: #fff; }
+  .hero :focus-visible { outline-color: #fff; }
   .container { max-width: 960px; margin: 0 auto; padding: 1rem; }
 
-  /* Header */
-  .header {
-    background: var(--primary);
-    color: white;
-    text-align: center;
-    padding: 2.5rem 1rem 2rem;
-    border-bottom: 4px solid var(--accent);
-    position: relative;
+  /* Hero — the shared left-aligned gradient header used by every other
+     page. This tool previously had its own centred flat-navy header. */
+  .hero {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    color: #fff;
+    padding: 44px 0 36px;
   }
-  .header h1 { font-family: var(--font-heading); font-size: 2.2rem; margin-bottom: 0.3rem; font-weight: 700; }
-  .header p { opacity: 0.9; font-size: 1rem; }
-  .lang-row { position: absolute; top: 1rem; right: 1rem; }
-  select#langSelect { font-family: var(--font-body); font-size: 13px; font-weight: 600; border: 1.5px solid rgba(255,255,255,0.4); background: rgba(255,255,255,0.08); color: #fff; border-radius: 8px; padding: 7px 10px; }
-  select#langSelect option { color: var(--text); }
+  /* Same max-width and inline padding as .container below, so the hero
+     text sits on exactly the same left edge as the page content. */
+  .wrap { max-width: 960px; margin: 0 auto; padding: 0 1rem; }
+  .hero-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; flex-wrap: wrap; }
+  .hero h1 { font-family: var(--font-heading); font-weight: 700; font-size: 34px; line-height: 1.15; text-wrap: balance; }
+  .hero p { margin-top: 10px; font-size: 15.5px; color: #dcdcf2; max-width: 680px; text-wrap: pretty; }
+  /* width:auto / flex:none override this file's global `select { width: 100% }`
+     form rule, which used to be harmless only because the selector sat in an
+     absolutely-positioned .lang-row. */
+  select#langSelect { width: auto; flex: none; font-family: var(--font-body); font-size: 13px; font-weight: 600; border: 1.5px solid rgba(255,255,255,0.4); background: rgba(255,255,255,0.08); color: #fff; border-radius: 8px; padding: 7px 10px; }
+  select#langSelect option { color: var(--ink); }
   .lang-scope-note { font-size: 0.85rem; color: var(--text-light); background: var(--powder); border: 1px solid var(--accent); border-radius: var(--radius); padding: 0.7rem 0.9rem; margin-bottom: 1rem; }
-  .crumb { font-size: 0.8rem; color: var(--blue); margin-bottom: 0.7rem; }
-  .crumb a { color: inherit; text-decoration: none; opacity: 0.85; }
+  .crumb { font-size: 13px; color: var(--accent); margin-bottom: 10px; }
+  .crumb a { color: var(--accent); text-decoration: none; }
   .crumb a:hover { text-decoration: underline; }
   .crumb .next-nav a { font-weight: 700; }
 
@@ -85,10 +98,10 @@
   /* Cards */
   .card {
     background: var(--card);
+    border: 1px solid var(--line);
     border-radius: var(--radius);
-    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-    padding: 1.5rem;
-    margin-bottom: 1rem;
+    padding: 22px 24px;
+    margin-bottom: 20px;
   }
   .card h2 { font-family: var(--font-heading); font-size: 1.35rem; margin-bottom: 1rem; color: var(--primary); }
   .card h3 { font-size: 1.1rem; margin-bottom: 0.8rem; }
@@ -300,9 +313,11 @@
 
   /* Responsive */
   @media (max-width: 720px) {
+    /* .wrap tracks .container so the hero and content edges stay flush. */
     .container { padding: 0.5rem; }
+    .wrap { padding: 0 0.5rem; }
     .dim-score-row .dim-label { width: 120px; }
-    .header h1 { font-size: 1.5rem; }
+    .hero h1 { font-size: 27px; }
     .score-hero .big-score { font-size: 2.5rem; }
     .btn-group { flex-direction: column; }
     .download-row { flex-direction: column; }
@@ -311,9 +326,9 @@
 </head>
 <body>
 
-<div class="header">
-  <div class="crumb"><a href="../../">AI Architect Toolkit</a> · Phase 1 · Discovery &amp; Assessment · <span class="next-nav">Next: <a href="../data-readiness-assessment-5c/console.html">Data Readiness Assessment (5C) →</a></span></div>
-  <div class="lang-row">
+<header class="hero"><div class="wrap">
+  <div class="hero-top">
+    <div class="crumb"><a href="../../">AI Architect Toolkit</a> · Phase 1 · Discovery &amp; Assessment · <span class="next-nav">Next: <a href="../data-readiness-assessment-5c/console.html">Data Readiness Assessment (5C) →</a></span></div>
     <select id="langSelect" onchange="setLang(this.value)">
       <option value="en">English</option>
       <option value="da">Dansk</option>
@@ -322,7 +337,7 @@
   </div>
   <h1 data-i18n="headerTitle"></h1>
   <p data-i18n="headerSubtitle"></p>
-</div>
+</div></header>
 <div class="progress-wrap"><div class="progress-bar" id="progressBar" style="width:0%"></div></div>
 
 <!-- ═══════════════════ PAGE: SETUP ═══════════════════ -->
