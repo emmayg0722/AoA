@@ -47,5 +47,6 @@
    "target": "<= 1 click to full explanation",
    "priority": "should"
   }
- ]
+ ],
+ "sopDone": [true, true, true, true, true]
 }

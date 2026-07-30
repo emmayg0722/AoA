@@ -36,5 +36,6 @@
    "scope": "14 pilot adjusters complete referral scenarios",
    "status": "notstarted"
   }
- ]
+ ],
+ "sopDone": [true, true, true, true, true]
 }

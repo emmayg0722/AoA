@@ -29,5 +29,6 @@
    "decision": "Use Azure AI Search rather than a self-hosted vector DB.",
    "consequences": "Azure lock-in accepted in exchange for Entra ID + Purview integration."
   }
- ]
+ ],
+ "sopDone": [true, true, true, true, true]
 }

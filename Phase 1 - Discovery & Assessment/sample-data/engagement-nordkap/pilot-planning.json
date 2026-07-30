@@ -28,5 +28,6 @@
    "checkpoint": "Go/no-go evidence pack complete",
    "signal": "Detection uplift confirmed on live data"
   }
- ]
+ ],
+ "sopDone": [true, true, true, true, true]
 }

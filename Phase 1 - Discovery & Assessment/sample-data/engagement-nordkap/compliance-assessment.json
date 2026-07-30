@@ -41,5 +41,6 @@
    "status": "compliant",
    "notes": "Board + usage policy operating"
   }
- ]
+ ],
+ "sopDone": [true, true, true, true, false]
 }

@@ -26,5 +26,6 @@
    "milestone": "National rollout + document-intake pipeline",
    "dependency": "Pilot go decision"
   }
- ]
+ ],
+ "sopDone": [true, true, true, true, true]
 }

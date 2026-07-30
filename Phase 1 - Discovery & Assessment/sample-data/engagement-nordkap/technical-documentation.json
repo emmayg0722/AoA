@@ -33,5 +33,6 @@
    "location": "Wiki > ClaimsAI > QA",
    "status": "notstarted"
   }
- ]
+ ],
+ "sopDone": [true, true, true, true, true]
 }

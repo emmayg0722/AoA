@@ -28,5 +28,6 @@
    "finding": "Testing in progress",
    "status": "pending"
   }
- ]
+ ],
+ "sopDone": [true, true, true, true, false]
 }

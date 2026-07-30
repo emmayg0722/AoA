@@ -9,5 +9,6 @@
   "aiMlArch": "Gradient-boosted baseline + LLM narrative-analysis feature (Azure OpenAI, in-tenant); champion/challenger deployment; drift monitoring with monthly review.",
   "integrationArch": "REST callback into ClaimCenter activity queue; SIU case system receives auto-referrals above threshold with full score rationale attached.",
   "techSelections": "Azure OpenAI (in-tenant), Azure ML, Event Hub, AKS, Azure AI Search for narrative retrieval, Purview for governance."
- }
+ },
+ "sopDone": [true, true, true, true, true, true]
 }

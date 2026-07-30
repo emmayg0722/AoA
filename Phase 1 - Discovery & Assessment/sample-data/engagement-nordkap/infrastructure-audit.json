@@ -15,5 +15,6 @@
   "score_cloud": "4",
   "score_integration": "2",
   "score_security": "4"
- }
+ },
+ "sopDone": [true, true, true, true, true]
 }

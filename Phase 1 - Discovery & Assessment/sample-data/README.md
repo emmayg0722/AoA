@@ -34,9 +34,12 @@ Phases 8–10 carry it through to handover and measurement:
 | 9 — Vendor Evaluation & Technology Selection | `rfp-builder`, `vendor-evaluation-matrix`, `build-vs-buy`, `platform-shortlist` | The vendors are scored on Nordkap's own imbalanced Danish-language claims history, and the deal-breakers (EU data residency, processor terms) trace back to the Phase 6 compliance assessment. |
 | 10 — ROI Analysis & Cost Optimization | `roi-analysis`, `tco-analysis`, `value-tracking` | The ROI model uses the same fraud-caught-per-1000-claims measure the Phase 4 go/no-go set and Phase 7 monitors, states its confounders (a concurrent claims-process change), and leaves the unverified reinsurance benefit excluded rather than assumed. |
 
-Note that the `sopDone` arrays in these files are deliberately *partly* complete —
-a real engagement's SOP checklist is rarely all-ticked, and the samples are more
-useful as a mid-flight snapshot than as a finished one.
+Every file carries a `sopDone` array, so "Load sample" restores each tool's SOP
+checklist alongside its content. The state tracks how far Nordkap has actually
+got: the phases it has passed through read as complete, while the Phase 6
+governance tools and the Phase 7–10 operational ones are deliberately *partly*
+ticked — a live engagement's checklist is rarely all-ticked, and recurring steps
+(a fairness re-audit, a risk-register review) are never "done" once.
 Every tool's **"🧪 Load sample"** button (in the export row) fetches its file
 same-origin and restores it through the tool's normal load path, after a
 confirmation (it replaces whatever is currently saved in that tool). Load

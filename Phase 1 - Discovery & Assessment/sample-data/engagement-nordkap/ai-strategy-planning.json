@@ -26,5 +26,6 @@
    "milestone": "AI-supported decisioning across claims lifecycle incl. subrogation",
    "metric": "Loss ratio -1.5pt; NPS +5"
   }
- ]
+ ],
+ "sopDone": [true, true, true, true, true]
 }
