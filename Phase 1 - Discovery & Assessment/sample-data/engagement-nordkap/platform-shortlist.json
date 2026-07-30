@@ -1,0 +1,77 @@
+{
+  "fields": {
+    "client": "Nordkap Insurance",
+    "assessor": "Emma Gao",
+    "mlPlatformNotes": "Azure ML, effectively decided by constraint rather than comparison: Nordkap's group IT has an existing Azure agreement, a completed security review and in-house skills, and no contract with the alternatives. On capability alone a couple of options score better for our workload, and that is recorded here so the choice is understood as a deliberate trade rather than an oversight. MLflow for registry and tracking, self-hosted alongside the workspace, chosen because it keeps the registry portable if the platform decision is ever revisited.",
+    "llmNotes": "Two separate decisions. Embeddings: a multilingual model, non-negotiable, because the corpus is Danish, Swedish and English and monolingual embeddings dropped recall sharply on non-English documents in testing. Generation for analyst summaries: evaluated three models on 200 real anonymised claims against a rubric the claims team wrote, then negotiated. The smallest model that passed the rubric was chosen over the strongest performer, because the quality gap was not visible to investigators in blind review while the cost gap was roughly fourfold.",
+    "dataNotes": "Data platform stays as-is: the existing Azure Data Factory and warehouse are adequate and the team runs them well, so no change is proposed. Vector store is the managed service from the vendor evaluation, on the build-vs-buy conclusion that a five-person team should not take on its first stateful service. pgvector was seriously considered and is recorded as rejected on measured recall at our corpus size rather than on preference, since it will be raised again.",
+    "observabilityNotes": "Reuse Nordkap's existing Grafana and its alerting rather than adding a vendor observability product; the model dashboards from Phase 7 are already built on it and on-call knows where to look. The gap is evaluation tooling: there is currently no home for the rubric-based summary evaluation beyond a spreadsheet. Deliberately deferred rather than filled, because the second use case is not live and choosing an evaluation platform before there is anything to evaluate would be picking on marketing."
+  },
+  "rows": [
+    {
+      "id": 1,
+      "category": "ML platform",
+      "choice": "Azure ML",
+      "rationale": "Existing agreement, security review, in-house skills",
+      "status": "selected"
+    },
+    {
+      "id": 2,
+      "category": "Registry & tracking",
+      "choice": "MLflow (self-hosted)",
+      "rationale": "Keeps registry portable if platform is revisited",
+      "status": "selected"
+    },
+    {
+      "id": 3,
+      "category": "Embedding model",
+      "choice": "Multilingual",
+      "rationale": "DA/SV corpus; monolingual dropped recall sharply",
+      "status": "selected"
+    },
+    {
+      "id": 4,
+      "category": "Generation model",
+      "choice": "Smallest that passed the rubric",
+      "rationale": "No visible quality gap in blind review, ~4x cheaper",
+      "status": "selected"
+    },
+    {
+      "id": 5,
+      "category": "Vector store",
+      "choice": "Halden Retrieval (managed)",
+      "rationale": "Build-vs-buy: team should not own first stateful service",
+      "status": "selected"
+    },
+    {
+      "id": 6,
+      "category": "Vector store (alternative)",
+      "choice": "pgvector",
+      "rationale": "Rejected on measured recall at our corpus size",
+      "status": "rejected"
+    },
+    {
+      "id": 7,
+      "category": "Observability",
+      "choice": "Existing Grafana",
+      "rationale": "Dashboards already built on it; on-call knows it",
+      "status": "selected"
+    },
+    {
+      "id": 8,
+      "category": "Evaluation tooling",
+      "choice": "None yet",
+      "rationale": "Deferred until the second use case is live",
+      "status": "deferred"
+    }
+  ],
+  "nextId": 9,
+  "sopDone": [
+    true,
+    true,
+    true,
+    true,
+    false
+  ],
+  "lang": "en"
+}

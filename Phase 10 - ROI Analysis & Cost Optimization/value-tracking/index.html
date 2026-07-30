@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Value Tracking & Quarterly Review — Phase 10</title>
+<meta name="description" content="SOP, client intake, a KPI tracker against baseline, and an auto-generated quarterly value review.">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='16' fill='%231B1474'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #1B1474; --primary-dark: #120D52; --accent: #DCDDF6; --powder: #EEEEFA;
+    --ink: #1c1c28; --muted: #5b5b6b; --line: #e4e4f0;
+    --green: #1a8a5c; --amber: #d4790e; --red: #c0392b;
+    --font-heading: 'Fraunces', Georgia, serif;
+    --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: var(--font-body); color: var(--ink); background: #fafaff; line-height: 1.6; }
+  :focus-visible { outline: 2px solid var(--primary); outline-offset: 3px; border-radius: 4px; }
+  .hero :focus-visible, .header :focus-visible { outline-color: #fff; }
+  .hero { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: #fff; padding: 44px 24px 36px; }
+  .wrap { max-width: 1100px; margin: 0 auto; }
+  .crumb { font-size: 13px; color: var(--accent); margin-bottom: 10px; }
+  .crumb a { color: var(--accent); text-decoration: none; }
+  .crumb .next-nav a { font-weight: 700; }
+  .hero-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; flex-wrap: wrap; }
+  .hero h1 { font-family: var(--font-heading); font-weight: 700; font-size: 34px; line-height: 1.15; }
+  .hero p { margin-top: 10px; font-size: 15.5px; color: #dcdcf2; max-width: 680px; }
+  select#langSelect { font-family: var(--font-body); font-size: 13px; font-weight: 600; border: 1.5px solid rgba(255,255,255,0.4); background: rgba(255,255,255,0.08); color: #fff; border-radius: 8px; padding: 7px 10px; }
+  select#langSelect option { color: var(--ink); }
+  main { max-width: 1100px; margin: 0 auto; padding: 28px 24px 80px; }
+  .note { background: var(--powder); border: 1px solid var(--accent); border-radius: 12px; padding: 14px 16px; font-size: 14px; color: var(--muted); margin-bottom: 26px; }
+  .note strong { color: var(--primary); }
+  .card { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 22px 24px; margin-bottom: 20px; }
+  .card > h2 { font-family: var(--font-heading); font-weight: 600; font-size: 21px; color: var(--primary); margin-bottom: 4px; }
+  .card .hint { font-size: 13.5px; color: var(--muted); margin-bottom: 14px; }
+  ol.sop { margin-left: 20px; }
+  ol.sop li { margin-bottom: 10px; font-size: 14px; }
+  ol.sop li.done > label.sop-step > span { text-decoration: line-through; color: var(--muted); }
+  label.sop-step { display: flex; gap: 9px; align-items: flex-start; font-weight: 400; margin: 0; cursor: pointer; font-size: 14px; color: var(--ink); }
+  label.sop-step input { width: auto; margin-top: 4px; flex: none; }
+  /* Flex child: min-width defaults to auto, so a long compound in the
+     SOP text could not shrink and nudged the page wide in Danish. */
+  label.sop-step > span { min-width: 0; overflow-wrap: break-word; }
+  label { display: block; font-size: 13px; font-weight: 600; color: var(--ink); margin: 10px 0 5px; }
+  input[type=text], textarea, select.field { width: 100%; font-family: var(--font-body); font-size: 14px; color: var(--ink); border: 1.5px solid var(--line); border-radius: 8px; padding: 9px 11px; background: #fff; }
+  textarea { resize: vertical; min-height: 70px; }
+  input:focus, textarea:focus, select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(27,20,116,0.12); }
+  input:focus:not(:focus-visible), textarea:focus:not(:focus-visible), select:focus:not(:focus-visible) { outline: none; }
+  .grid2 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 0 16px; }
+  .btn { font-family: var(--font-body); font-size: 13.5px; font-weight: 600; padding: 9px 16px; border-radius: 8px; border: none; cursor: pointer; transition: all 0.15s; }
+  .btn-primary { background: var(--accent); color: var(--primary); }
+  .btn-primary:hover { background: #C3C5EC; }
+  .btn-secondary { background: #fff; color: var(--primary); border: 1.5px solid var(--accent); }
+  .btn-secondary:hover { background: var(--powder); }
+  .btn-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px; }
+  table.matrix { width: 100%; border-collapse: collapse; font-size: 13.5px; margin-top: 10px; }
+  table.matrix th { text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); padding: 6px 8px; border-bottom: 2px solid var(--line); }
+  table.matrix td { padding: 6px 8px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+  table.matrix input[type=text] { padding: 6px 8px; font-size: 13px; }
+  table.matrix select { padding: 6px 6px; font-size: 13px; }
+  .rm-btn { background: none; border: none; color: var(--red); cursor: pointer; font-size: 15px; }
+  .status-badge { display: inline-block; font-size: 10.5px; font-weight: 700; padding: 2px 8px; border-radius: 10px; white-space: nowrap; }
+  .status-ontrack { background: var(--powder); color: var(--muted); }
+  .status-watch { background: #fdf3e3; color: var(--amber); }
+  .status-behind { background: #e7f5ee; color: var(--green); }
+  .status-retired { background: #fbeaea; color: var(--red); }
+  .preview { border: 1px dashed var(--line); border-radius: 10px; padding: 18px 20px; background: #fcfcff; font-size: 14px; }
+  .preview h3 { font-family: var(--font-heading); color: var(--primary); font-size: 16px; margin: 14px 0 6px; }
+  .preview h3:first-child { margin-top: 0; }
+  .preview p { margin: 6px 0; white-space: pre-wrap; }
+  .preview .meta { font-size: 13px; color: var(--muted); margin-bottom: 10px; }
+  .preview table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 8px 0; }
+  .preview th, .preview td { border: 1px solid var(--line); padding: 6px 9px; text-align: left; }
+  .preview th { background: var(--powder); color: var(--primary); }
+  .prompt-box { display: none; margin-top: 12px; }
+  pre.prompt { background: #f5f5fc; border: 1px solid var(--line); border-radius: 10px; padding: 14px; font-size: 12.5px; line-height: 1.5; white-space: pre-wrap; word-break: break-word; color: #2a2a3a; max-height: 320px; overflow: auto; }
+  .preview h2 { font-family: var(--font-heading); color: var(--primary); font-size: 18px; margin: 16px 0 6px; }
+  .preview h4, .preview h5 { font-family: var(--font-heading); color: var(--primary); margin: 12px 0 4px; }
+  .preview ul, .preview ol { margin: 8px 0 8px 22px; }
+  .preview code { background: #ececf6; padding: 1px 5px; border-radius: 4px; font-size: 12.5px; }
+  .preview pre { background: #f5f5fc; border: 1px solid var(--line); border-radius: 8px; padding: 12px; overflow: auto; font-size: 12.5px; white-space: pre-wrap; word-break: break-word; margin: 10px 0; }
+  .preview table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 8px 0; }
+  .preview th, .preview td { border: 1px solid var(--line); padding: 6px 9px; text-align: left; vertical-align: top; }
+  .preview th { background: var(--powder); color: var(--primary); }
+  textarea[data-eng="draftDoc"] { min-height: 110px; }
+  .saved { font-size: 12.5px; color: var(--green); margin-left: 8px; }
+  /* Wide tracker tables scroll inside their own container so the page body
+     never scrolls horizontally on narrow viewports. min-width keeps the
+     input columns usable rather than squeezing them to unusable widths. */
+  .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .table-scroll table { min-width: 560px; }
+  /* The generated document preview can contain a wide table once rows
+     exist; scroll it here rather than letting the page body scroll. */
+  .preview, .report { overflow-x: auto; }
+  /* Danish and Swedish compounds ("Implementeringsstyrningsplan",
+     "Kvalitetssaekringstestplan") are single words wider than a phone; without
+     these they force the page to scroll sideways. minmax(0,1fr) also lets grid
+     tracks shrink below their min-content floor. */
+  h1, h2, h3, h4, p, label, dt, dd, th, td, span, .hint, .crumb { overflow-wrap: break-word; hyphens: auto; }
+  @media (max-width: 720px) { .grid2 { grid-template-columns: minmax(0, 1fr); } .hero h1 { font-size: 27px; } table.matrix { font-size: 12px; } }
+</style>
+</head>
+<body>
+  <header class="hero"><div class="wrap">
+    <div class="hero-top">
+      <div class="crumb"><a href="../../">AI Architect Toolkit</a> · Phase 10 · ROI Analysis &amp; Cost Optimization · <span class="next-nav">End of the toolkit — <a href="../../engagement-report.html">view the master report →</a></span></div>
+      <select id="langSelect" onchange="setLang(this.value)">
+        <option value="en">English</option>
+        <option value="da">Dansk</option>
+        <option value="sv">Svenska</option>
+      </select>
+    </div>
+    <h1 data-i18n="heroTitle"></h1>
+    <p data-i18n="heroDesc"></p>
+  </div></header>
+
+  <main>
+    <div class="note"><strong data-i18n="noteLabel"></strong> <span data-i18n="noteBody"></span></div>
+
+    <div class="card">
+      <h2 data-i18n="sopTitle"></h2>
+      <p class="hint" data-i18n="sopHint"></p>
+      <ol class="sop" id="sopList"></ol>
+      <p class="hint" id="sopProgress" style="margin:8px 0 0"></p>
+    </div>
+
+    <div class="card">
+      <h2 data-i18n="intakeTitle"></h2>
+      <div class="grid2">
+        <div><label data-i18n="lblClient"></label><input type="text" data-eng="client" placeholder="Acme Corp"></div>
+        <div><label data-i18n="lblAssessor"></label><input type="text" data-eng="assessor"></div>
+      </div>
+      <label data-i18n="lblKpiNotes"></label>
+      <textarea data-eng="kpiNotes"></textarea>
+      <label data-i18n="lblDashboardNotes"></label>
+      <textarea data-eng="dashboardNotes"></textarea>
+      <label data-i18n="lblReviewNotes"></label>
+      <textarea data-eng="reviewNotes"></textarea>
+      <label data-i18n="lblActionNotes"></label>
+      <textarea data-eng="actionNotes"></textarea>
+    </div>
+
+    <div class="card">
+      <h2 data-i18n="tableTitle"></h2>
+      <p class="hint" data-i18n="tableHint"></p>
+      <div class="table-scroll">
+      <table class="matrix">
+        <thead><tr><th data-i18n="colA"></th><th data-i18n="colB"></th><th data-i18n="colC"></th><th data-i18n="colStatus"></th><th></th></tr></thead>
+        <tbody id="matrixBody"></tbody>
+      </table>
+      </div>
+      <div class="btn-row"><button class="btn btn-secondary" onclick="addRow()" data-i18n="btnAddRow"></button></div>
+    </div>
+
+    <div class="card">
+      <h2 data-i18n="draftTitle"></h2>
+      <p class="hint" data-i18n="draftHint"></p>
+      <div class="btn-row"><button class="btn btn-primary" onclick="genDraftPrompt()" data-i18n="btnGenDraft"></button></div>
+      <div class="prompt-box" id="pbDraft"><pre class="prompt" id="ptDraft"></pre>
+        <div class="btn-row"><button class="btn btn-secondary" onclick="copyDraftPrompt()" data-i18n="btnCopyDraft"></button></div></div>
+      <label data-i18n="lblDraftDoc"></label>
+      <textarea data-eng="draftDoc" placeholder="Paste the Markdown document the agent drafted&#8230;"></textarea>
+    </div>
+
+    <div class="card">
+      <h2 data-i18n="previewTitle"></h2>
+      <p class="hint" data-i18n="previewHint"></p>
+      <div class="preview" id="preview"></div>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="exportDoc('html')" data-i18n="btnExportHtml"></button>
+        <button class="btn btn-primary" onclick="exportDoc('md')" data-i18n="btnExportMd"></button>
+        <button class="btn btn-secondary" onclick="resetAll()" data-i18n="btnReset"></button>
+        <button class="btn btn-secondary" onclick="loadSample()" data-i18n="btnLoadSample"></button>
+        <span class="saved" id="savedFlag"></span>
+      </div>
+      <div id="sampleError" style="display:none;color:var(--red);font-size:12.5px;margin-top:8px"></div>
+    </div>
+  </main>
+
+<script>
+const KEY = 'aoa_value_tracking_v1';
+const STATUS_KEYS = { ontrack: 'statusOntrack', watch: 'statusWatch', behind: 'statusBehind', retired: 'statusRetired' };
+
+const STRINGS = {
+  en: {
+    heroTitle: "Value Tracking & Quarterly Review",
+    heroDesc: "SOP, client intake, a KPI tracker against baseline, and an auto-generated quarterly value review.",
+    noteLabel: "How this works.",
+    noteBody: "Fill in the intake fields and KPI tracker below; the review builds live. No API calls — everything autosaves locally.",
+    sopTitle: "SOP — how this is usually done",
+    sopHint: "The order an architect actually works this exercise in.",
+    sop: [
+      "Fix the baseline before go-live and write it down. A value programme that reconstructs its baseline afterwards produces numbers nobody outside the project believes, and reconstructing it is the most common reason value tracking is abandoned.",
+      "Track the outcome the use case was bought to move, alongside the model metrics. A dashboard of accuracy and latency can be entirely green while the business case quietly fails.",
+      "Keep the KPI set small enough that someone reads all of it. Six numbers reviewed monthly beats thirty reviewed never, and the thirty-number dashboard is what gets built by default.",
+      "Give each KPI an owner who can act on it. A metric with no owner becomes decoration on the second review, and the review becomes a status meeting.",
+      "Make the quarterly review able to conclude that this is not working. A value process that can only report progress is a reporting exercise, and the option to stop is the one that gives the rest of it credibility.",
+    ],
+    intakeTitle: "Client & KPI intake",
+    lblClient: "Client / engagement",
+    lblAssessor: "Assessor",
+    lblKpiNotes: "KPI set, baselines & owners",
+    lblDashboardNotes: "Dashboard design & where it lives",
+    lblReviewNotes: "Review cadence, attendees & decision rights",
+    lblActionNotes: "Actions from the latest review",
+    tableTitle: "KPIs",
+    tableHint: "Add one row per KPI, its baseline, and the current value.",
+    colA: "KPI",
+    colB: "Baseline (pre go-live)",
+    colC: "Current",
+    colStatus: "Status",
+    btnAddRow: "+ Add KPI",
+    statusOntrack: "On track",
+    statusWatch: "Watch",
+    statusBehind: "Behind",
+    statusRetired: "Retired",
+    previewTitle: "Quarterly value review",
+    previewHint: "This is the actual deliverable — auto-generated and customized for this client.",
+    btnExportHtml: "🌐 Export HTML",
+    btnExportMd: "📄 Export Markdown",
+    btnReset: "🔄 Reset",
+    docTitle: "Quarterly Value Review",
+    docFor: "Prepared for",
+    docAssessor: "Assessor",
+    docDate: "Date",
+    secA: "1. KPI Set, Baselines & Owners",
+    secB: "2. Dashboard Design",
+    secC: "3. Review Cadence & Decision Rights",
+    secD: "4. Actions from This Review",
+    secE: "5. KPIs",
+    noRows: "No KPIs added yet.",
+    phA: "e.g. Fraud caught per 1000 claims",
+    phB: "e.g. 4.1",
+    phC: "e.g. 6.8",
+    emptyNote: "(not yet documented)",
+  },
+  da: {
+    heroTitle: "Værdisporing og kvartalsgennemgang",
+    heroDesc: "SOP, kundeoptag, en KPI-tracker mod baseline, og en automatisk genereret kvartalsvis værdigennemgang.",
+    noteLabel: "Sådan virker det.",
+    noteBody: "Udfyld optagsfelterne og KPI-trackeren nedenfor; gennemgangen opbygges live. Ingen API-kald — alt gemmes automatisk lokalt.",
+    sopTitle: "SOP — sådan gøres det normalt",
+    sopHint: "Rækkefølgen en arkitekt reelt arbejder denne øvelse igennem.",
+    sop: [
+      "Fastlås baseline før go-live og skriv den ned. Et værdiprogram der rekonstruerer sin baseline bagefter, producerer tal ingen uden for projektet tror på, og rekonstruktionen er den mest almindelige årsag til at værdisporing opgives.",
+      "Følg det udfald use casen blev købt for at flytte, sammen med modelmetrikkerne. Et dashboard af nøjagtighed og latenstid kan være helt grønt, mens business casen stille fejler.",
+      "Hold KPI-sættet lille nok til at nogen læser det hele. Seks tal gennemgået månedligt slår tredive gennemgået aldrig, og dashboardet med tredive tal er det der bygges som standard.",
+      "Giv hver KPI en ejer der kan handle på den. En metrik uden ejer bliver dekoration ved anden gennemgang, og gennemgangen bliver et statusmøde.",
+      "Gør kvartalsgennemgangen i stand til at konkludere, at dette ikke virker. En værdiproces der kun kan rapportere fremgang, er en rapporteringsøvelse, og muligheden for at stoppe er den der giver resten troværdighed.",
+    ],
+    intakeTitle: "Kunde- og KPI-optag",
+    lblClient: "Kunde / engagement",
+    lblAssessor: "Vurderingsmand",
+    lblKpiNotes: "KPI-sæt, baselines og ejere",
+    lblDashboardNotes: "Dashboard-design og hvor det bor",
+    lblReviewNotes: "Gennemgangskadence, deltagere og beslutningsret",
+    lblActionNotes: "Handlinger fra seneste gennemgang",
+    tableTitle: "KPI'er",
+    tableHint: "Tilføj en række pr. KPI, dens baseline, og den aktuelle værdi.",
+    colA: "KPI",
+    colB: "Baseline (før go-live)",
+    colC: "Aktuel",
+    colStatus: "Status",
+    btnAddRow: "+ Tilføj KPI",
+    statusOntrack: "På sporet",
+    statusWatch: "Observeres",
+    statusBehind: "Bagud",
+    statusRetired: "Udfaset",
+    previewTitle: "Kvartalsvis værdigennemgang",
+    previewHint: "Dette er selve leverancen — automatisk genereret og tilpasset denne kunde.",
+    btnExportHtml: "🌐 Eksportér HTML",
+    btnExportMd: "📄 Eksportér Markdown",
+    btnReset: "🔄 Nulstil",
+    docTitle: "Kvartalsvis værdigennemgang",
+    docFor: "Udarbejdet for",
+    docAssessor: "Vurderingsmand",
+    docDate: "Dato",
+    secA: "1. KPI-sæt, baselines og ejere",
+    secB: "2. Dashboard-design",
+    secC: "3. Gennemgangskadence og beslutningsret",
+    secD: "4. Handlinger fra denne gennemgang",
+    secE: "5. KPI'er",
+    noRows: "Ingen KPI'er tilføjet endnu.",
+    phA: "fx Svindel fanget pr. 1000 sager",
+    phB: "fx 4,1",
+    phC: "fx 6,8",
+    emptyNote: "(endnu ikke dokumenteret)",
+  },
+  sv: {
+    heroTitle: "Värdespårning och kvartalsgranskning",
+    heroDesc: "SOP, kundintag, en KPI-spårare mot baslinje, och en automatiskt genererad kvartalsvis värdegranskning.",
+    noteLabel: "Så här fungerar det.",
+    noteBody: "Fyll i intagsfälten och KPI-spåraren nedan; granskningen byggs upp live. Inga API-anrop — allt sparas automatiskt lokalt.",
+    sopTitle: "SOP — så här görs det vanligtvis",
+    sopHint: "Ordningen en arkitekt faktiskt arbetar igenom denna övning.",
+    sop: [
+      "Lås baslinjen före go-live och skriv ned den. Ett värdeprogram som rekonstruerar sin baslinje efteråt producerar tal ingen utanför projektet tror på, och rekonstruktionen är det vanligaste skälet till att värdespårning överges.",
+      "Följ det utfall användningsfallet köptes för att flytta, jämte modellmåtten. En dashboard av träffsäkerhet och latens kan vara helt grön medan affärsfallet tyst misslyckas.",
+      "Håll KPI-uppsättningen liten nog att någon läser allt. Sex tal granskade månadsvis slår trettio granskade aldrig, och dashboarden med trettio tal är den som byggs som standard.",
+      "Ge varje KPI en ägare som kan agera på den. Ett mått utan ägare blir dekoration vid andra granskningen, och granskningen blir ett statusmöte.",
+      "Gör kvartalsgranskningen kapabel att dra slutsatsen att detta inte fungerar. En värdeprocess som bara kan rapportera framsteg är en rapporteringsövning, och möjligheten att stoppa är den som ger resten trovärdighet.",
+    ],
+    intakeTitle: "Kund- och KPI-intag",
+    lblClient: "Kund / uppdrag",
+    lblAssessor: "Bedömare",
+    lblKpiNotes: "KPI-uppsättning, baslinjer och ägare",
+    lblDashboardNotes: "Dashboard-design och var den bor",
+    lblReviewNotes: "Granskningskadens, deltagare och beslutsrätt",
+    lblActionNotes: "Åtgärder från senaste granskningen",
+    tableTitle: "KPI:er",
+    tableHint: "Lägg till en rad per KPI, dess baslinje, och det aktuella värdet.",
+    colA: "KPI",
+    colB: "Baslinje (före go-live)",
+    colC: "Aktuell",
+    colStatus: "Status",
+    btnAddRow: "+ Lägg till KPI",
+    statusOntrack: "På spåret",
+    statusWatch: "Bevakas",
+    statusBehind: "Efter",
+    statusRetired: "Utfasad",
+    previewTitle: "Kvartalsvis värdegranskning",
+    previewHint: "Detta är själva leveransen — automatiskt genererad och anpassad för denna kund.",
+    btnExportHtml: "🌐 Exportera HTML",
+    btnExportMd: "📄 Exportera Markdown",
+    btnReset: "🔄 Återställ",
+    docTitle: "Kvartalsvis värdegranskning",
+    docFor: "Framtagen för",
+    docAssessor: "Bedömare",
+    docDate: "Datum",
+    secA: "1. KPI-uppsättning, baslinjer och ägare",
+    secB: "2. Dashboard-design",
+    secC: "3. Granskningskadens och beslutsrätt",
+    secD: "4. Åtgärder från denna granskning",
+    secE: "5. KPI:er",
+    noRows: "Inga KPI:er tillagda än.",
+    phA: "t.ex. Bedrägeri fångat per 1000 ärenden",
+    phB: "t.ex. 4,1",
+    phC: "t.ex. 6,8",
+    emptyNote: "(ännu inte dokumenterat)",
+  },
+};
+
+// ── Checklist + sample-data strings (merged into STRINGS) ────────
+(function () {
+  const D = {
+    en: {
+      sopProgress: (n, total) => `${n} of ${total} steps done`,
+      btnLoadSample: '\ud83e\uddea Load sample',
+      sampleConfirm: 'Load the sample engagement into this tool? This replaces anything currently saved here.',
+      sampleLoadError2: (msg) => `Could not load the sample (${msg}). This can happen if the page was opened directly from disk rather than served over http(s).`,
+    },
+    da: {
+      sopProgress: (n, total) => `${n} af ${total} trin fuldf\u00f8rt`,
+      btnLoadSample: '\ud83e\uddea Indl\u00e6s eksempel',
+      sampleConfirm: 'Indl\u00e6s eksempel-engagementet i dette v\u00e6rkt\u00f8j? Dette erstatter alt, der aktuelt er gemt her.',
+      sampleLoadError2: (msg) => `Kunne ikke indl\u00e6se eksemplet (${msg}). Dette kan ske, hvis siden blev \u00e5bnet direkte fra disk i stedet for serveret over http(s).`,
+    },
+    sv: {
+      sopProgress: (n, total) => `${n} av ${total} steg klara`,
+      btnLoadSample: '\ud83e\uddea L\u00e4s in exempel',
+      sampleConfirm: 'L\u00e4s in exempeluppdraget i detta verktyg? Detta ers\u00e4tter allt som f\u00f6r n\u00e4rvarande \u00e4r sparat h\u00e4r.',
+      sampleLoadError2: (msg) => `Kunde inte l\u00e4sa in exemplet (${msg}). Detta kan h\u00e4nda om sidan \u00f6ppnades direkt fr\u00e5n disk ist\u00e4llet f\u00f6r att serveras \u00f6ver http(s).`,
+    },
+  };
+  Object.keys(D).forEach(l => { if (STRINGS[l]) Object.assign(STRINGS[l], D[l]); });
+})();
+
+
+// ── Agent-drafting chrome strings (merged into STRINGS) ──────────
+(function () {
+  const D = {
+    en: {
+      draftTitle: 'Agent drafting',
+      draftHint: "Generate a prompt that carries this tool's methodology and your full intake, run it in Claude (or any capable model), then paste the drafted Markdown below. A pasted draft replaces the template preview and both exports; clear it to go back to the template. Prompts are English — ask the agent for another output language if needed.",
+      btnGenDraft: '\ud83e\udd16 Generate drafting prompt',
+      btnCopyDraft: '\ud83d\udccb Copy prompt',
+      lblDraftDoc: 'Drafted document (Markdown, optional)',
+      draftCopied: '\u2705 Copied!',
+      draftCopyFail: 'Copy failed \u2014 select the text manually.',
+    },
+    da: {
+      draftTitle: 'Agent-udkast',
+      draftHint: 'Gener\u00e9r en prompt, der b\u00e6rer dette v\u00e6rkt\u00f8js metodik og hele dit optag, k\u00f8r den i Claude (eller en anden kapabel model), og inds\u00e6t derefter det udkastede Markdown nedenfor. Et indsat udkast erstatter skabelon-forh\u00e5ndsvisningen og begge eksporter; ryd det for at vende tilbage til skabelonen. Prompts er p\u00e5 engelsk \u2014 bed agenten om et andet outputsprog efter behov.',
+      btnGenDraft: '\ud83e\udd16 Gener\u00e9r udkast-prompt',
+      btnCopyDraft: '\ud83d\udccb Kopi\u00e9r prompt',
+      lblDraftDoc: 'Udkastet dokument (Markdown, valgfrit)',
+      draftCopied: '\u2705 Kopieret!',
+      draftCopyFail: 'Kopiering mislykkedes \u2014 mark\u00e9r teksten manuelt.',
+    },
+    sv: {
+      draftTitle: 'Agent-utkast',
+      draftHint: 'Generera en prompt som b\u00e4r detta verktygs metodik och hela ditt intag, k\u00f6r den i Claude (eller annan kapabel modell), och klistra sedan in det utkastade Markdown nedan. Ett inklistrat utkast ers\u00e4tter mallf\u00f6rhandsgranskningen och b\u00e5da exporterna; rensa det f\u00f6r att g\u00e5 tillbaka till mallen. Prompter \u00e4r p\u00e5 engelska \u2014 be agenten om ett annat utdataspr\u00e5k vid behov.',
+      btnGenDraft: '\ud83e\udd16 Generera utkast-prompt',
+      btnCopyDraft: '\ud83d\udccb Kopiera prompt',
+      lblDraftDoc: 'Utkastat dokument (Markdown, valfritt)',
+      draftCopied: '\u2705 Kopierat!',
+      draftCopyFail: 'Kopiering misslyckades \u2014 markera texten manuellt.',
+    },
+  };
+  Object.keys(D).forEach(l => { if (STRINGS[l]) Object.assign(STRINGS[l], D[l]); });
+})();
+
+
+let lang = localStorage.getItem('aoa_lang') || 'en';
+function t(key) { return (STRINGS[lang] && STRINGS[lang][key] !== undefined) ? STRINGS[lang][key] : (STRINGS.en[key] !== undefined ? STRINGS.en[key] : key); }
+function esc(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+// Markdown table cells: a raw | or newline in a tracker value would otherwise
+// invent columns or rows in the exported deliverable.
+function mdCell(v) { return String(v === undefined || v === null ? '' : v).replace(/\|/g, '\\|').replace(/\r?\n/g, ' '); }
+
+let rows = []; // { id, kpi, baseline, current, status }
+let nextId = 1;
+
+function setLang(l) {
+  lang = l;
+  localStorage.setItem('aoa_lang', l);
+  document.getElementById('langSelect').value = l;
+  applyI18n();
+  renderMatrix();
+  renderPreview();
+  save();
+}
+function applyI18n() {
+  document.documentElement.lang = lang;
+  document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.getAttribute('data-i18n')); });
+  document.title = t('heroTitle') + ' — Phase 10';
+  document.getElementById('sopList').innerHTML = t('sop').map(s => `<li>${esc(s)}</li>`).join('');
+}
+
+function fieldEls() { return Array.from(document.querySelectorAll('[data-eng]')); }
+function collectFields() { const o = {}; fieldEls().forEach(el => { o[el.getAttribute('data-eng')] = el.value; }); return o; }
+function restoreFields(o) { fieldEls().forEach(el => { const k = el.getAttribute('data-eng'); if (o[k] !== undefined) el.value = o[k]; }); }
+function val(k) { const el = document.querySelector(`[data-eng="${k}"]`); return el ? el.value : ''; }
+function orEmpty(v) { return v && v.trim() ? esc(v) : `<em>${esc(t('emptyNote'))}</em>`; }
+
+let savedTimer;
+function save() { try { localStorage.setItem(KEY, JSON.stringify({ fields: collectFields(), rows, nextId, lang })); flashSaved(); } catch (e) {} }
+function flashSaved() { const f = document.getElementById('savedFlag'); f.textContent = '✓'; clearTimeout(savedTimer); savedTimer = setTimeout(() => { f.textContent = ''; }, 1200); }
+function loadSaved() {
+  try {
+    const o = JSON.parse(localStorage.getItem(KEY) || '{}');
+    if (o.fields) restoreFields(o.fields);
+    if (o.rows) rows = o.rows;
+    if (o.nextId) nextId = o.nextId;
+  } catch (e) {}
+}
+
+function addRow() { rows.push({ id: nextId++, kpi: '', baseline: '', current: '', status: 'ontrack' }); renderMatrix(); renderPreview(); save(); }
+function removeRow(id) { rows = rows.filter(r => r.id !== id); renderMatrix(); renderPreview(); save(); }
+function updateRow(id, field, value) { const r = rows.find(r => r.id === id); if (r) r[field] = value; renderPreview(); save(); if (field === 'status') renderMatrix(); }
+
+function renderMatrix() {
+  const body = document.getElementById('matrixBody');
+  if (!rows.length) { body.innerHTML = `<tr><td colspan="5" style="color:var(--muted);font-style:italic;padding:14px 8px">${esc(t('noRows'))}</td></tr>`; return; }
+  body.innerHTML = rows.map(r => `<tr>
+      <td><input type="text" value="${esc(r.kpi)}" placeholder="${esc(t('phA'))}" oninput="updateRow(${r.id},'kpi',this.value)"></td>
+      <td><input type="text" value="${esc(r.baseline)}" placeholder="${esc(t('phB'))}" oninput="updateRow(${r.id},'baseline',this.value)"></td>
+      <td><input type="text" value="${esc(r.current)}" placeholder="${esc(t('phC'))}" oninput="updateRow(${r.id},'current',this.value)"></td>
+      <td><select onchange="updateRow(${r.id},'status',this.value)">
+        ${Object.entries(STATUS_KEYS).map(([v, k]) => `<option value="${v}" ${r.status === v ? 'selected' : ''}>${esc(t(k))}</option>`).join('')}
+      </select></td>
+      <td><button class="rm-btn" onclick="removeRow(${r.id})" title="remove">✕</button></td>
+    </tr>`).join('');
+}
+
+function renderPreview() {
+  const date = new Date().toISOString().slice(0, 10);
+  const filled = rows.filter(r => r.kpi.trim());
+  let h = `<div class="meta"><strong>${esc(t('docFor'))}:</strong> ${esc(val('client')) || '—'} &nbsp;·&nbsp; <strong>${esc(t('docAssessor'))}:</strong> ${esc(val('assessor')) || '—'} &nbsp;·&nbsp; <strong>${esc(t('docDate'))}:</strong> ${date}</div>`;
+  h += `<h3>${esc(t('secA'))}</h3><p>${orEmpty(val('kpiNotes'))}</p>`;
+  h += `<h3>${esc(t('secB'))}</h3><p>${orEmpty(val('dashboardNotes'))}</p>`;
+  h += `<h3>${esc(t('secC'))}</h3><p>${orEmpty(val('reviewNotes'))}</p>`;
+  h += `<h3>${esc(t('secD'))}</h3><p>${orEmpty(val('actionNotes'))}</p>`;
+  h += `<h3>${esc(t('secE'))}</h3>`;
+  if (filled.length) {
+    h += `<table><thead><tr><th>${esc(t('colA'))}</th><th>${esc(t('colB'))}</th><th>${esc(t('colC'))}</th><th>${esc(t('colStatus'))}</th></tr></thead><tbody>`;
+    h += filled.map(r => `<tr><td>${esc(r.kpi)}</td><td>${esc(r.baseline)}</td><td>${esc(r.current)}</td><td><span class="status-badge status-${r.status}">${esc(t(STATUS_KEYS[r.status] || 'statusOntrack'))}</span></td></tr>`).join('');
+    h += '</tbody></table>';
+  } else {
+    h += `<p><em>${esc(t('noRows'))}</em></p>`;
+  }
+  document.getElementById('preview').innerHTML = h;
+}
+
+document.addEventListener('input', e => { if (e.target.matches('[data-eng]')) { renderPreview(); save(); } });
+document.addEventListener('change', e => { if (e.target.matches('[data-eng]')) { renderPreview(); save(); } });
+
+function resetAll() {
+  if (!confirm('Clear all fields? / Ryd alle felter? / Rensa alla fält?')) return;
+  fieldEls().forEach(el => { el.value = ''; });
+  rows = []; nextId = 1;
+  renderMatrix(); renderPreview(); save();
+}
+
+function slug() { return (val('client') || 'value_tracking').replace(/\W+/g, '_'); }
+function docMarkdown() {
+  const date = new Date().toISOString().slice(0, 10);
+  const filled = rows.filter(r => r.kpi.trim());
+  let m = `# ${t('docTitle')} — ${val('client') || '[client]'}\n\n`;
+  m += `**${t('docFor')}:** ${val('client') || '—'}  \n**${t('docAssessor')}:** ${val('assessor') || '—'}  \n**${t('docDate')}:** ${date}\n\n`;
+  m += `## ${t('secA')}\n${val('kpiNotes') || t('emptyNote')}\n\n`;
+  m += `## ${t('secB')}\n${val('dashboardNotes') || t('emptyNote')}\n\n`;
+  m += `## ${t('secC')}\n${val('reviewNotes') || t('emptyNote')}\n\n`;
+  m += `## ${t('secD')}\n${val('actionNotes') || t('emptyNote')}\n\n`;
+  m += `## ${t('secE')}\n\n`;
+  if (filled.length) {
+    m += `| ${t('colA')} | ${t('colB')} | ${t('colC')} | ${t('colStatus')} |\n|---|---|---|---|\n`;
+    m += filled.map(r => `| ${mdCell(r.kpi)} | ${mdCell(r.baseline)} | ${mdCell(r.current)} | ${t(STATUS_KEYS[r.status] || 'statusOntrack')} |`).join('\n') + '\n';
+  } else {
+    m += `${t('noRows')}\n`;
+  }
+  return m;
+}
+function docHtml() {
+  return '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>' + esc(t('docTitle')) + ' — ' + esc(val('client') || 'client') + '</title>'
+    + '<style>body{font-family:Inter,Segoe UI,sans-serif;color:#1c1c28;max-width:880px;margin:40px auto;padding:0 22px;line-height:1.6}'
+    + 'h1,h3{color:#1B1474;font-family:Georgia,serif}table{width:100%;border-collapse:collapse;font-size:14px}th,td{border:1px solid #e4e4f0;padding:7px 10px;text-align:left}th{background:#EEEEFA;color:#1B1474}.status-badge{font-size:11px;font-weight:700;padding:2px 9px;border-radius:10px;background:#EEEEFA;color:#1B1474}</style></head><body>'
+    + document.getElementById('preview').outerHTML.replace('id="preview"', '')
+    + '</body></html>';
+}
+function download(text, fname, mime) {
+  const blob = new Blob([text], { type: mime });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = fname; a.click();
+  URL.revokeObjectURL(a.href);
+}
+function exportDoc(fmt) {
+  if (fmt === 'md') download(docMarkdown(), 'value_tracking_' + slug() + '.md', 'text/markdown');
+  else download(docHtml(), 'value_tracking_' + slug() + '.html', 'text/html');
+}
+
+// ── Shared engagement profile (site-wide prefill of client/assessor/use case) ──
+const ENG_KEY = 'aoa_engagement_v1';
+const ENG_FIELDS = ['client', 'assessor', 'useCase'];
+function prefillEngagement() {
+  try {
+    const eng = JSON.parse(localStorage.getItem(ENG_KEY) || '{}');
+    ENG_FIELDS.forEach(k => {
+      const el = document.querySelector('[data-eng="' + k + '"]');
+      if (el && !el.value && eng[k]) el.value = eng[k];
+    });
+  } catch (e) {}
+}
+document.addEventListener('input', e => {
+  const k = e.target.getAttribute && e.target.getAttribute('data-eng');
+  if (!k || ENG_FIELDS.indexOf(k) === -1 || !e.target.value) return;
+  try {
+    const eng = JSON.parse(localStorage.getItem(ENG_KEY) || '{}');
+    eng[k] = e.target.value;
+    localStorage.setItem(ENG_KEY, JSON.stringify(eng));
+  } catch (e2) {}
+});
+
+// ── Agent drafting engine: prompt generation + Markdown paste-back.
+// A non-empty draft replaces the echo template in preview and exports. ──
+function _mdInline(s) { return esc(s).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/`(.+?)`/g, '<code>$1</code>'); }
+function _mdRow(line) { return line.trim().replace(/^\|/, '').replace(/\|$/, '').split('|').map(c => c.trim()); }
+function mdToHtml(md) {
+  if (!md || !md.trim()) return '';
+  const L = md.replace(/\r/g, '').split('\n');
+  let html = '', i = 0;
+  while (i < L.length) {
+    const line = L[i];
+    if (/^\s*$/.test(line)) { i++; continue; }
+    if (/^```/.test(line.trim())) {
+      i++; const buf = [];
+      while (i < L.length && !/^```/.test(L[i].trim())) { buf.push(L[i]); i++; }
+      i++;
+      html += '<pre>' + esc(buf.join('\n')) + '</pre>';
+      continue;
+    }
+    if (line.includes('|') && i + 1 < L.length && /-/.test(L[i + 1]) && /^[\s:|-]+$/.test(L[i + 1].trim())) {
+      const head = _mdRow(line); i += 2; const body = [];
+      while (i < L.length && L[i].includes('|') && L[i].trim() !== '') { body.push(_mdRow(L[i])); i++; }
+      html += '<table><thead><tr>' + head.map(h => '<th>' + _mdInline(h) + '</th>').join('') + '</tr></thead><tbody>'
+            + body.map(r => '<tr>' + r.map(c => '<td>' + _mdInline(c) + '</td>').join('') + '</tr>').join('') + '</tbody></table>';
+      continue;
+    }
+    let m;
+    if (m = line.match(/^(#{1,4})\s+(.*)/)) { const lv = m[1].length + 1; html += '<h' + lv + '>' + _mdInline(m[2]) + '</h' + lv + '>'; i++; continue; }
+    if (/^\s*[-*]\s+/.test(line)) { const it = []; while (i < L.length && /^\s*[-*]\s+/.test(L[i])) { it.push(L[i].replace(/^\s*[-*]\s+/, '')); i++; } html += '<ul>' + it.map(x => '<li>' + _mdInline(x) + '</li>').join('') + '</ul>'; continue; }
+    if (/^\s*\d+\.\s+/.test(line)) { const it = []; while (i < L.length && /^\s*\d+\.\s+/.test(L[i])) { it.push(L[i].replace(/^\s*\d+\.\s+/, '')); i++; } html += '<ol>' + it.map(x => '<li>' + _mdInline(x) + '</li>').join('') + '</ol>'; continue; }
+    const para = [line]; i++;
+    while (i < L.length && !/^\s*$/.test(L[i]) && !/^(#{1,4}\s|[-*]\s|\d+\.\s)/.test(L[i]) && !L[i].includes('|')) { para.push(L[i]); i++; }
+    html += '<p>' + _mdInline(para.join(' ')) + '</p>';
+  }
+  return html;
+}
+function _humanizeKey(k) { return String(k).replace(/_/g, ' ').replace(/([a-z0-9])([A-Z])/g, '$1 $2').replace(/\b[a-z]/g, c => c.toUpperCase()).trim(); }
+function buildDraftPrompt() {
+  const title = STRINGS.en.docTitle || STRINGS.en.heroTitle;
+  let p = 'You are an expert AI-architecture consultant. Draft the complete "' + title + '" deliverable for the engagement below as clean, client-ready Markdown.\n\n';
+  p += "Methodology to follow (this tool's SOP):\n";
+  (STRINGS.en.sop || []).forEach((s, i) => { p += (i + 1) + '. ' + s + '\n'; });
+  p += "\nConsultant intake (verbatim \u2014 build on it, don't merely restate it):\n";
+  document.querySelectorAll('[data-eng]').forEach(el => {
+    const k = el.getAttribute('data-eng');
+    if (k === 'draftDoc') return;
+    const v = (el.type === 'checkbox') ? (el.checked ? 'yes' : '') : el.value;
+    if (v && String(v).trim()) p += '- ' + _humanizeKey(k) + ': ' + v + '\n';
+  });
+  let rowsData = null;
+  if (typeof rows !== 'undefined' && Array.isArray(rows) && rows.length) rowsData = rows;
+  else if (typeof adrs !== 'undefined' && Array.isArray(adrs) && adrs.length) rowsData = adrs;
+  if (rowsData) {
+    const cleaned = rowsData.map(r => { const o = Object.assign({}, r); delete o.id; return o; })
+      .filter(o => Object.keys(o).some(c => typeof o[c] === 'string' && o[c].trim() !== ''));
+    if (cleaned.length) p += '\nStructured entries (JSON):\n' + JSON.stringify(cleaned, null, 2) + '\n';
+  }
+  if (typeof stackRows !== 'undefined' && Array.isArray(stackRows) && stackRows.length) {
+    p += '\nImported architecture stack (JSON):\n' + JSON.stringify(stackRows, null, 2) + '\n';
+  }
+  p += '\nRequirements: professional consulting tone; expand thin inputs into complete, specific sections; never invent client facts \u2014 where information is missing, add it to a final "Open questions for the client" section; structure with clear Markdown headings; output only the document.';
+  return p;
+}
+function genDraftPrompt() {
+  document.getElementById('ptDraft').textContent = buildDraftPrompt();
+  document.getElementById('pbDraft').style.display = 'block';
+}
+function copyDraftPrompt() {
+  const txt = document.getElementById('ptDraft').textContent;
+  navigator.clipboard.writeText(txt).then(() => {
+    const btn = event.target; const o = btn.textContent;
+    btn.textContent = t('draftCopied'); setTimeout(() => { btn.textContent = o; }, 1800);
+  }).catch(() => alert(t('draftCopyFail')));
+}
+const _tplRenderPreview = renderPreview;
+renderPreview = function () {
+  const d = val('draftDoc');
+  if (d && d.trim()) document.getElementById('preview').innerHTML = mdToHtml(d);
+  else _tplRenderPreview();
+};
+const _tplDocMarkdown = docMarkdown;
+docMarkdown = function () {
+  const d = val('draftDoc');
+  return (d && d.trim()) ? d : _tplDocMarkdown();
+};
+const _tplDocHtml = docHtml;
+docHtml = function () {
+  const d = val('draftDoc');
+  if (!(d && d.trim())) return _tplDocHtml();
+  return '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>' + esc((STRINGS.en.docTitle || '') + ' \u2014 ' + (val('client') || 'client')) + '</title>'
+    + '<style>body{font-family:Inter,Segoe UI,sans-serif;color:#1c1c28;max-width:880px;margin:40px auto;padding:0 22px;line-height:1.6}'
+    + 'h1,h2,h3,h4{color:#1B1474;font-family:Georgia,serif}table{width:100%;border-collapse:collapse;font-size:14px;margin:12px 0}th,td{border:1px solid #e4e4f0;padding:7px 10px;text-align:left;vertical-align:top}th{background:#EEEEFA;color:#1B1474}'
+    + 'code{background:#ececf6;padding:1px 5px;border-radius:4px}pre{background:#f5f5fc;border:1px solid #e4e4f0;border-radius:8px;padding:12px;overflow:auto;font-size:12.5px}</style></head><body>'
+    + mdToHtml(d) + '</body></html>';
+};
+
+// ── Checkable SOP steps (persisted) + sample-engagement loader ───
+let sopDone = [];
+try { const _o0 = JSON.parse(localStorage.getItem(KEY) || '{}'); if (Array.isArray(_o0.sopDone)) sopDone = _o0.sopDone; } catch (e) {}
+function renderSop() {
+  const steps = t('sop');
+  document.getElementById('sopList').innerHTML = steps.map((s, i) =>
+    `<li class="${sopDone[i] ? 'done' : ''}"><label class="sop-step"><input type="checkbox" ${sopDone[i] ? 'checked' : ''} onchange="toggleSop(${i}, this.checked)"><span>${esc(s)}</span></label></li>`
+  ).join('');
+  const pl = document.getElementById('sopProgress');
+  if (pl) pl.textContent = t('sopProgress')(sopDone.filter(Boolean).length, steps.length);
+}
+function toggleSop(i, v) { sopDone[i] = v; renderSop(); save(); }
+const _sopSave = save;
+save = function () {
+  _sopSave();
+  try {
+    const o = JSON.parse(localStorage.getItem(KEY) || '{}');
+    o.sopDone = sopDone;
+    localStorage.setItem(KEY, JSON.stringify(o));
+  } catch (e) {}
+};
+const _sopApplyI18n = applyI18n;
+applyI18n = function () { _sopApplyI18n(); renderSop(); };
+const SAMPLE_URL = '../../Phase%201%20-%20Discovery%20%26%20Assessment/sample-data/engagement-nordkap/value-tracking.json';
+function loadSample() {
+  if (!confirm(t('sampleConfirm'))) return;
+  const errEl = document.getElementById('sampleError');
+  if (errEl) errEl.style.display = 'none';
+  fetch(SAMPLE_URL)
+    .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+    .then(o => {
+      localStorage.setItem(KEY, JSON.stringify(o));
+      // Carry the sample's client/assessor/use case into the shared profile
+      // too, so the hub dashboard and master report show this engagement
+      // instead of staying blank or naming the previous client.
+      try {
+        const f = (o && o.fields) || {};
+        const eng = JSON.parse(localStorage.getItem(ENG_KEY) || '{}');
+        ENG_FIELDS.forEach(k => { if (f[k]) eng[k] = f[k]; });
+        localStorage.setItem(ENG_KEY, JSON.stringify(eng));
+      } catch (e) {}
+      location.reload();
+    })
+    .catch(err => {
+      if (errEl) { errEl.textContent = t('sampleLoadError2')(err.message); errEl.style.display = 'block'; }
+    });
+}
+
+(function init() {
+  document.getElementById('langSelect').value = lang;
+  loadSaved();
+  prefillEngagement();
+  applyI18n();
+  if (!rows.length) { rows.push({ id: nextId++, kpi: '', baseline: '', current: '', status: 'ontrack' }); }
+  renderMatrix();
+  renderPreview();
+})();
+</script>
+</body>
+</html>

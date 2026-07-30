@@ -64,6 +64,11 @@
   /* The generated document preview can contain a wide table once rows
      exist; scroll it here rather than letting the page body scroll. */
   .preview, .report { overflow-x: auto; }
+  /* Danish and Swedish compounds ("Implementeringsstyrningsplan",
+     "Kvalitetssaekringstestplan") are single words wider than a phone; without
+     these they force the page to scroll sideways. minmax(0,1fr) also lets grid
+     tracks shrink below their min-content floor. */
+  h1, h2, h3, h4, p, label, dt, dd, th, td, span, .hint, .crumb { overflow-wrap: break-word; hyphens: auto; }
   @media (max-width: 720px) { .report dl { grid-template-columns: 1fr; } .hero h1 { font-size: 27px; } }
 </style>
 </head>
@@ -250,6 +255,23 @@ const REGISTRY = [
     { key: 'aoa_retraining_strategy_v1', title: 'Model Retraining Strategy', href: 'Phase%207%20-%20MLOps%20%26%20Operations/retraining-strategy/' },
     { key: 'aoa_operations_runbook_v1', title: 'Operations Runbook & On-Call Plan', href: 'Phase%207%20-%20MLOps%20%26%20Operations/operations-runbook/' },
     { key: 'aoa_cost_optimization_v1', title: 'Inference Cost Optimization Report', href: 'Phase%207%20-%20MLOps%20%26%20Operations/cost-optimization/' },
+  ]},
+  { phase: 'Phase 8 — Change Management & Enablement', tools: [
+    { key: 'aoa_change_management_v1', title: 'Change Management Plan', href: 'Phase%208%20-%20Change%20Management%20%26%20Enablement/change-management-plan/' },
+    { key: 'aoa_training_curriculum_v1', title: 'Training Curriculum', href: 'Phase%208%20-%20Change%20Management%20%26%20Enablement/training-curriculum/' },
+    { key: 'aoa_ai_coe_v1', title: 'AI Centre of Excellence Design', href: 'Phase%208%20-%20Change%20Management%20%26%20Enablement/ai-coe-design/' },
+    { key: 'aoa_knowledge_transfer_v1', title: 'Knowledge Transfer Plan', href: 'Phase%208%20-%20Change%20Management%20%26%20Enablement/knowledge-transfer/' },
+  ]},
+  { phase: 'Phase 9 — Vendor Evaluation & Technology Selection', tools: [
+    { key: 'aoa_rfp_builder_v1', title: 'RFP / RFI Builder', href: 'Phase%209%20-%20Vendor%20Evaluation%20%26%20Technology%20Selection/rfp-builder/' },
+    { key: 'aoa_vendor_evaluation_v1', title: 'Vendor Evaluation Matrix', href: 'Phase%209%20-%20Vendor%20Evaluation%20%26%20Technology%20Selection/vendor-evaluation-matrix/' },
+    { key: 'aoa_build_vs_buy_v1', title: 'Build vs. Buy Analysis', href: 'Phase%209%20-%20Vendor%20Evaluation%20%26%20Technology%20Selection/build-vs-buy/' },
+    { key: 'aoa_platform_shortlist_v1', title: 'Platform & Model Shortlist', href: 'Phase%209%20-%20Vendor%20Evaluation%20%26%20Technology%20Selection/platform-shortlist/' },
+  ]},
+  { phase: 'Phase 10 — ROI Analysis & Cost Optimization', tools: [
+    { key: 'aoa_roi_analysis_v1', title: 'ROI Analysis', href: 'Phase%2010%20-%20ROI%20Analysis%20%26%20Cost%20Optimization/roi-analysis/' },
+    { key: 'aoa_tco_analysis_v1', title: 'Total Cost of Ownership', href: 'Phase%2010%20-%20ROI%20Analysis%20%26%20Cost%20Optimization/tco-analysis/' },
+    { key: 'aoa_value_tracking_v1', title: 'Value Tracking & Quarterly Review', href: 'Phase%2010%20-%20ROI%20Analysis%20%26%20Cost%20Optimization/value-tracking/' },
   ]},
 ];
 

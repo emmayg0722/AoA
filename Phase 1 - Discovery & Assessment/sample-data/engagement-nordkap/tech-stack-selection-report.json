@@ -27,5 +27,6 @@
    "layer": "deployment",
    "choice": "option #3"
   }
- ]
+ ],
+ "sopDone": [true, true, true, true, true]
 }

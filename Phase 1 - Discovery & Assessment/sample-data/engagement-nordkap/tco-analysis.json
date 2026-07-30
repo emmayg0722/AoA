@@ -1,0 +1,84 @@
+{
+  "fields": {
+    "client": "Nordkap Insurance",
+    "assessor": "Emma Gao",
+    "scopeNotes": "Three-year TCO for the fraud detection system in production, excluding the second use case which is not live. Shared infrastructure is allocated by share of compute hours for the warehouse and by tagged spend for everything else, and that basis is stated because an unallocated model looks about 30% cheaper than it is. Year two is the reference year rather than year one, since year one excludes the first renewal and the first major upgrade.",
+    "runNotes": "Tagged Azure spend separates cleanly into online scoring, nightly feature build, and training runs. Scoring dropped substantially after the Phase 7 finding that it was provisioned on GPU nodes for a gradient-boosted tree; that saving is already reflected here rather than shown as available. The vector store licence for the second use case is excluded from scope. Renewal risk is real and noted: the managed service contract has no cap on renewal increases, which is the single largest uncertainty in the run line.",
+    "peopleNotes": "The larger half of the total, and the part that is usually missing. Includes 1.0 FTE ML engineer, roughly 0.4 FTE of platform-team on-call and pipeline operation, 0.15 FTE of the head of claims analytics as model owner, and analyst review time on scored claims at Nordkap's loaded rate. Analyst review is the line that scales with claim volume rather than with headcount decisions, so it is the one to watch if FNOL volume grows.",
+    "optimizationNotes": "Already applied, from the Phase 7 work: scoring moved off GPU, bureau data cached for 24 hours, nightly feature build on spot capacity. Available but not yet taken: the smaller fine-tuned model for analyst summaries, pending a governance review of the fine-tuning data handling. Explicitly rejected: quantizing the fraud model, which is a tree ensemble already sub-millisecond on CPU, recorded so it is not proposed again each budget cycle."
+  },
+  "rows": [
+    {
+      "id": 1,
+      "item": "Online scoring compute",
+      "basis": "Azure cost export, tagged, post-CPU move",
+      "annual": "180k DKK",
+      "status": "measured"
+    },
+    {
+      "id": 2,
+      "item": "Nightly feature build",
+      "basis": "Tagged, spot capacity",
+      "annual": "95k DKK",
+      "status": "measured"
+    },
+    {
+      "id": 3,
+      "item": "Training & retraining runs",
+      "basis": "Tagged, 2 retrains/year",
+      "annual": "60k DKK",
+      "status": "measured"
+    },
+    {
+      "id": 4,
+      "item": "Warehouse share",
+      "basis": "Allocated by compute hours",
+      "annual": "140k DKK",
+      "status": "estimated"
+    },
+    {
+      "id": 5,
+      "item": "Managed service licence",
+      "basis": "Contracted, renewal uncapped",
+      "annual": "145k DKK",
+      "status": "contracted"
+    },
+    {
+      "id": 6,
+      "item": "ML engineer (1.0 FTE)",
+      "basis": "Nordkap loaded rate",
+      "annual": "820k DKK",
+      "status": "contracted"
+    },
+    {
+      "id": 7,
+      "item": "Platform on-call & pipeline (0.4 FTE)",
+      "basis": "Loaded rate, estimated split",
+      "annual": "290k DKK",
+      "status": "estimated"
+    },
+    {
+      "id": 8,
+      "item": "Analyst review time",
+      "basis": "Scored claims x review minutes",
+      "annual": "410k DKK",
+      "status": "estimated"
+    },
+    {
+      "id": 9,
+      "item": "Renewal increase at year 2",
+      "basis": "No cap in contract",
+      "annual": "Unknown",
+      "status": "unknown"
+    }
+  ],
+  "nextId": 10,
+  "sopDone": [
+    true,
+    true,
+    true,
+    true,
+    true
+  ],
+  "lang": "en"
+}

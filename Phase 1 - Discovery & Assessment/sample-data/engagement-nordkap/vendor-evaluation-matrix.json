@@ -1,0 +1,56 @@
+{
+  "fields": {
+    "client": "Nordkap Insurance",
+    "assessor": "Emma Gao",
+    "shortlistNotes": "Five vendors received the RFI, three received the RFP. Two were filtered at RFI: one offered no EU-only region without an enterprise contract at roughly four times our budget, the other could not commit in writing that customer data is excluded from training by default. Both exclusions were on stated must-haves rather than on price, which is recorded here because the cheaper of the two will almost certainly be proposed again next budget cycle.",
+    "capabilityNotes": "All three were benchmarked on the same 2,000 anonymised claims documents from our own corpus, with the same embedding model, scored on recall at 10 for a fixed set of 60 investigator questions. Northbeam led on recall by a meaningful margin. Halden was close and noticeably faster at ingest. Trellis scored lowest on recall but was the only one to handle Danish and Swedish text without a separate configuration step, which matters more than the benchmark gap for a Nordic insurer and was not something the RFP had thought to weight.",
+    "supportNotes": "At our spend level, Northbeam offers ticket-only support with a 24-hour first response and no named engineer, despite the deck implying otherwise; the named-engineer tier starts about three times higher. Halden includes a named contact at our tier and was the only vendor whose reference confirmed they had actually used it. Trellis has the thinnest support offering but also the simplest product, so there is less to support.",
+    "stabilityNotes": "Northbeam raised a large round 14 months ago and is hiring, which reads as stable but also as a company likely to reprice as it moves upmarket; its contract has no cap on renewal increases, which we asked to change. Halden is smaller, profitable and slower moving, with an acquisition clause we would want strengthened. Trellis is open-core with a self-host path, which is the strongest exit position of the three even though it scored lowest overall."
+  },
+  "rows": [
+    {
+      "id": 1,
+      "vendor": "Northbeam Vector",
+      "strength": "Best recall on our corpus by a clear margin",
+      "concern": "Ticket-only support at our tier; renewal uncapped",
+      "status": "evaluating"
+    },
+    {
+      "id": 2,
+      "vendor": "Halden Retrieval",
+      "strength": "Named support contact, fastest ingest",
+      "concern": "Smaller vendor; acquisition clause weak",
+      "status": "recommended"
+    },
+    {
+      "id": 3,
+      "vendor": "Trellis Index",
+      "strength": "Handles DA/SV natively; self-host exit path",
+      "concern": "Lowest recall of the three",
+      "status": "evaluating"
+    },
+    {
+      "id": 4,
+      "vendor": "Meridian Cloud AI",
+      "strength": "Broadest platform if we consolidated",
+      "concern": "No EU-only region below enterprise tier",
+      "status": "eliminated"
+    },
+    {
+      "id": 5,
+      "vendor": "Vektor Labs",
+      "strength": "Cheapest by a wide margin",
+      "concern": "Would not exclude our data from training in writing",
+      "status": "eliminated"
+    }
+  ],
+  "nextId": 6,
+  "sopDone": [
+    true,
+    true,
+    true,
+    true,
+    true
+  ],
+  "lang": "en"
+}

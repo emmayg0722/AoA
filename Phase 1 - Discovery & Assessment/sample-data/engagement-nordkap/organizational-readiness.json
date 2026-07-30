@@ -15,5 +15,6 @@
   "score_culture": "4",
   "score_process": "3",
   "score_stakeholders": "4"
- }
+ },
+ "sopDone": [true, true, true, true, true]
 }

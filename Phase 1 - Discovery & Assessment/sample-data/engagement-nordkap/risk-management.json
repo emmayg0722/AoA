@@ -46,5 +46,6 @@
    "mitigation": "Contractual support commitment + batch fallback path",
    "owner": "Claims IT lead"
   }
- ]
+ ],
+ "sopDone": [true, true, true, true, false]
 }

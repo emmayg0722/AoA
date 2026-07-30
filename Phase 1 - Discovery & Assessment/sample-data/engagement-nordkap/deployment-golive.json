@@ -27,5 +27,6 @@
    "scope": "All FNOL",
    "signal": "Steering sign-off after wave-2 review"
   }
- ]
+ ],
+ "sopDone": [true, true, true, true, true]
 }

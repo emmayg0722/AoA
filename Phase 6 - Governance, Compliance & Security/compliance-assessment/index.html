@@ -44,12 +44,15 @@
   ol.sop li.done > label.sop-step > span { text-decoration: line-through; color: var(--muted); }
   label.sop-step { display: flex; gap: 9px; align-items: flex-start; font-weight: 400; margin: 0; cursor: pointer; font-size: 14px; color: var(--ink); }
   label.sop-step input { width: auto; margin-top: 4px; flex: none; }
+  /* Flex child: min-width defaults to auto, so a long compound in the
+     SOP text could not shrink and nudged the page wide in Danish. */
+  label.sop-step > span { min-width: 0; overflow-wrap: break-word; }
   label { display: block; font-size: 13px; font-weight: 600; color: var(--ink); margin: 10px 0 5px; }
   input[type=text], textarea, select.field { width: 100%; font-family: var(--font-body); font-size: 14px; color: var(--ink); border: 1.5px solid var(--line); border-radius: 8px; padding: 9px 11px; background: #fff; }
   textarea { resize: vertical; min-height: 70px; }
   input:focus, textarea:focus, select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(27,20,116,0.12); }
   input:focus:not(:focus-visible), textarea:focus:not(:focus-visible), select:focus:not(:focus-visible) { outline: none; }
-  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; }
+  .grid2 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 0 16px; }
   .btn { font-family: var(--font-body); font-size: 13.5px; font-weight: 600; padding: 9px 16px; border-radius: 8px; border: none; cursor: pointer; transition: all 0.15s; }
   .btn-primary { background: var(--accent); color: var(--primary); }
   .btn-primary:hover { background: #C3C5EC; }
@@ -95,7 +98,12 @@
   /* The generated document preview can contain a wide table once rows
      exist; scroll it here rather than letting the page body scroll. */
   .preview, .report { overflow-x: auto; }
-  @media (max-width: 720px) { .grid2 { grid-template-columns: 1fr; } .hero h1 { font-size: 27px; } table.matrix { font-size: 12px; } }
+  /* Danish and Swedish compounds ("Implementeringsstyrningsplan",
+     "Kvalitetssaekringstestplan") are single words wider than a phone; without
+     these they force the page to scroll sideways. minmax(0,1fr) also lets grid
+     tracks shrink below their min-content floor. */
+  h1, h2, h3, h4, p, label, dt, dd, th, td, span, .hint, .crumb { overflow-wrap: break-word; hyphens: auto; }
+  @media (max-width: 720px) { .grid2 { grid-template-columns: minmax(0, 1fr); } .hero h1 { font-size: 27px; } table.matrix { font-size: 12px; } }
 </style>
 </head>
 <body>

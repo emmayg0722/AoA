@@ -1,0 +1,63 @@
+{
+  "fields": {
+    "client": "Nordkap Insurance",
+    "assessor": "Emma Gao",
+    "structureNotes": "Hub-and-spoke, deliberately small. The hub is two people in claims analytics who own standards, the model registry and promotion gates; the spokes are existing engineers in the data platform and claims IT teams who build with those standards. Nordkap does not have the volume to justify a central delivery team, and a fully federated model would have no owner for the registry or the fairness review. The hub's mandate is standards and enablement, explicitly not building every model, which is written into the charter so the first request to 'just build it for us' has an answer.",
+    "rolesNotes": "Funded headcount: 1.0 FTE model owner (existing head of claims analytics, 50% reallocated), 1.0 FTE ML engineer (new hire, approved), and named part-time contributions from the data platform lead and the DPO. The new hire is the single point of failure in this design and is called out as such; until it is filled, promotion gates depend on one person.",
+    "processNotes": "Three processes, each with an explicit decision right. Promotion to production: the hub decides, and can block. New use-case intake: the hub recommends, the claims director decides, using the Phase 1 prioritization rubric. Standards changes: the hub decides, with a two-week comment period for the spokes. Everything else is advisory, stated plainly so nobody waits on the hub for work it does not own.",
+    "kpiNotes": "Enablement-weighted rather than volume. (1) Time-to-first-model for a team that has not shipped one before, target under one quarter. (2) Share of production models passing the promotion gate first time, which measures whether the standards are learnable rather than whether the hub is strict. (3) Number of models in production with a named owner outside the hub, which is the actual goal. Deliberately not counting models built by the hub, since that number going up would mean the design is failing."
+  },
+  "rows": [
+    {
+      "id": 1,
+      "role": "Model owner (hub)",
+      "responsibility": "Owns registry, approves promotion to production, can block",
+      "owner": "Head of claims analytics",
+      "status": "filled"
+    },
+    {
+      "id": 2,
+      "role": "ML engineer (hub)",
+      "responsibility": "Retraining pipeline, evaluation, fairness re-runs",
+      "owner": "New hire, approved not started",
+      "status": "vacant"
+    },
+    {
+      "id": 3,
+      "role": "Data platform lead (spoke)",
+      "responsibility": "Feature pipelines, on-call rotation",
+      "owner": "Data platform team lead",
+      "status": "filled"
+    },
+    {
+      "id": 4,
+      "role": "Claims IT engineer (spoke)",
+      "responsibility": "Scoring service, analyst queue integration",
+      "owner": "Claims IT",
+      "status": "filled"
+    },
+    {
+      "id": 5,
+      "role": "Data protection officer",
+      "responsibility": "Signs off PII handling and retention",
+      "owner": "Group DPO",
+      "status": "agreed"
+    },
+    {
+      "id": 6,
+      "role": "Business sponsor",
+      "responsibility": "Decides new use-case intake, owns the outcome metric",
+      "owner": "Claims director",
+      "status": "filled"
+    }
+  ],
+  "nextId": 7,
+  "sopDone": [
+    true,
+    true,
+    true,
+    true,
+    false
+  ],
+  "lang": "en"
+}

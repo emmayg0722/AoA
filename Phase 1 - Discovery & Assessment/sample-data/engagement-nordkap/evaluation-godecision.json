@@ -23,5 +23,6 @@
    "evidence": "Two latency spikes during storm week; runbook gaps found",
    "score": "3"
   }
- ]
+ ],
+ "sopDone": [true, true, true, true, true]
 }

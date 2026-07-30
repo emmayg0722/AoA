@@ -45,5 +45,6 @@
    "feas": "2",
    "impact": "4"
   }
- ]
+ ],
+ "sopDone": [true, true, true, true, true]
 }

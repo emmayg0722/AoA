@@ -1,0 +1,70 @@
+{
+  "fields": {
+    "client": "Nordkap Insurance",
+    "assessor": "Emma Gao",
+    "transferNotes": "Done means a Nordkap engineer performs the task unaided while we observe, and the named sign-off person says yes in writing. Not a document, not a session attended. Four rounds per area: two where they watch us, two where we watch them and answer only when asked. The order follows what breaks first, so the on-call playbooks and the scoring-service restart come before anything about model design.",
+    "docsNotes": "Everything lands in Nordkap's existing wiki next to the claims-platform docs, not in a separate AI space, so on-call has one place to look. The set is deliberately small: the operations runbook, the ADR log, the model registry conventions, and the retraining pipeline README. The Phase 5 technical documentation index is the map. Anything we wrote that is not in one of those four is treated as working notes and is not part of the handover.",
+    "practiceNotes": "Standards live as ADRs plus the promotion-gate checklist in the registry, not as a best-practice document. The reasoning for each convention sits with the decision it justifies, because that is what people actually open when they hit the decision again. Two conventions were promoted from working practice during the pilot: pinning a dated data snapshot per training run, and re-running the fairness audit on every candidate.",
+    "communityNotes": "Low ceremony, matched to a five-person team. The existing fortnightly data platform stand-up gains a standing five-minute slot for anything model-related, and the monthly model review is the forum where drift, overrides and retraining decisions get discussed with the business. No new AI guild, no separate channel: at this size a new forum would be empty within two months."
+  },
+  "rows": [
+    {
+      "id": 1,
+      "area": "On-call playbooks & scoring restart",
+      "from": "Our platform engineer",
+      "to": "Nordkap platform team (5)",
+      "status": "signedoff"
+    },
+    {
+      "id": 2,
+      "area": "Feature pipeline operation",
+      "from": "Our data engineer",
+      "to": "Data platform lead",
+      "status": "signedoff"
+    },
+    {
+      "id": 3,
+      "area": "Retraining pipeline",
+      "from": "Our ML engineer",
+      "to": "Nordkap ML engineer (new hire)",
+      "status": "notstarted"
+    },
+    {
+      "id": 4,
+      "area": "Model registry & promotion gates",
+      "from": "Our ML engineer",
+      "to": "Head of claims analytics",
+      "status": "leading"
+    },
+    {
+      "id": 5,
+      "area": "Drift dashboard interpretation",
+      "from": "Our ML engineer",
+      "to": "Head of claims analytics",
+      "status": "shadowing"
+    },
+    {
+      "id": 6,
+      "area": "Fairness audit re-run",
+      "from": "Our ML engineer",
+      "to": "Head of claims analytics + DPO",
+      "status": "shadowing"
+    },
+    {
+      "id": 7,
+      "area": "Architecture rationale (ADR walkthrough)",
+      "from": "Our architect",
+      "to": "Claims IT + data platform",
+      "status": "notstarted"
+    }
+  ],
+  "nextId": 8,
+  "sopDone": [
+    true,
+    true,
+    false,
+    true,
+    false
+  ],
+  "lang": "en"
+}

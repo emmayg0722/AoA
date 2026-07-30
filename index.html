@@ -198,6 +198,11 @@
     font-size: 28px;
     color: var(--primary);
     text-wrap: balance;
+    /* Flex items floor at min-content by default, and the Danish/Swedish phase
+       titles contain compounds ("omkostningsoptimering",
+       "Leverantörsutvärdering") wider than a 320px phone. min-width: 0 lets the
+       heading shrink so the overflow-wrap rule below can break the word. */
+    min-width: 0;
   }
   .phase-tag {
     font-size: 12px;
@@ -210,7 +215,12 @@
     border-radius: 20px;
   }
   .phase-sub { color: var(--muted); margin-bottom: 24px; max-width: 72ch; text-wrap: pretty; }
-  .cards { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  /* minmax(0, 1fr) instead of 1fr: a 1fr track floors at min-content, which
+     for Danish and Swedish compounds ("Implementeringsstyrningsplan",
+     "Kvalitetssäkringstestplan") is wider than a phone, so the grid pushed
+     the whole page sideways. Paired with the wrapping rules below. */
+  .cards { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; }
+  .card h3, .card p, .phase-head h2, .hero h1 { overflow-wrap: break-word; hyphens: auto; }
   .card {
     display: flex;
     flex-direction: column;
@@ -270,20 +280,6 @@
     font-size: 14px;
     color: var(--primary);
   }
-  .card.soon { opacity: 0.7; cursor: default; }
-  .card.soon:hover { transform: none; box-shadow: none; border-color: var(--line); }
-  .card .badge-soon {
-    align-self: flex-start;
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--muted);
-    background: var(--powder);
-    padding: 3px 9px;
-    border-radius: 20px;
-    margin-top: 18px;
-  }
   .dash {
     background: #fff;
     border: 1px solid var(--line);
@@ -321,28 +317,6 @@
   .dash.is-empty .dash-sub { margin-bottom: 0; }
   .dash.is-empty .dash-grid { display: none; }
   .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
-  .future {
-    margin-top: 44px;
-    padding-top: 28px;
-    border-top: 1px solid var(--line);
-  }
-  .future h2 {
-    font-family: var(--font-heading);
-    font-weight: 600;
-    font-size: 22px;
-    color: var(--primary);
-    margin-bottom: 6px;
-  }
-  .future p { color: var(--muted); font-size: 15px; margin-bottom: 18px; }
-  .pills { display: flex; flex-wrap: wrap; gap: 10px; }
-  .pill {
-    font-size: 13px;
-    color: var(--muted);
-    background: #fff;
-    border: 1px solid var(--line);
-    padding: 7px 14px;
-    border-radius: 20px;
-  }
   footer {
     max-width: 960px;
     margin: 0 auto;
@@ -351,20 +325,22 @@
     font-size: 13px;
   }
   @media (max-width: 480px) {
-    .hero-stats { gap: 14px; }
+    /* Measured with Inter actually loaded, the full three-item strip needs
+       ~546-564px depending on language. Even with compact labels the Danish
+       and Swedish wordings need 385px and 428px, so they still wrapped on
+       most phones. The two counts are the part worth keeping at this size;
+       the browser-only claim is already in the footer and on every tool
+       page, so it drops out here rather than forcing a second row or type
+       below the readable minimum. */
+    .hero-stats { gap: 16px; }
     .hero-stats .lbl-long { display: none; }
     .hero-stats .lbl-short { display: inline; }
-  }
-  @media (max-width: 400px) {
-    /* Tighten just enough to keep all three stats on one row down to 320px. */
-    .hero { padding-left: 16px; padding-right: 16px; }
-    .hero-stats { gap: 10px; }
-    .hero-stats span { font-size: 13px; }
+    .hero-stats .stat-privacy { display: none; }
   }
   @media (max-width: 720px) {
     .hero { padding: 56px 20px 48px; }
     .hero h1 { font-size: 34px; }
-    .cards { grid-template-columns: 1fr; }
+    .cards { grid-template-columns: minmax(0, 1fr); }
     /* The seven phase pills stacked into seven rows on a phone, which read
        as a wall rather than a navigation aid. One swipeable row instead. */
     .phase-nav {
@@ -426,7 +402,7 @@
       <div class="hero-stats">
         <span><strong id="statToolsNum"></strong><span data-i18n="statTools"></span></span>
         <span><strong id="statPhasesNum"></strong><span class="lbl-long" data-i18n="statPhases"></span><span class="lbl-short" data-i18n="statPhasesShort"></span></span>
-        <span><span class="lbl-long" data-i18n="statPrivacy"></span><span class="lbl-short" data-i18n="statPrivacyShort"></span></span>
+        <span class="stat-privacy" data-i18n="statPrivacy"></span>
       </div>
     </div>
   </header>
@@ -739,14 +715,111 @@
       </a>
     </div>
 
-    <div class="future">
-      <h2 data-i18n="futureTitle"></h2>
-      <p data-i18n="futureDesc"></p>
-      <div class="pills">
-        <span class="pill" data-i18n="pillPhase8"></span>
-        <span class="pill" data-i18n="pillPhase9"></span>
-        <span class="pill" data-i18n="pillPhase10"></span>
-      </div>
+    <div class="phase-head" id="phase-8" style="margin-top:44px">
+      <h2 data-i18n="p8Title"></h2>
+      <span class="phase-tag" data-i18n="tagP8"></span>
+      <span class="phase-count"></span>
+    </div>
+    <p class="phase-sub" data-i18n="p8Sub"></p>
+
+    <div class="cards">
+      <a class="card" href="Phase%208%20-%20Change%20Management%20%26%20Enablement/change-management-plan/">
+        <div class="icon">📣</div>
+        <h3 data-i18n="c_change_t"></h3>
+        <p data-i18n="c_change_d"></p>
+        <span class="go" data-i18n="c_change_c"></span>
+      </a>
+
+      <a class="card" href="Phase%208%20-%20Change%20Management%20%26%20Enablement/training-curriculum/">
+        <div class="icon">🎓</div>
+        <h3 data-i18n="c_train_t"></h3>
+        <p data-i18n="c_train_d"></p>
+        <span class="go" data-i18n="c_train_c"></span>
+      </a>
+
+      <a class="card" href="Phase%208%20-%20Change%20Management%20%26%20Enablement/ai-coe-design/">
+        <div class="icon">🏛️</div>
+        <h3 data-i18n="c_coe_t"></h3>
+        <p data-i18n="c_coe_d"></p>
+        <span class="go" data-i18n="c_coe_c"></span>
+      </a>
+
+      <a class="card" href="Phase%208%20-%20Change%20Management%20%26%20Enablement/knowledge-transfer/">
+        <div class="icon">🤝</div>
+        <h3 data-i18n="c_ktrans_t"></h3>
+        <p data-i18n="c_ktrans_d"></p>
+        <span class="go" data-i18n="c_ktrans_c"></span>
+      </a>
+
+    </div>
+
+    <div class="phase-head" id="phase-9" style="margin-top:44px">
+      <h2 data-i18n="p9Title"></h2>
+      <span class="phase-tag" data-i18n="tagP9"></span>
+      <span class="phase-count"></span>
+    </div>
+    <p class="phase-sub" data-i18n="p9Sub"></p>
+
+    <div class="cards">
+      <a class="card" href="Phase%209%20-%20Vendor%20Evaluation%20%26%20Technology%20Selection/rfp-builder/">
+        <div class="icon">📋</div>
+        <h3 data-i18n="c_rfp_t"></h3>
+        <p data-i18n="c_rfp_d"></p>
+        <span class="go" data-i18n="c_rfp_c"></span>
+      </a>
+
+      <a class="card" href="Phase%209%20-%20Vendor%20Evaluation%20%26%20Technology%20Selection/vendor-evaluation-matrix/">
+        <div class="icon">⚖️</div>
+        <h3 data-i18n="c_vendor_t"></h3>
+        <p data-i18n="c_vendor_d"></p>
+        <span class="go" data-i18n="c_vendor_c"></span>
+      </a>
+
+      <a class="card" href="Phase%209%20-%20Vendor%20Evaluation%20%26%20Technology%20Selection/build-vs-buy/">
+        <div class="icon">🔨</div>
+        <h3 data-i18n="c_bvb_t"></h3>
+        <p data-i18n="c_bvb_d"></p>
+        <span class="go" data-i18n="c_bvb_c"></span>
+      </a>
+
+      <a class="card" href="Phase%209%20-%20Vendor%20Evaluation%20%26%20Technology%20Selection/platform-shortlist/">
+        <div class="icon">🧩</div>
+        <h3 data-i18n="c_plat_t"></h3>
+        <p data-i18n="c_plat_d"></p>
+        <span class="go" data-i18n="c_plat_c"></span>
+      </a>
+
+    </div>
+
+    <div class="phase-head" id="phase-10" style="margin-top:44px">
+      <h2 data-i18n="p10Title"></h2>
+      <span class="phase-tag" data-i18n="tagP10"></span>
+      <span class="phase-count"></span>
+    </div>
+    <p class="phase-sub" data-i18n="p10Sub"></p>
+
+    <div class="cards">
+      <a class="card" href="Phase%2010%20-%20ROI%20Analysis%20%26%20Cost%20Optimization/roi-analysis/">
+        <div class="icon">📈</div>
+        <h3 data-i18n="c_roi_t"></h3>
+        <p data-i18n="c_roi_d"></p>
+        <span class="go" data-i18n="c_roi_c"></span>
+      </a>
+
+      <a class="card" href="Phase%2010%20-%20ROI%20Analysis%20%26%20Cost%20Optimization/tco-analysis/">
+        <div class="icon">🧮</div>
+        <h3 data-i18n="c_tco_t"></h3>
+        <p data-i18n="c_tco_d"></p>
+        <span class="go" data-i18n="c_tco_c"></span>
+      </a>
+
+      <a class="card" href="Phase%2010%20-%20ROI%20Analysis%20%26%20Cost%20Optimization/value-tracking/">
+        <div class="icon">🎯</div>
+        <h3 data-i18n="c_value_t"></h3>
+        <p data-i18n="c_value_d"></p>
+        <span class="go" data-i18n="c_value_c"></span>
+      </a>
+
     </div>
   </main>
 
@@ -760,14 +833,12 @@ const STRINGS = {
     heroDesc: 'An evolving set of assessments and accelerators that mirror how an AI architect actually moves a client from discovery to production.',
     statTools: ' tools', statPhases: ' delivery phases', statPrivacy: 'Runs fully in your browser. Nothing is uploaded.',
     skipLink: 'Skip to the toolkit',
-    jumpToLabel: 'Jump to:',
     toolsCountLabel: (n) => `${n} tool${n === 1 ? '' : 's'}`,
     filterLabel: 'Find a tool',
     filterPlaceholder: 'Find a tool by name or keyword…',
     filterCount: (n, total) => n === total ? `${total} tools` : `${n} of ${total} tools match`,
     filterNone: 'No tool matches that. Try a shorter word, or browse by phase above.',
     statPhasesShort: ' phases',
-    statPrivacyShort: 'Browser-only. No uploads.',
     dashReset: '\u21ba Reset engagement',
     dashResetConfirm: 'Clear every tool\u2019s saved work in this browser, plus the shared client / assessor / use case? This cannot be undone. Export the engagement from the master report first if you want a copy.',
     dashResetDone: 'Engagement cleared. Every tool in this browser is now empty.',
@@ -868,6 +939,48 @@ const STRINGS = {
     tagP7: 'Phase 7',
     p7Title: 'MLOps & Operations',
     p7Sub: 'Keep the deployed solution working: the platform that retrains and redeploys it, the monitoring that catches drift before users do, and the runbook the client\'s own on-call team will run on.',
+    tagP8: 'Phase 8',
+    p8Title: 'Change Management & Enablement',
+    p8Sub: 'Make the organization able to run what was built: who is affected and how, what each group needs to learn, the internal team that owns AI after we leave, and the handover that makes leaving possible.',
+    c_change_t: 'Change Management Plan',
+    c_change_d: 'SOP, client intake, and a stakeholder-group tracker, covering change impact, communication cadence, anticipated resistance and the adoption loop, auto-generating a change management plan. EN / DA / SV.',
+    c_change_c: 'Open plan →',
+    c_train_t: 'Training Curriculum',
+    c_train_d: 'SOP, client intake, and a curriculum-module tracker across four tracks — AI literacy, technical, daily tool use and leadership — auto-generating a training curriculum. EN / DA / SV.',
+    c_train_c: 'Open plan →',
+    c_coe_t: 'AI Centre of Excellence Design',
+    c_coe_d: 'SOP, client intake, and a roles-and-responsibilities tracker, covering the CoE mandate and organizational model, headcount and funding, decision authority and KPI framework. EN / DA / SV.',
+    c_coe_c: 'Open design →',
+    c_ktrans_t: 'Knowledge Transfer Plan',
+    c_ktrans_d: 'SOP, client intake, and a handover-area tracker with a definition of done per area, covering the documentation set, best-practice library and the internal community that keeps it alive. EN / DA / SV.',
+    c_ktrans_c: 'Open plan →',
+    tagP9: 'Phase 9',
+    p9Title: 'Vendor Evaluation & Technology Selection',
+    p9Sub: 'Choose deliberately rather than by demo: a requirement statement vendors can actually bid against, a scored comparison run on your own data, an honest build-vs-buy case, and a shortlist per platform category.',
+    c_rfp_t: 'RFP / RFI Builder',
+    c_rfp_d: 'SOP, client intake, and an evaluation-criteria tracker with weights, covering the requirement statement, scoring model, process rules and deal-breakers, auto-generating an RFP document. EN / DA / SV.',
+    c_rfp_c: 'Open builder →',
+    c_vendor_t: 'Vendor Evaluation Matrix',
+    c_vendor_d: 'SOP, client intake, and a per-vendor scoring matrix, covering technical capability tested on your own data, implementation and support, company stability and lock-in risk. EN / DA / SV.',
+    c_vendor_c: 'Open matrix →',
+    c_bvb_t: 'Build vs. Buy Analysis',
+    c_bvb_d: 'SOP, client intake, and a decision-factor tracker weighing each option, covering cost over the horizon, technical debt and maintenance burden, and strategic flexibility versus lock-in. EN / DA / SV.',
+    c_bvb_c: 'Open analysis →',
+    c_plat_t: 'Platform & Model Shortlist',
+    c_plat_d: 'SOP, client intake, and a per-category selection tracker across ML platform and MLOps tooling, model choice, data platform and vector store, and observability tooling. EN / DA / SV.',
+    c_plat_c: 'Open shortlist →',
+    tagP10: 'Phase 10',
+    p10Title: 'ROI Analysis & Cost Optimization',
+    p10Sub: 'Show what it was worth and what it costs to keep: a defensible ROI model with its attribution stated, the full cost of ownership over the horizon, and the quarterly review that keeps the numbers honest after go-live.',
+    c_roi_t: 'ROI Analysis',
+    c_roi_d: 'SOP, client intake, and a value-driver tracker with each driver\'s confidence stated, covering the quantification approach, payback horizon, attribution method and downside case. EN / DA / SV.',
+    c_roi_c: 'Open analysis →',
+    c_tco_t: 'Total Cost of Ownership',
+    c_tco_d: 'SOP, client intake, and a cost-line tracker over the chosen horizon, covering run costs, people costs to operate and review, and the optimization levers already applied or still available. EN / DA / SV.',
+    c_tco_c: 'Open analysis →',
+    c_value_t: 'Value Tracking & Quarterly Review',
+    c_value_d: 'SOP, client intake, and a KPI tracker with baseline against current, covering KPI ownership, dashboard design, review cadence with real decision rights, and actions from the latest review. EN / DA / SV.',
+    c_value_c: 'Open report →',
     c_mlops_t: 'MLOps Platform Architecture',
     c_mlops_d: 'SOP, client intake, and a platform-component tracker covering CI/CD pipelines, model registry, feature store, and experiment tracking, auto-generating an MLOps platform architecture document. EN / DA / SV.',
     c_mlops_c: 'Open architecture →',
@@ -883,11 +996,6 @@ const STRINGS = {
     c_cost_t: 'Inference Cost Optimization Report',
     c_cost_d: 'SOP, client intake, and an optimization-lever tracker ranked by saving against effort, covering cost attribution, utilization, compression and caching, auto-generating a cost optimization report. EN / DA / SV.',
     c_cost_c: 'Open report →',
-    futureTitle: 'Further phases',
-    futureDesc: 'The toolkit follows the full AI-architect delivery lifecycle. Phases 1 through 7 are built; these remaining phases will be added over time.',
-    pillPhase8: 'Phase 8 · Change Management & Enablement',
-    pillPhase9: 'Phase 9 · Vendor Evaluation & Technology Selection',
-    pillPhase10: 'Phase 10 · ROI Analysis & Cost Optimization',
     footerText: 'Built as an independent AI-architecture consulting portfolio. All assessment tools run fully client-side — no data leaves your browser.',
     dashTitle: 'Engagement dashboard',
     dashReport: 'Open master report →',
@@ -902,14 +1010,12 @@ const STRINGS = {
     heroDesc: 'Et voksende sæt af vurderinger og accelleratorer, der afspejler hvordan en AI-arkitekt reelt flytter en kunde fra discovery til produktion.',
     statTools: ' værktøjer', statPhases: ' leveringsfaser', statPrivacy: 'Kører fuldt ud i din browser. Intet uploades.',
     skipLink: 'Gå direkte til værktøjerne',
-    jumpToLabel: 'Gå til:',
     toolsCountLabel: (n) => `${n} værktøj${n === 1 ? '' : 'er'}`,
     filterLabel: 'Find et værktøj',
     filterPlaceholder: 'Find et værktøj efter navn eller nøgleord…',
     filterCount: (n, total) => n === total ? `${total} værktøjer` : `${n} af ${total} værktøjer matcher`,
     filterNone: 'Intet værktøj matcher det. Prøv et kortere ord, eller browse efter fase ovenfor.',
     statPhasesShort: ' faser',
-    statPrivacyShort: 'Kun browser. Intet uploades.',
     dashReset: '\u21ba Nulstil engagement',
     dashResetConfirm: 'Ryd hvert v\u00e6rkt\u00f8js gemte arbejde i denne browser samt den delte kunde / vurderingsmand / use case? Dette kan ikke fortrydes. Eksport\u00e9r engagementet fra den samlede rapport f\u00f8rst, hvis du vil have en kopi.',
     dashResetDone: 'Engagement ryddet. Alle v\u00e6rkt\u00f8jer i denne browser er nu tomme.',
@@ -1010,6 +1116,48 @@ const STRINGS = {
     tagP7: 'Fase 7',
     p7Title: 'MLOps & Drift',
     p7Sub: 'Hold den udrullede løsning kørende: platformen der gentræner og genudruller den, monitoreringen der fanger drift før brugerne gør, og håndbogen kundens eget vagtteam kommer til at køre på.',
+    tagP8: 'Fase 8',
+    p8Title: 'Forandringsledelse & aktivering',
+    p8Sub: 'Gør organisationen i stand til at køre det, der blev bygget: hvem der er påvirket og hvordan, hvad hver gruppe skal lære, det interne team der ejer AI efter vi går, og den overdragelse der gør det muligt at gå.',
+    c_change_t: 'Forandringsledelsesplan',
+    c_change_d: 'SOP, kundeoptag, og en interessentgruppe-tracker, der dækker forandringspåvirkning, kommunikationskadence, forventet modstand og adoptionsløkken, og automatisk genererer en forandringsledelsesplan. EN / DA / SV.',
+    c_change_c: 'Åbn plan →',
+    c_train_t: 'Uddannelsesprogram',
+    c_train_d: 'SOP, kundeoptag, og en pensummodul-tracker på tværs af fire spor — AI-forståelse, teknisk, daglig værktøjsbrug og ledelse — der automatisk genererer et uddannelsesprogram. EN / DA / SV.',
+    c_train_c: 'Åbn plan →',
+    c_coe_t: 'Design af AI Center of Excellence',
+    c_coe_d: 'SOP, kundeoptag, og en roller-og-ansvar-tracker, der dækker CoE-mandat og organisationsmodel, bemanding og finansiering, beslutningskompetence og KPI-ramme. EN / DA / SV.',
+    c_coe_c: 'Åbn design →',
+    c_ktrans_t: 'Plan for videnoverførsel',
+    c_ktrans_d: 'SOP, kundeoptag, og en overdragelsesområde-tracker med en definition of done per område, der dækker dokumentationssættet, best-practice-biblioteket og det interne fællesskab, der holder det levende. EN / DA / SV.',
+    c_ktrans_c: 'Åbn plan →',
+    tagP9: 'Fase 9',
+    p9Title: 'Leverandørevaluering & teknologivalg',
+    p9Sub: 'Vælg bevidst i stedet for efter demo: et kravgrundlag leverandører reelt kan byde på, en scoret sammenligning kørt på egne data, en ærlig build-vs-buy-sag, og en shortlist per platformkategori.',
+    c_rfp_t: 'RFP-/RFI-bygger',
+    c_rfp_d: 'SOP, kundeoptag, og en evalueringskriterie-tracker med vægte, der dækker kravgrundlaget, scoringsmodellen, processreglerne og deal-breakers, og automatisk genererer et RFP-dokument. EN / DA / SV.',
+    c_rfp_c: 'Åbn bygger →',
+    c_vendor_t: 'Leverandørevalueringsmatrix',
+    c_vendor_d: 'SOP, kundeoptag, og en scoringsmatrix per leverandør, der dækker teknisk kapabilitet testet på egne data, implementering og support, virksomhedsstabilitet og lock-in-risiko. EN / DA / SV.',
+    c_vendor_c: 'Åbn matrix →',
+    c_bvb_t: 'Build vs. buy-analyse',
+    c_bvb_d: 'SOP, kundeoptag, og en beslutningsfaktor-tracker der vejer hver mulighed, dækkende omkostninger over horisonten, teknisk gæld og vedligeholdelsesbyrde, og strategisk fleksibilitet mod lock-in. EN / DA / SV.',
+    c_bvb_c: 'Åbn analyse →',
+    c_plat_t: 'Platform- og modelshortlist',
+    c_plat_d: 'SOP, kundeoptag, og en udvalgs-tracker per kategori på tværs af ML-platform og MLOps-værktøjer, modelvalg, dataplatform og vektorlager, og observability-værktøjer. EN / DA / SV.',
+    c_plat_c: 'Åbn shortlist →',
+    tagP10: 'Fase 10',
+    p10Title: 'ROI-analyse & omkostningsoptimering',
+    p10Sub: 'Vis hvad det var værd, og hvad det koster at beholde: en holdbar ROI-model med attribueringen sagt højt, de samlede ejerskabsomkostninger over horisonten, og den kvartalsgennemgang der holder tallene ærlige efter go-live.',
+    c_roi_t: 'ROI-analyse',
+    c_roi_d: 'SOP, kundeoptag, og en værdidriver-tracker med hver drivers konfidens angivet, der dækker kvantificeringstilgangen, tilbagebetalingshorisonten, attribueringsmetoden og nedsidescenariet. EN / DA / SV.',
+    c_roi_c: 'Åbn analyse →',
+    c_tco_t: 'Totale ejerskabsomkostninger',
+    c_tco_d: 'SOP, kundeoptag, og en omkostningslinje-tracker over den valgte horisont, der dækker driftsomkostninger, personaleomkostninger til drift og gennemgang, og de optimeringsgreb der allerede er brugt eller stadig er tilgængelige. EN / DA / SV.',
+    c_tco_c: 'Åbn analyse →',
+    c_value_t: 'Værdisporing og kvartalsgennemgang',
+    c_value_d: 'SOP, kundeoptag, og en KPI-tracker med baseline mod nuværende, der dækker KPI-ejerskab, dashboard-design, gennemgangskadence med reelle beslutningsrettigheder, og handlinger fra seneste gennemgang. EN / DA / SV.',
+    c_value_c: 'Åbn rapport →',
     c_mlops_t: 'MLOps-platformarkitektur',
     c_mlops_d: 'SOP, kundeoptag, og en platformkomponent-tracker der dækker CI/CD-pipelines, modelregister, feature store og experiment tracking, og automatisk genererer et MLOps-platformarkitekturdokument. EN / DA / SV.',
     c_mlops_c: 'Åbn arkitektur →',
@@ -1025,11 +1173,6 @@ const STRINGS = {
     c_cost_t: 'Rapport om optimering af inferensomkostninger',
     c_cost_d: 'SOP, kundeoptag, og en optimeringsgreb-tracker rangeret efter besparelse mod indsats, der dækker omkostningsattribuering, udnyttelse, kompression og caching, og automatisk genererer en omkostningsoptimeringsrapport. EN / DA / SV.',
     c_cost_c: 'Åbn rapport →',
-    futureTitle: 'Kommende faser',
-    futureDesc: 'Værktøjssættet følger hele AI-arkitektens leveringslivscyklus. Disse faser er skitseret og vil blive udfyldt over tid.',
-    pillPhase8: 'Fase 8 · Organisationsforandring & Enablement',
-    pillPhase9: 'Fase 9 · Leverandørvurdering & Teknologivalg',
-    pillPhase10: 'Fase 10 · ROI-analyse & Omkostningsoptimering',
     footerText: 'Bygget som en uafhængig AI-arkitektur-konsulentportefølje. Alle vurderingsværktøjer kører fuldt klient-side — ingen data forlader din browser.',
     dashTitle: 'Engagementsoverblik',
     dashReport: 'Åbn samlet rapport →',
@@ -1044,14 +1187,12 @@ const STRINGS = {
     heroDesc: 'En växande uppsättning bedömningar och acceleratorer som speglar hur en AI-arkitekt faktiskt flyttar en kund från discovery till produktion.',
     statTools: ' verktyg', statPhases: ' leveransfaser', statPrivacy: 'Körs helt i din webbläsare. Inget laddas upp.',
     skipLink: 'Hoppa till verktygen',
-    jumpToLabel: 'Gå till:',
     toolsCountLabel: (n) => `${n} verktyg`,
     filterLabel: 'Hitta ett verktyg',
     filterPlaceholder: 'Hitta ett verktyg efter namn eller nyckelord…',
     filterCount: (n, total) => n === total ? `${total} verktyg` : `${n} av ${total} verktyg matchar`,
     filterNone: 'Inget verktyg matchar det. Prova ett kortare ord, eller bläddra efter fas ovan.',
     statPhasesShort: ' faser',
-    statPrivacyShort: 'Endast webbl\u00e4sare. Inget laddas upp.',
     dashReset: '\u21ba \u00c5terst\u00e4ll uppdrag',
     dashResetConfirm: 'Rensa varje verktygs sparade arbete i denna webbl\u00e4sare, plus den delade kunden / bed\u00f6maren / anv\u00e4ndningsfallet? Detta kan inte \u00e5ngras. Exportera uppdraget fr\u00e5n den samlade rapporten f\u00f6rst om du vill ha en kopia.',
     dashResetDone: 'Uppdrag rensat. Alla verktyg i denna webbl\u00e4sare \u00e4r nu tomma.',
@@ -1152,6 +1293,48 @@ const STRINGS = {
     tagP7: 'Fas 7',
     p7Title: 'MLOps & Drift',
     p7Sub: 'Håll den driftsatta lösningen fungerande: plattformen som omtränar och driftsätter om den, monitoreringen som fångar drift före användarna, och handboken kundens eget jourteam kommer att köra på.',
+    tagP8: 'Fas 8',
+    p8Title: 'Förändringsledning & möjliggörande',
+    p8Sub: 'Gör organisationen kapabel att driva det som byggts: vilka som påverkas och hur, vad varje grupp behöver lära sig, det interna teamet som äger AI efter att vi lämnat, och överlämningen som gör det möjligt att lämna.',
+    c_change_t: 'Förändringsledningsplan',
+    c_change_d: 'SOP, kundintag, och en intressentgrupp-spårare, som täcker förändringspåverkan, kommunikationskadens, förväntat motstånd och adoptionsloopen, och automatiskt genererar en förändringsledningsplan. EN / DA / SV.',
+    c_change_c: 'Öppna plan →',
+    c_train_t: 'Utbildningsprogram',
+    c_train_d: 'SOP, kundintag, och en kursmodul-spårare över fyra spår — AI-förståelse, tekniskt, daglig verktygsanvändning och ledarskap — som automatiskt genererar ett utbildningsprogram. EN / DA / SV.',
+    c_train_c: 'Öppna plan →',
+    c_coe_t: 'Design av AI Center of Excellence',
+    c_coe_d: 'SOP, kundintag, och en roller-och-ansvar-spårare, som täcker CoE-mandat och organisationsmodell, bemanning och finansiering, beslutsmandat och KPI-ram. EN / DA / SV.',
+    c_coe_c: 'Öppna design →',
+    c_ktrans_t: 'Plan för kunskapsöverföring',
+    c_ktrans_d: 'SOP, kundintag, och en överlämningsområde-spårare med en definition of done per område, som täcker dokumentationsuppsättningen, best-practice-biblioteket och den interna gemenskapen som håller det levande. EN / DA / SV.',
+    c_ktrans_c: 'Öppna plan →',
+    tagP9: 'Fas 9',
+    p9Title: 'Leverantörsutvärdering & teknikval',
+    p9Sub: 'Välj medvetet i stället för efter demo: ett kravunderlag leverantörer faktiskt kan lämna anbud på, en poängsatt jämförelse körd på egna data, ett ärligt build-vs-buy-underlag, och en shortlist per plattformskategori.',
+    c_rfp_t: 'RFP-/RFI-byggare',
+    c_rfp_d: 'SOP, kundintag, och en utvärderingskriterie-spårare med vikter, som täcker kravunderlaget, poängmodellen, processreglerna och deal-breakers, och automatiskt genererar ett RFP-dokument. EN / DA / SV.',
+    c_rfp_c: 'Öppna byggare →',
+    c_vendor_t: 'Leverantörsutvärderingsmatris',
+    c_vendor_d: 'SOP, kundintag, och en poängmatris per leverantör, som täcker teknisk kapacitet testad på egna data, implementering och support, företagsstabilitet och lock-in-risk. EN / DA / SV.',
+    c_vendor_c: 'Öppna matris →',
+    c_bvb_t: 'Build vs. buy-analys',
+    c_bvb_d: 'SOP, kundintag, och en beslutsfaktor-spårare som väger varje alternativ, täckande kostnad över horisonten, teknisk skuld och underhållsbörda, och strategisk flexibilitet mot lock-in. EN / DA / SV.',
+    c_bvb_c: 'Öppna analys →',
+    c_plat_t: 'Plattform- och modellshortlist',
+    c_plat_d: 'SOP, kundintag, och en urvals-spårare per kategori över ML-plattform och MLOps-verktyg, modellval, dataplattform och vektorlager, och observability-verktyg. EN / DA / SV.',
+    c_plat_c: 'Öppna shortlist →',
+    tagP10: 'Fas 10',
+    p10Title: 'ROI-analys & kostnadsoptimering',
+    p10Sub: 'Visa vad det var värt och vad det kostar att behålla: en hållbar ROI-modell med attributionen uttalad, den totala ägandekostnaden över horisonten, och kvartalsgranskningen som håller siffrorna ärliga efter go-live.',
+    c_roi_t: 'ROI-analys',
+    c_roi_d: 'SOP, kundintag, och en värdedrivare-spårare med varje drivares konfidens angiven, som täcker kvantifieringsansatsen, återbetalningshorisonten, attributionsmetoden och nedsidesscenariot. EN / DA / SV.',
+    c_roi_c: 'Öppna analys →',
+    c_tco_t: 'Total ägandekostnad',
+    c_tco_d: 'SOP, kundintag, och en kostnadsrad-spårare över den valda horisonten, som täcker driftkostnader, personalkostnader för drift och granskning, och de optimeringsspakar som redan använts eller fortfarande finns. EN / DA / SV.',
+    c_tco_c: 'Öppna analys →',
+    c_value_t: 'Värdespårning och kvartalsgranskning',
+    c_value_d: 'SOP, kundintag, och en KPI-spårare med baslinje mot nuvarande, som täcker KPI-ägarskap, dashboard-design, granskningskadens med reella beslutsrättigheter, och åtgärder från senaste granskningen. EN / DA / SV.',
+    c_value_c: 'Öppna rapport →',
     c_mlops_t: 'MLOps-plattformsarkitektur',
     c_mlops_d: 'SOP, kundintag, och en plattformskomponent-spårare som täcker CI/CD-pipelines, modellregister, feature store och experiment tracking, och automatiskt genererar ett MLOps-plattformsarkitekturdokument. EN / DA / SV.',
     c_mlops_c: 'Öppna arkitektur →',
@@ -1167,11 +1350,6 @@ const STRINGS = {
     c_cost_t: 'Rapport om optimering av inferenskostnader',
     c_cost_d: 'SOP, kundintag, och en optimeringsspak-spårare rangordnad efter besparing mot insats, som täcker kostnadsattribuering, utnyttjande, kompression och caching, och automatiskt genererar en kostnadsoptimeringsrapport. EN / DA / SV.',
     c_cost_c: 'Öppna rapport →',
-    futureTitle: 'Kommande faser',
-    futureDesc: 'Verktygssamlingen följer AI-arkitektens hela leveranslivscykel. Dessa faser är skisserade och kommer fyllas i över tid.',
-    pillPhase8: 'Fas 8 · Organisationsförändring & Enablement',
-    pillPhase9: 'Fas 9 · Leverantörsbedömning & Teknikval',
-    pillPhase10: 'Fas 10 · ROI-analys & Kostnadsoptimering',
     footerText: 'Byggd som en oberoende AI-arkitektur-konsultportfölj. Alla bedömningsverktyg körs helt klient-sidan — ingen data lämnar din webbläsare.',
     dashTitle: 'Uppdragsöversikt',
     dashReport: 'Öppna samlad rapport →',
@@ -1216,6 +1394,17 @@ const TOOL_REGISTRY = [
   { key: 'aoa_retraining_strategy_v1', titleKey: 'c_retrain_t', href: 'Phase%207%20-%20MLOps%20%26%20Operations/retraining-strategy/' },
   { key: 'aoa_operations_runbook_v1', titleKey: 'c_runbook_t', href: 'Phase%207%20-%20MLOps%20%26%20Operations/operations-runbook/' },
   { key: 'aoa_cost_optimization_v1', titleKey: 'c_cost_t', href: 'Phase%207%20-%20MLOps%20%26%20Operations/cost-optimization/' },
+  { key: 'aoa_change_management_v1', titleKey: 'c_change_t', href: 'Phase%208%20-%20Change%20Management%20%26%20Enablement/change-management-plan/' },
+  { key: 'aoa_training_curriculum_v1', titleKey: 'c_train_t', href: 'Phase%208%20-%20Change%20Management%20%26%20Enablement/training-curriculum/' },
+  { key: 'aoa_ai_coe_v1', titleKey: 'c_coe_t', href: 'Phase%208%20-%20Change%20Management%20%26%20Enablement/ai-coe-design/' },
+  { key: 'aoa_knowledge_transfer_v1', titleKey: 'c_ktrans_t', href: 'Phase%208%20-%20Change%20Management%20%26%20Enablement/knowledge-transfer/' },
+  { key: 'aoa_rfp_builder_v1', titleKey: 'c_rfp_t', href: 'Phase%209%20-%20Vendor%20Evaluation%20%26%20Technology%20Selection/rfp-builder/' },
+  { key: 'aoa_vendor_evaluation_v1', titleKey: 'c_vendor_t', href: 'Phase%209%20-%20Vendor%20Evaluation%20%26%20Technology%20Selection/vendor-evaluation-matrix/' },
+  { key: 'aoa_build_vs_buy_v1', titleKey: 'c_bvb_t', href: 'Phase%209%20-%20Vendor%20Evaluation%20%26%20Technology%20Selection/build-vs-buy/' },
+  { key: 'aoa_platform_shortlist_v1', titleKey: 'c_plat_t', href: 'Phase%209%20-%20Vendor%20Evaluation%20%26%20Technology%20Selection/platform-shortlist/' },
+  { key: 'aoa_roi_analysis_v1', titleKey: 'c_roi_t', href: 'Phase%2010%20-%20ROI%20Analysis%20%26%20Cost%20Optimization/roi-analysis/' },
+  { key: 'aoa_tco_analysis_v1', titleKey: 'c_tco_t', href: 'Phase%2010%20-%20ROI%20Analysis%20%26%20Cost%20Optimization/tco-analysis/' },
+  { key: 'aoa_value_tracking_v1', titleKey: 'c_value_t', href: 'Phase%2010%20-%20ROI%20Analysis%20%26%20Cost%20Optimization/value-tracking/' },
 ];
 
 function _numOnly(s) { return /^\d+(\.\d+)?$/.test(s.trim()); }
@@ -1292,6 +1481,9 @@ const PHASE_NAV = [
   { id: 'phase-5', titleKey: 'p5Title', tagKey: 'tagP5' },
   { id: 'phase-6', titleKey: 'p6Title', tagKey: 'tagP6' },
   { id: 'phase-7', titleKey: 'p7Title', tagKey: 'tagP7' },
+  { id: 'phase-8', titleKey: 'p8Title', tagKey: 'tagP8' },
+  { id: 'phase-9', titleKey: 'p9Title', tagKey: 'tagP9' },
+  { id: 'phase-10', titleKey: 'p10Title', tagKey: 'tagP10' },
 ];
 function renderPhaseNav() {
   const nav = document.getElementById('phaseNav');

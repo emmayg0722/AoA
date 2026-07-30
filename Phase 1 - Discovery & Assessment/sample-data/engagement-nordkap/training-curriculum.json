@@ -1,0 +1,70 @@
+{
+  "fields": {
+    "client": "Nordkap Insurance",
+    "assessor": "Emma Gao",
+    "literacyNotes": "Deliberately minimal. One 30-minute session for claims and call-centre staff covering what the fraud model does, what it does not do, and who to ask. No general AI content, no history of machine learning: staff outside the investigation team need to know the system exists and is not deciding claims on its own. Delivered once at rollout and then folded into new-joiner onboarding, owned by the claims training lead.",
+    "technicalNotes": "For the four-person data platform team plus two ML engineers. Covers the retraining pipeline, the model registry promotion gates, reading the drift dashboard, and the runbook playbooks hands-on. Delivered as three half-days spread over the handover period, each ending with the trainee driving the task while we watch rather than the reverse. The on-call drill in the runbook counts as the final assessment.",
+    "toolNotes": "The load-bearing track. For the 14 claims investigators: how the ranking is produced, what the top contributing factors mean, when to override and how to record why. Built around real anonymised claims from the pilot rather than synthetic examples, because investigators immediately spot cases that do not behave like real ones. 45-minute workshop in groups of five, plus a one-page reference card at the desk.",
+    "leadershipNotes": "One 60-minute session for the claims director and two managers, focused on the limits of the evidence: what a fraud score is not, why a high override rate may be the model's fault, what the model cannot see, and which decisions still need a human on the record for regulatory reasons. Framed around the questions they will be asked in audit rather than around the technology."
+  },
+  "rows": [
+    {
+      "id": 1,
+      "module": "What the fraud model does",
+      "audience": "Claims & call-centre staff",
+      "format": "30 min, once at rollout",
+      "status": "delivered"
+    },
+    {
+      "id": 2,
+      "module": "Reading a fraud score and its factors",
+      "audience": "Claims investigators",
+      "format": "45 min workshop, groups of 5",
+      "status": "delivered"
+    },
+    {
+      "id": 3,
+      "module": "When and how to override",
+      "audience": "Claims investigators",
+      "format": "45 min, real pilot cases",
+      "status": "built"
+    },
+    {
+      "id": 4,
+      "module": "Retraining pipeline hands-on",
+      "audience": "Data platform + ML engineers",
+      "format": "Half day, trainee drives",
+      "status": "built"
+    },
+    {
+      "id": 5,
+      "module": "Drift dashboard and runbook",
+      "audience": "Data platform team",
+      "format": "Half day + on-call drill",
+      "status": "planned"
+    },
+    {
+      "id": 6,
+      "module": "Limits of the evidence",
+      "audience": "Claims director & managers",
+      "format": "60 min, audit-question framing",
+      "status": "planned"
+    },
+    {
+      "id": 7,
+      "module": "Desk reference card",
+      "audience": "Claims investigators",
+      "format": "One page, at the desk",
+      "status": "built"
+    }
+  ],
+  "nextId": 8,
+  "sopDone": [
+    true,
+    true,
+    true,
+    true,
+    false
+  ],
+  "lang": "en"
+}
