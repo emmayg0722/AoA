@@ -9,5 +9,6 @@
   "timeline": "4 weeks, starting 2026-08-03",
   "verdict": "proceed",
   "demoEnv": "Azure ML workspace in the sandbox subscription; anonymized extract approved by the data office."
- }
+ },
+ "sopDone": [true, true, true, true, true]
 }

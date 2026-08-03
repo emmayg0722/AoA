@@ -280,20 +280,6 @@
     font-size: 14px;
     color: var(--primary);
   }
-  .card.soon { opacity: 0.7; cursor: default; }
-  .card.soon:hover { transform: none; box-shadow: none; border-color: var(--line); }
-  .card .badge-soon {
-    align-self: flex-start;
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--muted);
-    background: var(--powder);
-    padding: 3px 9px;
-    border-radius: 20px;
-    margin-top: 18px;
-  }
   .dash {
     background: #fff;
     border: 1px solid var(--line);
@@ -854,7 +840,6 @@ const STRINGS = {
     heroDesc: 'An evolving set of assessments and accelerators that mirror how an AI architect actually moves a client from discovery to production.',
     statTools: ' tools', statPhases: ' delivery phases', statPrivacy: 'Runs fully in your browser. Nothing is uploaded.',
     skipLink: 'Skip to the toolkit',
-    jumpToLabel: 'Jump to:',
     toolsCountLabel: (n) => `${n} tool${n === 1 ? '' : 's'}`,
     filterLabel: 'Find a tool',
     filterPlaceholder: 'Find a tool by name or keyword…',
@@ -1035,7 +1020,6 @@ const STRINGS = {
     heroDesc: 'Et voksende sæt af vurderinger og accelleratorer, der afspejler hvordan en AI-arkitekt reelt flytter en kunde fra discovery til produktion.',
     statTools: ' værktøjer', statPhases: ' leveringsfaser', statPrivacy: 'Kører fuldt ud i din browser. Intet uploades.',
     skipLink: 'Gå direkte til værktøjerne',
-    jumpToLabel: 'Gå til:',
     toolsCountLabel: (n) => `${n} værktøj${n === 1 ? '' : 'er'}`,
     filterLabel: 'Find et værktøj',
     filterPlaceholder: 'Find et værktøj efter navn eller nøgleord…',
@@ -1216,7 +1200,6 @@ const STRINGS = {
     heroDesc: 'En växande uppsättning bedömningar och acceleratorer som speglar hur en AI-arkitekt faktiskt flyttar en kund från discovery till produktion.',
     statTools: ' verktyg', statPhases: ' leveransfaser', statPrivacy: 'Körs helt i din webbläsare. Inget laddas upp.',
     skipLink: 'Hoppa till verktygen',
-    jumpToLabel: 'Gå till:',
     toolsCountLabel: (n) => `${n} verktyg`,
     filterLabel: 'Hitta ett verktyg',
     filterPlaceholder: 'Hitta ett verktyg efter namn eller nyckelord…',

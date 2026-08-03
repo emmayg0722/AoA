@@ -12,5 +12,6 @@
   "score_access": "4",
   "score_audit": "3",
   "score_injection": "3"
- }
+ },
+ "sopDone": [true, true, true, true, true]
 }

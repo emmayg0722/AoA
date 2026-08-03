@@ -29,5 +29,6 @@
    "dataFlow": "Inbound, nightly",
    "status": "done"
   }
- ]
+ ],
+ "sopDone": [true, true, true, true, true]
 }

@@ -26,5 +26,6 @@
    "goal": "SIU auto-referral flow + audit logging complete",
    "status": "planned"
   }
- ]
+ ],
+ "sopDone": [true, true, true, true, true]
 }
