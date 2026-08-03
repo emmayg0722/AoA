@@ -10,6 +10,7 @@
 | `ai-maturity-assessment/sample-payload.json` | AI Maturity Assessment's "🧪 View sample results" link | A fake completed assessment ("Acme Corp") in the same shape `shareResults()` produces — jumps straight to a populated results page. |
 | `data-readiness-assessment-5c/sample-engagement.json` | DRA-5C console's "🧪 Load sample engagement" button | A fake engagement ("Northwind Lending" — the running example used throughout this asset's docs) covering all four steps and the final scorecard. |
 | `data-readiness-assessment-5c/sample-transactions.csv` | DRA-5C profiler's "🧪 Load sample data" button | A 20-row synthetic dataset with intentional imperfections (nulls, one duplicate row, a wide date span) so the profiler demo shows a non-trivial report. |
+| `engagement-nordkap/use-case-evaluator.json` | Guided Use Case Evaluation's "🧪 Load sample" button | The Nordkap fraud-triage use case run through all six criteria, deliberately including one score marked *scored from assumption* and one criterion below the conditional bar — so the sample demonstrates a **Pursue with conditions** verdict with real derived conditions rather than a flattering all-4s sheet. |
 
 Each tool fetches its sample file from this folder at runtime (same-origin, no
 external network call) and feeds it through the tool's normal loading/restore

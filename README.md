@@ -6,7 +6,7 @@ phase. Live site: https://emmayg0722.github.io/AoA/
 Each consulting phase has its own folder; within a phase, each deliverable/tool has
 its own subfolder. New phases and assets follow the same structure.
 
-All **ten phases** of the delivery lifecycle are built — 43 browser-local tools
+All **ten phases** of the delivery lifecycle are built — 44 browser-local tools
 from first discovery interview through to the quarterly value review after go-live.
 
 ## Structure
@@ -18,7 +18,7 @@ from first discovery interview through to the quarterly value review after go-li
 ├── AI-Architect-Consulting-Work-Research.md   # The Phase 1–10 reference this toolkit follows
 ├── .claude/agents/                    # Claude Code agents (must live here to be loadable)
 │   ├── dra-5c.md                      # Data Readiness Assessment (5C) agent
-│   └── use-case-evaluator.md          # Use-case evaluation mentor (scores against Phase 1/4 rubrics)
+│   └── use-case-evaluator.md          # Use-case evaluation mentor (browser twin: evaluator.html)
 └── Phase 1 - Discovery & Assessment/
     ├── ai-maturity-assessment/        # Browser tool: 6-dimension AI maturity scoring
     │   ├── index.html
@@ -32,6 +32,8 @@ from first discovery interview through to the quarterly value review after go-li
     ├── infrastructure-audit/          # SOP + intake + auto-generated current-state doc (EN/DA/SV)
     ├── organizational-readiness/      # SOP + intake + auto-generated readiness doc (EN/DA/SV)
     ├── use-case-prioritization/       # SOP + ROI/feasibility/impact matrix + priority doc (EN/DA/SV)
+    │   ├── index.html                 #   the matrix
+    │   └── evaluator.html             #   guided evaluation: teaches each score, verdict, feeds the matrix
     └── sample-data/                   # Synthetic demo data only — see its README
         ├── ai-maturity-assessment/
         └── data-readiness-assessment-5c/
@@ -104,8 +106,23 @@ from first discovery interview through to the quarterly value review after go-li
 - **Use Case Identification & Prioritization** — SOP plus a live, scorable ROI /
   feasibility / impact matrix that ranks candidate AI use cases, flags quick wins,
   and auto-generates a priority document.
+- **Guided Use Case Evaluation** (`use-case-prioritization/evaluator.html`) — the
+  browser counterpart to the `use-case-evaluator` agent, and the place to start if
+  you are learning rather than filling in a matrix. It walks *one* use case through
+  six criteria, one screen at a time, and for each shows the question a senior
+  architect would actually ask, what separates a 2 from a 4 in practice, and why the
+  criterion earns its place. The criteria are not invented for it: ROI / Feasibility /
+  Impact come from the matrix above, and technical performance / user acceptance /
+  business impact from the Phase 4 go/no-go tool, scored as *projections* and labelled
+  as such. Two things keep it honest — a "scored from assumption" flag per criterion
+  that becomes a named condition instead of quietly averaging away, and a 5C data-
+  readiness gate read straight from the DRA-5C scorecard, treated as an open gap when
+  no scorecard exists. It ends in a **Pursue / Pursue-with-conditions / Don't-pursue**
+  verdict with derived conditions, a "what a senior architect would flag here"
+  paragraph, and a one-click hand-off that writes its three prioritization scores
+  into the matrix next door.
 
-All three new Phase 1 tools follow the same pattern: an SOP card, a client-intake
+The three form-style Phase 1 tools follow the same pattern: an SOP card, a client-intake
 form (autosaved locally), a live document preview built from a `{{field}}` template,
 HTML/Markdown export, and an English/Danish/Swedish language selector — the pattern
 now used across the toolkit.
@@ -372,7 +389,7 @@ Client, assessor, and use case are entered **once** and carry across the whole
 toolkit: every tool prefills those fields from a shared browser-local profile
 (`localStorage` key `aoa_engagement_v1`) and writes changes back to it. The hub
 shows an **engagement dashboard** — the current engagement plus a started/empty
-chip for each of the 43 stateful tools. A root-level **`engagement-report.html`**
+chip for each of the 44 stateful tools. A root-level **`engagement-report.html`**
 assembles every tool's saved work into one combined report (HTML/Markdown
 export) and can save or restore the *entire* engagement — all tools at once —
 as a single JSON file. Like everything else here, all of it is browser-local:
