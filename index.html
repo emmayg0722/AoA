@@ -87,6 +87,8 @@
   .hero:hover::before { opacity: 1; }
   .wrap { max-width: 1180px; margin: 0 auto; position: relative; z-index: 1; }
   .hero-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; flex-wrap: wrap; }
+  .hero-controls { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .hero-controls .tool-find { margin: 0; }
   select#langSelect { font-family: var(--font-body); font-size: 13px; font-weight: 600; border: 1.5px solid rgba(255,255,255,0.4); background: rgba(255,255,255,0.08); color: #fff; border-radius: 8px; padding: 7px 10px; }
   select#langSelect option { color: var(--ink); }
   .eyebrow {
@@ -160,50 +162,132 @@
     color: var(--muted);
     margin-bottom: 12px;
   }
-  .phase-nav {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    border-left: 2px solid var(--line);
+  /* Engagement progress, so the rail answers "how far along am I" as well as
+     "where am I". Mirrors the dashboard's own count. */
+  .nav-progress { margin-bottom: 16px; }
+  .nav-progress-bar {
+    height: 4px;
+    border-radius: 999px;
+    background: var(--line);
+    overflow: hidden;
   }
-  .phase-nav a {
-    font-size: 13px;
-    font-weight: 600;
-    line-height: 1.35;
-    color: var(--primary);
-    padding: 8px 12px;
-    margin-left: -2px;
-    border-left: 2px solid transparent;
-    border-radius: 0 6px 6px 0;
-    text-decoration: none;
-    text-wrap: pretty;
-    transition: background 0.15s ease, border-color 0.15s ease;
-  }
-  .phase-nav a:hover { background: var(--powder); border-left-color: var(--accent); }
-  /* Scroll spy: marks which phase the reader is currently in. */
-  .phase-nav a.is-active { background: var(--powder); border-left-color: var(--primary); }
-  .phase-nav .nav-num {
+  .nav-progress-bar span {
     display: block;
-    font-size: 10.5px;
+    height: 100%;
+    width: 0;
+    border-radius: 999px;
+    background: var(--primary);
+    transition: width 0.45s cubic-bezier(0.22, 0.61, 0.36, 1);
+  }
+  .nav-progress-text { font-size: 11.5px; color: var(--muted); margin-top: 7px; font-variant-numeric: tabular-nums; }
+  /* "All phases" is not a step in the sequence, so it sits outside the
+     numbered path rather than becoming an eleventh node. */
+  .nav-all {
+    width: 100%;
+    text-align: left;
+    font-family: var(--font-body);
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--primary);
+    background: transparent;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 8px 12px;
+    margin-bottom: 14px;
+    cursor: pointer;
+    transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+  }
+  .nav-all:hover { background: var(--powder); border-color: var(--accent); }
+  .nav-all.is-active { background: var(--primary); border-color: var(--primary); color: #fff; }
+  .phase-nav { display: flex; flex-direction: column; }
+  .nav-item {
+    position: relative;
+    display: grid;
+    grid-template-columns: 22px minmax(0, 1fr);
+    gap: 10px;
+    align-items: start;
+    padding: 8px 10px 12px;
+    border-radius: 8px;
+    text-decoration: none;
+    color: var(--ink);
+    transition: background 0.18s ease;
+  }
+  .nav-item:hover { background: var(--powder); }
+  .nav-item.is-active { background: var(--powder); }
+  /* The connector that turns ten links into one visible path. */
+  .nav-item::after {
+    content: '';
+    position: absolute;
+    left: 20px;
+    top: 32px;
+    bottom: 0;
+    width: 2px;
+    background: var(--line);
+  }
+  .nav-item:last-child::after { display: none; }
+  .nav-node {
+    position: relative;
+    z-index: 1;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    color: var(--muted);
+    background: #fff;
+    border: 2px solid var(--line);
+    transition: background 0.22s ease, border-color 0.22s ease, color 0.22s ease, transform 0.22s ease;
+  }
+  /* A phase with saved work reads as visited even when it is not selected. */
+  .nav-item.is-started .nav-node { border-color: var(--accent); color: var(--primary); }
+  .nav-item.is-active .nav-node { background: var(--primary); border-color: var(--primary); color: #fff; transform: scale(1.12); }
+  .nav-num {
+    display: block;
+    font-size: 10px;
     letter-spacing: 0.06em;
     text-transform: uppercase;
     color: var(--muted);
     font-weight: 700;
   }
+  .nav-name { display: block; font-size: 13px; font-weight: 600; line-height: 1.35; color: var(--primary); text-wrap: pretty; }
+  .nav-count { display: block; font-size: 11px; color: var(--muted); margin-top: 3px; font-variant-numeric: tabular-nums; }
+  /* What the stage stands for — revealed for the selected phase only, so the
+     rail stays scannable but explains itself where it matters. */
+  .nav-detail {
+    display: block;   /* a span will not honour max-height/overflow */
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    font-size: 11.5px;
+    line-height: 1.5;
+    color: var(--muted);
+    text-wrap: pretty;
+    transition: max-height 0.34s cubic-bezier(0.22, 0.61, 0.36, 1), opacity 0.24s ease, margin-top 0.34s ease;
+  }
+  .nav-item.is-active .nav-detail { max-height: 260px; opacity: 1; margin-top: 6px; }
+  .nav-item:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
   /* Find-a-tool filter: 32 cards is too many to scan, so offer a direct
      text path alongside browsing by phase. */
-  .tool-find { margin-bottom: 14px; }
+  .tool-find { margin: 0; }
   #toolFilter {
-    width: 100%;
-    max-width: 420px;
+    width: 232px;
+    max-width: 100%;
     font-family: var(--font-body);
-    font-size: 15px;
-    color: var(--ink);
-    background: #fff;
-    border: 1.5px solid var(--line);
-    border-radius: 10px;
-    padding: 11px 14px;
+    font-size: 13.5px;
+    color: #fff;
+    background: rgba(255,255,255,0.08);
+    border: 1.5px solid rgba(255,255,255,0.4);
+    border-radius: 8px;
+    padding: 7px 12px;
+    transition: background 0.15s ease, border-color 0.15s ease, width 0.2s ease;
   }
+  #toolFilter::placeholder { color: rgba(255,255,255,0.6); }
+  #toolFilter:focus { background: rgba(255,255,255,0.16); border-color: rgba(255,255,255,0.75); outline: none; }
+  #toolFilter:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
   #toolFilter::placeholder { color: var(--muted); }
   .filter-status { font-size: 13px; color: var(--muted); margin-top: 8px; min-height: 1.2em; }
   .phase-head[hidden], .phase-sub[hidden], .cards[hidden], .card[hidden] { display: none; }
@@ -366,43 +450,20 @@
     .hero-stats { gap: 16px; }
     .hero-stats .lbl-long { display: none; }
     .hero-stats .lbl-short { display: inline; }
-    .hero-stats .stat-privacy { display: none; }
   }
-  /* Below this the rail would squeeze the two-card grid too hard, so the
-     phase list drops back to the pill row it used before the sidebar. */
+  /* Below this the rail would squeeze the two-card grid too hard. The path
+     lies down into a swipeable strip; the stage description drops out because
+     the same text already sits under the phase heading in the content column. */
   @media (max-width: 1040px) {
     main { grid-template-columns: minmax(0, 1fr); gap: 0; }
-    .side-nav { position: static; margin-bottom: 36px; }
+    .side-nav { position: static; margin-bottom: 32px; }
     .side-nav-title { display: none; }
-    .phase-nav { flex-direction: row; flex-wrap: wrap; gap: 8px; border-left: 0; }
-    .phase-nav a {
-      background: var(--powder);
-      border: 1px solid var(--line);
-      border-radius: 20px;
-      padding: 7px 13px;
-      margin-left: 0;
-      font-size: 13.5px;
-    }
-    .phase-nav a:hover { background: var(--accent); border-color: var(--accent); }
-    .phase-nav a.is-active { background: var(--accent); border-color: var(--accent); }
-    .phase-nav .nav-num {
-      display: inline;
-      font-size: inherit;
-      letter-spacing: 0;
-      text-transform: none;
-      color: inherit;
-      font-weight: 600;
-    }
-    .phase-nav .nav-num::after { content: '\00a0\00b7\00a0'; }
-  }
-  @media (max-width: 720px) {
-    .hero { padding: 56px 20px 48px; }
-    .hero h1 { font-size: 34px; }
-    .cards { grid-template-columns: minmax(0, 1fr); }
-    /* The seven phase pills stacked into seven rows on a phone, which read
-       as a wall rather than a navigation aid. One swipeable row instead. */
+    .nav-progress { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+    .nav-progress-bar { flex: 1; }
+    .nav-progress-text { margin-top: 0; white-space: nowrap; }
+    .nav-all { width: auto; margin-bottom: 12px; }
     .phase-nav {
-      flex-wrap: nowrap;
+      flex-direction: row;
       overflow-x: auto;
       -webkit-overflow-scrolling: touch;
       scroll-snap-type: x proximity;
@@ -412,15 +473,35 @@
       scrollbar-width: none;
     }
     .phase-nav::-webkit-scrollbar { display: none; }
-    .phase-nav a { flex: none; white-space: nowrap; scroll-snap-align: start; }
-    /* Touch targets: all of these measured 33-41px, under the 44px minimum.
-       16px on the inputs also stops iOS auto-zooming the page on focus. */
-    .phase-nav a, .dash-report-link {
-      min-height: 44px;
-      display: inline-flex;
+    .nav-item {
+      flex: none;
+      scroll-snap-align: start;
+      grid-template-columns: auto auto;
       align-items: center;
+      gap: 8px;
+      padding: 7px 13px;
+      background: var(--powder);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      margin-right: 8px;
+      min-height: 44px;
     }
-    #toolFilter { min-height: 44px; font-size: 16px; }
+    .nav-item::after { display: none; }
+    .nav-item.is-active { background: var(--primary); border-color: var(--primary); }
+    .nav-item.is-active .nav-name, .nav-item.is-active .nav-num { color: #fff; }
+    .nav-item.is-active .nav-node { transform: none; background: #fff; color: var(--primary); border-color: #fff; }
+    .nav-name { white-space: nowrap; font-size: 13.5px; }
+    .nav-num, .nav-count, .nav-detail { display: none; }
+  }
+  @media (max-width: 720px) {
+    .hero { padding: 56px 20px 48px; }
+    .hero h1 { font-size: 34px; }
+    .cards { grid-template-columns: minmax(0, 1fr); }
+    /* Touch targets, and 16px stops iOS auto-zooming the page on focus. */
+    .dash-report-link { min-height: 44px; display: inline-flex; align-items: center; }
+    #toolFilter { min-height: 44px; font-size: 16px; width: 100%; }
+    .hero-controls { width: 100%; }
+    .hero-controls .tool-find { flex: 1; }
     select#langSelect { min-height: 44px; font-size: 16px; }
     /* Card copy is written for desktop scanning; on a phone it made the page
        ~18 screens tall. Trim to a readable summary, full text is on the tool. */
@@ -438,7 +519,8 @@
   @media (prefers-reduced-motion: reduce) {
     .hero::before { display: none; }
     .card::before { display: none; }
-    .card, .phase-nav a, .skip-link { transition: none; }
+    .card, .skip-link, .nav-item, .nav-node, .nav-all, .nav-detail,
+    .nav-progress-bar span { transition: none; }
     .card:hover { transform: none; }
   }
 </style>
@@ -449,18 +531,23 @@
     <div class="wrap">
       <div class="hero-top">
         <span class="eyebrow" data-i18n="heroEyebrow"></span>
-        <select id="langSelect" onchange="setLang(this.value)">
-          <option value="en">English</option>
-          <option value="da">Dansk</option>
-          <option value="sv">Svenska</option>
-        </select>
+        <div class="hero-controls">
+          <div class="tool-find">
+            <label class="sr-only" for="toolFilter" data-i18n="filterLabel"></label>
+            <input type="search" id="toolFilter" autocomplete="off" oninput="filterTools(this.value)">
+          </div>
+          <select id="langSelect" onchange="setLang(this.value)">
+            <option value="en">English</option>
+            <option value="da">Dansk</option>
+            <option value="sv">Svenska</option>
+          </select>
+        </div>
       </div>
       <h1 data-i18n="heroTitle"></h1>
       <p data-i18n="heroDesc"></p>
       <div class="hero-stats">
         <span><strong id="statToolsNum"></strong><span data-i18n="statTools"></span></span>
         <span><strong id="statPhasesNum"></strong><span class="lbl-long" data-i18n="statPhases"></span><span class="lbl-short" data-i18n="statPhasesShort"></span></span>
-        <span class="stat-privacy" data-i18n="statPrivacy"></span>
       </div>
     </div>
   </header>
@@ -468,15 +555,16 @@
   <main id="toolkit">
     <aside class="side-nav">
       <p class="side-nav-title" data-i18n="navTitle"></p>
-      <nav class="phase-nav" id="phaseNav" aria-label="Jump to phase"></nav>
+      <div class="nav-progress">
+        <div class="nav-progress-bar"><span id="navProgressFill"></span></div>
+        <p class="nav-progress-text" id="navProgressText"></p>
+      </div>
+      <button type="button" class="nav-all" id="navAll" onclick="selectPhase('all')"></button>
+      <nav class="phase-nav" id="phaseNav" aria-label="Choose a delivery phase"></nav>
     </aside>
 
     <div class="main-col">
-    <div class="tool-find">
-      <label class="sr-only" for="toolFilter" data-i18n="filterLabel"></label>
-      <input type="search" id="toolFilter" autocomplete="off" oninput="filterTools(this.value)">
-      <p class="filter-status" id="filterStatus" role="status" aria-live="polite"></p>
-    </div>
+    <p class="filter-status" id="filterStatus" role="status" aria-live="polite"></p>
 
     <div class="dash">
       <div class="dash-head">
@@ -894,9 +982,11 @@ const STRINGS = {
     heroEyebrow: 'AI Architecture · Consulting Toolkit',
     heroTitle: 'Practical tools for AI-architecture engagements, organized by delivery phase.',
     heroDesc: 'An evolving set of assessments and accelerators that mirror how an AI architect actually moves a client from discovery to production.',
-    statTools: ' tools', statPhases: ' delivery phases', statPrivacy: 'Runs fully in your browser. Nothing is uploaded.',
+    statTools: ' tools', statPhases: ' delivery phases',
     skipLink: 'Skip to the toolkit',
     navTitle: 'Delivery phases',
+    navAll: 'All phases',
+    navPhaseCount: (n, total) => `${n} of ${total} started`,
     toolsCountLabel: (n) => `${n} tool${n === 1 ? '' : 's'}`,
     filterLabel: 'Find a tool',
     filterPlaceholder: 'Find a tool by name or keyword…',
@@ -1072,9 +1162,11 @@ const STRINGS = {
     heroEyebrow: 'AI-arkitektur · Konsulentværktøjer',
     heroTitle: 'Praktiske værktøjer til AI-arkitektur-engagementer, organiseret efter leveringsfase.',
     heroDesc: 'Et voksende sæt af vurderinger og accelleratorer, der afspejler hvordan en AI-arkitekt reelt flytter en kunde fra discovery til produktion.',
-    statTools: ' værktøjer', statPhases: ' leveringsfaser', statPrivacy: 'Kører fuldt ud i din browser. Intet uploades.',
+    statTools: ' værktøjer', statPhases: ' leveringsfaser',
     skipLink: 'Gå direkte til værktøjerne',
     navTitle: 'Leveringsfaser',
+    navAll: 'Alle faser',
+    navPhaseCount: (n, total) => `${n} af ${total} påbegyndt`,
     toolsCountLabel: (n) => `${n} værktøj${n === 1 ? '' : 'er'}`,
     filterLabel: 'Find et værktøj',
     filterPlaceholder: 'Find et værktøj efter navn eller nøgleord…',
@@ -1250,9 +1342,11 @@ const STRINGS = {
     heroEyebrow: 'AI-arkitektur · Konsultverktyg',
     heroTitle: 'Praktiska verktyg för AI-arkitekturuppdrag, organiserade efter leveransfas.',
     heroDesc: 'En växande uppsättning bedömningar och acceleratorer som speglar hur en AI-arkitekt faktiskt flyttar en kund från discovery till produktion.',
-    statTools: ' verktyg', statPhases: ' leveransfaser', statPrivacy: 'Körs helt i din webbläsare. Inget laddas upp.',
+    statTools: ' verktyg', statPhases: ' leveransfaser',
     skipLink: 'Hoppa till verktygen',
     navTitle: 'Leveransfaser',
+    navAll: 'Alla faser',
+    navPhaseCount: (n, total) => `${n} av ${total} påbörjade`,
     toolsCountLabel: (n) => `${n} verktyg`,
     filterLabel: 'Hitta ett verktyg',
     filterPlaceholder: 'Hitta ett verktyg efter namn eller nyckelord…',
@@ -1540,52 +1634,114 @@ let lang = localStorage.getItem('aoa_lang') || 'en';
 function t(key) { return (STRINGS[lang] && STRINGS[lang][key] !== undefined) ? STRINGS[lang][key] : (STRINGS.en[key] !== undefined ? STRINGS.en[key] : key); }
 function setLang(l) { lang = l; localStorage.setItem('aoa_lang', l); document.getElementById('langSelect').value = l; applyI18n(); renderDashboard(); }
 const PHASE_NAV = [
-  { id: 'phase-1', titleKey: 'p1Title', tagKey: 'tagP1' },
-  { id: 'phase-2', titleKey: 'p2Title', tagKey: 'tagP2' },
-  { id: 'phase-3', titleKey: 'p3Title', tagKey: 'tagP3' },
-  { id: 'phase-4', titleKey: 'p4Title', tagKey: 'tagP4' },
-  { id: 'phase-5', titleKey: 'p5Title', tagKey: 'tagP5' },
-  { id: 'phase-6', titleKey: 'p6Title', tagKey: 'tagP6' },
-  { id: 'phase-7', titleKey: 'p7Title', tagKey: 'tagP7' },
-  { id: 'phase-8', titleKey: 'p8Title', tagKey: 'tagP8' },
-  { id: 'phase-9', titleKey: 'p9Title', tagKey: 'tagP9' },
-  { id: 'phase-10', titleKey: 'p10Title', tagKey: 'tagP10' },
+  { id: 'phase-1', titleKey: 'p1Title', tagKey: 'tagP1', subKey: 'p1Sub' },
+  { id: 'phase-2', titleKey: 'p2Title', tagKey: 'tagP2', subKey: 'p2Sub' },
+  { id: 'phase-3', titleKey: 'p3Title', tagKey: 'tagP3', subKey: 'p3Sub' },
+  { id: 'phase-4', titleKey: 'p4Title', tagKey: 'tagP4', subKey: 'p4Sub' },
+  { id: 'phase-5', titleKey: 'p5Title', tagKey: 'tagP5', subKey: 'p5Sub' },
+  { id: 'phase-6', titleKey: 'p6Title', tagKey: 'tagP6', subKey: 'p6Sub' },
+  { id: 'phase-7', titleKey: 'p7Title', tagKey: 'tagP7', subKey: 'p7Sub' },
+  { id: 'phase-8', titleKey: 'p8Title', tagKey: 'tagP8', subKey: 'p8Sub' },
+  { id: 'phase-9', titleKey: 'p9Title', tagKey: 'tagP9', subKey: 'p9Sub' },
+  { id: 'phase-10', titleKey: 'p10Title', tagKey: 'tagP10', subKey: 'p10Sub' },
 ];
+/* The rail is a phase selector, not just a jump list: choosing a phase shows
+   that phase's tools on their own. 'all' restores the full engagement view. */
+let currentPhase = 'all';
+let currentQuery = '';
+
+/* Each tool's registry href starts with its phase folder, so per-phase
+   progress needs no second source of truth. */
+function phaseOfTool(tool) {
+  const m = /^Phase%20(\d+)%20/.exec(tool.href);
+  return m ? 'phase-' + m[1] : null;
+}
+
+function phaseProgress(id) {
+  const tools = TOOL_REGISTRY.filter(tl => phaseOfTool(tl) === id);
+  return { started: tools.filter(tl => toolStarted(tl.key)).length, total: tools.length };
+}
+
 function renderPhaseNav() {
   const nav = document.getElementById('phaseNav');
   if (!nav) return;
-  nav.innerHTML = PHASE_NAV.map(p => `<a href="#${p.id}"><span class="nav-num">${esc(t(p.tagKey))}</span>${esc(t(p.titleKey))}</a>`).join('');
-  initPhaseSpy();
+  nav.innerHTML = PHASE_NAV.map((p, i) => {
+    const pr = phaseProgress(p.id);
+    return `<a class="nav-item" href="#${p.id}" data-phase="${p.id}" onclick="return selectPhase('${p.id}', event)">
+      <span class="nav-node" aria-hidden="true">${i + 1}</span>
+      <span class="nav-body">
+        <span class="nav-num">${esc(t(p.tagKey))}</span>
+        <span class="nav-name">${esc(t(p.titleKey))}</span>
+        ${pr.total ? `<span class="nav-count">${esc(t('navPhaseCount')(pr.started, pr.total))}</span>` : ''}
+        <span class="nav-detail">${esc(t(p.subKey))}</span>
+      </span>
+    </a>`;
+  }).join('');
+  const all = document.getElementById('navAll');
+  if (all) all.textContent = t('navAll');
+  renderNavProgress();
+  syncNavState();
 }
-/* Highlights the phase the reader is currently in. Re-run on language
-   switch (the links are rebuilt); the listeners bind only once. */
-let phaseSpyBound = false;
-function initPhaseSpy() {
-  const nav = document.getElementById('phaseNav');
-  if (!nav) return;
-  const sync = () => {
-    // offsetParent skips phases the tool filter has hidden.
-    const heads = Array.from(document.querySelectorAll('main .phase-head'))
-      .filter(h => h.offsetParent !== null);
-    const line = window.innerHeight * 0.33;
-    let current = null;
-    heads.forEach(h => { if (h.getBoundingClientRect().top <= line) current = h.id; });
-    nav.querySelectorAll('a').forEach(a => {
-      a.classList.toggle('is-active', !!current && a.getAttribute('href') === '#' + current);
-    });
-  };
-  sync();
-  if (phaseSpyBound) return;
-  phaseSpyBound = true;
-  let ticking = false;
-  const onScroll = () => {
-    if (ticking) return;
-    ticking = true;
-    requestAnimationFrame(() => { ticking = false; sync(); });
-  };
-  addEventListener('scroll', onScroll, { passive: true });
-  addEventListener('resize', onScroll, { passive: true });
+
+function renderNavProgress() {
+  const fill = document.getElementById('navProgressFill');
+  const text = document.getElementById('navProgressText');
+  if (!fill || !text) return;
+  const started = TOOL_REGISTRY.filter(tl => toolStarted(tl.key)).length;
+  const total = TOOL_REGISTRY.length;
+  fill.style.width = total ? (started / total * 100) + '%' : '0';
+  text.textContent = t('dashProgress')(started, total);
 }
+
+/* Marks the selected phase in the rail. Kept separate from rendering so
+   selection does not rebuild the list (and restart its transitions). */
+function syncNavState() {
+  document.querySelectorAll('#phaseNav .nav-item').forEach(a => {
+    const on = a.getAttribute('data-phase') === currentPhase;
+    a.classList.toggle('is-active', on);
+    if (on) { a.setAttribute('aria-current', 'true'); } else { a.removeAttribute('aria-current'); }
+    const pr = phaseProgress(a.getAttribute('data-phase'));
+    a.classList.toggle('is-started', pr.started > 0);
+  });
+  const all = document.getElementById('navAll');
+  if (all) {
+    all.classList.toggle('is-active', currentPhase === 'all');
+    all.setAttribute('aria-pressed', currentPhase === 'all' ? 'true' : 'false');
+  }
+}
+
+function selectPhase(id, ev) {
+  if (ev) ev.preventDefault();
+  currentPhase = id;
+  // Selecting a phase is a scope change, not a search; clear any stale query
+  // so the two controls cannot disagree about what is on screen.
+  if (currentQuery) {
+    currentQuery = '';
+    const f = document.getElementById('toolFilter');
+    if (f) f.value = '';
+  }
+  syncNavState();
+  applyView();
+  if (id !== 'all') {
+    const head = document.getElementById(id);
+    // Only scroll when the heading is out of view; a click on the phase you
+    // are already reading should not yank the page.
+    if (head) {
+      const top = head.getBoundingClientRect().top;
+      if (top < 0 || top > window.innerHeight * 0.6) {
+        head.scrollIntoView({ behavior: prefersCalm() ? 'auto' : 'smooth', block: 'start' });
+      }
+    }
+  } else {
+    window.scrollTo({ top: 0, behavior: prefersCalm() ? 'auto' : 'smooth' });
+  }
+  return false;
+}
+
+function prefersCalm() {
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+}
+
 function renderPhaseCounts() {
   document.querySelectorAll('.phase-head').forEach(head => {
     const countEl = head.querySelector('.phase-count');
@@ -1615,15 +1771,28 @@ function resetEngagement() {
     localStorage.removeItem('aoa_engagement_v1');
   } catch (e) {}
   renderDashboard();
+  renderNavProgress();
+  syncNavState();
   const summary = document.getElementById('dashSummary');
   if (summary) summary.textContent = t('dashResetDone');
 }
 
-// ── Find-a-tool filter ────────────────────────────────────────────────
+// ── What is on screen ─────────────────────────────────────────────────
 // Filters the card grid in place and hides any phase whose cards all drop
 // out, so the page never shows a heading above an empty grid.
+/* Search and phase scope both decide what is on screen, so one function owns
+   visibility. Typing widens the scope back to every phase: a query that only
+   searched the selected phase would silently hide matches elsewhere. */
 function filterTools(q) {
-  const query = String(q || '').trim().toLowerCase();
+  currentQuery = String(q || '').trim().toLowerCase();
+  if (currentQuery && currentPhase !== 'all') {
+    currentPhase = 'all';
+    syncNavState();
+  }
+  applyView();
+}
+
+function applyView() {
   const heads = Array.from(document.querySelectorAll('main .phase-head'));
   let shown = 0, total = 0;
 
@@ -1634,11 +1803,12 @@ function filterTools(q) {
     while (grid && !grid.classList.contains('cards')) grid = grid.nextElementSibling;
     if (!grid) return;
 
+    const inScope = currentPhase === 'all' || head.id === currentPhase;
     let visibleHere = 0;
     grid.querySelectorAll('a.card').forEach(card => {
       total++;
       const hay = card.textContent.toLowerCase();
-      const match = !query || hay.indexOf(query) !== -1;
+      const match = inScope && (!currentQuery || hay.indexOf(currentQuery) !== -1);
       card.hidden = !match;
       if (match) { visibleHere++; shown++; }
     });
@@ -1648,10 +1818,10 @@ function filterTools(q) {
   });
 
   const status = document.getElementById('filterStatus');
-  if (status) status.textContent = query ? (shown === 0 ? t('filterNone') : t('filterCount')(shown, total)) : '';
+  if (status) status.textContent = currentQuery ? (shown === 0 ? t('filterNone') : t('filterCount')(shown, total)) : '';
   // A search that matches nothing should not leave the page looking broken.
   let none = document.getElementById('noResults');
-  if (query && shown === 0) {
+  if (currentQuery && shown === 0) {
     if (!none) {
       none = document.createElement('p');
       none.id = 'noResults';
@@ -1672,7 +1842,8 @@ function applyI18n() {
   if (f) f.placeholder = t('filterPlaceholder');
   renderPhaseNav();
   renderPhaseCounts();
-  if (f && f.value) filterTools(f.value);
+  if (f) currentQuery = String(f.value || '').trim().toLowerCase();
+  applyView();
 }
 
 // ── Pointer-reactive spotlights (hero backdrop + tool cards) ──────────
@@ -1722,8 +1893,15 @@ function applyI18n() {
 
 (function init() {
   document.getElementById('langSelect').value = lang;
+  const fromHash = (location.hash || '').replace('#', '');
+  if (PHASE_NAV.some(p => p.id === fromHash)) currentPhase = fromHash;
   applyI18n();
   renderDashboard();
+  // Back/forward between phases, and links arriving from a tool page.
+  addEventListener('hashchange', () => {
+    const id = (location.hash || '').replace('#', '');
+    if (PHASE_NAV.some(p => p.id === id) && id !== currentPhase) selectPhase(id);
+  });
 })();
 </script>
 </body>
