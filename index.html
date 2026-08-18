@@ -85,7 +85,7 @@
     pointer-events: none;
   }
   .hero:hover::before { opacity: 1; }
-  .wrap { max-width: 960px; margin: 0 auto; position: relative; z-index: 1; }
+  .wrap { max-width: 1180px; margin: 0 auto; position: relative; z-index: 1; }
   .hero-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; flex-wrap: wrap; }
   select#langSelect { font-family: var(--font-body); font-size: 13px; font-weight: 600; border: 1.5px solid rgba(255,255,255,0.4); background: rgba(255,255,255,0.08); color: #fff; border-radius: 8px; padding: 7px 10px; }
   select#langSelect option { color: var(--ink); }
@@ -140,25 +140,56 @@
     color: #fff;
     margin-right: 6px;
   }
-  main { max-width: 960px; margin: 0 auto; padding: 48px 24px 72px; }
+  main {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 48px 24px 72px;
+    display: grid;
+    grid-template-columns: 216px minmax(0, 1fr);
+    gap: 44px;
+    align-items: start;
+  }
+  /* The phase list is the primary way around 43 tools, so it rides along in a
+     sticky rail instead of scrolling out of reach at the top of the page. */
+  .side-nav { position: sticky; top: 24px; align-self: start; }
+  .side-nav-title {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 12px;
+  }
   .phase-nav {
     display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-bottom: 36px;
+    flex-direction: column;
+    gap: 2px;
+    border-left: 2px solid var(--line);
   }
   .phase-nav a {
-    font-size: 13.5px;
+    font-size: 13px;
     font-weight: 600;
+    line-height: 1.35;
     color: var(--primary);
-    background: var(--powder);
-    border: 1px solid var(--line);
-    padding: 7px 13px;
-    border-radius: 20px;
+    padding: 8px 12px;
+    margin-left: -2px;
+    border-left: 2px solid transparent;
+    border-radius: 0 6px 6px 0;
     text-decoration: none;
+    text-wrap: pretty;
     transition: background 0.15s ease, border-color 0.15s ease;
   }
-  .phase-nav a:hover { background: var(--accent); border-color: var(--accent); }
+  .phase-nav a:hover { background: var(--powder); border-left-color: var(--accent); }
+  /* Scroll spy: marks which phase the reader is currently in. */
+  .phase-nav a.is-active { background: var(--powder); border-left-color: var(--primary); }
+  .phase-nav .nav-num {
+    display: block;
+    font-size: 10.5px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 700;
+  }
   /* Find-a-tool filter: 32 cards is too many to scan, so offer a direct
      text path alongside browsing by phase. */
   .tool-find { margin-bottom: 14px; }
@@ -318,7 +349,7 @@
   .dash.is-empty .dash-grid { display: none; }
   .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
   footer {
-    max-width: 960px;
+    max-width: 1180px;
     margin: 0 auto;
     padding: 0 24px 56px;
     color: var(--muted);
@@ -336,6 +367,33 @@
     .hero-stats .lbl-long { display: none; }
     .hero-stats .lbl-short { display: inline; }
     .hero-stats .stat-privacy { display: none; }
+  }
+  /* Below this the rail would squeeze the two-card grid too hard, so the
+     phase list drops back to the pill row it used before the sidebar. */
+  @media (max-width: 1040px) {
+    main { grid-template-columns: minmax(0, 1fr); gap: 0; }
+    .side-nav { position: static; margin-bottom: 36px; }
+    .side-nav-title { display: none; }
+    .phase-nav { flex-direction: row; flex-wrap: wrap; gap: 8px; border-left: 0; }
+    .phase-nav a {
+      background: var(--powder);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 7px 13px;
+      margin-left: 0;
+      font-size: 13.5px;
+    }
+    .phase-nav a:hover { background: var(--accent); border-color: var(--accent); }
+    .phase-nav a.is-active { background: var(--accent); border-color: var(--accent); }
+    .phase-nav .nav-num {
+      display: inline;
+      font-size: inherit;
+      letter-spacing: 0;
+      text-transform: none;
+      color: inherit;
+      font-weight: 600;
+    }
+    .phase-nav .nav-num::after { content: '\00a0\00b7\00a0'; }
   }
   @media (max-width: 720px) {
     .hero { padding: 56px 20px 48px; }
@@ -408,13 +466,17 @@
   </header>
 
   <main id="toolkit">
+    <aside class="side-nav">
+      <p class="side-nav-title" data-i18n="navTitle"></p>
+      <nav class="phase-nav" id="phaseNav" aria-label="Jump to phase"></nav>
+    </aside>
+
+    <div class="main-col">
     <div class="tool-find">
       <label class="sr-only" for="toolFilter" data-i18n="filterLabel"></label>
       <input type="search" id="toolFilter" autocomplete="off" oninput="filterTools(this.value)">
       <p class="filter-status" id="filterStatus" role="status" aria-live="polite"></p>
     </div>
-
-    <nav class="phase-nav" id="phaseNav" aria-label="Jump to phase"></nav>
 
     <div class="dash">
       <div class="dash-head">
@@ -821,6 +883,7 @@
       </a>
 
     </div>
+    </div>
   </main>
 
   <footer data-i18n="footerText"></footer>
@@ -833,6 +896,7 @@ const STRINGS = {
     heroDesc: 'An evolving set of assessments and accelerators that mirror how an AI architect actually moves a client from discovery to production.',
     statTools: ' tools', statPhases: ' delivery phases', statPrivacy: 'Runs fully in your browser. Nothing is uploaded.',
     skipLink: 'Skip to the toolkit',
+    navTitle: 'Delivery phases',
     toolsCountLabel: (n) => `${n} tool${n === 1 ? '' : 's'}`,
     filterLabel: 'Find a tool',
     filterPlaceholder: 'Find a tool by name or keyword…',
@@ -1010,6 +1074,7 @@ const STRINGS = {
     heroDesc: 'Et voksende sæt af vurderinger og accelleratorer, der afspejler hvordan en AI-arkitekt reelt flytter en kunde fra discovery til produktion.',
     statTools: ' værktøjer', statPhases: ' leveringsfaser', statPrivacy: 'Kører fuldt ud i din browser. Intet uploades.',
     skipLink: 'Gå direkte til værktøjerne',
+    navTitle: 'Leveringsfaser',
     toolsCountLabel: (n) => `${n} værktøj${n === 1 ? '' : 'er'}`,
     filterLabel: 'Find et værktøj',
     filterPlaceholder: 'Find et værktøj efter navn eller nøgleord…',
@@ -1187,6 +1252,7 @@ const STRINGS = {
     heroDesc: 'En växande uppsättning bedömningar och acceleratorer som speglar hur en AI-arkitekt faktiskt flyttar en kund från discovery till produktion.',
     statTools: ' verktyg', statPhases: ' leveransfaser', statPrivacy: 'Körs helt i din webbläsare. Inget laddas upp.',
     skipLink: 'Hoppa till verktygen',
+    navTitle: 'Leveransfaser',
     toolsCountLabel: (n) => `${n} verktyg`,
     filterLabel: 'Hitta ett verktyg',
     filterPlaceholder: 'Hitta ett verktyg efter namn eller nyckelord…',
@@ -1488,7 +1554,37 @@ const PHASE_NAV = [
 function renderPhaseNav() {
   const nav = document.getElementById('phaseNav');
   if (!nav) return;
-  nav.innerHTML = PHASE_NAV.map(p => `<a href="#${p.id}">${esc(t(p.tagKey))} · ${esc(t(p.titleKey))}</a>`).join('');
+  nav.innerHTML = PHASE_NAV.map(p => `<a href="#${p.id}"><span class="nav-num">${esc(t(p.tagKey))}</span>${esc(t(p.titleKey))}</a>`).join('');
+  initPhaseSpy();
+}
+/* Highlights the phase the reader is currently in. Re-run on language
+   switch (the links are rebuilt); the listeners bind only once. */
+let phaseSpyBound = false;
+function initPhaseSpy() {
+  const nav = document.getElementById('phaseNav');
+  if (!nav) return;
+  const sync = () => {
+    // offsetParent skips phases the tool filter has hidden.
+    const heads = Array.from(document.querySelectorAll('main .phase-head'))
+      .filter(h => h.offsetParent !== null);
+    const line = window.innerHeight * 0.33;
+    let current = null;
+    heads.forEach(h => { if (h.getBoundingClientRect().top <= line) current = h.id; });
+    nav.querySelectorAll('a').forEach(a => {
+      a.classList.toggle('is-active', !!current && a.getAttribute('href') === '#' + current);
+    });
+  };
+  sync();
+  if (phaseSpyBound) return;
+  phaseSpyBound = true;
+  let ticking = false;
+  const onScroll = () => {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => { ticking = false; sync(); });
+  };
+  addEventListener('scroll', onScroll, { passive: true });
+  addEventListener('resize', onScroll, { passive: true });
 }
 function renderPhaseCounts() {
   document.querySelectorAll('.phase-head').forEach(head => {
