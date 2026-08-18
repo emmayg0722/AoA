@@ -272,6 +272,96 @@
   }
   .nav-item.is-active .nav-detail { max-height: 260px; opacity: 1; margin-top: 6px; }
   .nav-item:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+  /* Each phase reads as a stage in one engagement, not a bucket of tools:
+     what you decide here, what leaves with the client, and the gate you have
+     to clear before the next stage is worth starting. */
+  .stage {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 12px 12px 0;
+    padding: 16px 20px;
+    margin-bottom: 22px;
+  }
+  .stage-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px 26px; }
+  .stage-row { min-width: 0; }
+  .stage-lbl {
+    display: block;
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 3px;
+  }
+  .stage-row p { font-size: 13.5px; line-height: 1.5; text-wrap: pretty; }
+  .stage-stack p { color: var(--muted); }
+  .stage-stack code { font-size: 12.5px; background: var(--powder); border-radius: 4px; padding: 1px 5px; color: var(--primary); }
+  .stage-gate {
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid var(--line);
+    font-size: 13.5px;
+    line-height: 1.5;
+    text-wrap: pretty;
+  }
+  .stage-gate .stage-lbl { display: inline; margin-right: 7px; color: var(--primary); }
+  @media (max-width: 720px) {
+    .stage { padding: 14px 16px; }
+    .stage-grid { grid-template-columns: minmax(0, 1fr); }
+  }
+  /* Reference architecture: the 18 capability layers, surfaced on the hub so
+     the stack vocabulary is visible without digging into Phase 3. */
+  /* Inherits the two-column .cards grid deliberately — the four bands pair up
+     naturally and it keeps the section consistent with the phase grids.
+     align-items:start stops a short band stretching to match a tall one. */
+  .ref-arch { align-items: start; }
+  .ref-band { margin-bottom: 26px; }
+  .ref-band > h3 {
+    font-family: var(--font-heading);
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--primary);
+    margin-bottom: 3px;
+  }
+  .ref-band > p { font-size: 13px; color: var(--muted); margin-bottom: 12px; }
+  .layer {
+    display: grid;
+    grid-template-columns: 30px minmax(0, 1fr);
+    gap: 12px;
+    align-items: start;
+    padding: 13px 16px;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    margin-bottom: 8px;
+    text-decoration: none;
+    color: var(--ink);
+    transition: border-color 0.15s ease, transform 0.15s ease;
+  }
+  .layer:hover { border-color: var(--accent); transform: translateY(-1px); }
+  .layer-n {
+    font-size: 11px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    color: var(--muted);
+    background: var(--powder);
+    border-radius: 6px;
+    padding: 3px 0;
+    text-align: center;
+  }
+  .layer-name { display: block; font-weight: 600; font-size: 14.5px; color: var(--primary); }
+  .layer-does { display: block; font-size: 13px; color: var(--muted); margin: 2px 0 7px; text-wrap: pretty; }
+  .layer-tools { display: flex; flex-wrap: wrap; gap: 5px; }
+  .layer-tools span {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 11.5px;
+    color: var(--primary);
+    background: var(--powder);
+    border-radius: 4px;
+    padding: 2px 7px;
+  }
+  @media (prefers-reduced-motion: reduce) { .layer { transition: none; } .layer:hover { transform: none; } }
   /* Find-a-tool filter: 32 cards is too many to scan, so offer a direct
      text path alongside browsing by phase. */
   .tool-find { margin: 0; }
@@ -567,6 +657,7 @@
       <button type="button" class="nav-all" id="navAll" onclick="selectPhase('all')"></button>
       <nav class="phase-nav" id="phaseNav" aria-label="Choose a delivery phase"></nav>
       <button type="button" class="nav-all nav-aux" id="navSkills" onclick="selectPhase('skills')"></button>
+      <button type="button" class="nav-all nav-aux" id="navRef" onclick="selectPhase('reference')"></button>
     </aside>
 
     <div class="main-col">
@@ -590,6 +681,13 @@
       <span class="phase-count"></span>
     </div>
     <p class="phase-sub" data-i18n="p1Sub"></p>
+    <div class="stage">
+      <div class="stage-grid">
+        <div class="stage-row"><span class="stage-lbl" data-i18n="lblDecide"></span><p data-i18n="p1Decide"></p></div>
+        <div class="stage-row"><span class="stage-lbl" data-i18n="lblProduce"></span><p data-i18n="p1Produce"></p></div>
+      </div>
+      <p class="stage-gate"><span class="stage-lbl" data-i18n="lblGate"></span><span data-i18n="p1Gate"></span></p>
+    </div>
 
     <div class="cards">
       <a class="card" href="Phase%201%20-%20Discovery%20%26%20Assessment/ai-maturity-assessment/">
@@ -634,6 +732,13 @@
       <span class="phase-count"></span>
     </div>
     <p class="phase-sub" data-i18n="p2Sub"></p>
+    <div class="stage">
+      <div class="stage-grid">
+        <div class="stage-row"><span class="stage-lbl" data-i18n="lblDecide"></span><p data-i18n="p2Decide"></p></div>
+        <div class="stage-row"><span class="stage-lbl" data-i18n="lblProduce"></span><p data-i18n="p2Produce"></p></div>
+      </div>
+      <p class="stage-gate"><span class="stage-lbl" data-i18n="lblGate"></span><span data-i18n="p2Gate"></span></p>
+    </div>
 
     <div class="cards">
       <a class="card" href="Phase%202%20-%20Strategy%20%26%20Roadmap/ai-strategy-planning/">
@@ -671,6 +776,14 @@
       <span class="phase-count"></span>
     </div>
     <p class="phase-sub" data-i18n="p3Sub"></p>
+    <div class="stage">
+      <div class="stage-grid">
+        <div class="stage-row"><span class="stage-lbl" data-i18n="lblDecide"></span><p data-i18n="p3Decide"></p></div>
+        <div class="stage-row"><span class="stage-lbl" data-i18n="lblProduce"></span><p data-i18n="p3Produce"></p></div>
+        <div class="stage-row stage-stack"><span class="stage-lbl" data-i18n="lblStack"></span><p data-i18n-html="p3Stack"></p></div>
+      </div>
+      <p class="stage-gate"><span class="stage-lbl" data-i18n="lblGate"></span><span data-i18n="p3Gate"></span></p>
+    </div>
 
     <div class="cards">
       <a class="card" href="Phase%203%20-%20Architecture%20Design/Design%20Layers/architecture-builder.html">
@@ -722,6 +835,14 @@
       <span class="phase-count"></span>
     </div>
     <p class="phase-sub" data-i18n="p4Sub"></p>
+    <div class="stage">
+      <div class="stage-grid">
+        <div class="stage-row"><span class="stage-lbl" data-i18n="lblDecide"></span><p data-i18n="p4Decide"></p></div>
+        <div class="stage-row"><span class="stage-lbl" data-i18n="lblProduce"></span><p data-i18n="p4Produce"></p></div>
+        <div class="stage-row stage-stack"><span class="stage-lbl" data-i18n="lblStack"></span><p data-i18n-html="p4Stack"></p></div>
+      </div>
+      <p class="stage-gate"><span class="stage-lbl" data-i18n="lblGate"></span><span data-i18n="p4Gate"></span></p>
+    </div>
 
     <div class="cards">
       <a class="card" href="Phase%204%20-%20PoC%20%26%20Pilot/poc-planning/">
@@ -752,6 +873,13 @@
       <span class="phase-count"></span>
     </div>
     <p class="phase-sub" data-i18n="p5Sub"></p>
+    <div class="stage">
+      <div class="stage-grid">
+        <div class="stage-row"><span class="stage-lbl" data-i18n="lblDecide"></span><p data-i18n="p5Decide"></p></div>
+        <div class="stage-row"><span class="stage-lbl" data-i18n="lblProduce"></span><p data-i18n="p5Produce"></p></div>
+      </div>
+      <p class="stage-gate"><span class="stage-lbl" data-i18n="lblGate"></span><span data-i18n="p5Gate"></span></p>
+    </div>
 
     <div class="cards">
       <a class="card" href="Phase%205%20-%20Implementation%20%26%20Delivery/implementation-management/">
@@ -796,6 +924,13 @@
       <span class="phase-count"></span>
     </div>
     <p class="phase-sub" data-i18n="p6Sub"></p>
+    <div class="stage">
+      <div class="stage-grid">
+        <div class="stage-row"><span class="stage-lbl" data-i18n="lblDecide"></span><p data-i18n="p6Decide"></p></div>
+        <div class="stage-row"><span class="stage-lbl" data-i18n="lblProduce"></span><p data-i18n="p6Produce"></p></div>
+      </div>
+      <p class="stage-gate"><span class="stage-lbl" data-i18n="lblGate"></span><span data-i18n="p6Gate"></span></p>
+    </div>
 
     <div class="cards">
       <a class="card" href="Phase%206%20-%20Governance%2C%20Compliance%20%26%20Security/ai-governance-framework/">
@@ -833,6 +968,14 @@
       <span class="phase-count"></span>
     </div>
     <p class="phase-sub" data-i18n="p7Sub"></p>
+    <div class="stage">
+      <div class="stage-grid">
+        <div class="stage-row"><span class="stage-lbl" data-i18n="lblDecide"></span><p data-i18n="p7Decide"></p></div>
+        <div class="stage-row"><span class="stage-lbl" data-i18n="lblProduce"></span><p data-i18n="p7Produce"></p></div>
+        <div class="stage-row stage-stack"><span class="stage-lbl" data-i18n="lblStack"></span><p data-i18n-html="p7Stack"></p></div>
+      </div>
+      <p class="stage-gate"><span class="stage-lbl" data-i18n="lblGate"></span><span data-i18n="p7Gate"></span></p>
+    </div>
 
     <div class="cards">
       <a class="card" href="Phase%207%20-%20MLOps%20%26%20Operations/mlops-platform-design/">
@@ -877,6 +1020,13 @@
       <span class="phase-count"></span>
     </div>
     <p class="phase-sub" data-i18n="p8Sub"></p>
+    <div class="stage">
+      <div class="stage-grid">
+        <div class="stage-row"><span class="stage-lbl" data-i18n="lblDecide"></span><p data-i18n="p8Decide"></p></div>
+        <div class="stage-row"><span class="stage-lbl" data-i18n="lblProduce"></span><p data-i18n="p8Produce"></p></div>
+      </div>
+      <p class="stage-gate"><span class="stage-lbl" data-i18n="lblGate"></span><span data-i18n="p8Gate"></span></p>
+    </div>
 
     <div class="cards">
       <a class="card" href="Phase%208%20-%20Change%20Management%20%26%20Enablement/change-management-plan/">
@@ -915,6 +1065,13 @@
       <span class="phase-count"></span>
     </div>
     <p class="phase-sub" data-i18n="p9Sub"></p>
+    <div class="stage">
+      <div class="stage-grid">
+        <div class="stage-row"><span class="stage-lbl" data-i18n="lblDecide"></span><p data-i18n="p9Decide"></p></div>
+        <div class="stage-row"><span class="stage-lbl" data-i18n="lblProduce"></span><p data-i18n="p9Produce"></p></div>
+      </div>
+      <p class="stage-gate"><span class="stage-lbl" data-i18n="lblGate"></span><span data-i18n="p9Gate"></span></p>
+    </div>
 
     <div class="cards">
       <a class="card" href="Phase%209%20-%20Vendor%20Evaluation%20%26%20Technology%20Selection/rfp-builder/">
@@ -953,6 +1110,13 @@
       <span class="phase-count"></span>
     </div>
     <p class="phase-sub" data-i18n="p10Sub"></p>
+    <div class="stage">
+      <div class="stage-grid">
+        <div class="stage-row"><span class="stage-lbl" data-i18n="lblDecide"></span><p data-i18n="p10Decide"></p></div>
+        <div class="stage-row"><span class="stage-lbl" data-i18n="lblProduce"></span><p data-i18n="p10Produce"></p></div>
+      </div>
+      <p class="stage-gate"><span class="stage-lbl" data-i18n="lblGate"></span><span data-i18n="p10Gate"></span></p>
+    </div>
 
     <div class="cards">
       <a class="card" href="Phase%2010%20-%20ROI%20Analysis%20%26%20Cost%20Optimization/roi-analysis/">
@@ -1028,6 +1192,15 @@
         <span class="go" data-i18n="c_skTrade_c"></span>
       </a>
     </div>
+
+    <div class="phase-head is-aux" id="reference" style="margin-top:44px">
+      <h2 data-i18n="refTitle"></h2>
+      <span class="phase-tag" data-i18n="tagRef"></span>
+      <span class="phase-count"></span>
+    </div>
+    <p class="phase-sub" data-i18n="refSub"></p>
+
+    <div class="cards is-aux ref-arch" id="refArch"></div>
     </div>
   </main>
 
@@ -1042,8 +1215,54 @@ const STRINGS = {
     statTools: ' tools', statPhases: ' delivery phases', statSkills: ' agent skills',
     skipLink: 'Skip to the toolkit',
     navTitle: 'Delivery phases',
+    lblDecide: 'Decide', lblProduce: 'Produce', lblStack: 'Stack decisions', lblGate: 'Gate to clear',
+    p1Decide: "Is there a real problem here, and is the client's data ready for it?",
+    p1Produce: "A maturity baseline, a 5C data-readiness scorecard, and a ranked list of use cases.",
+    p1Gate: "One use case with a named owner, a measurable baseline, and data that survives a spot-check.",
+    p2Decide: 'Which use cases get funded, in what order, and on what business case.',
+    p2Produce: "AI strategy, a business case with payback, and technology and organisational roadmaps.",
+    p2Gate: "A sponsor has signed a budget against a dated milestone plan.",
+    p3Decide: 'How the system is actually built — the capability stack, layer by layer.',
+    p3Produce: "Architecture blueprint, decision records, NFR spec, security architecture.",
+    p3Stack: "Orchestration (<code>LangGraph</code>, <code>CrewAI</code>, <code>Semantic Kernel</code>), retrieval (<code>LangChain</code> / <code>LlamaIndex</code> over a vector store), tool calling (<code>MCP</code>, function calling), and memory.",
+    p3Gate: "Every one-way-door decision recorded with its rationale and a revisit trigger.",
+    p4Decide: 'Does it work well enough, and will the business actually accept it?',
+    p4Produce: "Feasibility report, pilot results, and a go/no-go decision.",
+    p4Stack: "Evaluation and tracing (<code>LangSmith</code>, <code>Ragas</code>, <code>DeepEval</code>, <code>Braintrust</code>).",
+    p4Gate: "A measured result against a baseline, plus real users who kept using it after the novelty wore off.",
+    p5Decide: 'How this reaches production without breaking what already works.',
+    p5Produce: "Integration plan, QA test plan, deployment and go-live plan, technical documentation.",
+    p5Gate: "Rollback tested rather than documented, runbook written, support team trained.",
+    p6Decide: 'What the system is allowed to do, and who answers when it is wrong.',
+    p6Produce: "Governance framework, compliance gap analysis, risk register, responsible-AI audit.",
+    p6Gate: "Named accountability per decision class, and a route for anyone affected to challenge an outcome.",
+    p7Decide: 'How it keeps working once nobody is watching it.',
+    p7Produce: "MLOps platform design, monitoring and drift plan, retraining strategy, runbook, cost plan.",
+    p7Stack: "Observability (<code>Helicone</code>, <code>Arize</code>, <code>OpenTelemetry</code>) and guardrails (<code>Guardrails AI</code>, <code>NeMo</code>, <code>Lakera</code>, <code>Llama Guard</code>).",
+    p7Gate: "Output quality is monitored, not just uptime — with an alert threshold below the acceptance bar and a named owner.",
+    p8Decide: 'Whether the organisation actually adopts it, or works around it.',
+    p8Produce: "Change plan, training curriculum, AI CoE design, knowledge transfer.",
+    p8Gate: "Adoption measured rather than assumed, and the client can run it without you.",
+    p9Decide: 'Build or buy, and if buy, which vendor.',
+    p9Produce: "RFP, weighted evaluation matrix, build-vs-buy analysis, platform shortlist.",
+    p9Gate: "A scored comparison whose criteria were agreed before the options were seen, and a known exit cost.",
+    p10Decide: 'Did it pay, and what does it cost to keep running.',
+    p10Produce: "ROI analysis, TCO model, and a value tracker against the original baseline.",
+    p10Gate: "Benefit measured against the Phase 1 baseline by someone accountable for the number.",
     navAll: 'All phases',
     navSkills: 'Agent skills',
+    navRef: 'Reference architecture',
+    tagRef: 'Reference',
+    refTitle: 'Reference Architecture',
+    refSub: 'The eighteen capability layers a production AI system is actually assembled from, with the tools each layer is usually built with. Pulled up from the Phase 3 Design Layers reference so the stack is visible here; the layer notes themselves stay in English.',
+    band_agent_t: 'The agent itself',
+    band_agent_d: 'How it decides what to do, and how it acts.',
+    band_knowledge_t: 'What it knows',
+    band_knowledge_d: 'Where the facts come from, and what it remembers.',
+    band_trust_t: 'Whether you can trust it',
+    band_trust_d: 'How you check it, watch it, and constrain it.',
+    band_operate_t: 'How it runs in the business',
+    band_operate_d: 'Where it lives, what it connects to, and what it costs.',
     tagSkills: 'Skills',
     skTitle: 'Agent Skills',
     skSub: 'Portable skills that give Claude, Codex or any other agent the reasoning an AI architect applies. The one part of this toolkit that runs inside an agent rather than in your browser.',
@@ -1068,6 +1287,7 @@ const STRINGS = {
     navPhaseCount: (n, total) => `${n} of ${total} started`,
     toolsCountLabel: (n) => `${n} tool${n === 1 ? '' : 's'}`,
     skillsCountLabel: (n) => `${n} skill${n === 1 ? '' : 's'}`,
+    layersCountLabel: (n) => `${n} layers`,
     filterLabel: 'Find a tool',
     filterPlaceholder: 'Find a tool by name or keyword…',
     filterCount: (n, total) => n === total ? `${total} tools` : `${n} of ${total} tools match`,
@@ -1245,8 +1465,54 @@ const STRINGS = {
     statTools: ' værktøjer', statPhases: ' leveringsfaser', statSkills: ' agentfærdigheder',
     skipLink: 'Gå direkte til værktøjerne',
     navTitle: 'Leveringsfaser',
+    lblDecide: 'Beslut', lblProduce: 'Leverance', lblStack: 'Stack-valg', lblGate: 'Gate der skal passeres',
+    p1Decide: 'Er der et reelt problem her, og er kundens data klar til det?',
+    p1Produce: "En modenhedsbaseline, et 5C data-readiness scorecard og en prioriteret liste over use cases.",
+    p1Gate: "Én use case med en navngivet ejer, en målbar baseline, og data der overlever en stikprøve.",
+    p2Decide: 'Hvilke use cases bliver finansieret, i hvilken rækkefølge, og på hvilken business case.',
+    p2Produce: "AI-strategi, business case med tilbagebetaling, samt teknologi- og organisationsroadmaps.",
+    p2Gate: "En sponsor har underskrevet et budget mod en dateret milepælsplan.",
+    p3Decide: 'Hvordan systemet reelt bygges — kapabilitetsstakken, lag for lag.',
+    p3Produce: "Arkitektur-blueprint, beslutningsregistre, NFR-specifikation, sikkerhedsarkitektur.",
+    p3Stack: "Orkestrering (<code>LangGraph</code>, <code>CrewAI</code>, <code>Semantic Kernel</code>), retrieval (<code>LangChain</code> / <code>LlamaIndex</code> over en vektordatabase), tool calling (<code>MCP</code>, function calling) og hukommelse.",
+    p3Gate: "Alle uigenkaldelige beslutninger er registreret med begrundelse og en trigger for genbesøg.",
+    p4Decide: 'Virker det godt nok, og vil forretningen reelt acceptere det?',
+    p4Produce: "Feasibility-rapport, pilotresultater og en go/no-go-beslutning.",
+    p4Stack: "Evaluering og tracing (<code>LangSmith</code>, <code>Ragas</code>, <code>DeepEval</code>, <code>Braintrust</code>).",
+    p4Gate: "Et målt resultat mod en baseline, plus rigtige brugere der blev ved efter nyhedsværdien forsvandt.",
+    p5Decide: 'Hvordan dette når i produktion uden at ødelægge det der allerede virker.',
+    p5Produce: "Integrationsplan, QA-testplan, deployment- og go-live-plan, teknisk dokumentation.",
+    p5Gate: "Rollback afprøvet frem for beskrevet, runbook skrevet, supportteam trænet.",
+    p6Decide: 'Hvad systemet må gøre, og hvem der svarer når det tager fejl.',
+    p6Produce: "Governance-framework, compliance-gapanalyse, risikoregister, responsible-AI-audit.",
+    p6Gate: "Navngivet ansvar pr. beslutningsklasse, og en vej for berørte til at anfægte et udfald.",
+    p7Decide: 'Hvordan det bliver ved med at virke når ingen kigger.',
+    p7Produce: "MLOps-platformdesign, overvågnings- og driftplan, gentræningsstrategi, runbook, omkostningsplan.",
+    p7Stack: "Observability (<code>Helicone</code>, <code>Arize</code>, <code>OpenTelemetry</code>) og guardrails (<code>Guardrails AI</code>, <code>NeMo</code>, <code>Lakera</code>, <code>Llama Guard</code>).",
+    p7Gate: "Outputkvalitet overvåges, ikke kun oppetid — med en alarmtærskel under acceptgrænsen og en navngivet ejer.",
+    p8Decide: 'Om organisationen reelt tager det til sig, eller arbejder uden om det.',
+    p8Produce: "Forandringsplan, træningsforløb, AI CoE-design, videnoverdragelse.",
+    p8Gate: "Adoption måles frem for antages, og kunden kan drive det uden jer.",
+    p9Decide: 'Byg eller køb — og hvis køb, hvilken leverandør.',
+    p9Produce: "RFP, vægtet evalueringsmatrix, byg-vs-køb-analyse, platform-shortlist.",
+    p9Gate: "En scoret sammenligning hvor kriterierne blev aftalt før mulighederne blev set, og en kendt exit-omkostning.",
+    p10Decide: 'Betalte det sig, og hvad koster det at holde kørende.',
+    p10Produce: "ROI-analyse, TCO-model og en værditracker mod den oprindelige baseline.",
+    p10Gate: "Gevinsten målt mod Fase 1-baselinen af en der er ansvarlig for tallet.",
     navAll: 'Alle faser',
     navSkills: 'Agentfærdigheder',
+    navRef: 'Referencearkitektur',
+    tagRef: 'Reference',
+    refTitle: 'Referencearkitektur',
+    refSub: 'De atten kapabilitetslag et AI-system i produktion reelt samles af, med de værktøjer hvert lag typisk bygges med. Hentet op fra Design Layers-referencen i Fase 3, så stakken er synlig her; selve lagnoterne er på engelsk.',
+    band_agent_t: 'Selve agenten',
+    band_agent_d: 'Hvordan den beslutter hvad der skal gøres, og hvordan den handler.',
+    band_knowledge_t: 'Hvad den ved',
+    band_knowledge_d: 'Hvor fakta kommer fra, og hvad den husker.',
+    band_trust_t: 'Om man kan stole på den',
+    band_trust_d: 'Hvordan man kontrollerer, overvåger og begrænser den.',
+    band_operate_t: 'Hvordan den kører i forretningen',
+    band_operate_d: 'Hvor den bor, hvad den forbinder til, og hvad den koster.',
     tagSkills: 'Færdigheder',
     skTitle: 'Agentfærdigheder',
     skSub: 'Bærbare færdigheder, der giver Claude, Codex eller enhver anden agent den tankegang, en AI-arkitekt bruger. Den ene del af værktøjskassen, der kører inde i en agent frem for i din browser.',
@@ -1271,6 +1537,7 @@ const STRINGS = {
     navPhaseCount: (n, total) => `${n} af ${total} påbegyndt`,
     toolsCountLabel: (n) => `${n} værktøj${n === 1 ? '' : 'er'}`,
     skillsCountLabel: (n) => `${n} færdighed${n === 1 ? '' : 'er'}`,
+    layersCountLabel: (n) => `${n} lag`,
     filterLabel: 'Find et værktøj',
     filterPlaceholder: 'Find et værktøj efter navn eller nøgleord…',
     filterCount: (n, total) => n === total ? `${total} værktøjer` : `${n} af ${total} værktøjer matcher`,
@@ -1448,8 +1715,54 @@ const STRINGS = {
     statTools: ' verktyg', statPhases: ' leveransfaser', statSkills: ' agentfärdigheter',
     skipLink: 'Hoppa till verktygen',
     navTitle: 'Leveransfaser',
+    lblDecide: 'Beslut', lblProduce: 'Leverans', lblStack: 'Stack-val', lblGate: 'Grind att passera',
+    p1Decide: 'Finns det ett verkligt problem här, och är kundens data redo för det?',
+    p1Produce: "En mognadsbaslinje, ett 5C data-readiness-scorecard och en rangordnad lista över use cases.",
+    p1Gate: "Ett use case med en namngiven ägare, en mätbar baslinje, och data som klarar en stickprovskontroll.",
+    p2Decide: 'Vilka use cases finansieras, i vilken ordning, och på vilken business case.',
+    p2Produce: "AI-strategi, business case med återbetalning, samt teknik- och organisationsroadmaps.",
+    p2Gate: "En sponsor har skrivit under en budget mot en daterad milstolpeplan.",
+    p3Decide: 'Hur systemet faktiskt byggs — kapabilitetsstacken, lager för lager.',
+    p3Produce: "Arkitektur-blueprint, beslutsregister, NFR-specifikation, säkerhetsarkitektur.",
+    p3Stack: "Orkestrering (<code>LangGraph</code>, <code>CrewAI</code>, <code>Semantic Kernel</code>), retrieval (<code>LangChain</code> / <code>LlamaIndex</code> över en vektordatabas), tool calling (<code>MCP</code>, function calling) och minne.",
+    p3Gate: "Varje oåterkallelig beslut registrerat med motivering och en trigger för omprövning.",
+    p4Decide: 'Fungerar det tillräckligt bra, och kommer verksamheten faktiskt att acceptera det?',
+    p4Produce: "Feasibility-rapport, pilotresultat och ett go/no-go-beslut.",
+    p4Stack: "Utvärdering och tracing (<code>LangSmith</code>, <code>Ragas</code>, <code>DeepEval</code>, <code>Braintrust</code>).",
+    p4Gate: "Ett uppmätt resultat mot en baslinje, plus riktiga användare som fortsatte efter att nyhetsvärdet försvann.",
+    p5Decide: 'Hur detta når produktion utan att förstöra det som redan fungerar.',
+    p5Produce: "Integrationsplan, QA-testplan, deployment- och go-live-plan, teknisk dokumentation.",
+    p5Gate: "Rollback testad snarare än dokumenterad, runbook skriven, supportteam utbildat.",
+    p6Decide: 'Vad systemet får göra, och vem som svarar när det har fel.',
+    p6Produce: "Governance-ramverk, compliance-gapanalys, riskregister, responsible-AI-granskning.",
+    p6Gate: "Namngivet ansvar per beslutsklass, och en väg för berörda att bestrida ett utfall.",
+    p7Decide: 'Hur det fortsätter fungera när ingen tittar.',
+    p7Produce: "MLOps-plattformsdesign, övervaknings- och driftplan, omträningsstrategi, runbook, kostnadsplan.",
+    p7Stack: "Observability (<code>Helicone</code>, <code>Arize</code>, <code>OpenTelemetry</code>) och guardrails (<code>Guardrails AI</code>, <code>NeMo</code>, <code>Lakera</code>, <code>Llama Guard</code>).",
+    p7Gate: "Utdatakvalitet övervakas, inte bara upptid — med en larmtröskel under acceptansgränsen och en namngiven ägare.",
+    p8Decide: 'Om organisationen faktiskt tar till sig det, eller arbetar runt det.',
+    p8Produce: "Förändringsplan, utbildningsprogram, AI CoE-design, kunskapsöverföring.",
+    p8Gate: "Adoption mäts snarare än antas, och kunden kan driva det utan er.",
+    p9Decide: 'Bygga eller köpa — och om köpa, vilken leverantör.',
+    p9Produce: "RFP, viktad utvärderingsmatris, bygga-vs-köpa-analys, plattformsshortlist.",
+    p9Gate: "En poängsatt jämförelse vars kriterier enades om innan alternativen sågs, och en känd exitkostnad.",
+    p10Decide: 'Lönade det sig, och vad kostar det att hålla igång.',
+    p10Produce: "ROI-analys, TCO-modell och en värdespårare mot den ursprungliga baslinjen.",
+    p10Gate: "Nyttan mätt mot Fas 1-baslinjen av någon som är ansvarig för siffran.",
     navAll: 'Alla faser',
     navSkills: 'Agentfärdigheter',
+    navRef: 'Referensarkitektur',
+    tagRef: 'Referens',
+    refTitle: 'Referensarkitektur',
+    refSub: 'De arton kapabilitetslager ett AI-system i produktion faktiskt sätts ihop av, med de verktyg varje lager oftast byggs med. Upplyft från Design Layers-referensen i Fas 3 så att stacken syns här; själva lageranteckningarna är på engelska.',
+    band_agent_t: 'Själva agenten',
+    band_agent_d: 'Hur den avgör vad som ska göras, och hur den agerar.',
+    band_knowledge_t: 'Vad den vet',
+    band_knowledge_d: 'Var fakta kommer ifrån, och vad den minns.',
+    band_trust_t: 'Om den går att lita på',
+    band_trust_d: 'Hur du kontrollerar, övervakar och begränsar den.',
+    band_operate_t: 'Hur den körs i verksamheten',
+    band_operate_d: 'Var den bor, vad den kopplar till, och vad den kostar.',
     tagSkills: 'Färdigheter',
     skTitle: 'Agentfärdigheter',
     skSub: 'Portabla färdigheter som ger Claude, Codex eller vilken annan agent som helst det resonemang en AI-arkitekt använder. Den enda delen av verktygslådan som körs inuti en agent i stället för i din webbläsare.',
@@ -1474,6 +1787,7 @@ const STRINGS = {
     navPhaseCount: (n, total) => `${n} av ${total} påbörjade`,
     toolsCountLabel: (n) => `${n} verktyg`,
     skillsCountLabel: (n) => `${n} färdighet${n === 1 ? '' : 'er'}`,
+    layersCountLabel: (n) => `${n} lager`,
     filterLabel: 'Hitta ett verktyg',
     filterPlaceholder: 'Hitta ett verktyg efter namn eller nyckelord…',
     filterCount: (n, total) => n === total ? `${total} verktyg` : `${n} av ${total} verktyg matchar`,
@@ -1791,7 +2105,88 @@ function phaseProgress(id) {
 /* Scopes the rail can select. The ten phases are an ordered path; 'skills'
    is an extra section that is deliberately not a step in it. */
 function allScopes() {
-  return PHASE_NAV.map(p => p.id).concat('skills');
+  return PHASE_NAV.map(p => p.id).concat('skills', 'reference');
+}
+
+/* The 18 capability layers from the Phase 3 Design Layers reference, grouped
+   into four bands. Surfaced here so the stack vocabulary a client actually
+   uses — orchestration, retrieval, guardrails, observability — is visible on
+   the hub rather than three levels down. Layer content stays in English, the
+   same convention the maturity assessment follows; the chrome translates. */
+const LAYER_DIR = 'Phase%203%20-%20Architecture%20Design/Design%20Layers/layers/';
+const LAYERS = [
+  ['agent', 1, 'core-intelligence', 'Core Intelligence',
+   'Which model does the thinking, and at what cost-to-quality point.', []],
+  ['agent', 2, 'agent-orchestration', 'Agent Orchestration',
+   'How steps are planned, retried and branched. Where "agent" actually starts.',
+   ['LangGraph', 'CrewAI', 'AutoGen', 'Semantic Kernel', 'OpenAI Agents SDK', 'LlamaIndex workflows']],
+  ['agent', 3, 'tool-calling-action', 'Tool Calling & Action',
+   'How the agent reaches real systems, and what it is permitted to do there.',
+   ['MCP', 'function calling', 'Composio', 'Pipedream', 'Apify', 'custom APIs']],
+  ['agent', 6, 'planning-reasoning', 'Planning & Reasoning',
+   'How a task is decomposed before anything is executed.', []],
+  ['agent', 18, 'agent-types', 'Agent Types',
+   'Which shape of agent the problem actually needs — or whether it needs one.', []],
+
+  ['knowledge', 4, 'knowledge-rag', 'Knowledge & RAG',
+   'How the system finds the facts it needs to be right, and cites them.',
+   ['LangChain', 'LlamaIndex', 'Haystack', 'RAGFlow', 'Pinecone', 'Weaviate', 'Chroma', 'Qdrant', 'Milvus', 'FAISS']],
+  ['knowledge', 5, 'memory-context', 'Memory & Context',
+   'What it remembers between turns, and across sessions.',
+   ['Mem0', 'Zep', 'Redis', 'Supabase', 'PostgreSQL']],
+  ['knowledge', 14, 'data', 'Data',
+   'What feeds it, and whether that data can carry the weight put on it.', []],
+  ['knowledge', 15, 'prompt-instruction', 'Prompt & Instruction',
+   'How behaviour is specified, versioned and changed safely.', []],
+
+  ['trust', 7, 'human-in-the-loop', 'Human-in-the-Loop',
+   'Where a person approves, corrects, or takes over.',
+   ['Slack', 'Gmail', 'Airtable', 'Notion', 'Jira', 'Linear']],
+  ['trust', 8, 'evaluation-testing', 'Evaluation & Testing',
+   'How you know it works, and that the last change did not break it.',
+   ['LangSmith', 'PromptLayer', 'Ragas', 'DeepEval', 'Braintrust']],
+  ['trust', 9, 'observability-monitoring', 'Observability & Monitoring',
+   'How you see what it did, and notice quality degrading before users do.',
+   ['Helicone', 'Arize AI', 'Datadog', 'OpenTelemetry']],
+  ['trust', 10, 'guardrails-safety', 'Guardrails & Safety',
+   'What it must never do — enforced, not requested.',
+   ['Guardrails AI', 'NeMo Guardrails', 'Lakera', 'Llama Guard']],
+  ['trust', 11, 'security-governance', 'Security & Governance',
+   'Who may use it, on whose data, and who answers when it is wrong.',
+   ['Credo AI', 'Holistic AI', 'Microsoft Purview', 'Protect AI', 'OpenMetadata']],
+
+  ['operate', 12, 'deployment-serving', 'Deployment & Serving',
+   'Where it runs, and how a new version reaches users.',
+   ['Docker', 'Kubernetes', 'Streamlit', 'Vercel', 'Azure AI Foundry', 'Azure Container Apps', 'Copilot Studio']],
+  ['operate', 13, 'business-application-integration', 'Business Application Integration',
+   'Which systems of record it plugs into, where the work already lives.',
+   ['Salesforce', 'HubSpot', 'Zendesk', 'ServiceNow', 'SAP', 'D365', 'Dataverse', 'SharePoint', 'Fabric']],
+  ['operate', 16, 'workflow-process', 'Workflow & Process',
+   'How the work actually flows around it, including the human steps.', []],
+  ['operate', 17, 'cost-performance', 'Cost & Performance',
+   'What one request costs, and what that becomes at real volume.', []],
+];
+
+function renderReference() {
+  const host = document.getElementById('refArch');
+  if (!host) return;
+  const bands = ['agent', 'knowledge', 'trust', 'operate'];
+  host.innerHTML = bands.map(band => {
+    const rows = LAYERS.filter(l => l[0] === band).map(([, n, slug, name, does, tools]) => `
+      <a class="layer" href="${LAYER_DIR}${String(n).padStart(2, '0')}-${slug}.md">
+        <span class="layer-n">${n}</span>
+        <span>
+          <span class="layer-name">${esc(name)}</span>
+          <span class="layer-does">${esc(does)}</span>
+          ${tools.length ? `<span class="layer-tools">${tools.map(t => `<span>${esc(t)}</span>`).join('')}</span>` : ''}
+        </span>
+      </a>`).join('');
+    return `<div class="ref-band">
+      <h3>${esc(t('band_' + band + '_t'))}</h3>
+      <p>${esc(t('band_' + band + '_d'))}</p>
+      ${rows}
+    </div>`;
+  }).join('');
 }
 
 function renderPhaseNav() {
@@ -1813,6 +2208,9 @@ function renderPhaseNav() {
   if (all) all.textContent = t('navAll');
   const sk = document.getElementById('navSkills');
   if (sk) sk.textContent = t('navSkills');
+  const rf = document.getElementById('navRef');
+  if (rf) rf.textContent = t('navRef');
+  renderReference();
   renderNavProgress();
   syncNavState();
 }
@@ -1846,6 +2244,11 @@ function syncNavState() {
   if (sk) {
     sk.classList.toggle('is-active', currentPhase === 'skills');
     sk.setAttribute('aria-pressed', currentPhase === 'skills' ? 'true' : 'false');
+  }
+  const rf = document.getElementById('navRef');
+  if (rf) {
+    rf.classList.toggle('is-active', currentPhase === 'reference');
+    rf.setAttribute('aria-pressed', currentPhase === 'reference' ? 'true' : 'false');
   }
 }
 
@@ -1889,9 +2292,10 @@ function renderPhaseCounts() {
     while (cardsEl && !cardsEl.classList.contains('cards')) cardsEl = cardsEl.nextElementSibling;
     if (!cardsEl) return;
     // card-index links to a landing page, not to a tool or skill.
-    const n = cardsEl.querySelectorAll('a.card:not(.card-index)').length;
+    const n = cardsEl.querySelectorAll('a.card:not(.card-index), a.layer').length;
     // The aux section holds skills, not stateful browser tools.
-    const key = head.classList.contains('is-aux') ? 'skillsCountLabel' : 'toolsCountLabel';
+    const key = head.id === 'reference' ? 'layersCountLabel'
+      : head.classList.contains('is-aux') ? 'skillsCountLabel' : 'toolsCountLabel';
     if (n) countEl.textContent = t(key)(n);
   });
   const totalTools = document.querySelectorAll('main .cards:not(.is-aux) a.card').length;
@@ -1950,7 +2354,7 @@ function applyView() {
 
     const inScope = currentPhase === 'all' || head.id === currentPhase;
     let visibleHere = 0;
-    grid.querySelectorAll('a.card').forEach(card => {
+    grid.querySelectorAll('a.card, a.layer').forEach(card => {
       total++;
       const hay = card.textContent.toLowerCase();
       const match = inScope && (!currentQuery || hay.indexOf(currentQuery) !== -1);
@@ -1982,6 +2386,7 @@ function applyView() {
 
 function applyI18n() {
   document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.getAttribute('data-i18n')); });
+  document.querySelectorAll('[data-i18n-html]').forEach(el => { el.innerHTML = t(el.getAttribute('data-i18n-html')); });
   document.documentElement.lang = lang;
   const f = document.getElementById('toolFilter');
   if (f) f.placeholder = t('filterPlaceholder');

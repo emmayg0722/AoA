@@ -74,6 +74,22 @@ when adding new phases or tools so terminology stays consistent.
                                                   # value-tracking
 ```
 
+The hub presents each phase as a **stage**, not a bucket of tools: a `.stage`
+block under every `phase-head` states what you decide there, what you produce,
+the stack decisions it forces (phases 3, 4 and 7), and the gate to clear before
+the next stage is worth starting. Below the skills section sits a **Reference
+Architecture** section rendered from the `LAYERS` array in `index.html` — the 18
+capability layers lifted out of `Phase 3 - Architecture Design/Design Layers/`
+with the tools each is built with, so the stack vocabulary (LangGraph, MCP,
+Ragas, Lakera, Helicone…) is visible on the hub instead of three levels down.
+Both sections are `is-aux`, so they stay out of the numbered path and out of the
+"43 tools / 10 phases" counts; layer rows are `a.layer`, which the visibility
+pass counts alongside `a.card`.
+
+Stage `Stack` lines carry `<code>` markup, so they use `data-i18n-html` rather
+than `data-i18n` — `applyI18n` writes `textContent` for the former and
+`innerHTML` only for the latter, keeping the safe path the default.
+
 **All 10 phases above are fully built** — every subfolder listed is a real, working tool,
 not a placeholder, and the delivery lifecycle this toolkit follows is now complete end to
 end (43 stateful tools). Almost every tool folder is `index.html`; the two
