@@ -37,6 +37,10 @@ when adding new phases or tools so terminology stays consistent.
 ├── .claude/agents/               # Claude Code agents (MUST live here to be loadable)
 │   ├── dra-5c.md                 # Data Readiness Assessment (5C) orchestrating agent
 │   └── use-case-evaluator.md     # Use-case evaluation mentor (scores against Phase 1/4 rubrics)
+├── skills/                       # Portable agent skills — SKILL.md files, not browser tools
+│   ├── index.html                # Skills library + per-agent install guide (EN/DA/SV)
+│   ├── business-problem-sharpener/   # SKILL.md + references/taxonomy.md
+│   └── roi-scenario-model/       # SKILL.md + scripts/roi_model.py + references/
 ├── Phase 1 - Discovery & Assessment/    # ai-maturity-assessment, data-readiness-assessment-5c,
 │                                        # infrastructure-audit, organizational-readiness,
 │                                        # use-case-prioritization, sample-data/
@@ -119,6 +123,34 @@ editing it. The **browser** tools (including the HTML `ai-maturity-assessment/in
 use an **English / Dansk / Svenska** language selector instead — this is the pattern for
 every HTML tool in the repo, not just the newer ones. When adding a language to an HTML
 tool, add it to all three; when editing the Python impl, keep EN/中文 in sync.
+
+## The portable agent skills
+
+`skills/` is the one part of the toolkit that does **not** run in a browser. Each
+subfolder is a `SKILL.md` (YAML frontmatter + markdown) that an agent loads and
+follows — `business-problem-sharpener` (Phase 1) and `roi-scenario-model`
+(Phase 10), with `skills/index.html` as the library and install guide.
+
+These differ from the `.claude/agents/` subagents in one load-bearing way, and it
+must be preserved if you edit them: **the agents read methodology out of this
+repo's tool files; the skills carry their own.** A skill is copied out and
+installed elsewhere — on Claude, Codex, Cursor — so it can never read a sibling
+file here. Keep the invariants:
+
+- **Self-contained.** No skill reads another file in this repository. Cross-
+  reference toolkit phases by name where useful, never by path.
+- **No agent-specific assumptions.** Frontmatter stays at `name` and
+  `description`; no named tools or vendor APIs in the body.
+- **Scripts are stdlib-only and optional.** `roi_model.py` imports nothing
+  outside the standard library, and the skill says what to do without Python.
+- **Nothing is uploaded**, same as every tool here.
+
+When you add a skill: create the folder under `skills/`, keep `SKILL.md` under
+~500 lines with detail pushed into `references/`, then update `skills/README.md`,
+`skills/index.html` (all three languages), the root `index.html` card, and this
+file. The hub counts skills separately from the 43 tools — the skills card grid
+carries `class="cards is-aux"` and its section heading `class="phase-head is-aux"`,
+which is what keeps the "43 tools / 10 delivery phases" stats honest.
 
 ## The Claude Code agents
 

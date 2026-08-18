@@ -198,6 +198,8 @@
     transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
   }
   .nav-all:hover { background: var(--powder); border-color: var(--accent); }
+  /* Sits under the path, separated, because it is not a delivery phase. */
+  .nav-aux { margin-top: 14px; margin-bottom: 0; }
   .nav-all.is-active { background: var(--primary); border-color: var(--primary); color: #fff; }
   .phase-nav { display: flex; flex-direction: column; }
   .nav-item {
@@ -450,6 +452,7 @@
     .hero-stats { gap: 16px; }
     .hero-stats .lbl-long { display: none; }
     .hero-stats .lbl-short { display: inline; }
+    .hero-stats .stat-skills { display: none; }
   }
   /* Below this the rail would squeeze the two-card grid too hard. The path
      lies down into a swipeable strip; the stage description drops out because
@@ -462,6 +465,7 @@
     .nav-progress-bar { flex: 1; }
     .nav-progress-text { margin-top: 0; white-space: nowrap; }
     .nav-all { width: auto; margin-bottom: 12px; }
+    .nav-aux { margin-top: 12px; margin-bottom: 12px; }
     .phase-nav {
       flex-direction: row;
       overflow-x: auto;
@@ -548,6 +552,7 @@
       <div class="hero-stats">
         <span><strong id="statToolsNum"></strong><span data-i18n="statTools"></span></span>
         <span><strong id="statPhasesNum"></strong><span class="lbl-long" data-i18n="statPhases"></span><span class="lbl-short" data-i18n="statPhasesShort"></span></span>
+        <span class="stat-skills"><strong id="statSkillsNum"></strong><span data-i18n="statSkills"></span></span>
       </div>
     </div>
   </header>
@@ -561,6 +566,7 @@
       </div>
       <button type="button" class="nav-all" id="navAll" onclick="selectPhase('all')"></button>
       <nav class="phase-nav" id="phaseNav" aria-label="Choose a delivery phase"></nav>
+      <button type="button" class="nav-all nav-aux" id="navSkills" onclick="selectPhase('skills')"></button>
     </aside>
 
     <div class="main-col">
@@ -971,6 +977,36 @@
       </a>
 
     </div>
+
+    <div class="phase-head is-aux" id="skills" style="margin-top:44px">
+      <h2 data-i18n="skTitle"></h2>
+      <span class="phase-tag" data-i18n="tagSkills"></span>
+      <span class="phase-count"></span>
+    </div>
+    <p class="phase-sub" data-i18n="skSub"></p>
+
+    <div class="cards is-aux">
+      <a class="card" href="skills/">
+        <div class="icon">🧩</div>
+        <h3 data-i18n="c_skHub_t"></h3>
+        <p data-i18n="c_skHub_d"></p>
+        <span class="go" data-i18n="c_skHub_c"></span>
+      </a>
+
+      <a class="card" href="skills/business-problem-sharpener/SKILL.md">
+        <div class="icon">🔎</div>
+        <h3 data-i18n="c_skSharp_t"></h3>
+        <p data-i18n="c_skSharp_d"></p>
+        <span class="go" data-i18n="c_skSharp_c"></span>
+      </a>
+
+      <a class="card" href="skills/roi-scenario-model/SKILL.md">
+        <div class="icon">📐</div>
+        <h3 data-i18n="c_skRoi_t"></h3>
+        <p data-i18n="c_skRoi_d"></p>
+        <span class="go" data-i18n="c_skRoi_c"></span>
+      </a>
+    </div>
     </div>
   </main>
 
@@ -982,12 +1018,26 @@ const STRINGS = {
     heroEyebrow: 'AI Architecture · Consulting Toolkit',
     heroTitle: 'Practical tools for AI-architecture engagements, organized by delivery phase.',
     heroDesc: 'An evolving set of assessments and accelerators that mirror how an AI architect actually moves a client from discovery to production.',
-    statTools: ' tools', statPhases: ' delivery phases',
+    statTools: ' tools', statPhases: ' delivery phases', statSkills: ' agent skills',
     skipLink: 'Skip to the toolkit',
     navTitle: 'Delivery phases',
     navAll: 'All phases',
+    navSkills: 'Agent skills',
+    tagSkills: 'Skills',
+    skTitle: 'Agent Skills',
+    skSub: 'Portable skills that give Claude, Codex or any other agent the reasoning an AI architect applies. The one part of this toolkit that runs inside an agent rather than in your browser.',
+    c_skHub_t: 'Skills Library & Install Guide',
+    c_skHub_d: 'What each skill does, when it triggers, and where the file goes on Claude, Codex, Cursor or anything else that reads a markdown instruction file. EN / DA / SV.',
+    c_skHub_c: 'Open library →',
+    c_skSharp_t: 'Business Problem Sharpener',
+    c_skSharp_d: 'Turns a solution-shaped request into a measurable, solution-free problem statement — then classifies it, starting with whether it is an AI problem at all. Ships with a four-axis taxonomy and the disguises that recur most.',
+    c_skSharp_c: 'Read SKILL.md →',
+    c_skRoi_t: 'ROI Scenario Model',
+    c_skRoi_d: 'Conservative / base / optimistic ROI for one solution, with NPV, payback, a sensitivity ranking and the breakeven the case hinges on. Bundles a stdlib-only Python engine so the arithmetic is not re-derived each time.',
+    c_skRoi_c: 'Read SKILL.md →',
     navPhaseCount: (n, total) => `${n} of ${total} started`,
     toolsCountLabel: (n) => `${n} tool${n === 1 ? '' : 's'}`,
+    skillsCountLabel: (n) => `${n} skill${n === 1 ? '' : 's'}`,
     filterLabel: 'Find a tool',
     filterPlaceholder: 'Find a tool by name or keyword…',
     filterCount: (n, total) => n === total ? `${total} tools` : `${n} of ${total} tools match`,
@@ -1162,12 +1212,26 @@ const STRINGS = {
     heroEyebrow: 'AI-arkitektur · Konsulentværktøjer',
     heroTitle: 'Praktiske værktøjer til AI-arkitektur-engagementer, organiseret efter leveringsfase.',
     heroDesc: 'Et voksende sæt af vurderinger og accelleratorer, der afspejler hvordan en AI-arkitekt reelt flytter en kunde fra discovery til produktion.',
-    statTools: ' værktøjer', statPhases: ' leveringsfaser',
+    statTools: ' værktøjer', statPhases: ' leveringsfaser', statSkills: ' agentfærdigheder',
     skipLink: 'Gå direkte til værktøjerne',
     navTitle: 'Leveringsfaser',
     navAll: 'Alle faser',
+    navSkills: 'Agentfærdigheder',
+    tagSkills: 'Færdigheder',
+    skTitle: 'Agentfærdigheder',
+    skSub: 'Bærbare færdigheder, der giver Claude, Codex eller enhver anden agent den tankegang, en AI-arkitekt bruger. Den ene del af værktøjskassen, der kører inde i en agent frem for i din browser.',
+    c_skHub_t: 'Færdighedsbibliotek og installationsguide',
+    c_skHub_d: 'Hvad hver færdighed gør, hvornår den udløses, og hvor filen skal ligge på Claude, Codex, Cursor eller alt andet, der kan læse en markdown-instruktionsfil. EN / DA / SV.',
+    c_skHub_c: 'Åbn bibliotek →',
+    c_skSharp_t: 'Skarpstilling af forretningsproblem',
+    c_skSharp_d: 'Gør et løsningsformet ønske til en målbar, løsningsfri problemformulering — og klassificerer det så, med start i om det overhovedet er et AI-problem. Med taksonomi på fire akser og de hyppigste forklædninger.',
+    c_skSharp_c: 'Læs SKILL.md →',
+    c_skRoi_t: 'ROI-scenariemodel',
+    c_skRoi_d: 'Konservativ / basis / optimistisk ROI for én løsning, med NPV, tilbagebetaling, følsomhedsrangering og det nulpunkt sagen hviler på. Med en Python-motor uden afhængigheder, så beregningen ikke laves forfra hver gang.',
+    c_skRoi_c: 'Læs SKILL.md →',
     navPhaseCount: (n, total) => `${n} af ${total} påbegyndt`,
     toolsCountLabel: (n) => `${n} værktøj${n === 1 ? '' : 'er'}`,
+    skillsCountLabel: (n) => `${n} færdighed${n === 1 ? '' : 'er'}`,
     filterLabel: 'Find et værktøj',
     filterPlaceholder: 'Find et værktøj efter navn eller nøgleord…',
     filterCount: (n, total) => n === total ? `${total} værktøjer` : `${n} af ${total} værktøjer matcher`,
@@ -1342,12 +1406,26 @@ const STRINGS = {
     heroEyebrow: 'AI-arkitektur · Konsultverktyg',
     heroTitle: 'Praktiska verktyg för AI-arkitekturuppdrag, organiserade efter leveransfas.',
     heroDesc: 'En växande uppsättning bedömningar och acceleratorer som speglar hur en AI-arkitekt faktiskt flyttar en kund från discovery till produktion.',
-    statTools: ' verktyg', statPhases: ' leveransfaser',
+    statTools: ' verktyg', statPhases: ' leveransfaser', statSkills: ' agentfärdigheter',
     skipLink: 'Hoppa till verktygen',
     navTitle: 'Leveransfaser',
     navAll: 'Alla faser',
+    navSkills: 'Agentfärdigheter',
+    tagSkills: 'Färdigheter',
+    skTitle: 'Agentfärdigheter',
+    skSub: 'Portabla färdigheter som ger Claude, Codex eller vilken annan agent som helst det resonemang en AI-arkitekt använder. Den enda delen av verktygslådan som körs inuti en agent i stället för i din webbläsare.',
+    c_skHub_t: 'Färdighetsbibliotek och installationsguide',
+    c_skHub_d: 'Vad varje färdighet gör, när den utlöses, och var filen ska ligga på Claude, Codex, Cursor eller något annat som läser en markdown-instruktionsfil. EN / DA / SV.',
+    c_skHub_c: 'Öppna bibliotek →',
+    c_skSharp_t: 'Skärpning av affärsproblem',
+    c_skSharp_d: 'Gör ett lösningsformat önskemål till en mätbar, lösningsfri problemformulering — och klassificerar det sedan, med start i om det alls är ett AI-problem. Med taxonomi på fyra axlar och de vanligaste förklädnaderna.',
+    c_skSharp_c: 'Läs SKILL.md →',
+    c_skRoi_t: 'ROI-scenariomodell',
+    c_skRoi_d: 'Konservativ / bas / optimistisk ROI för en lösning, med NPV, återbetalning, känslighetsrangordning och den nollpunkt fallet vilar på. Med en Python-motor utan beroenden, så beräkningen inte görs om varje gång.',
+    c_skRoi_c: 'Läs SKILL.md →',
     navPhaseCount: (n, total) => `${n} av ${total} påbörjade`,
     toolsCountLabel: (n) => `${n} verktyg`,
+    skillsCountLabel: (n) => `${n} färdighet${n === 1 ? '' : 'er'}`,
     filterLabel: 'Hitta ett verktyg',
     filterPlaceholder: 'Hitta ett verktyg efter namn eller nyckelord…',
     filterCount: (n, total) => n === total ? `${total} verktyg` : `${n} av ${total} verktyg matchar`,
@@ -1662,6 +1740,12 @@ function phaseProgress(id) {
   return { started: tools.filter(tl => toolStarted(tl.key)).length, total: tools.length };
 }
 
+/* Scopes the rail can select. The ten phases are an ordered path; 'skills'
+   is an extra section that is deliberately not a step in it. */
+function allScopes() {
+  return PHASE_NAV.map(p => p.id).concat('skills');
+}
+
 function renderPhaseNav() {
   const nav = document.getElementById('phaseNav');
   if (!nav) return;
@@ -1679,6 +1763,8 @@ function renderPhaseNav() {
   }).join('');
   const all = document.getElementById('navAll');
   if (all) all.textContent = t('navAll');
+  const sk = document.getElementById('navSkills');
+  if (sk) sk.textContent = t('navSkills');
   renderNavProgress();
   syncNavState();
 }
@@ -1707,6 +1793,11 @@ function syncNavState() {
   if (all) {
     all.classList.toggle('is-active', currentPhase === 'all');
     all.setAttribute('aria-pressed', currentPhase === 'all' ? 'true' : 'false');
+  }
+  const sk = document.getElementById('navSkills');
+  if (sk) {
+    sk.classList.toggle('is-active', currentPhase === 'skills');
+    sk.setAttribute('aria-pressed', currentPhase === 'skills' ? 'true' : 'false');
   }
 }
 
@@ -1750,10 +1841,15 @@ function renderPhaseCounts() {
     while (cardsEl && !cardsEl.classList.contains('cards')) cardsEl = cardsEl.nextElementSibling;
     if (!cardsEl) return;
     const n = cardsEl.querySelectorAll('a.card').length;
-    if (n) countEl.textContent = t('toolsCountLabel')(n);
+    // The aux section holds skills, not stateful browser tools.
+    const key = head.classList.contains('is-aux') ? 'skillsCountLabel' : 'toolsCountLabel';
+    if (n) countEl.textContent = t(key)(n);
   });
-  const totalTools = document.querySelectorAll('main .cards a.card').length;
-  const totalPhases = document.querySelectorAll('.phase-head').length;
+  const totalTools = document.querySelectorAll('main .cards:not(.is-aux) a.card').length;
+  const totalSkills = document.querySelectorAll('main .cards.is-aux a.card').length;
+  const statSkills = document.getElementById('statSkillsNum');
+  if (statSkills) statSkills.textContent = totalSkills;
+  const totalPhases = document.querySelectorAll('.phase-head:not(.is-aux)').length;
   const statTools = document.getElementById('statToolsNum');
   const statPhases = document.getElementById('statPhasesNum');
   if (statTools) statTools.textContent = totalTools;
@@ -1894,13 +1990,13 @@ function applyI18n() {
 (function init() {
   document.getElementById('langSelect').value = lang;
   const fromHash = (location.hash || '').replace('#', '');
-  if (PHASE_NAV.some(p => p.id === fromHash)) currentPhase = fromHash;
+  if (allScopes().indexOf(fromHash) !== -1) currentPhase = fromHash;
   applyI18n();
   renderDashboard();
   // Back/forward between phases, and links arriving from a tool page.
   addEventListener('hashchange', () => {
     const id = (location.hash || '').replace('#', '');
-    if (PHASE_NAV.some(p => p.id === id) && id !== currentPhase) selectPhase(id);
+    if (allScopes().indexOf(id) !== -1 && id !== currentPhase) selectPhase(id);
   });
 })();
 </script>

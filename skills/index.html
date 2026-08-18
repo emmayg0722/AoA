@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agent Skills — AI Architect Toolkit</title>
+<meta name="description" content="Portable agent skills that give Claude, Codex or any other agent the reasoning an AI architect applies — problem sharpening and scenario ROI modelling.">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='16' fill='%231B1474'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #1B1474;
+    --primary-dark: #120D52;
+    --accent: #DCDDF6;
+    --powder: #EEEEFA;
+    --ink: #1c1c28;
+    --muted: #5b5b6b;
+    --line: #e4e4f0;
+    --font-heading: 'Fraunces', Georgia, serif;
+    --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font-body); color: var(--ink); background: #F7F7FC; line-height: 1.6; }
+  .hero { background: linear-gradient(135deg, var(--primary-dark), var(--primary)); color: #fff; padding: 40px 24px 52px; }
+  .wrap { max-width: 940px; margin: 0 auto; }
+  .crumb { font-size: 13px; color: var(--accent); margin-bottom: 22px; }
+  .crumb a { color: var(--accent); }
+  .hero-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; flex-wrap: wrap; }
+  select#langSelect { font-family: var(--font-body); font-size: 13px; font-weight: 600; border: 1.5px solid rgba(255,255,255,0.4); background: rgba(255,255,255,0.08); color: #fff; border-radius: 8px; padding: 7px 10px; }
+  select#langSelect option { color: var(--ink); }
+  .hero h1 { font-family: var(--font-heading); font-size: 40px; font-weight: 700; line-height: 1.12; margin-bottom: 14px; text-wrap: balance; }
+  .hero p { max-width: 64ch; color: var(--accent); text-wrap: pretty; }
+  main { max-width: 940px; margin: 0 auto; padding: 44px 24px 72px; }
+  h2 { font-family: var(--font-heading); font-size: 26px; font-weight: 600; color: var(--primary); margin-bottom: 10px; }
+  h3 { font-family: var(--font-heading); font-size: 20px; font-weight: 600; color: var(--primary); margin-bottom: 8px; }
+  .lede { color: var(--muted); max-width: 68ch; margin-bottom: 32px; text-wrap: pretty; }
+  section { margin-bottom: 44px; }
+  .panel { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 24px 26px; }
+  .skill { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 24px 26px; margin-bottom: 18px; }
+  .skill-top { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 10px; }
+  .tag { font-size: 11px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--primary); background: var(--powder); border-radius: 20px; padding: 4px 11px; }
+  .skill p { color: var(--muted); margin-bottom: 14px; text-wrap: pretty; }
+  .meta { display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 6px 16px; font-size: 14px; margin-bottom: 16px; }
+  .meta dt { font-weight: 600; color: var(--ink); }
+  .meta dd { color: var(--muted); }
+  code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  code { font-size: 13px; background: var(--powder); border-radius: 5px; padding: 2px 6px; color: var(--primary); }
+  pre { background: var(--primary-dark); color: #E8E8F8; border-radius: 10px; padding: 15px 17px; overflow-x: auto; font-size: 13px; line-height: 1.65; }
+  pre code { background: none; color: inherit; padding: 0; font-size: 13px; }
+  .files { list-style: none; font-size: 13.5px; }
+  .files li { padding: 5px 0; border-bottom: 1px solid var(--line); display: flex; gap: 10px; flex-wrap: wrap; }
+  .files li:last-child { border-bottom: 0; }
+  .files a { font-weight: 600; }
+  .files span { color: var(--muted); }
+  a { color: var(--primary); }
+  a:hover { text-decoration: underline; }
+  .tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
+  .tabs button { font-family: var(--font-body); font-size: 13px; font-weight: 600; color: var(--primary); background: var(--powder); border: 1px solid var(--line); border-radius: 20px; padding: 7px 14px; cursor: pointer; transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease; }
+  .tabs button:hover { background: var(--accent); border-color: var(--accent); }
+  .tabs button[aria-selected="true"] { background: var(--primary); border-color: var(--primary); color: #fff; }
+  .tab-panel[hidden] { display: none; }
+  .tab-panel p { color: var(--muted); font-size: 14px; margin-bottom: 12px; }
+  .rules { list-style: none; }
+  .rules li { padding: 11px 0; border-bottom: 1px solid var(--line); color: var(--muted); text-wrap: pretty; }
+  .rules li:last-child { border-bottom: 0; }
+  .rules strong { color: var(--ink); }
+  footer { max-width: 940px; margin: 0 auto; padding: 0 24px 56px; color: var(--muted); font-size: 13px; }
+  :focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+  @media (max-width: 720px) {
+    .hero h1 { font-size: 30px; }
+    .meta { grid-template-columns: minmax(0, 1fr); gap: 2px; }
+    .meta dd { margin-bottom: 8px; }
+    select#langSelect { min-height: 44px; font-size: 16px; }
+    .tabs button { min-height: 44px; }
+  }
+  @media (prefers-reduced-motion: reduce) { .tabs button { transition: none; } }
+</style>
+</head>
+<body>
+  <header class="hero">
+    <div class="wrap">
+      <div class="hero-top">
+        <p class="crumb"><a href="../" data-i18n="crumbHome"></a> <span data-i18n="crumbSep"></span></p>
+        <select id="langSelect" onchange="setLang(this.value)">
+          <option value="en">English</option>
+          <option value="da">Dansk</option>
+          <option value="sv">Svenska</option>
+        </select>
+      </div>
+      <h1 data-i18n="heroTitle"></h1>
+      <p data-i18n="heroDesc"></p>
+    </div>
+  </header>
+
+  <main>
+    <section>
+      <h2 data-i18n="whatTitle"></h2>
+      <p class="lede" data-i18n="whatBody"></p>
+
+      <div class="skill">
+        <div class="skill-top">
+          <h3 data-i18n="s1Title"></h3>
+          <span class="tag" data-i18n="s1Tag"></span>
+        </div>
+        <p data-i18n="s1Desc"></p>
+        <dl class="meta">
+          <dt data-i18n="lblUse"></dt><dd data-i18n="s1Use"></dd>
+          <dt data-i18n="lblGives"></dt><dd data-i18n="s1Gives"></dd>
+        </dl>
+        <ul class="files">
+          <li><a href="business-problem-sharpener/SKILL.md">SKILL.md</a> <span data-i18n="s1F1"></span></li>
+          <li><a href="business-problem-sharpener/references/taxonomy.md">references/taxonomy.md</a> <span data-i18n="s1F2"></span></li>
+        </ul>
+      </div>
+
+      <div class="skill">
+        <div class="skill-top">
+          <h3 data-i18n="s2Title"></h3>
+          <span class="tag" data-i18n="s2Tag"></span>
+        </div>
+        <p data-i18n="s2Desc"></p>
+        <dl class="meta">
+          <dt data-i18n="lblUse"></dt><dd data-i18n="s2Use"></dd>
+          <dt data-i18n="lblGives"></dt><dd data-i18n="s2Gives"></dd>
+        </dl>
+        <ul class="files">
+          <li><a href="roi-scenario-model/SKILL.md">SKILL.md</a> <span data-i18n="s2F1"></span></li>
+          <li><a href="roi-scenario-model/scripts/roi_model.py">scripts/roi_model.py</a> <span data-i18n="s2F2"></span></li>
+          <li><a href="roi-scenario-model/references/spec-format.md">references/spec-format.md</a> <span data-i18n="s2F3"></span></li>
+          <li><a href="roi-scenario-model/references/cost-checklist.md">references/cost-checklist.md</a> <span data-i18n="s2F4"></span></li>
+        </ul>
+      </div>
+    </section>
+
+    <section>
+      <h2 data-i18n="installTitle"></h2>
+      <p class="lede" data-i18n="installBody"></p>
+      <div class="panel">
+        <div class="tabs" role="tablist">
+          <button role="tab" id="tab-claude" aria-controls="panel-claude" aria-selected="true" onclick="showTab('claude')">Claude</button>
+          <button role="tab" id="tab-codex" aria-controls="panel-codex" aria-selected="false" onclick="showTab('codex')">Codex</button>
+          <button role="tab" id="tab-other" aria-controls="panel-other" aria-selected="false" onclick="showTab('other')" data-i18n="tabOther"></button>
+        </div>
+
+        <div class="tab-panel" id="panel-claude" role="tabpanel" aria-labelledby="tab-claude">
+          <p data-i18n="claudeBody"></p>
+          <pre><code># just you, everywhere
+cp -r skills/business-problem-sharpener ~/.claude/skills/
+
+# or committed to a project, shared with the team
+mkdir -p .claude/skills
+cp -r skills/business-problem-sharpener .claude/skills/</code></pre>
+        </div>
+
+        <div class="tab-panel" id="panel-codex" role="tabpanel" aria-labelledby="tab-codex" hidden>
+          <p data-i18n="codexBody"></p>
+          <pre><code>## Skills
+
+- When sharpening a business problem or classifying an AI use
+  case, read `skills/business-problem-sharpener/SKILL.md` and
+  follow it.
+- When building an ROI or business case, read
+  `skills/roi-scenario-model/SKILL.md` and follow it.</code></pre>
+        </div>
+
+        <div class="tab-panel" id="panel-other" role="tabpanel" aria-labelledby="tab-other" hidden>
+          <p data-i18n="otherBody"></p>
+          <pre><code># .cursor/rules/ai-architect.mdc
+When the task involves sharpening a business problem,
+classifying an AI use case, or building an ROI case, read the
+matching SKILL.md under skills/ and follow it.</code></pre>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2 data-i18n="rulesTitle"></h2>
+      <p class="lede" data-i18n="rulesBody"></p>
+      <div class="panel">
+        <ul class="rules">
+          <li><strong data-i18n="r1t"></strong> <span data-i18n="r1d"></span></li>
+          <li><strong data-i18n="r2t"></strong> <span data-i18n="r2d"></span></li>
+          <li><strong data-i18n="r3t"></strong> <span data-i18n="r3d"></span></li>
+          <li><strong data-i18n="r4t"></strong> <span data-i18n="r4d"></span></li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <footer data-i18n="footerText"></footer>
+
+<script>
+const STRINGS = {
+  en: {
+    crumbHome: 'AI Architect Toolkit', crumbSep: '· Agent Skills',
+    heroTitle: 'Agent Skills',
+    heroDesc: 'Portable skills that give Claude, Codex or any other agent the reasoning an AI architect applies. Same methodology as the rest of this toolkit — a different operator.',
+    whatTitle: 'The skills',
+    whatBody: 'Each skill is a self-contained folder: a SKILL.md holding the instructions, reference files loaded only when the work needs them, and scripts where arithmetic beats prose. Nothing here reads the rest of this repository, so a skill keeps working when you copy it out on its own.',
+    lblUse: 'Use it when', lblGives: 'You get back',
+    s1Title: 'Business Problem Sharpener', s1Tag: 'Discovery',
+    s1Desc: 'Most business problems arrive pre-solved — "we need a chatbot for support" already contains a symptom, a guessed cause and a chosen solution. This pulls that chain apart, finds which link is load-bearing, and is willing to conclude the problem is not an AI problem at all.',
+    s1Use: 'Someone brings a use-case idea, a project brief or a stakeholder complaint — especially when the ask already names a technology.',
+    s1Gives: 'A solution-free, measurable problem statement, a four-axis classification, and the cheapest evidence that would prove the reading wrong.',
+    s1F1: '— the workflow, quality bar and common disguises',
+    s1F2: '— problem shape, AI archetype, value mechanism, decision class',
+    s2Title: 'ROI Scenario Model', s2Tag: 'Value',
+    s2Desc: 'A single ROI number is a hostage to its weakest assumption. This builds the case as three scenarios driven by named assumption changes, then shows which assumption the case actually rests on and what it has to clear for the case to wash.',
+    s2Use: 'Anyone asks for the ROI, business case, payback or TCO of an AI initiative — especially when a single-point number is being requested.',
+    s2Gives: 'Conservative / base / optimistic cash flows with NPV, payback and ROI, a sensitivity ranking, and a breakeven value.',
+    s2F1: '— the workflow, traps, and what to do when the answer is no',
+    s2F2: '— the calculation engine, Python standard library only',
+    s2F3: '— the JSON spec fields and the arithmetic behind them',
+    s2F4: '— build and run costs people routinely forget',
+    installTitle: 'Installing',
+    installBody: 'The SKILL.md format — YAML frontmatter plus markdown — is readable by any agent. What changes between them is only where the file goes.',
+    tabOther: 'Cursor & others',
+    claudeBody: 'Copy the folder into a skills directory. Claude discovers it and loads the instructions when the description matches what you are doing. On claude.ai, upload the folder as a skill in settings instead.',
+    codexBody: 'Codex reads AGENTS.md from the repository root. Point it at the skill rather than pasting the contents, so there is only one copy to maintain:',
+    otherBody: 'Same idea, different filename — a rule file that points at the skill. For anything else, paste SKILL.md into the system prompt or project instructions; paste the reference files only when the skill points to them.',
+    rulesTitle: 'How these are built',
+    rulesBody: 'Four rules follow from wanting one skill to work across several agents, and from the same privacy stance as the rest of the toolkit.',
+    r1t: 'Self-contained.', r1d: 'A skill never reads another file in this repository, so copying it out on its own breaks nothing.',
+    r2t: 'No agent-specific assumptions.', r2d: 'No named tools or vendor APIs in the body; frontmatter stays at name and description, the two fields every implementation understands.',
+    r3t: 'Scripts are optional and stdlib-only.', r3d: 'The ROI engine needs nothing but Python 3, and the skill says what to do when Python is unavailable.',
+    r4t: 'Nothing is uploaded.', r4d: 'Same rule as every tool here — the skills work from what the architect types, and no client data leaves the machine.',
+    footerText: 'AI Architect Toolkit — agent skills. Self-contained, portable, and runnable on whichever agent you already use.',
+  },
+  da: {
+    crumbHome: 'AI-arkitekt-værktøjer', crumbSep: '· Agentfærdigheder',
+    heroTitle: 'Agentfærdigheder',
+    heroDesc: 'Bærbare færdigheder, der giver Claude, Codex eller enhver anden agent den tankegang, en AI-arkitekt bruger. Samme metode som resten af værktøjskassen — bare en anden operatør.',
+    whatTitle: 'Færdighederne',
+    whatBody: 'Hver færdighed er en selvstændig mappe: en SKILL.md med instruktionerne, referencefiler der kun indlæses når arbejdet kræver det, og scripts hvor beregning slår prosa. Intet her læser resten af dette repository, så en færdighed virker fortsat, når du kopierer den ud alene.',
+    lblUse: 'Brug den når', lblGives: 'Du får',
+    s1Title: 'Skarpstilling af forretningsproblem', s1Tag: 'Discovery',
+    s1Desc: 'De fleste forretningsproblemer ankommer færdigløste — "vi har brug for en chatbot til support" indeholder allerede et symptom, en gættet årsag og en valgt løsning. Denne færdighed skiller kæden ad, finder det led der reelt bærer, og er villig til at konkludere, at problemet slet ikke er et AI-problem.',
+    s1Use: 'Nogen kommer med en use case-idé, et projektoplæg eller en klage fra en interessent — især når ønsket allerede nævner en teknologi.',
+    s1Gives: 'En løsningsfri, målbar problemformulering, en klassifikation på fire akser, og det billigste bevis der ville modbevise læsningen.',
+    s1F1: '— arbejdsgangen, kvalitetskravene og de almindelige forklædninger',
+    s1F2: '— problemform, AI-arketype, værdimekanisme, beslutningsklasse',
+    s2Title: 'ROI-scenariemodel', s2Tag: 'Værdi',
+    s2Desc: 'Ét ROI-tal er gidsel for sin svageste antagelse. Denne bygger sagen som tre scenarier drevet af navngivne ændringer i antagelser, og viser så hvilken antagelse sagen reelt hviler på, og hvad den skal nå for at gå i nul.',
+    s2Use: 'Nogen beder om ROI, business case, tilbagebetalingstid eller TCO for et AI-initiativ — især når der bedes om ét enkelt tal.',
+    s2Gives: 'Konservative / basis / optimistiske pengestrømme med NPV, tilbagebetaling og ROI, en følsomhedsrangering og en nulpunktsværdi.',
+    s2F1: '— arbejdsgangen, faldgruberne, og hvad man gør når svaret er nej',
+    s2F2: '— beregningsmotoren, kun Pythons standardbibliotek',
+    s2F3: '— felterne i JSON-specifikationen og beregningerne bag dem',
+    s2F4: '— bygge- og driftsomkostninger folk rutinemæssigt glemmer',
+    installTitle: 'Installation',
+    installBody: 'SKILL.md-formatet — YAML-frontmatter plus markdown — kan læses af enhver agent. Det eneste der ændrer sig mellem dem, er hvor filen skal ligge.',
+    tabOther: 'Cursor og andre',
+    claudeBody: 'Kopiér mappen ind i en skills-mappe. Claude finder den og indlæser instruktionerne, når beskrivelsen matcher det du er i gang med. På claude.ai uploader du i stedet mappen som en skill under indstillinger.',
+    codexBody: 'Codex læser AGENTS.md fra roden af repositoriet. Peg på færdigheden i stedet for at indsætte indholdet, så der kun er én kopi at vedligeholde:',
+    otherBody: 'Samme idé, andet filnavn — en regelfil der peger på færdigheden. For alt andet: indsæt SKILL.md i systemprompten eller projektinstruktionerne, og indsæt kun referencefilerne når færdigheden henviser til dem.',
+    rulesTitle: 'Sådan er de bygget',
+    rulesBody: 'Fire regler følger af ønsket om, at én færdighed skal virke på tværs af flere agenter, og af samme privatlivsholdning som resten af værktøjskassen.',
+    r1t: 'Selvstændige.', r1d: 'En færdighed læser aldrig en anden fil i dette repository, så det bryder intet at kopiere den ud alene.',
+    r2t: 'Ingen agentspecifikke antagelser.', r2d: 'Ingen navngivne værktøjer eller leverandør-API’er i indholdet; frontmatter holder sig til name og description, de to felter enhver implementering forstår.',
+    r3t: 'Scripts er valgfrie og kun standardbibliotek.', r3d: 'ROI-motoren kræver kun Python 3, og færdigheden fortæller hvad man gør, når Python ikke er tilgængelig.',
+    r4t: 'Intet uploades.', r4d: 'Samme regel som alle værktøjer her — færdighederne arbejder ud fra det arkitekten skriver, og ingen kundedata forlader maskinen.',
+    footerText: 'AI-arkitekt-værktøjer — agentfærdigheder. Selvstændige, bærbare og klar til den agent du allerede bruger.',
+  },
+  sv: {
+    crumbHome: 'AI-arkitektverktyg', crumbSep: '· Agentfärdigheter',
+    heroTitle: 'Agentfärdigheter',
+    heroDesc: 'Portabla färdigheter som ger Claude, Codex eller vilken annan agent som helst det resonemang en AI-arkitekt använder. Samma metodik som resten av verktygslådan — en annan operatör.',
+    whatTitle: 'Färdigheterna',
+    whatBody: 'Varje färdighet är en fristående mapp: en SKILL.md med instruktionerna, referensfiler som laddas först när arbetet kräver det, och skript där beräkning slår prosa. Inget här läser resten av detta repository, så en färdighet fungerar även när du kopierar ut den ensam.',
+    lblUse: 'Använd den när', lblGives: 'Du får tillbaka',
+    s1Title: 'Skärpning av affärsproblem', s1Tag: 'Discovery',
+    s1Desc: 'De flesta affärsproblem kommer färdiglösta — "vi behöver en chatbot för support" innehåller redan ett symptom, en gissad orsak och en vald lösning. Den här plockar isär kedjan, hittar vilken länk som faktiskt bär, och är beredd att dra slutsatsen att problemet inte är ett AI-problem alls.',
+    s1Use: 'Någon kommer med en use case-idé, ett projektunderlag eller ett klagomål från en intressent — särskilt när önskemålet redan nämner en teknik.',
+    s1Gives: 'En lösningsfri, mätbar problemformulering, en klassificering på fyra axlar, och det billigaste belägg som skulle motbevisa tolkningen.',
+    s1F1: '— arbetsflödet, kvalitetskraven och de vanliga förklädnaderna',
+    s1F2: '— problemform, AI-arketyp, värdemekanism, beslutsklass',
+    s2Title: 'ROI-scenariomodell', s2Tag: 'Värde',
+    s2Desc: 'En enda ROI-siffra är gisslan hos sitt svagaste antagande. Den här bygger fallet som tre scenarier drivna av namngivna förändringar i antaganden, och visar sedan vilket antagande fallet faktiskt vilar på och vad det måste nå för att gå jämnt upp.',
+    s2Use: 'Någon ber om ROI, business case, återbetalningstid eller TCO för ett AI-initiativ — särskilt när en enda siffra efterfrågas.',
+    s2Gives: 'Konservativa / bas / optimistiska kassaflöden med NPV, återbetalning och ROI, en känslighetsrangordning och ett nollpunktsvärde.',
+    s2F1: '— arbetsflödet, fallgroparna, och vad man gör när svaret är nej',
+    s2F2: '— beräkningsmotorn, endast Pythons standardbibliotek',
+    s2F3: '— fälten i JSON-specifikationen och beräkningarna bakom dem',
+    s2F4: '— bygg- och driftkostnader som folk rutinmässigt glömmer',
+    installTitle: 'Installation',
+    installBody: 'SKILL.md-formatet — YAML-frontmatter plus markdown — kan läsas av vilken agent som helst. Det enda som skiljer dem åt är var filen ska ligga.',
+    tabOther: 'Cursor och andra',
+    claudeBody: 'Kopiera mappen till en skills-katalog. Claude hittar den och laddar instruktionerna när beskrivningen matchar det du håller på med. På claude.ai laddar du i stället upp mappen som en skill under inställningar.',
+    codexBody: 'Codex läser AGENTS.md från repositoryts rot. Peka på färdigheten i stället för att klistra in innehållet, så finns bara en kopia att underhålla:',
+    otherBody: 'Samma idé, annat filnamn — en regelfil som pekar på färdigheten. För allt annat: klistra in SKILL.md i systemprompten eller projektinstruktionerna, och klistra in referensfilerna först när färdigheten hänvisar till dem.',
+    rulesTitle: 'Så är de byggda',
+    rulesBody: 'Fyra regler följer av att en färdighet ska fungera på flera agenter, och av samma integritetshållning som resten av verktygslådan.',
+    r1t: 'Fristående.', r1d: 'En färdighet läser aldrig en annan fil i detta repository, så det bryter ingenting att kopiera ut den ensam.',
+    r2t: 'Inga agentspecifika antaganden.', r2d: 'Inga namngivna verktyg eller leverantörs-API:er i innehållet; frontmatter håller sig till name och description, de två fält varje implementation förstår.',
+    r3t: 'Skript är valfria och endast standardbibliotek.', r3d: 'ROI-motorn kräver bara Python 3, och färdigheten säger vad man gör när Python inte finns.',
+    r4t: 'Inget laddas upp.', r4d: 'Samma regel som alla verktyg här — färdigheterna arbetar utifrån det arkitekten skriver, och ingen kunddata lämnar maskinen.',
+    footerText: 'AI-arkitektverktyg — agentfärdigheter. Fristående, portabla och körbara på den agent du redan använder.',
+  },
+};
+
+let lang = (function () {
+  try { return localStorage.getItem('aoa_lang') || 'en'; } catch (e) { return 'en'; }
+})();
+if (!STRINGS[lang]) lang = 'en';
+
+function t(key) { return (STRINGS[lang] && STRINGS[lang][key]) || STRINGS.en[key] || ''; }
+
+function applyI18n() {
+  document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.getAttribute('data-i18n')); });
+  document.documentElement.lang = lang;
+  document.title = t('heroTitle') + ' — AI Architect Toolkit';
+}
+
+function setLang(l) {
+  lang = l;
+  try { localStorage.setItem('aoa_lang', l); } catch (e) {}
+  applyI18n();
+}
+
+/* The install snippets are commands, so they stay untranslated; only the
+   surrounding explanation switches language. */
+function showTab(name) {
+  ['claude', 'codex', 'other'].forEach(n => {
+    document.getElementById('panel-' + n).hidden = n !== name;
+    document.getElementById('tab-' + n).setAttribute('aria-selected', n === name ? 'true' : 'false');
+  });
+}
+
+(function init() {
+  document.getElementById('langSelect').value = lang;
+  applyI18n();
+})();
+</script>
+</body>
+</html>

@@ -8,6 +8,8 @@ its own subfolder. New phases and assets follow the same structure.
 
 All **ten phases** of the delivery lifecycle are built — 43 browser-local tools
 from first discovery interview through to the quarterly value review after go-live.
+Alongside them sit **agent skills**: portable instructions that give Claude, Codex
+or any other agent the same reasoning, installable outside this repository.
 
 ## Structure
 
@@ -19,6 +21,10 @@ from first discovery interview through to the quarterly value review after go-li
 ├── .claude/agents/                    # Claude Code agents (must live here to be loadable)
 │   ├── dra-5c.md                      # Data Readiness Assessment (5C) agent
 │   └── use-case-evaluator.md          # Use-case evaluation mentor (scores against Phase 1/4 rubrics)
+├── skills/                            # Portable agent skills — run inside an agent, not the browser
+│   ├── index.html                     # Skills library & per-agent install guide (EN/DA/SV)
+│   ├── business-problem-sharpener/    # Sharpen + classify a business problem
+│   └── roi-scenario-model/            # Scenario ROI with NPV, sensitivity, breakeven
 └── Phase 1 - Discovery & Assessment/
     ├── ai-maturity-assessment/        # Browser tool: 6-dimension AI maturity scoring
     │   ├── index.html
@@ -329,6 +335,25 @@ All eleven Phase 8–10 tools follow the same established pattern (checkable SOP
 card, autosaved client intake, tracker matrix, live document preview, HTML/Markdown
 export, agent drafting, sample engagement, English/Danish/Swedish language
 selector). With these, all ten phases of the delivery lifecycle are built.
+
+## Agent skills (portable, outside the browser)
+
+`skills/` holds the one part of this toolkit that does **not** run in a browser.
+Each is a `SKILL.md` — YAML frontmatter plus markdown — that an agent loads and
+follows, so the same methodology works whether an architect is operating a tool
+by hand or driving an agent.
+
+| Skill | What it does | Maps to |
+|---|---|---|
+| `business-problem-sharpener` | Turns a solution-shaped request into a measurable, solution-free problem statement, then classifies it on four axes — starting with whether it is an AI problem at all. Ships a taxonomy reference and the disguises that recur most. | Phase 1 |
+| `roi-scenario-model` | Conservative / base / optimistic ROI for one solution, with NPV, payback, a sensitivity ranking and the breakeven the case hinges on. Bundles a stdlib-only Python engine. | Phase 10 |
+
+They are deliberately **self-contained** — a skill never reads another file in
+this repository, so copying one out on its own breaks nothing. Frontmatter stays
+at `name` and `description`, the two fields every implementation understands, and
+bundled scripts need only the Python standard library. Install guidance for
+Claude, Codex and rule-file agents is in `skills/README.md` and on the
+[skills page](skills/).
 
 ## SOP checklists & the Nordkap sample engagement
 
