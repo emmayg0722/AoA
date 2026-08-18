@@ -235,10 +235,10 @@ def breakeven(spec, scenario_name, key):
     npv_lo, npv_hi = npv_at(lo), npv_at(hi)
     if npv_lo > 0:
         return {"assumption": key, "base_value": base, "breakeven_value": 0.0,
-                "note": "positive even at zero — the case does not depend on this"}
+                "outcome": "positive_at_zero", "search_ceiling": hi}
     if npv_hi < 0:
         return {"assumption": key, "base_value": base, "breakeven_value": None,
-                "note": "never breaks even within 4x the base value"}
+                "outcome": "never", "search_ceiling": hi}
     for _ in range(80):
         mid = (lo + hi) / 2
         if npv_at(mid) < 0:
@@ -250,6 +250,7 @@ def breakeven(spec, scenario_name, key):
         "assumption": key,
         "base_value": base,
         "breakeven_value": be,
+        "outcome": "found",
         "headroom_pct": (base - be) / base * 100.0 if base else None,
     }
 
@@ -328,17 +329,37 @@ def render_markdown(spec, results, sens, be, ref):
     if be:
         out.append("## Breakeven")
         out.append("")
-        if be.get("breakeven_value") is None:
-            out.append("`%s` never breaks even within 4x its base value. %s"
-                       % (be["assumption"], be.get("note", "")))
+        outcome = be.get("outcome")
+        if outcome == "never":
+            out.append("`%s` never reaches breakeven, even at %s — %.0fx the base "
+                       "assumption of %s. No setting of this assumption rescues the "
+                       "case at this cost, so the question is not what to assume but "
+                       "whether to shrink the scope or drop it."
+                       % (be["assumption"], format_number(be["search_ceiling"]),
+                          be["search_ceiling"] / be["base_value"] if be["base_value"] else 0,
+                          format_number(be["base_value"])))
+        elif outcome == "positive_at_zero":
+            out.append("The case is positive even with `%s` at zero, so it is not "
+                       "load-bearing. Pick a different assumption to test."
+                       % be["assumption"])
         else:
+            gap = be.get("headroom_pct")
+            if gap is None:
+                tail = ""
+            elif gap >= 0:
+                # Breakeven sits below the assumption: room to be wrong.
+                tail = (", leaving %.0f%% headroom — the assumption can be this "
+                        "much too optimistic and the case still holds" % gap)
+            else:
+                # Breakeven sits above it: the case does not work as assumed.
+                tail = (", which is %.0f%% **above** the base assumption — on these "
+                        "numbers the case does not clear, and this is the gap to "
+                        "close or concede" % abs(gap))
             out.append("`%s` has to reach **%s** for the case to wash "
                        "(base assumption: %s%s)." % (
                            be["assumption"],
                            format_number(be["breakeven_value"]),
-                           format_number(be["base_value"]),
-                           (", leaving %.0f%% headroom" % be["headroom_pct"])
-                           if be.get("headroom_pct") is not None else ""))
+                           format_number(be["base_value"]), tail))
         out.append("")
     return "\n".join(out)
 
