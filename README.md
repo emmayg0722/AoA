@@ -343,10 +343,13 @@ Each is a `SKILL.md` — YAML frontmatter plus markdown — that an agent loads 
 follows, so the same methodology works whether an architect is operating a tool
 by hand or driving an agent.
 
-| Skill | What it does | Maps to |
-|---|---|---|
-| `business-problem-sharpener` | Turns a solution-shaped request into a measurable, solution-free problem statement, then classifies it on four axes — starting with whether it is an AI problem at all. Ships a taxonomy reference and the disguises that recur most. | Phase 1 |
-| `roi-scenario-model` | Conservative / base / optimistic ROI for one solution, with NPV, payback, a sensitivity ranking and the breakeven the case hinges on. Bundles a stdlib-only Python engine. | Phase 10 |
+| Skill | What it does | Verb | Maps to |
+|---|---|---|---|
+| `business-problem-sharpener` | Turns a solution-shaped request into a measurable, solution-free problem statement, then classifies it on four axes — starting with whether it is an AI problem at all. | Interrogate | Phase 1 |
+| `eval-harness-designer` | Designs how you will know the system works: stratified test set, metrics by archetype, naive and human baselines, per-slice thresholds, and a regression plan for when the model changes underneath you. Bundles a stdlib-only per-slice scorer with confidence intervals. | Interrogate | Phase 4 |
+| `architecture-tradeoff-analyst` | Forces criteria and weights to be agreed before options are scored, then makes the runner-up state what would have to be true for it to win. | Decide | Phase 3 |
+| `architecture-red-team` | Attacks a proposed design along eight axes — load, model dependency, adversarial input, silent degradation, blast radius, privacy, cost runaway, human factors — ranked by likelihood and recoverability. | Critique | Phase 3/5 |
+| `roi-scenario-model` | Conservative / base / optimistic ROI with NPV, payback, sensitivity and breakeven. Bundles a stdlib-only Python engine. | Quantify | Phase 10 |
 
 They are deliberately **self-contained** — a skill never reads another file in
 this repository, so copying one out on its own breaks nothing. Frontmatter stays

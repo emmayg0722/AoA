@@ -39,7 +39,10 @@ when adding new phases or tools so terminology stays consistent.
 │   └── use-case-evaluator.md     # Use-case evaluation mentor (scores against Phase 1/4 rubrics)
 ├── skills/                       # Portable agent skills — SKILL.md files, not browser tools
 │   ├── index.html                # Skills library + per-agent install guide (EN/DA/SV)
-│   ├── business-problem-sharpener/   # SKILL.md + references/taxonomy.md
+│   ├── business-problem-sharpener/      # SKILL.md + references/taxonomy.md
+│   ├── eval-harness-designer/           # SKILL.md + scripts/eval_report.py + references/
+│   ├── architecture-tradeoff-analyst/   # SKILL.md + references/common-decisions.md
+│   ├── architecture-red-team/           # SKILL.md + references/attack-axes.md
 │   └── roi-scenario-model/       # SKILL.md + scripts/roi_model.py + references/
 ├── Phase 1 - Discovery & Assessment/    # ai-maturity-assessment, data-readiness-assessment-5c,
 │                                        # infrastructure-audit, organizational-readiness,
@@ -128,8 +131,14 @@ tool, add it to all three; when editing the Python impl, keep EN/中文 in sync.
 
 `skills/` is the one part of the toolkit that does **not** run in a browser. Each
 subfolder is a `SKILL.md` (YAML frontmatter + markdown) that an agent loads and
-follows — `business-problem-sharpener` (Phase 1) and `roi-scenario-model`
-(Phase 10), with `skills/index.html` as the library and install guide.
+follows, with `skills/index.html` as the library and install guide. Five exist:
+`business-problem-sharpener` (Phase 1), `eval-harness-designer` (Phase 4),
+`architecture-tradeoff-analyst` and `architecture-red-team` (Phase 3/5), and
+`roi-scenario-model` (Phase 10).
+
+The set is spread deliberately across four verbs — **interrogate, decide,
+critique, quantify** — one per skill. Skills whose descriptions overlap compete
+for the same request and mis-trigger, so keep new ones in a distinct lane.
 
 These differ from the `.claude/agents/` subagents in one load-bearing way, and it
 must be preserved if you edit them: **the agents read methodology out of this

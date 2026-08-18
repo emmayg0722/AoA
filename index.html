@@ -986,7 +986,7 @@
     <p class="phase-sub" data-i18n="skSub"></p>
 
     <div class="cards is-aux">
-      <a class="card" href="skills/">
+      <a class="card card-index" href="skills/">
         <div class="icon">🧩</div>
         <h3 data-i18n="c_skHub_t"></h3>
         <p data-i18n="c_skHub_d"></p>
@@ -1005,6 +1005,27 @@
         <h3 data-i18n="c_skRoi_t"></h3>
         <p data-i18n="c_skRoi_d"></p>
         <span class="go" data-i18n="c_skRoi_c"></span>
+      </a>
+
+      <a class="card" href="skills/eval-harness-designer/SKILL.md">
+        <div class="icon">🎚️</div>
+        <h3 data-i18n="c_skEval_t"></h3>
+        <p data-i18n="c_skEval_d"></p>
+        <span class="go" data-i18n="c_skEval_c"></span>
+      </a>
+
+      <a class="card" href="skills/architecture-red-team/SKILL.md">
+        <div class="icon">🛡️</div>
+        <h3 data-i18n="c_skRed_t"></h3>
+        <p data-i18n="c_skRed_d"></p>
+        <span class="go" data-i18n="c_skRed_c"></span>
+      </a>
+
+      <a class="card" href="skills/architecture-tradeoff-analyst/SKILL.md">
+        <div class="icon">⚖️</div>
+        <h3 data-i18n="c_skTrade_t"></h3>
+        <p data-i18n="c_skTrade_d"></p>
+        <span class="go" data-i18n="c_skTrade_c"></span>
       </a>
     </div>
     </div>
@@ -1035,6 +1056,15 @@ const STRINGS = {
     c_skRoi_t: 'ROI Scenario Model',
     c_skRoi_d: 'Conservative / base / optimistic ROI for one solution, with NPV, payback, a sensitivity ranking and the breakeven the case hinges on. Bundles a stdlib-only Python engine so the arithmetic is not re-derived each time.',
     c_skRoi_c: 'Read SKILL.md →',
+    c_skEval_t: 'Eval Harness Designer',
+    c_skEval_d: 'Designs how you will know an AI system works — a stratified test set, metrics chosen by archetype, a naive and a human baseline, per-slice thresholds, and a regression plan. Bundles a stdlib-only scorer with confidence intervals.',
+    c_skEval_c: 'Read SKILL.md →',
+    c_skRed_t: 'Architecture Red Team',
+    c_skRed_d: 'Attacks a proposed design along eight axes — load, model dependency, adversarial input, silent degradation, blast radius, privacy, cost runaway, human factors — ranked by likelihood and recoverability, each with its cheapest mitigation.',
+    c_skRed_c: 'Read SKILL.md →',
+    c_skTrade_t: 'Architecture Trade-off Analyst',
+    c_skTrade_d: 'Forces criteria and weights to be agreed before options are scored, so the comparison is evidence rather than advocacy — then makes the runner-up state what would have to be true for it to win.',
+    c_skTrade_c: 'Read SKILL.md →',
     navPhaseCount: (n, total) => `${n} of ${total} started`,
     toolsCountLabel: (n) => `${n} tool${n === 1 ? '' : 's'}`,
     skillsCountLabel: (n) => `${n} skill${n === 1 ? '' : 's'}`,
@@ -1229,6 +1259,15 @@ const STRINGS = {
     c_skRoi_t: 'ROI-scenariemodel',
     c_skRoi_d: 'Konservativ / basis / optimistisk ROI for én løsning, med NPV, tilbagebetaling, følsomhedsrangering og det nulpunkt sagen hviler på. Med en Python-motor uden afhængigheder, så beregningen ikke laves forfra hver gang.',
     c_skRoi_c: 'Læs SKILL.md →',
+    c_skEval_t: 'Designer af evalueringsopsætning',
+    c_skEval_d: 'Designer hvordan I vil vide om et AI-system virker — stratificeret testsæt, metrikker valgt ud fra arketype, naiv og menneskelig baseline, tærskler pr. segment og en regressionsplan. Med en scorer uden afhængigheder og konfidensintervaller.',
+    c_skEval_c: 'Læs SKILL.md →',
+    c_skRed_t: 'Arkitektur-red team',
+    c_skRed_d: 'Angriber et foreslået design langs otte akser — belastning, modelafhængighed, fjendtligt input, tavs forringelse, skadesomfang, privatliv, løbske omkostninger, menneskelige faktorer — rangeret efter sandsynlighed og genopretbarhed.',
+    c_skRed_c: 'Læs SKILL.md →',
+    c_skTrade_t: 'Analytiker af arkitektur-afvejninger',
+    c_skTrade_d: 'Kræver at kriterier og vægte aftales før mulighederne scores, så sammenligningen bliver dokumentation frem for fortalervirksomhed — og lader nummer to sige hvad der skulle være sandt for at den vandt.',
+    c_skTrade_c: 'Læs SKILL.md →',
     navPhaseCount: (n, total) => `${n} af ${total} påbegyndt`,
     toolsCountLabel: (n) => `${n} værktøj${n === 1 ? '' : 'er'}`,
     skillsCountLabel: (n) => `${n} færdighed${n === 1 ? '' : 'er'}`,
@@ -1423,6 +1462,15 @@ const STRINGS = {
     c_skRoi_t: 'ROI-scenariomodell',
     c_skRoi_d: 'Konservativ / bas / optimistisk ROI för en lösning, med NPV, återbetalning, känslighetsrangordning och den nollpunkt fallet vilar på. Med en Python-motor utan beroenden, så beräkningen inte görs om varje gång.',
     c_skRoi_c: 'Läs SKILL.md →',
+    c_skEval_t: 'Designer av utvärderingsuppsättning',
+    c_skEval_d: 'Designar hur ni ska veta om ett AI-system fungerar — stratifierat testset, mått valda utifrån arketyp, naiv och mänsklig baslinje, trösklar per segment och en regressionsplan. Med en scorer utan beroenden och konfidensintervall.',
+    c_skEval_c: 'Läs SKILL.md →',
+    c_skRed_t: 'Arkitektur-red team',
+    c_skRed_d: 'Angriper en föreslagen design längs åtta axlar — last, modellberoende, fientlig indata, tyst försämring, skadeomfång, integritet, skenande kostnader, mänskliga faktorer — rangordnat efter sannolikhet och återställbarhet.',
+    c_skRed_c: 'Läs SKILL.md →',
+    c_skTrade_t: 'Analytiker av arkitekturavvägningar',
+    c_skTrade_d: 'Kräver att kriterier och vikter enas om innan alternativen poängsätts, så jämförelsen blir bevis snarare än förespråkande — och låter tvåan säga vad som skulle behöva vara sant för att den skulle vinna.',
+    c_skTrade_c: 'Läs SKILL.md →',
     navPhaseCount: (n, total) => `${n} av ${total} påbörjade`,
     toolsCountLabel: (n) => `${n} verktyg`,
     skillsCountLabel: (n) => `${n} färdighet${n === 1 ? '' : 'er'}`,
@@ -1840,13 +1888,14 @@ function renderPhaseCounts() {
     let cardsEl = head.nextElementSibling;
     while (cardsEl && !cardsEl.classList.contains('cards')) cardsEl = cardsEl.nextElementSibling;
     if (!cardsEl) return;
-    const n = cardsEl.querySelectorAll('a.card').length;
+    // card-index links to a landing page, not to a tool or skill.
+    const n = cardsEl.querySelectorAll('a.card:not(.card-index)').length;
     // The aux section holds skills, not stateful browser tools.
     const key = head.classList.contains('is-aux') ? 'skillsCountLabel' : 'toolsCountLabel';
     if (n) countEl.textContent = t(key)(n);
   });
   const totalTools = document.querySelectorAll('main .cards:not(.is-aux) a.card').length;
-  const totalSkills = document.querySelectorAll('main .cards.is-aux a.card').length;
+  const totalSkills = document.querySelectorAll('main .cards.is-aux a.card:not(.card-index)').length;
   const statSkills = document.getElementById('statSkillsNum');
   if (statSkills) statSkills.textContent = totalSkills;
   const totalPhases = document.querySelectorAll('.phase-head:not(.is-aux)').length;

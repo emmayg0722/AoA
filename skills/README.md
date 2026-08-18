@@ -10,10 +10,13 @@ instructions an *agent* loads and follows. Same methodology, different operator.
 
 ## What's here
 
-| Skill | What it does | Maps to |
-|---|---|---|
-| [`business-problem-sharpener`](business-problem-sharpener/) | Turns a vague, solution-shaped request into a sharp, measurable, solution-free problem statement — then classifies it, starting with whether it is an AI problem at all | Phase 1 · Discovery & Assessment |
-| [`roi-scenario-model`](roi-scenario-model/) | Builds a scenario ROI case for one solution — conservative / base / optimistic, with NPV, payback, sensitivity, and the breakeven the case hinges on | Phase 10 · ROI Analysis & Cost Optimization |
+| Skill | What it does | Verb | Maps to |
+|---|---|---|---|
+| [`business-problem-sharpener`](business-problem-sharpener/) | Turns a vague, solution-shaped request into a sharp, measurable, solution-free problem statement — then classifies it, starting with whether it is an AI problem at all | Interrogate | Phase 1 · Discovery |
+| [`eval-harness-designer`](eval-harness-designer/) | Designs how you will know the system works — stratified test set, metrics by archetype, baselines, per-slice thresholds, regression plan | Interrogate | Phase 4 · PoC & Pilot |
+| [`architecture-tradeoff-analyst`](architecture-tradeoff-analyst/) | Weights the criteria before the options are visible, so a comparison is evidence rather than advocacy — then argues the runner-up's case | Decide | Phase 3 · Architecture |
+| [`architecture-red-team`](architecture-red-team/) | Attacks a proposed design along eight axes, ranked by likelihood and recoverability, each with its cheapest mitigation | Critique | Phase 3/5 · Design & Delivery |
+| [`roi-scenario-model`](roi-scenario-model/) | Conservative / base / optimistic ROI for one solution, with NPV, payback, sensitivity, and the breakeven the case hinges on | Quantify | Phase 10 · ROI |
 
 Each skill is a self-contained folder:
 
@@ -37,9 +40,14 @@ skill is copied out on its own — which is the normal way it gets used.
 `.claude/`-only conventions inside the skill body. Frontmatter stays at `name`
 and `description`, the two fields every implementation understands.
 
-**Scripts are stdlib-only and optional.** `roi_model.py` needs nothing but
-Python 3, and the skill says what to do if Python is unavailable. A skill that
+**Scripts are stdlib-only and optional.** `roi_model.py` and `eval_report.py`
+need nothing but Python 3, and each skill says what to do if Python is
+unavailable. A skill that
 silently requires a package manager is not portable.
+
+**One verb each.** The set is deliberately spread across interrogate / decide /
+critique / quantify. Skills whose descriptions overlap compete for the same
+request and mis-trigger, so each one owns a distinct kind of question.
 
 **Prose explains why, not just what.** These are read by models with good
 judgement working on messy real cases. Rules without reasons get misapplied at
@@ -76,10 +84,18 @@ pasting the contents, so there is one copy to maintain:
 ```markdown
 ## Skills
 
-- When sharpening a business problem or classifying an AI use case, read
-  `skills/business-problem-sharpener/SKILL.md` and follow it.
-- When building an ROI or business case, read
-  `skills/roi-scenario-model/SKILL.md` and follow it.
+Each file below states when it applies. Read the matching one and follow it.
+
+- Sharpening or classifying a business problem →
+  `skills/business-problem-sharpener/SKILL.md`
+- Designing evaluation, test sets or accuracy targets →
+  `skills/eval-harness-designer/SKILL.md`
+- Choosing between technical approaches →
+  `skills/architecture-tradeoff-analyst/SKILL.md`
+- Reviewing or stress-testing a design →
+  `skills/architecture-red-team/SKILL.md`
+- Building an ROI or business case →
+  `skills/roi-scenario-model/SKILL.md`
 ```
 
 ### Cursor, Windsurf, and similar
@@ -88,9 +104,10 @@ Same idea, different filename — a rule file that points at the skill:
 
 ```
 # .cursor/rules/ai-architect.mdc
-When the task involves sharpening a business problem, classifying an AI use
-case, or building an ROI case, read the matching SKILL.md under skills/ and
-follow it.
+Before starting AI-architecture work — framing a problem, designing an
+evaluation, choosing between approaches, reviewing a design, or building an
+ROI case — list skills/*/SKILL.md, read the frontmatter description of each,
+and follow the one whose description matches the task.
 ```
 
 ### Any other agent

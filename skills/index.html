@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Agent Skills — AI Architect Toolkit</title>
-<meta name="description" content="Portable agent skills that give Claude, Codex or any other agent the reasoning an AI architect applies — problem sharpening and scenario ROI modelling.">
+<meta name="description" content="Portable agent skills that give Claude, Codex or any other agent the reasoning an AI architect applies — problem sharpening, evaluation design, architecture review, trade-off analysis and scenario ROI.">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='16' fill='%231B1474'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -132,6 +132,56 @@
           <li><a href="roi-scenario-model/references/cost-checklist.md">references/cost-checklist.md</a> <span data-i18n="s2F4"></span></li>
         </ul>
       </div>
+
+      <div class="skill">
+        <div class="skill-top">
+          <h3 data-i18n="s3Title"></h3>
+          <span class="tag" data-i18n="s3Tag"></span>
+        </div>
+        <p data-i18n="s3Desc"></p>
+        <dl class="meta">
+          <dt data-i18n="lblUse"></dt><dd data-i18n="s3Use"></dd>
+          <dt data-i18n="lblGives"></dt><dd data-i18n="s3Gives"></dd>
+        </dl>
+        <ul class="files">
+          <li><a href="eval-harness-designer/SKILL.md">SKILL.md</a> <span data-i18n="s3F1"></span></li>
+          <li><a href="eval-harness-designer/scripts/eval_report.py">scripts/eval_report.py</a> <span data-i18n="s3F2"></span></li>
+          <li><a href="eval-harness-designer/references/metrics-by-archetype.md">references/metrics-by-archetype.md</a> <span data-i18n="s3F3"></span></li>
+          <li><a href="eval-harness-designer/references/eval-report-usage.md">references/eval-report-usage.md</a> <span data-i18n="s3F4"></span></li>
+        </ul>
+      </div>
+
+      <div class="skill">
+        <div class="skill-top">
+          <h3 data-i18n="s4Title"></h3>
+          <span class="tag" data-i18n="s4Tag"></span>
+        </div>
+        <p data-i18n="s4Desc"></p>
+        <dl class="meta">
+          <dt data-i18n="lblUse"></dt><dd data-i18n="s4Use"></dd>
+          <dt data-i18n="lblGives"></dt><dd data-i18n="s4Gives"></dd>
+        </dl>
+        <ul class="files">
+          <li><a href="architecture-red-team/SKILL.md">SKILL.md</a> <span data-i18n="s4F1"></span></li>
+          <li><a href="architecture-red-team/references/attack-axes.md">references/attack-axes.md</a> <span data-i18n="s4F2"></span></li>
+        </ul>
+      </div>
+
+      <div class="skill">
+        <div class="skill-top">
+          <h3 data-i18n="s5Title"></h3>
+          <span class="tag" data-i18n="s5Tag"></span>
+        </div>
+        <p data-i18n="s5Desc"></p>
+        <dl class="meta">
+          <dt data-i18n="lblUse"></dt><dd data-i18n="s5Use"></dd>
+          <dt data-i18n="lblGives"></dt><dd data-i18n="s5Gives"></dd>
+        </dl>
+        <ul class="files">
+          <li><a href="architecture-tradeoff-analyst/SKILL.md">SKILL.md</a> <span data-i18n="s5F1"></span></li>
+          <li><a href="architecture-tradeoff-analyst/references/common-decisions.md">references/common-decisions.md</a> <span data-i18n="s5F2"></span></li>
+        </ul>
+      </div>
     </section>
 
     <section>
@@ -158,19 +208,29 @@ cp -r skills/business-problem-sharpener .claude/skills/</code></pre>
           <p data-i18n="codexBody"></p>
           <pre><code>## Skills
 
-- When sharpening a business problem or classifying an AI use
-  case, read `skills/business-problem-sharpener/SKILL.md` and
-  follow it.
-- When building an ROI or business case, read
-  `skills/roi-scenario-model/SKILL.md` and follow it.</code></pre>
+Each file states when it applies. Read the matching one
+and follow it.
+
+- Sharpening or classifying a business problem →
+  `skills/business-problem-sharpener/SKILL.md`
+- Designing evaluation or accuracy targets →
+  `skills/eval-harness-designer/SKILL.md`
+- Choosing between technical approaches →
+  `skills/architecture-tradeoff-analyst/SKILL.md`
+- Reviewing or stress-testing a design →
+  `skills/architecture-red-team/SKILL.md`
+- Building an ROI or business case →
+  `skills/roi-scenario-model/SKILL.md`</code></pre>
         </div>
 
         <div class="tab-panel" id="panel-other" role="tabpanel" aria-labelledby="tab-other" hidden>
           <p data-i18n="otherBody"></p>
           <pre><code># .cursor/rules/ai-architect.mdc
-When the task involves sharpening a business problem,
-classifying an AI use case, or building an ROI case, read the
-matching SKILL.md under skills/ and follow it.</code></pre>
+Before starting AI-architecture work — framing a problem,
+designing an evaluation, choosing between approaches,
+reviewing a design, or building an ROI case — list
+skills/*/SKILL.md, read each frontmatter description, and
+follow the one that matches the task.</code></pre>
         </div>
       </div>
     </section>
@@ -214,6 +274,26 @@ const STRINGS = {
     s2F2: '— the calculation engine, Python standard library only',
     s2F3: '— the JSON spec fields and the arithmetic behind them',
     s2F4: '— build and run costs people routinely forget',
+    s3Title: 'Eval Harness Designer', s3Tag: 'Evidence',
+    s3Desc: 'Most AI systems ship with no way to tell whether they work — no baseline, no held-out data that has not leaked into prompt iteration, no agreement on what "good" means. This designs the harness before the build, so a change can be shown to have helped.',
+    s3Use: 'Anyone asks how you will know it works, what accuracy target to set, how to build a test set, whether a change helped, or why quality seems to have degraded.',
+    s3Gives: 'A stratified test-set spec, metrics chosen by archetype, a naive and a human baseline, per-slice acceptance thresholds, and a regression plan for when the model changes underneath you.',
+    s3F1: '— the workflow, offline vs online, and LLM-as-judge',
+    s3F2: '— per-slice metrics with confidence intervals, stdlib only',
+    s3F3: '— what to measure per archetype, and what each metric misses',
+    s3F4: '— input columns, flags, and how to read the output',
+    s4Title: 'Architecture Red Team', s4Tag: 'Critique',
+    s4Desc: 'A design review that finds nothing is a review that did not happen. This attacks a proposed architecture along eight fixed axes, ranks findings by likelihood and recoverability, and pairs each with its cheapest mitigation.',
+    s4Use: 'A design, blueprint, ADR or technical proposal comes up for review, or a go-live gate approaches — especially when the design looks clean and everyone agrees.',
+    s4Gives: 'Ranked findings with concrete trigger-and-chain scenarios, split into fix-before-launch, monitor, and explicitly accepted.',
+    s4F1: '— steelman first, ranking, calibration, and the write-up',
+    s4F2: '— the eight axes with recurring patterns and cheap mitigations',
+    s5Title: 'Architecture Trade-off Analyst', s5Tag: 'Decision',
+    s5Desc: 'Most architecture comparisons are decorative — criteria get picked after the options are visible, so the favourite wins. This forces criteria and weights to be agreed first, then makes the runner-up argue its case.',
+    s5Use: 'Choosing between technical approaches — RAG vs fine-tune, managed vs self-hosted, agent vs pipeline, build vs buy, or which model.',
+    s5Gives: 'A criteria-first comparison with Measured/Estimated/Assumed scoring, the two or three criteria that actually decided it, and the condition under which the runner-up wins.',
+    s5F1: '— reversibility, weighting, and when to run an experiment instead',
+    s5F2: '— the recurring AI decisions and the tells that settle them',
     installTitle: 'Installing',
     installBody: 'The SKILL.md format — YAML frontmatter plus markdown — is readable by any agent. What changes between them is only where the file goes.',
     tabOther: 'Cursor & others',
@@ -249,6 +329,26 @@ const STRINGS = {
     s2F2: '— beregningsmotoren, kun Pythons standardbibliotek',
     s2F3: '— felterne i JSON-specifikationen og beregningerne bag dem',
     s2F4: '— bygge- og driftsomkostninger folk rutinemæssigt glemmer',
+    s3Title: 'Designer af evalueringsopsætning', s3Tag: 'Evidens',
+    s3Desc: 'De fleste AI-systemer går i luften uden nogen måde at vide om de virker — ingen baseline, ingen tilbageholdt data der ikke er sivet ind i prompt-arbejdet, ingen enighed om hvad "godt" betyder. Denne designer opsætningen før byggeriet.',
+    s3Use: 'Nogen spørger hvordan I vil vide at det virker, hvilket præcisionsmål der skal sættes, hvordan man bygger et testsæt, eller hvorfor kvaliteten ser ud til at være faldet.',
+    s3Gives: 'En stratificeret testsæt-specifikation, metrikker valgt ud fra arketype, en naiv og en menneskelig baseline, accepttærskler pr. segment, og en plan for regression når modellen ændrer sig under jer.',
+    s3F1: '— arbejdsgangen, offline vs online, og LLM som dommer',
+    s3F2: '— metrikker pr. segment med konfidensintervaller, kun standardbibliotek',
+    s3F3: '— hvad man måler pr. arketype, og hvad hver metrik overser',
+    s3F4: '— inputkolonner, flag, og hvordan output læses',
+    s4Title: 'Arkitektur-red team', s4Tag: 'Kritik',
+    s4Desc: 'En designgennemgang der intet finder, er en gennemgang der ikke fandt sted. Denne angriber en foreslået arkitektur langs otte faste akser, rangerer fund efter sandsynlighed og genopretbarhed, og giver hver den billigste afhjælpning.',
+    s4Use: 'Et design, en blueprint, en ADR eller et teknisk oplæg skal gennemgås, eller en go-live nærmer sig — især når designet ser rent ud og alle er enige.',
+    s4Gives: 'Rangerede fund med konkrete udløser-og-kæde-scenarier, opdelt i ret-før-launch, overvåg, og udtrykkeligt accepteret.',
+    s4F1: '— steelman først, rangering, kalibrering og afrapportering',
+    s4F2: '— de otte akser med gentagne mønstre og billige afhjælpninger',
+    s5Title: 'Analytiker af arkitektur-afvejninger', s5Tag: 'Beslutning',
+    s5Desc: 'De fleste arkitektursammenligninger er pynt — kriterier vælges efter mulighederne er synlige, så favoritten vinder. Denne kræver at kriterier og vægte aftales først, og lader så nummer to føre sin sag.',
+    s5Use: 'Valg mellem tekniske tilgange — RAG vs finjustering, managed vs selvhostet, agent vs pipeline, byg vs køb, eller hvilken model.',
+    s5Gives: 'En kriterie-først-sammenligning med Målt/Estimeret/Antaget-scoring, de to-tre kriterier der reelt afgjorde det, og betingelsen hvorunder nummer to vinder.',
+    s5F1: '— reversibilitet, vægtning, og hvornår man hellere laver et forsøg',
+    s5F2: '— de tilbagevendende AI-beslutninger og de tegn der afgør dem',
     installTitle: 'Installation',
     installBody: 'SKILL.md-formatet — YAML-frontmatter plus markdown — kan læses af enhver agent. Det eneste der ændrer sig mellem dem, er hvor filen skal ligge.',
     tabOther: 'Cursor og andre',
@@ -284,6 +384,26 @@ const STRINGS = {
     s2F2: '— beräkningsmotorn, endast Pythons standardbibliotek',
     s2F3: '— fälten i JSON-specifikationen och beräkningarna bakom dem',
     s2F4: '— bygg- och driftkostnader som folk rutinmässigt glömmer',
+    s3Title: 'Designer av utvärderingsuppsättning', s3Tag: 'Evidens',
+    s3Desc: 'De flesta AI-system lanseras utan något sätt att veta om de fungerar — ingen baslinje, ingen undanhållen data som inte läckt in i promptarbetet, ingen enighet om vad "bra" betyder. Den här designar uppsättningen före bygget.',
+    s3Use: 'Någon frågar hur ni ska veta att det fungerar, vilket precisionsmål som ska sättas, hur man bygger ett testset, eller varför kvaliteten verkar ha försämrats.',
+    s3Gives: 'En stratifierad testset-specifikation, mått valda utifrån arketyp, en naiv och en mänsklig baslinje, acceptanströsklar per segment, och en plan för regression när modellen ändras under er.',
+    s3F1: '— arbetsflödet, offline vs online, och LLM som domare',
+    s3F2: '— mått per segment med konfidensintervall, endast standardbibliotek',
+    s3F3: '— vad man mäter per arketyp, och vad varje mått missar',
+    s3F4: '— indatakolumner, flaggor, och hur resultatet läses',
+    s4Title: 'Arkitektur-red team', s4Tag: 'Kritik',
+    s4Desc: 'En designgranskning som inte hittar något är en granskning som inte ägde rum. Den här angriper en föreslagen arkitektur längs åtta fasta axlar, rangordnar fynd efter sannolikhet och återställbarhet, och ger var och en den billigaste åtgärden.',
+    s4Use: 'En design, blueprint, ADR eller tekniskt förslag ska granskas, eller en go-live närmar sig — särskilt när designen ser ren ut och alla är överens.',
+    s4Gives: 'Rangordnade fynd med konkreta utlösare-och-kedja-scenarier, uppdelade i åtgärda-före-lansering, övervaka, och uttryckligen accepterat.',
+    s4F1: '— steelman först, rangordning, kalibrering och rapportering',
+    s4F2: '— de åtta axlarna med återkommande mönster och billiga åtgärder',
+    s5Title: 'Analytiker av arkitekturavvägningar', s5Tag: 'Beslut',
+    s5Desc: 'De flesta arkitekturjämförelser är dekorativa — kriterier väljs efter att alternativen syns, så favoriten vinner. Den här kräver att kriterier och vikter enas om först, och låter sedan tvåan föra sin talan.',
+    s5Use: 'Val mellan tekniska angreppssätt — RAG vs finjustering, managed vs självhostad, agent vs pipeline, bygga vs köpa, eller vilken modell.',
+    s5Gives: 'En kriterier-först-jämförelse med Uppmätt/Uppskattat/Antaget-poäng, de två-tre kriterier som faktiskt avgjorde, och villkoret under vilket tvåan vinner.',
+    s5F1: '— reversibilitet, viktning, och när man hellre kör ett experiment',
+    s5F2: '— de återkommande AI-besluten och tecknen som avgör dem',
     installTitle: 'Installation',
     installBody: 'SKILL.md-formatet — YAML-frontmatter plus markdown — kan läsas av vilken agent som helst. Det enda som skiljer dem åt är var filen ska ligga.',
     tabOther: 'Cursor och andra',
