@@ -53,6 +53,9 @@ WHEN = {
         "vs self-hosted, agent vs pipeline, build vs buy",
     "architecture-red-team":
         "Reviewing or stress-testing a proposed design before it ships",
+    "context-architecture-designer":
+        "Designing how information reaches the model — retrieval or long "
+        "context, chunking, reranking, caching, and cost per request",
     "roi-scenario-model":
         "Building an ROI case, business case, payback or TCO for an AI "
         "initiative",

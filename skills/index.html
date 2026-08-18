@@ -182,6 +182,24 @@
           <li><a href="architecture-tradeoff-analyst/references/common-decisions.md">references/common-decisions.md</a> <span data-i18n="s5F2"></span></li>
         </ul>
       </div>
+
+      <div class="skill">
+        <div class="skill-top">
+          <h3 data-i18n="s6Title"></h3>
+          <span class="tag" data-i18n="s6Tag"></span>
+        </div>
+        <p data-i18n="s6Desc"></p>
+        <dl class="meta">
+          <dt data-i18n="lblUse"></dt><dd data-i18n="s6Use"></dd>
+          <dt data-i18n="lblGives"></dt><dd data-i18n="s6Gives"></dd>
+        </dl>
+        <ul class="files">
+          <li><a href="context-architecture-designer/SKILL.md">SKILL.md</a> <span data-i18n="s6F1"></span></li>
+          <li><a href="context-architecture-designer/scripts/context_budget.py">scripts/context_budget.py</a> <span data-i18n="s6F2"></span></li>
+          <li><a href="context-architecture-designer/references/retrieval-pipeline.md">references/retrieval-pipeline.md</a> <span data-i18n="s6F3"></span></li>
+          <li><a href="context-architecture-designer/references/budget-format.md">references/budget-format.md</a> <span data-i18n="s6F4"></span></li>
+        </ul>
+      </div>
     </section>
 
     <section>
@@ -310,6 +328,14 @@ const STRINGS = {
     s5Gives: 'A criteria-first comparison with Measured/Estimated/Assumed scoring, the two or three criteria that actually decided it, and the condition under which the runner-up wins.',
     s5F1: '— reversibility, weighting, and when to run an experiment instead',
     s5F2: '— the recurring AI decisions and the tells that settle them',
+    s6Title: 'Context Architecture Designer', s6Tag: 'Pipeline',
+    s6Desc: 'Every request is a context window someone assembled — most by accident. This treats it as a budget you allocate: what is retrieved, what sits in the prompt, what is trained in, how it is chunked and reranked, and what it costs per request at real volume.',
+    s6Use: 'Building or fixing a RAG system, choosing chunk sizes, weighing long context against retrieval, seeing stale or wrong answers, or watching inference cost climb faster than usage.',
+    s6Gives: 'A context budget with token and cost projections, a stage-by-stage retrieval design, permission and caching decisions, and the measurement that settles the arguments.',
+    s6F1: '— the workflow, symptoms table, and where knowledge should live',
+    s6F2: '— token and cost budget per request, stdlib only',
+    s6F3: '— parse, chunk, embed, search, rerank, assemble',
+    s6F4: '— the JSON spec fields and how to read the report',
     installTitle: 'Installing',
     installBody: 'The SKILL.md format — YAML frontmatter plus markdown — is readable by any agent. What changes between them is only where the file goes.',
     quickBody: 'The installer is standard-library Python, so it runs the same on macOS, Linux and Windows with nothing to install first. It copies the skills and, for Codex and Cursor, writes the wiring file that points the agent at them.',
@@ -368,6 +394,14 @@ const STRINGS = {
     s5Gives: 'En kriterie-først-sammenligning med Målt/Estimeret/Antaget-scoring, de to-tre kriterier der reelt afgjorde det, og betingelsen hvorunder nummer to vinder.',
     s5F1: '— reversibilitet, vægtning, og hvornår man hellere laver et forsøg',
     s5F2: '— de tilbagevendende AI-beslutninger og de tegn der afgør dem',
+    s6Title: 'Designer af kontekstarkitektur', s6Tag: 'Pipeline',
+    s6Desc: 'Hver forespørgsel er et kontekstvindue, nogen har sammensat — de fleste ved et tilfælde. Denne behandler det som et budget: hvad der hentes, hvad der står i prompten, hvad der er finjusteret ind, hvordan det chunkes og rerankes, og hvad det koster pr. forespørgsel.',
+    s6Use: 'Bygning eller fejlretning af et RAG-system, valg af chunk-størrelser, lang kontekst vs retrieval, forældede eller forkerte svar, eller omkostninger der stiger hurtigere end brugen.',
+    s6Gives: 'Et kontekstbudget med token- og omkostningsprognoser, et retrieval-design trin for trin, rettigheds- og caching-beslutninger, og den måling der afgør diskussionerne.',
+    s6F1: '— arbejdsgangen, symptomtabellen, og hvor viden bør ligge',
+    s6F2: '— token- og omkostningsbudget pr. forespørgsel, kun standardbibliotek',
+    s6F3: '— parse, chunk, embed, søg, rerank, saml',
+    s6F4: '— felterne i JSON-specifikationen og hvordan rapporten læses',
     installTitle: 'Installation',
     installBody: 'SKILL.md-formatet — YAML-frontmatter plus markdown — kan læses af enhver agent. Det eneste der ændrer sig mellem dem, er hvor filen skal ligge.',
     quickBody: 'Installationsprogrammet er Python med kun standardbiblioteket, så det kører ens på macOS, Linux og Windows uden at installere noget først. Det kopierer færdighederne og skriver — for Codex og Cursor — den fil der peger agenten hen på dem.',
@@ -426,6 +460,14 @@ const STRINGS = {
     s5Gives: 'En kriterier-först-jämförelse med Uppmätt/Uppskattat/Antaget-poäng, de två-tre kriterier som faktiskt avgjorde, och villkoret under vilket tvåan vinner.',
     s5F1: '— reversibilitet, viktning, och när man hellre kör ett experiment',
     s5F2: '— de återkommande AI-besluten och tecknen som avgör dem',
+    s6Title: 'Designer av kontextarkitektur', s6Tag: 'Pipeline',
+    s6Desc: 'Varje förfrågan är ett kontextfönster som någon satt ihop — de flesta av misstag. Den här behandlar det som en budget: vad som hämtas, vad som står i prompten, vad som finjusterats in, hur det chunkas och rerankas, och vad det kostar per förfrågan.',
+    s6Use: 'Bygga eller felsöka ett RAG-system, välja chunk-storlekar, lång kontext vs retrieval, inaktuella eller felaktiga svar, eller kostnader som stiger snabbare än användningen.',
+    s6Gives: 'En kontextbudget med token- och kostnadsprognoser, en retrieval-design steg för steg, rättighets- och caching-beslut, och mätningen som avgör diskussionerna.',
+    s6F1: '— arbetsflödet, symptomtabellen, och var kunskap bör ligga',
+    s6F2: '— token- och kostnadsbudget per förfrågan, endast standardbibliotek',
+    s6F3: '— parse, chunk, embed, sök, rerank, sätt ihop',
+    s6F4: '— fälten i JSON-specifikationen och hur rapporten läses',
     installTitle: 'Installation',
     installBody: 'SKILL.md-formatet — YAML-frontmatter plus markdown — kan läsas av vilken agent som helst. Det enda som skiljer dem åt är var filen ska ligga.',
     quickBody: 'Installationsprogrammet är Python med enbart standardbiblioteket, så det körs likadant på macOS, Linux och Windows utan att något behöver installeras först. Det kopierar färdigheterna och skriver — för Codex och Cursor — filen som pekar agenten mot dem.',

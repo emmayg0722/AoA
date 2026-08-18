@@ -16,6 +16,7 @@ instructions an *agent* loads and follows. Same methodology, different operator.
 | [`eval-harness-designer`](eval-harness-designer/) | Designs how you will know the system works — stratified test set, metrics by archetype, baselines, per-slice thresholds, regression plan | Interrogate | Phase 4 · PoC & Pilot |
 | [`architecture-tradeoff-analyst`](architecture-tradeoff-analyst/) | Weights the criteria before the options are visible, so a comparison is evidence rather than advocacy — then argues the runner-up's case | Decide | Phase 3 · Architecture |
 | [`architecture-red-team`](architecture-red-team/) | Attacks a proposed design along eight axes, ranked by likelihood and recoverability, each with its cheapest mitigation | Critique | Phase 3/5 · Design & Delivery |
+| [`context-architecture-designer`](context-architecture-designer/) | Designs how information actually reaches the model — retrieved vs prompt vs fine-tuned, chunking, reranking, permissions, caching, and the token/cost budget per request | Design | Phase 3 · Architecture |
 | [`roi-scenario-model`](roi-scenario-model/) | Conservative / base / optimistic ROI for one solution, with NPV, payback, sensitivity, and the breakeven the case hinges on | Quantify | Phase 10 · ROI |
 
 Each skill is a self-contained folder:
@@ -40,13 +41,13 @@ skill is copied out on its own — which is the normal way it gets used.
 `.claude/`-only conventions inside the skill body. Frontmatter stays at `name`
 and `description`, the two fields every implementation understands.
 
-**Scripts are stdlib-only and optional.** `roi_model.py` and `eval_report.py`
-need nothing but Python 3, and each skill says what to do if Python is
+**Scripts are stdlib-only and optional.** `roi_model.py`, `eval_report.py` and
+`context_budget.py` need nothing but Python 3, and each skill says what to do if Python is
 unavailable. A skill that
 silently requires a package manager is not portable.
 
-**One verb each.** The set is deliberately spread across interrogate / decide /
-critique / quantify. Skills whose descriptions overlap compete for the same
+**One verb each.** The set is deliberately spread across interrogate / design /
+decide / critique / quantify. Skills whose descriptions overlap compete for the same
 request and mis-trigger, so each one owns a distinct kind of question.
 
 **Prose explains why, not just what.** These are read by models with good

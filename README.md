@@ -349,6 +349,7 @@ by hand or driving an agent.
 | `eval-harness-designer` | Designs how you will know the system works: stratified test set, metrics by archetype, naive and human baselines, per-slice thresholds, and a regression plan for when the model changes underneath you. Bundles a stdlib-only per-slice scorer with confidence intervals. | Interrogate | Phase 4 |
 | `architecture-tradeoff-analyst` | Forces criteria and weights to be agreed before options are scored, then makes the runner-up state what would have to be true for it to win. | Decide | Phase 3 |
 | `architecture-red-team` | Attacks a proposed design along eight axes — load, model dependency, adversarial input, silent degradation, blast radius, privacy, cost runaway, human factors — ranked by likelihood and recoverability. | Critique | Phase 3/5 |
+| `context-architecture-designer` | Designs how information reaches the model — retrieved vs prompt vs fine-tuned, chunking, reranking, permission filtering, caching — and budgets tokens and cost per request. Bundles a stdlib-only context budget script. | Design | Phase 3 |
 | `roi-scenario-model` | Conservative / base / optimistic ROI with NPV, payback, sensitivity and breakeven. Bundles a stdlib-only Python engine. | Quantify | Phase 10 |
 
 They are deliberately **self-contained** — a skill never reads another file in
