@@ -39,6 +39,7 @@ when adding new phases or tools so terminology stays consistent.
 │   └── use-case-evaluator.md     # Use-case evaluation mentor (scores against Phase 1/4 rubrics)
 ├── skills/                       # Portable agent skills — SKILL.md files, not browser tools
 │   ├── index.html                # Skills library + per-agent install guide (EN/DA/SV)
+│   ├── install.py                # Cross-platform installer (Claude/Codex/Cursor, stdlib only)
 │   ├── business-problem-sharpener/      # SKILL.md + references/taxonomy.md
 │   ├── eval-harness-designer/           # SKILL.md + scripts/eval_report.py + references/
 │   ├── architecture-tradeoff-analyst/   # SKILL.md + references/common-decisions.md
@@ -153,6 +154,14 @@ file here. Keep the invariants:
 - **Scripts are stdlib-only and optional.** `roi_model.py` imports nothing
   outside the standard library, and the skill says what to do without Python.
 - **Nothing is uploaded**, same as every tool here.
+
+`skills/install.py` copies the skills to the right place per agent and OS, and
+for Codex/Cursor writes the wiring file that points at them. It inserts a block
+between `<!-- ai-architect-skills:start -->` / `:end` markers so re-running is
+idempotent and never clobbers a user's existing `AGENTS.md`. It lists whatever
+is actually present in the destination, not just what the run touched, so
+installing one skill at a time does not drop the others from the wiring. If you
+add a skill, add a line to its `WHEN` map so the generated wiring describes it.
 
 When you add a skill: create the folder under `skills/`, keep `SKILL.md` under
 ~500 lines with detail pushed into `references/`, then update `skills/README.md`,

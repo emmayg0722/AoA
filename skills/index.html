@@ -187,7 +187,20 @@
     <section>
       <h2 data-i18n="installTitle"></h2>
       <p class="lede" data-i18n="installBody"></p>
+      <div class="panel" style="margin-bottom:18px">
+        <p data-i18n="quickBody" style="color:var(--muted);font-size:14px;margin-bottom:12px"></p>
+        <pre><code>git clone https://github.com/emmayg0722/AoA.git
+cd AoA/skills
+
+python3 install.py --list                      # see what is available
+python3 install.py --agent claude              # all five, just for you
+python3 install.py --agent codex  --project .  # copies + wires AGENTS.md
+python3 install.py --agent cursor --project .  # copies + writes a rule file</code></pre>
+        <p data-i18n="quickWin" style="color:var(--muted);font-size:13.5px;margin-top:12px"></p>
+      </div>
+
       <div class="panel">
+        <p data-i18n="manualBody" style="color:var(--muted);font-size:14px;margin-bottom:14px"></p>
         <div class="tabs" role="tablist">
           <button role="tab" id="tab-claude" aria-controls="panel-claude" aria-selected="true" onclick="showTab('claude')">Claude</button>
           <button role="tab" id="tab-codex" aria-controls="panel-codex" aria-selected="false" onclick="showTab('codex')">Codex</button>
@@ -196,12 +209,15 @@
 
         <div class="tab-panel" id="panel-claude" role="tabpanel" aria-labelledby="tab-claude">
           <p data-i18n="claudeBody"></p>
-          <pre><code># just you, everywhere
-cp -r skills/business-problem-sharpener ~/.claude/skills/
+          <pre><code># macOS / Linux — just you, everywhere
+cp -r business-problem-sharpener ~/.claude/skills/
 
-# or committed to a project, shared with the team
+# macOS / Linux — committed to a project, shared with the team
 mkdir -p .claude/skills
-cp -r skills/business-problem-sharpener .claude/skills/</code></pre>
+cp -r business-problem-sharpener .claude/skills/</code></pre>
+          <pre><code># Windows PowerShell
+Copy-Item -Recurse business-problem-sharpener `
+  $env:USERPROFILE\.claude\skills\</code></pre>
         </div>
 
         <div class="tab-panel" id="panel-codex" role="tabpanel" aria-labelledby="tab-codex" hidden>
@@ -296,6 +312,9 @@ const STRINGS = {
     s5F2: '— the recurring AI decisions and the tells that settle them',
     installTitle: 'Installing',
     installBody: 'The SKILL.md format — YAML frontmatter plus markdown — is readable by any agent. What changes between them is only where the file goes.',
+    quickBody: 'The installer is standard-library Python, so it runs the same on macOS, Linux and Windows with nothing to install first. It copies the skills and, for Codex and Cursor, writes the wiring file that points the agent at them.',
+    quickWin: 'On Windows use py install.py … or python install.py … if python3 is not on your PATH. Nothing else differs — ~ resolves to %USERPROFILE%, so the Claude path becomes %USERPROFILE%\\.claude\\skills automatically. Add --dry-run to see what would happen, or --skill NAME for just one.',
+    manualBody: 'Or do it by hand — a skill is a folder, and installing it is a copy.',
     tabOther: 'Cursor & others',
     claudeBody: 'Copy the folder into a skills directory. Claude discovers it and loads the instructions when the description matches what you are doing. On claude.ai, upload the folder as a skill in settings instead.',
     codexBody: 'Codex reads AGENTS.md from the repository root. Point it at the skill rather than pasting the contents, so there is only one copy to maintain:',
@@ -351,6 +370,9 @@ const STRINGS = {
     s5F2: '— de tilbagevendende AI-beslutninger og de tegn der afgør dem',
     installTitle: 'Installation',
     installBody: 'SKILL.md-formatet — YAML-frontmatter plus markdown — kan læses af enhver agent. Det eneste der ændrer sig mellem dem, er hvor filen skal ligge.',
+    quickBody: 'Installationsprogrammet er Python med kun standardbiblioteket, så det kører ens på macOS, Linux og Windows uden at installere noget først. Det kopierer færdighederne og skriver — for Codex og Cursor — den fil der peger agenten hen på dem.',
+    quickWin: 'På Windows bruges py install.py … eller python install.py …, hvis python3 ikke er på din PATH. Ellers er der ingen forskel — ~ bliver til %USERPROFILE%, så Claude-stien bliver %USERPROFILE%\\.claude\\skills automatisk. Tilføj --dry-run for at se hvad der ville ske, eller --skill NAVN for kun én.',
+    manualBody: 'Eller gør det manuelt — en færdighed er en mappe, og installation er en kopiering.',
     tabOther: 'Cursor og andre',
     claudeBody: 'Kopiér mappen ind i en skills-mappe. Claude finder den og indlæser instruktionerne, når beskrivelsen matcher det du er i gang med. På claude.ai uploader du i stedet mappen som en skill under indstillinger.',
     codexBody: 'Codex læser AGENTS.md fra roden af repositoriet. Peg på færdigheden i stedet for at indsætte indholdet, så der kun er én kopi at vedligeholde:',
@@ -406,6 +428,9 @@ const STRINGS = {
     s5F2: '— de återkommande AI-besluten och tecknen som avgör dem',
     installTitle: 'Installation',
     installBody: 'SKILL.md-formatet — YAML-frontmatter plus markdown — kan läsas av vilken agent som helst. Det enda som skiljer dem åt är var filen ska ligga.',
+    quickBody: 'Installationsprogrammet är Python med enbart standardbiblioteket, så det körs likadant på macOS, Linux och Windows utan att något behöver installeras först. Det kopierar färdigheterna och skriver — för Codex och Cursor — filen som pekar agenten mot dem.',
+    quickWin: 'På Windows används py install.py … eller python install.py … om python3 inte finns i din PATH. I övrigt är det ingen skillnad — ~ blir %USERPROFILE%, så Claude-sökvägen blir %USERPROFILE%\\.claude\\skills automatiskt. Lägg till --dry-run för att se vad som skulle hända, eller --skill NAMN för bara en.',
+    manualBody: 'Eller gör det för hand — en färdighet är en mapp, och installation är en kopiering.',
     tabOther: 'Cursor och andra',
     claudeBody: 'Kopiera mappen till en skills-katalog. Claude hittar den och laddar instruktionerna när beskrivningen matchar det du håller på med. På claude.ai laddar du i stället upp mappen som en skill under inställningar.',
     codexBody: 'Codex läser AGENTS.md från repositoryts rot. Peka på färdigheten i stället för att klistra in innehållet, så finns bara en kopia att underhålla:',

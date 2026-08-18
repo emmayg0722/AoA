@@ -354,9 +354,23 @@ by hand or driving an agent.
 They are deliberately **self-contained** — a skill never reads another file in
 this repository, so copying one out on its own breaks nothing. Frontmatter stays
 at `name` and `description`, the two fields every implementation understands, and
-bundled scripts need only the Python standard library. Install guidance for
-Claude, Codex and rule-file agents is in `skills/README.md` and on the
-[skills page](skills/).
+bundled scripts need only the Python standard library.
+
+Installing is one command, and works the same on macOS, Linux and Windows:
+
+```bash
+cd skills
+python3 install.py --list                      # see what is available
+python3 install.py --agent claude              # all five, just for you
+python3 install.py --agent codex  --project .  # copies + wires AGENTS.md
+python3 install.py --agent cursor --project .  # copies + writes a rule file
+```
+
+`install.py` is standard-library Python, so nothing needs installing first. For
+Codex and Cursor it also writes the file that points the agent at the skills,
+inserting a marked block so re-running updates that block and leaves the rest of
+your `AGENTS.md` alone. Manual per-OS paths and the `.skill` package format are
+covered in `skills/README.md` and on the [skills page](skills/).
 
 ## SOP checklists & the Nordkap sample engagement
 

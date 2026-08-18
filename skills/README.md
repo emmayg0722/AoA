@@ -58,56 +58,79 @@ work from what the architect types; nothing uploads anything.
 
 ## Installing
 
-The `SKILL.md` format — YAML frontmatter plus markdown — is readable by any
-agent. What changes per agent is where the file goes.
+### The one command
 
-### Claude Code / claude.ai
-
-Copy the folder into a skills directory. Claude discovers it and loads the body
-when the description matches what you are doing.
+Clone the repo, then run the installer. It is standard-library Python, so it
+works the same on macOS, Linux and Windows with nothing to install first.
 
 ```bash
-# just you, everywhere
-cp -r skills/business-problem-sharpener ~/.claude/skills/
+git clone https://github.com/emmayg0722/AoA.git
+cd AoA/skills
 
-# or committed to a project, shared with the team
-mkdir -p .claude/skills && cp -r skills/business-problem-sharpener .claude/skills/
+python3 install.py --list                      # see what is available
+python3 install.py --agent claude              # all five, just for you
+python3 install.py --agent codex  --project .  # copies + wires AGENTS.md
+python3 install.py --agent cursor --project .  # copies + writes a rule file
 ```
 
-On claude.ai, upload the folder as a skill in settings instead.
+On Windows use `py install.py …` or `python install.py …` if `python3` is not
+on your PATH. Nothing else differs — `~` resolves to `%USERPROFILE%`, so the
+Claude path becomes `%USERPROFILE%\.claude\skills` automatically.
 
-### Codex
+Useful flags:
 
-Codex reads `AGENTS.md` from the repo root. Point it at the skill rather than
-pasting the contents, so there is one copy to maintain:
+| Flag | Effect |
+|---|---|
+| `--skill NAME` | Install one skill instead of all five. Repeatable. |
+| `--project DIR` | For Claude, install into `DIR/.claude/skills` so the team shares it. Required for Codex and Cursor. |
+| `--force` | Overwrite skills already installed. Without it they are skipped and reported. |
+| `--dry-run` | Print what would happen and change nothing. |
+
+For Codex and Cursor the installer also writes the wiring file that points the
+agent at the skills. It inserts a marked block, so re-running updates that block
+and leaves the rest of your `AGENTS.md` untouched.
+
+### Or do it by hand
+
+Nothing here is magic — a skill is a folder, and installing it is a copy.
+
+| Agent | Where the folder goes |
+|---|---|
+| **Claude** (you, everywhere) | macOS/Linux `~/.claude/skills/` · Windows `%USERPROFILE%\.claude\skills\` |
+| **Claude** (one project) | `<project>/.claude/skills/` |
+| **claude.ai** | Upload the folder as a skill in settings |
+| **Codex** | Anywhere in the project; point at it from `AGENTS.md` |
+| **Cursor / Windsurf** | Anywhere in the project; point at it from `.cursor/rules/` |
+
+```bash
+# macOS / Linux
+cp -r business-problem-sharpener ~/.claude/skills/
+```
+
+```powershell
+# Windows PowerShell
+Copy-Item -Recurse business-problem-sharpener $env:USERPROFILE\.claude\skills\
+```
+
+For Codex, the block the installer generates looks like this — paste it into
+`AGENTS.md` yourself if you prefer:
 
 ```markdown
-## Skills
+## AI-architect skills
 
-Each file below states when it applies. Read the matching one and follow it.
+Each file states when it applies. Before starting one of these tasks, read
+the matching file and follow it.
 
-- Sharpening or classifying a business problem →
+- Sharpening a vague or solution-shaped business problem →
   `skills/business-problem-sharpener/SKILL.md`
-- Designing evaluation, test sets or accuracy targets →
+- Designing evaluation — test sets, metrics, accuracy targets →
   `skills/eval-harness-designer/SKILL.md`
 - Choosing between technical approaches →
   `skills/architecture-tradeoff-analyst/SKILL.md`
-- Reviewing or stress-testing a design →
+- Reviewing or stress-testing a proposed design →
   `skills/architecture-red-team/SKILL.md`
 - Building an ROI or business case →
   `skills/roi-scenario-model/SKILL.md`
-```
-
-### Cursor, Windsurf, and similar
-
-Same idea, different filename — a rule file that points at the skill:
-
-```
-# .cursor/rules/ai-architect.mdc
-Before starting AI-architecture work — framing a problem, designing an
-evaluation, choosing between approaches, reviewing a design, or building an
-ROI case — list skills/*/SKILL.md, read the frontmatter description of each,
-and follow the one whose description matches the task.
 ```
 
 ### Any other agent
