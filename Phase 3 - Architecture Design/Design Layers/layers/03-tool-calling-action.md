@@ -6,8 +6,8 @@ This is the agent's "hands."
 
 ## Tools referenced
 
-- OpenAI function calling
-- MCP
+- function calling (OpenAI, Anthropic, and every major provider)
+- MCP (Model Context Protocol)
 - Composio
 - Pipedream
 - Apify
@@ -31,6 +31,27 @@ It lets the agent interact with external systems:
 - internal APIs
 
 Without tool calling, the agent only talks. With tool calling, the agent can execute.
+
+## What MCP changed
+
+Before MCP, every agent framework had its own way of describing a tool, so an
+integration written for one agent had to be rewritten for the next. MCP is an
+open protocol for exposing tools, data sources and prompts to any agent that
+speaks it.
+
+For an architect that matters in three practical ways:
+
+- **Integrations become reusable.** An MCP server for your ERP works with any
+  MCP-capable agent, not just the one you built it for. That changes build-vs-buy
+  maths for connectors.
+- **The trust boundary gets a name.** An MCP server is where you decide what the
+  agent may see and do — a single place to enforce permissions, rather than
+  scattering checks through prompt text.
+- **It does not remove the approval question below.** A protocol makes an action
+  easy to call; it does not make it safe to call unattended.
+
+Client-side, most vendors now ship MCP support. If you are choosing an
+orchestration framework, whether it speaks MCP is a reasonable filter.
 
 ## Enterprise example
 

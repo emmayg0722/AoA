@@ -10,7 +10,11 @@ This is the agent's "company knowledge."
 - LlamaIndex
 - Haystack
 - RAGFlow
-- vector databases like Pinecone, Weaviate, Chroma, Qdrant, Milvus, FAISS
+- vector databases like Pinecone, Weaviate, Chroma, Qdrant, Milvus, FAISS, and
+  pgvector where Postgres is already in the estate
+- rerankers like Cohere Rerank, bge-reranker, and other cross-encoder models
+- embedding models — treat the choice as a one-way door, since changing it means
+  re-embedding the whole corpus
 
 ## What this layer does
 
@@ -44,6 +48,17 @@ A mature RAG system includes:
 11. Access control
 12. Freshness handling
 13. Evaluation
+
+Two of those thirteen do most of the work and are the ones most often skipped:
+
+- **Reranking (8).** Vector search optimises for similarity, not relevance. The
+  right passage frequently sits at position seven. Retrieve 20-50 candidates,
+  rerank with a cross-encoder, pass the best 3-8. This is usually the highest-
+  yield addition to a mediocre RAG system.
+- **Hybrid retrieval (6 + 7).** Pure vector search is weak on exact identifiers —
+  part numbers, error codes, policy references — because embeddings blur exactly
+  what makes them distinctive. Combining keyword and vector scoring recovers
+  them.
 
 **Simple RAG:** "Search some documents and answer."
 

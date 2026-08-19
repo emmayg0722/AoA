@@ -7,9 +7,11 @@ This is the "what happened?" layer.
 ## Tools referenced
 
 - Helicone
-- Arize AI
+- Langfuse
+- Arize AI / Phoenix
 - Datadog
-- OpenTelemetry
+- OpenTelemetry — increasingly the common trace format, so tooling can be
+  swapped without re-instrumenting
 - LangSmith-style tracing
 
 ## What should be monitored

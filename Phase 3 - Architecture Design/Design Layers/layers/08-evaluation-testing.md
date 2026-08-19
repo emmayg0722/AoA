@@ -7,10 +7,13 @@ This is one of the most underrated layers.
 ## Tools referenced
 
 - LangSmith
+- Langfuse
 - PromptLayer
 - Ragas
 - DeepEval
 - Braintrust
+- promptfoo
+- Arize Phoenix
 
 ## What you evaluate
 
