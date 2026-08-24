@@ -29,9 +29,25 @@ Two outputs, in this order, never merged:
 2. **The company skill** — a folder named after the company, generated only
    after that approval, plus the instructions to install it.
 
-## The rule that does the work
+## Two rules
 
-**Extract, then ask. Never infer a brand and ship it in one move.**
+**1. A question the artefacts can answer is a bug, not diligence.**
+
+If someone hands you a deck and you ask them for their logo, you have wasted
+their time — the logo is inside the file, on the slide master. Same for the
+company name, the fonts, and which accent colours are real. Work the derive-first
+list below to exhaustion before you write a single question.
+
+| Do not ask | Derive it from |
+| --- | --- |
+| The logo | `--extract-media` from a deck, `--from-html` from a site — both rank candidates |
+| Company name | `--from-html` reads `og:site_name` / `<title>`; a deck's title slide has it too |
+| Which accents are real | `--from-pptx` counts how often each theme slot is actually painted |
+| Heading and body fonts | The theme's `majorFont` / `minorFont` |
+| Whether fonts are a brand choice | If the theme matches a stock Office default, they are not |
+| Voice and values | The site's About page and the LinkedIn boilerplate |
+
+**2. Extract, then ask. Never infer a brand and ship it in one move.**
 
 Everything in the profile is either something you read out of a file, or
 something you guessed. Those two things must be visibly different to the
@@ -70,11 +86,25 @@ prevent. `scripts/brand_profile.py` reads the real values, standard library
 only:
 
 ```bash
-python scripts/brand_profile.py --from-pptx template.potx   # theme colours, fonts, embedded media
-python scripts/brand_profile.py --from-svg logo.svg         # every colour the mark paints with
-python scripts/brand_profile.py --from-css site.css         # custom properties, palette, font stacks
-python scripts/brand_profile.py --contrast "#1B1474" "#FFF" # WCAG ratio for one pairing
+python scripts/brand_profile.py --from-pptx template.potx        # colours, fonts, real slot usage, media
+python scripts/brand_profile.py --extract-media template.potx --out assets/   # write the logo out
+python scripts/brand_profile.py --from-svg logo.svg              # every colour the mark paints with
+python scripts/brand_profile.py --from-html homepage.html        # logo candidates, company name, theme colour
+python scripts/brand_profile.py --from-css site.css              # custom properties, palette, font stacks
+python scripts/brand_profile.py --contrast "#1B1474" "#FFF"      # WCAG ratio for one pairing
 ```
+
+Three things `--from-pptx` reports that decide how much of the deck is real:
+
+- **Slot usage.** `accent1 used 8×` versus `accent3 never used — template
+  leftover` answers which accents are the brand's, without asking.
+- **Stock-theme detection.** If the palette and fonts match an Office default,
+  it says so. A template using Aptos and Microsoft's stock accents has not
+  been branded at all, and treating those values as the company's colours is
+  the single easiest way to produce a confidently wrong skill.
+- **Where each image is used.** An image on the slide master is the logo; an
+  image on one slide is a photo. `--extract-media` writes them out, candidates
+  first.
 
 `references/extraction.md` has the per-source detail — where OOXML hides theme
 colours, how to handle a raster-only logo, what to pull from a site when you
@@ -84,6 +114,30 @@ source does not yield to the script.
 If Python is unavailable, the same file formats are still readable by hand:
 a `.pptx` is a zip, and `ppt/theme/theme1.xml` holds the palette. The
 reference explains it.
+
+### 2b. If a website was provided, it is the reference
+
+A live site outranks everything else, because it is what the company ships
+today rather than what someone approved four years ago. When you are given a
+URL, work it properly rather than treating it as one source among several:
+
+- **Palette and type** from the stylesheet — custom properties first.
+- **Company name and descriptor** from the `<title>` and the header.
+- **Voice** from the About page: take two or three sentences verbatim.
+- **Values** from wherever they state them, then push each one until it
+  constrains a sentence.
+- **Logo** — save the page and run `--from-html`. It ranks candidates, and
+  the ranking matters: a favicon is *evidence* of a logo, not a logo. The
+  header `<img>` or inline `<svg>`, then `mask-icon` (always vector), then the
+  apple-touch-icon, then `og:image`, then the 32px favicon last. The
+  favicon-extractor libraries on GitHub stop at `<link rel="icon">`, which is
+  why they hand back a 32px square when you wanted the wordmark.
+
+Anything the site settles is settled. Do not then ask the person for it, and
+do not let a deck template overrule it — say which one you followed instead.
+
+If you cannot fetch the site, say so explicitly rather than silently falling
+back to the deck. That is a gap the person can close in one paste.
 
 ### 3. Resolve the conflicts out loud
 
@@ -121,19 +175,35 @@ pass a failing profile to the next step.
 
 Present three things:
 
-- **The profile itself**, with extracted and inferred clearly marked.
-- **A swatch preview** — a small HTML or Markdown block showing the palette,
-  the type at heading and body size, and the logo on both light and dark, so
-  they are approving something they can see rather than a table of hex codes.
-- **Your open questions**, as a short numbered list. Ask only what you
-  genuinely could not determine, and make each one answerable in a word:
+- **A swatch sheet they can look at.** Not optional, and not a table of hex
+  codes — `#1B1474` is meaningless to almost everyone, so an approval built on
+  it is not really an approval.
 
-  > 1. Accent 1 in your template is a warm orange, but it appears nowhere on
-  >    the site. Still in use, or legacy?
-  > 2. Is Poppins licensed for the client's use, or should the generated skill
-  >    specify the fallback as primary?
-  > 3. Three values on your About page. Which one should actually change how
-  >    a document reads?
+  ```bash
+  python scripts/brand_profile.py --swatch brand.json --out swatches.html
+  ```
+
+  It renders each colour as a block with its plain-English name ("deep
+  indigo"), the logo on both light and dark, the type at heading and body
+  size, and every text pairing rendered as real text on its real background
+  with failures in red. Give them the file and tell them to open it.
+
+- **The profile itself**, with extracted, inferred and proposed marked.
+
+- **Your open questions** — only the ones the artefacts genuinely could not
+  settle. Before writing any question, check it against the derive-first table
+  in the rules above. These are legitimate:
+
+  > 1. Accent 1 in your template is a warm orange, used on two slides but
+  >    nowhere on your site. Still in use, or legacy?
+  > 2. Aptos is Microsoft's default font, so your template was never branded.
+  >    Do you have a real typeface, or shall the skill use the site's stack?
+  > 3. Your About page lists three values. Which one should actually change
+  >    how a document reads?
+
+  These are bugs: *"can you send me your logo"* when you were handed a deck,
+  *"is this the company name"* when it is on the title slide, *"do you have a
+  website"* when they gave you the URL.
 
 Then wait. Explicit approval, not silence, and not "looks good" to a message
 that contained five questions. If they answer some questions and ignore
@@ -177,6 +247,16 @@ Give the exact path for the agent they use:
 | Claude (one project) | `<project>/.claude/skills/columbus/` |
 | Codex | `~/.codex/skills/columbus/`, then point `AGENTS.md` at it |
 | Cursor | `~/.cursor/skills/columbus/`, then a rule file that names it |
+
+On Claude Code the folder name becomes a slash command, so once
+`~/.claude/skills/columbus/` exists the person types **`/columbus`** to invoke
+it deliberately — and it also triggers on its own from the description. Keep
+the slug short and typeable for exactly this reason; `columbus` is a good
+command, `columbus-brand-guidelines-2026` is not. Codex and Cursor have no
+slash commands for skills, so there the wiring file is what makes it load.
+
+Tell the person the command in the same message as the install path. A skill
+nobody knows how to call is a skill nobody calls.
 
 Then run one smoke test and look at the result together: *"Make a one-slide
 title deck for Columbus"* or *"Build a one-page HTML overview."* Check the

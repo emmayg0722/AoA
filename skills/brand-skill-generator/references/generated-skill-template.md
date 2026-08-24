@@ -136,6 +136,27 @@ The traits and prohibitions, three or more verbatim samples, and two or three
 before/after rewrites showing a generic sentence turned into one that sounds
 like the company. Rewrites teach more than adjectives.
 
+## The slug is a command
+
+On Claude Code the skill's folder and frontmatter `name` become a slash
+command: a skill installed at `~/.claude/skills/columbus/` is invoked by
+typing `/columbus`. Pick the slug accordingly — short, lowercase, the word the
+person would actually type. `columbus` is a good command; `columbus-brand-v2`
+is one nobody will type twice.
+
+The skill still triggers on its own from the description; the slash command is
+for when someone wants it deliberately. Both matter, so do not trade a good
+description for a good slug.
+
+Hand over the command with the path, in the same message:
+
+> Copy the folder to `~/.claude/skills/columbus/`, then type `/columbus` in
+> Claude Code — or just ask for a deck and it will apply itself.
+
+Codex and Cursor have no slash commands for skills. There the wiring file
+(`AGENTS.md` or a rule file) is what makes the skill load, so say that instead
+of promising a command that does not exist.
+
 ## Description quality
 
 The description is the only part always in context, so it is the only part
