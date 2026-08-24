@@ -84,16 +84,26 @@ capability layers lifted out of `Phase 3 - Architecture Design/Design Layers/`
 with the tools each is built with, so the stack vocabulary (LangGraph, MCP,
 Ragas, Lakera, Helicone…) is visible on the hub instead of three levels down.
 Last comes a **Microsoft Enterprise Ladder** section, rendered from `MS_LADDER`
-and `MS_FOOTPRINT` in `index.html` — the four rungs a Microsoft-shop client climbs
-from a bought Microsoft 365 Copilot seat, through configured Copilot Studio
-agents and delegated work in Copilot Cowork, to a governed estate (Work IQ,
+and `MS_FOOTPRINT` in `index.html` — the four rungs a Microsoft-shop
+client climbs from a bought Microsoft 365 Copilot seat, through configured Copilot
+Studio agents and delegated work in Copilot Cowork, to a governed estate (Work IQ,
 Fabric, Dataverse/Dynamics 365, Foundry, Agent 365 + Entra Agent ID, Purview).
-Each rung carries ship / watch / gate, mirroring the stage blocks, and above them
-a footprint matrix scores five enterprise surfaces against the four rungs from
-"not in play yet" to "load-bearing". The ladder runs alongside the phases, not
-instead of them: rung 1 is a Phase 1 use case, rung 4 a Phase 6 governance
-programme. Its product facts age fast — check them against Microsoft's own
-announcements before editing rather than paraphrasing what is already there.
+Each rung is one full-width block answering the questions a client asks in order —
+try this first (with what bites), what it gets you, how to turn it on (numbered
+setup steps), gate to clear — so keep that shape when editing rather than adding a
+fifth column. `msFlowFigure()` draws the framing diagram as hand-authored inline
+SVG: the same three-step flow four times, so the only thing that changes is where
+the person stands (doing the work → handling exceptions → approving → governing).
+Its per-rung copy lives on each `MS_LADDER` entry's `flow` field rather than in a
+parallel array, so the panel and the rung below it cannot describe different
+ladders. The rung blocks reuse the shared `.stage-grid` / `.stage-row` /
+`.stage-lbl` classes the phase stages use — style the ladder by editing those,
+not by adding a second eyebrow rule.
+Below the rungs a footprint matrix scores five enterprise surfaces against the four
+rungs from "not in play yet" to "load-bearing". The ladder runs alongside the
+phases, not instead of them: rung 1 is a Phase 1 use case, rung 4 a Phase 6
+governance programme. Its product facts age fast — check them against Microsoft's
+own announcements before editing rather than paraphrasing what is already there.
 
 All three sections are `is-aux`, so they stay out of the numbered path and out of
 the "43 tools / 10 phases" counts; layer rows are `a.layer` and ladder rungs are
