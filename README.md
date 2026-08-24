@@ -373,6 +373,37 @@ inserting a marked block so re-running updates that block and leaves the rest of
 your `AGENTS.md` alone. Manual per-OS paths and the `.skill` package format are
 covered in `skills/README.md` and on the [skills page](skills/).
 
+## Microsoft enterprise ladder (on the hub)
+
+Most clients this toolkit is aimed at are Microsoft shops, and their AI programme
+does not start at architecture — it starts with a Copilot licence somebody already
+bought. The hub carries a **Microsoft Enterprise Ladder** section describing the
+four rungs from that first seat to a governed agent estate:
+
+| Rung | What it is | Where the work is |
+| --- | --- | --- |
+| 1 · Assisted | **Microsoft 365 Copilot** in Word, Excel, PowerPoint, Outlook and Teams | Named workflows, a time baseline, and fixing tenant oversharing before Copilot makes it searchable |
+| 2 · Configured | **Agents in Copilot Studio** — declarative agents grounded in SharePoint, Graph or Dataverse, published into Teams | One scoped agent with an owner, a tested answer set, a fallback path and a deflection number |
+| 3 · Delegated | **Copilot Cowork** — you define the task, it plans and executes multi-step work across M365 and returns a deliverable | A delegation policy, a named reviewer per deliverable class, and a budget owner for usage credits |
+| 4 · Governed estate | **Work IQ, Fabric, Dataverse/Dynamics 365, Microsoft Foundry, Agent 365 + Entra Agent ID, Purview** | A curated knowledge layer, an agent registry with owners and access reviews, evals before release, cost per outcome |
+
+Each rung states what you ship, what actually bites, and the gate to clear before
+the next rung is worth funding — the same shape the delivery phases use. The
+ladder runs *alongside* those phases rather than replacing them: rung 1 is a
+Phase 1 use case, rung 2 a Phase 4 pilot, rung 4 a Phase 6 governance programme.
+
+Above the rungs sits an **enterprise footprint** matrix — five enterprise surfaces
+(productivity, business apps and process, knowledge and data, identity and
+governance, custom engineering) against the four rungs, each cell scored from
+"not in play yet" to "load-bearing". The footprint spreads down and to the right:
+rung 1 touches the productivity surface, rung 4 has load-bearing dependencies in
+data, identity and engineering — which is the argument for why the last rung is a
+programme and not a licence.
+
+Like the reference-architecture layers, the rung content stays in English while
+the chrome around it follows the site language selector. The section is `is-aux`,
+so it stays out of the numbered path and out of the "43 tools / 10 phases" counts.
+
 ## SOP checklists & the Nordkap sample engagement
 
 Every tool's SOP is now a **checkable checklist** — step state persists locally

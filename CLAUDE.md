@@ -83,9 +83,24 @@ Architecture** section rendered from the `LAYERS` array in `index.html` — the 
 capability layers lifted out of `Phase 3 - Architecture Design/Design Layers/`
 with the tools each is built with, so the stack vocabulary (LangGraph, MCP,
 Ragas, Lakera, Helicone…) is visible on the hub instead of three levels down.
-Both sections are `is-aux`, so they stay out of the numbered path and out of the
-"43 tools / 10 phases" counts; layer rows are `a.layer`, which the visibility
-pass counts alongside `a.card`.
+Last comes a **Microsoft Enterprise Ladder** section, rendered from `MS_LADDER`
+and `MS_FOOTPRINT` in `index.html` — the four rungs a Microsoft-shop client climbs
+from a bought Microsoft 365 Copilot seat, through configured Copilot Studio
+agents and delegated work in Copilot Cowork, to a governed estate (Work IQ,
+Fabric, Dataverse/Dynamics 365, Foundry, Agent 365 + Entra Agent ID, Purview).
+Each rung carries ship / watch / gate, mirroring the stage blocks, and above them
+a footprint matrix scores five enterprise surfaces against the four rungs from
+"not in play yet" to "load-bearing". The ladder runs alongside the phases, not
+instead of them: rung 1 is a Phase 1 use case, rung 4 a Phase 6 governance
+programme. Its product facts age fast — check them against Microsoft's own
+announcements before editing rather than paraphrasing what is already there.
+
+All three sections are `is-aux`, so they stay out of the numbered path and out of
+the "43 tools / 10 phases" counts; layer rows are `a.layer` and ladder rungs are
+`.rung`, both of which the visibility and count passes handle alongside `a.card`.
+
+Layer and rung content stays in English — the same scoping the maturity
+assessment uses — while the chrome around it translates with the site selector.
 
 Stage `Stack` lines carry `<code>` markup, so they use `data-i18n-html` rather
 than `data-i18n` — `applyI18n` writes `textContent` for the former and
