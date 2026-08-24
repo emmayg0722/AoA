@@ -29,7 +29,7 @@ Two outputs, in this order, never merged:
 2. **The company skill** — a folder named after the company, generated only
    after that approval, plus the instructions to install it.
 
-## Two rules
+## Three rules
 
 **1. A question the artefacts can answer is a bug, not diligence.**
 
@@ -47,7 +47,21 @@ list below to exhaustion before you write a single question.
 | Whether fonts are a brand choice | If the theme matches a stock Office default, they are not |
 | Voice and values | The site's About page and the LinkedIn boilerplate |
 
-**2. Extract, then ask. Never infer a brand and ship it in one move.**
+**2. Never ask permission to do the work.**
+
+Being handed a `.pptx` *is* the instruction to read it. "Shall I proceed with
+extraction from the .pptx now?" is not a courtesy — it is a turn spent asking
+whether to do the thing you were invoked for, and the only possible answer is
+yes. Run the commands, then report what came out.
+
+The same goes for "shall I look at the website you gave me", "would you like
+me to check the logo colours", and every other variant. If the answer to your
+question is obviously yes, it was not a question.
+
+Ask before doing only when an action is destructive, costs the person money,
+or sends their data somewhere. Reading files they handed you is none of those.
+
+**3. Extract, then ask. Never infer a brand and ship it in one move.**
 
 Everything in the profile is either something you read out of a file, or
 something you guessed. Those two things must be visibly different to the
@@ -79,11 +93,23 @@ settle:
 Name the gaps now. "No brand guidelines document, so logo clear space is a
 guess" is a line in the profile, not a silent omission.
 
-### 2. Read the values out of the files
+### 2. Run the extraction now
 
-Guessing colours from a screenshot is the failure this skill exists to
-prevent. `scripts/brand_profile.py` reads the real values, standard library
-only:
+Not "offer to". Run it, in this turn, for every input that arrived. Guessing
+colours from a screenshot is the failure this skill exists to prevent, and
+`scripts/brand_profile.py` reads the real values with nothing but the standard
+library — there is no cost to running it and no reason to ask first.
+
+Map inputs to commands and work the list:
+
+| They gave you | Run |
+| --- | --- |
+| `.pptx` / `.potx` | `--from-pptx`, then `--extract-media` |
+| `.docx` / `.dotx` | Same ZIP structure — see `references/extraction.md` |
+| A website URL | Save the page, then `--from-html`, then `--from-css` on its stylesheet |
+| `.svg` logo | `--from-svg` |
+| `.png` / `.jpg` logo | Check the deck and site for a vector first |
+| A LinkedIn URL | Read the About text — voice and values, no colours |
 
 ```bash
 python scripts/brand_profile.py --from-pptx template.potx        # colours, fonts, real slot usage, media
@@ -173,6 +199,22 @@ pass a failing profile to the next step.
 
 **Stop here. Do not generate the skill yet.**
 
+Before you write a single question, every one of these must already be true.
+If one is not, you are not at this step yet — go back and run it.
+
+- [ ] Every input that arrived has been run through its command: a deck
+      through `--from-pptx` **and** `--extract-media`, a site through
+      `--from-html` and `--from-css`, a logo through `--from-svg`.
+- [ ] You have the extracted logo files on disk, and you know which one is
+      the primary mark and why.
+- [ ] You know which theme slots are actually used, and whether the template
+      is an unmodified Office default.
+- [ ] `--check` passes on the profile.
+- [ ] `--swatch` has been written.
+
+A question written before this checklist is complete is a question the files
+were about to answer.
+
 Present three things:
 
 - **A swatch sheet they can look at.** Not optional, and not a table of hex
@@ -201,9 +243,22 @@ Present three things:
   > 3. Your About page lists three values. Which one should actually change
   >    how a document reads?
 
-  These are bugs: *"can you send me your logo"* when you were handed a deck,
-  *"is this the company name"* when it is on the title slide, *"do you have a
-  website"* when they gave you the URL.
+  These are bugs:
+
+  - *"Can you send me your logo?"* — you were handed a deck; it is on the
+    slide master. Extract it, show it, and only then ask for what is missing.
+  - *"Shall I proceed with extraction from the .pptx?"* — see rule 2.
+  - *"Is this the company name?"* — it is on the title slide and in the site's
+    `<title>`.
+  - *"Do you have a website?"* — they gave you the URL.
+
+  A logo question becomes legitimate once you have shown what you already
+  found, and it names the specific gap rather than asking for everything:
+
+  > I pulled your logo off the slide master — it is a 3 KB PNG, so it will
+  > blur above about 300px wide. Do you have the SVG? And I found no
+  > light-on-dark variant anywhere; is there one, or shall the skill say to
+  > keep the logo on light backgrounds only?
 
 Then wait. Explicit approval, not silence, and not "looks good" to a message
 that contained five questions. If they answer some questions and ignore
@@ -288,7 +343,10 @@ Use this for the profile at step 5.
 [Heading and body, with fallbacks, and the licensing position]
 
 ## Logo
-[Variants, clear space, minimum size, what must never happen to it]
+[The files you extracted and where each came from — "logo-primary.png, pulled
+from the slide master" — then clear space, minimum size, and what must never
+happen to it. If you are showing a logo here, you cannot also be asking for
+one below.]
 
 ## Voice
 [Traits, things to avoid, one rewritten sentence showing the difference]
@@ -301,7 +359,10 @@ nothing is decoration; drop it.]
 [Each disagreement between sources, and which won]
 
 ## Questions before I generate the skill
-[Numbered, each answerable in a word]
+[Numbered, each answerable in a word. Every one has survived this test: the
+files I was given cannot answer it, and the answer is not obviously yes.
+Three or four is normal. If you have written more than five, you skipped
+step 2.]
 
 ## What separates a real brand skill from a colour list
 
