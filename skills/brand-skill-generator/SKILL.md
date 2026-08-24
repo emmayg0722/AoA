@@ -22,21 +22,28 @@ You are turning scattered brand artefacts into one reusable thing: a skill,
 named after the company, that any later session can load to produce work that
 looks and sounds like it came from that company.
 
-Two outputs, in this order, never merged:
+## The whole skill in nine lines
 
-1. **A brand profile** — what you extracted, what you inferred, and what you
-   could not determine. Shown to the person for approval.
-2. **The company skill** — a folder named after the company, generated only
-   after that approval, plus the instructions to install it.
+Three phases. Never skip one, never reorder them, never merge two.
+
+| | Phase | What happens | Never |
+| --- | --- | --- | --- |
+| 1 | **EXTRACT** | Run every command against every file you were given. Always, immediately, without asking. | Never ask permission. Never ask for something a file you hold can answer. |
+| 2 | **ASK** | Only for what extraction actually failed to produce, naming what you tried. Often this is nothing. | Never ask before phase 1 has run. |
+| 3 | **TICKET** | One approval ticket: what you found, shown as colour you can see, and any open questions. Wait for a yes. | Never generate the skill without one. |
+
+Then, and only then, generate the company skill and say how to install it.
+
+If you are about to write a question, you are in phase 2 — so phase 1 must
+already be finished. If it is not, go and finish it.
 
 ## Three rules
 
 **1. A question the artefacts can answer is a bug, not diligence.**
 
-If someone hands you a deck and you ask them for their logo, you have wasted
-their time — the logo is inside the file, on the slide master. Same for the
-company name, the fonts, and which accent colours are real. Work the derive-first
-list below to exhaustion before you write a single question.
+Hand someone's deck back with "can you send me your logo?" and you have wasted
+their time — it is inside the file, on the slide master. Same for the company
+name, the fonts, and which accents are real:
 
 | Do not ask | Derive it from |
 | --- | --- |
@@ -50,31 +57,27 @@ list below to exhaustion before you write a single question.
 **2. Never ask permission to do the work.**
 
 Being handed a `.pptx` *is* the instruction to read it. "Shall I proceed with
-extraction from the .pptx now?" is not a courtesy — it is a turn spent asking
-whether to do the thing you were invoked for, and the only possible answer is
-yes. Run the commands, then report what came out.
+extraction now?" is a turn spent asking whether to do the thing you were
+invoked for, and the only possible answer is yes. Same for "shall I look at
+the website you gave me". If the answer is obviously yes, it was not a
+question.
 
-The same goes for "shall I look at the website you gave me", "would you like
-me to check the logo colours", and every other variant. If the answer to your
-question is obviously yes, it was not a question.
-
-Ask before doing only when an action is destructive, costs the person money,
-or sends their data somewhere. Reading files they handed you is none of those.
+Ask before acting only when something is destructive, costs money, or sends
+data somewhere. Reading files they handed you is none of those.
 
 **3. Extract, then ask. Never infer a brand and ship it in one move.**
 
-Everything in the profile is either something you read out of a file, or
-something you guessed. Those two things must be visibly different to the
-person reviewing it, because they will accept the whole document at a glance
-and only your labelling protects them from accepting your guesses too.
+Everything in the profile is either read out of a file or guessed, and the two
+must be visibly different in the ticket. People accept a document at a glance;
+your labelling is the only thing stopping them accepting your guesses at the
+same speed as your findings.
 
-A logo's PNG has no "primary colour" field; you sampled it. A website's CSS
-has forty greys; you picked one. The deck template and the site disagree; you
-chose. Each of those is a question, not a finding — and the person whose brand
-it is answers them in seconds, where you would spend the whole engagement
-being subtly wrong.
+A PNG logo has no "primary colour" field, so you sampled it. A site's CSS has
+forty greys, so you picked one. The deck and the site disagree, so you chose.
+Each of those is a question the brand's owner answers in seconds, and that you
+would otherwise be subtly wrong about for the whole engagement.
 
-## Workflow
+## Phase 1 — EXTRACT
 
 ### 1. Inventory what you were actually given
 
@@ -141,6 +144,24 @@ If Python is unavailable, the same file formats are still readable by hand:
 a `.pptx` is a zip, and `ppt/theme/theme1.xml` holds the palette. The
 reference explains it.
 
+#### When extraction genuinely does not work
+
+Extraction failing is the *only* thing that licenses a question about
+something a file should have contained. Diagnose which of these happened,
+because the right move differs:
+
+| What happened | What to do |
+| --- | --- |
+| The command ran and found it | Use it. No question. |
+| The command ran and the thing is genuinely absent — a deck with no image on any master, a site with no header mark | Now you may ask, and say what you tried: *"There is no logo on any master or layout in the deck, and your site's header uses a text wordmark. Do you have a logo file?"* |
+| The command found something too poor to use — a 3 KB PNG that will blur, a JPEG whose colours are compression artefacts | Show what you found, say why it is not enough, ask for the specific better thing. |
+| Python is unavailable | Do it by hand. A `.pptx` is a zip; `references/extraction.md` has the paths. Only ask if that also fails. |
+| The file is not what it claims — a `.pptx` that is not a zip, an HTML page that is a login wall | Say exactly that, and ask for the right file. |
+
+The pattern in every legitimate case is the same: **report what you tried,
+what you got, and why it is not enough** — then ask. A question without that
+preamble is a question that skipped phase 1.
+
 ### 2b. If a website was provided, it is the reference
 
 A live site outranks everything else, because it is what the company ships
@@ -178,7 +199,7 @@ a line the person can overrule:
 > Primary blue is `#1B1474` on the website but `#241C7A` in the deck template.
 > Used the website value. The template is the older of the two.
 
-### 4. Build the brand profile
+### 4. Assemble the brand profile
 
 Fill the structure in `references/brand-profile-format.md`. Every colour gets
 a role and a use, not just a hex. Every pairing of text on background gets a
@@ -193,13 +214,19 @@ python scripts/brand_profile.py --check brand.json       # validate + contrast-t
 
 `--check` exits non-zero if a pairing fails WCAG AA. Fix it, or record it in
 the profile as decorative-only with the accessible alternative named. Do not
-pass a failing profile to the next step.
+put a failing profile in the ticket.
 
-### 5. Align with the person — the approval gate
+## Phases 2 and 3 — ASK, then TICKET
+
+### 5. Write the ticket, and wait
 
 **Stop here. Do not generate the skill yet.**
 
-Before you write a single question, every one of these must already be true.
+The ticket is one message containing three things, every time, no exceptions.
+It is the only thing that stands between an inferred brand and a company
+producing documents in the wrong colours for a year.
+
+Before you write it, every one of these must already be true.
 If one is not, you are not at this step yet — go back and run it.
 
 - [ ] Every input that arrived has been run through its command: a deck
@@ -215,7 +242,7 @@ If one is not, you are not at this step yet — go back and run it.
 A question written before this checklist is complete is a question the files
 were about to answer.
 
-Present three things:
+The ticket contains:
 
 - **A swatch sheet they can look at.** Not optional, and not a table of hex
   codes — `#1B1474` is meaningless to almost everyone, so an approval built on
@@ -264,6 +291,8 @@ Then wait. Explicit approval, not silence, and not "looks good" to a message
 that contained five questions. If they answer some questions and ignore
 others, ask the rest — an unanswered question becomes a wrong default baked
 into every document the company produces from here.
+
+## After the yes
 
 ### 6. Generate the company skill
 
@@ -321,9 +350,12 @@ site rather than the old template.
 
 A generated skill nobody has run once is not finished.
 
-## Output template
+## The ticket
 
-Use this for the profile at step 5.
+The one artefact the person approves. Send it as a single message with the
+swatch file attached, using this shape. There is always a ticket, even when
+you have no questions at all — in that case it ends with "nothing outstanding;
+say go and I will generate it."
 
 ## Brand profile — [Company]
 
@@ -362,7 +394,7 @@ nothing is decoration; drop it.]
 [Numbered, each answerable in a word. Every one has survived this test: the
 files I was given cannot answer it, and the answer is not obviously yes.
 Three or four is normal. If you have written more than five, you skipped
-step 2.]
+phase 1.]
 
 ## What separates a real brand skill from a colour list
 
