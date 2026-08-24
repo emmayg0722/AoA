@@ -378,27 +378,35 @@ covered in `skills/README.md` and on the [skills page](skills/).
 Most clients this toolkit is aimed at are Microsoft shops, and their AI programme
 does not start at architecture — it starts with a Copilot licence somebody already
 bought. The hub carries a **Microsoft Enterprise Ladder** section describing the
-four rungs from that first seat to a governed agent estate:
+four rungs from that first seat to a governed agent estate. Each rung answers the
+four questions a client actually asks, in the order they ask them:
 
-| Rung | What it is | Where the work is |
+- **Try this first** — the concrete first move, plus what bites if you skip ahead
+- **What it gets you** — the outcome in business terms, not features
+- **How to turn it on** — the numbered setup: licences, admin steps, prerequisites
+- **Gate to clear** — what has to be true before the next rung is worth funding
+
+| Rung | What it is | The first move |
 | --- | --- | --- |
-| 1 · Assisted | **Microsoft 365 Copilot** in Word, Excel, PowerPoint, Outlook and Teams | Named workflows, a time baseline, and fixing tenant oversharing before Copilot makes it searchable |
-| 2 · Configured | **Agents in Copilot Studio** — declarative agents grounded in SharePoint, Graph or Dataverse, published into Teams | One scoped agent with an owner, a tested answer set, a fallback path and a deflection number |
-| 3 · Delegated | **Copilot Cowork** — you define the task, it plans and executes multi-step work across M365 and returns a deliverable | A delegation policy, a named reviewer per deliverable class, and a budget owner for usage credits |
-| 4 · Governed estate | **Work IQ, Fabric, Dataverse/Dynamics 365, Microsoft Foundry, Agent 365 + Entra Agent ID, Purview** | A curated knowledge layer, an agent registry with owners and access reviews, evals before release, cost per outcome |
+| 1 · Assisted | **Microsoft 365 Copilot** in Word, Excel, PowerPoint, Outlook and Teams | Two or three named weekly jobs in one or two teams, with a time baseline, after fixing SharePoint oversharing |
+| 2 · Configured | **Agents in Copilot Studio**, grounded in SharePoint, Graph or Dataverse and published into Teams | One repeat-question queue turned into an agent with an owner, an escalation path and a deflection number |
+| 3 · Delegated | **Copilot Cowork** — define the task, it plans and runs the steps and returns a deliverable | One whole multi-step piece of work handed over, reviewed at checkpoints, on a budget somebody owns |
+| 4 · Governed estate | **Work IQ, Fabric, Dataverse/Dynamics 365, Microsoft Foundry, Agent 365 + Entra Agent ID, Purview** | Curate the knowledge agents read, register every agent that exists, then let teams build on top |
 
-Each rung states what you ship, what actually bites, and the gate to clear before
-the next rung is worth funding — the same shape the delivery phases use. The
-ladder runs *alongside* those phases rather than replacing them: rung 1 is a
-Phase 1 use case, rung 2 a Phase 4 pilot, rung 4 a Phase 6 governance programme.
+The ladder runs *alongside* the delivery phases rather than replacing them: rung 1
+is a Phase 1 use case, rung 2 a Phase 4 pilot, rung 4 a Phase 6 governance
+programme.
 
-Above the rungs sits an **enterprise footprint** matrix — five enterprise surfaces
-(productivity, business apps and process, knowledge and data, identity and
-governance, custom engineering) against the four rungs, each cell scored from
-"not in play yet" to "load-bearing". The footprint spreads down and to the right:
-rung 1 touches the productivity surface, rung 4 has load-bearing dependencies in
-data, identity and engineering — which is the argument for why the last rung is a
-programme and not a licence.
+Two visuals frame the rungs. Above them, a hand-authored inline SVG shows the same
+three-step flow at each rung so the only thing that changes is **where the person
+stands**: doing the work, then answering what the agent cannot, then approving what
+it produced, then governing the estate that produces it. That is what decides which
+rung a client is really on, rather than what they have licensed. Below them, an
+**enterprise footprint** matrix scores five enterprise surfaces (productivity,
+business apps and process, knowledge and data, identity and governance, custom
+engineering) against the four rungs, from "not in play yet" to "load-bearing" —
+the footprint spreads down and to the right, which is the argument for why the last
+rung is a programme and not a licence.
 
 Like the reference-architecture layers, the rung content stays in English while
 the chrome around it follows the site language selector. The section is `is-aux`,

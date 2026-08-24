@@ -24,6 +24,7 @@
     --ink: #1c1c28;
     --muted: #5b5b6b;
     --line: #e4e4f0;
+    --warn: #8a5a2b;
     --font-heading: 'Fraunces', Georgia, serif;
     --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     /* Layer scale. Only two layers exist on this page; keep it that way. */
@@ -305,7 +306,7 @@
     line-height: 1.5;
     text-wrap: pretty;
   }
-  .stage-gate .stage-lbl { display: inline; margin-right: 7px; color: var(--primary); }
+  .stage-gate .stage-lbl, .rung-gate .stage-lbl { display: inline; margin-right: 7px; color: var(--primary); }
   @media (max-width: 720px) {
     .stage { padding: 14px 16px; }
     .stage-grid { grid-template-columns: minmax(0, 1fr); }
@@ -363,65 +364,88 @@
   }
   @media (prefers-reduced-motion: reduce) { .layer { transition: none; } .layer:hover { transform: none; } }
   /* Microsoft enterprise ladder: the four rungs a Microsoft-shop client climbs
-     from a first Copilot seat to a governed agent estate, plus a footprint
-     matrix showing which parts of the enterprise each rung puts weight on.
-     Rung content stays in English like the reference layers; chrome translates. */
-  .ms-grid { align-items: start; }
-  .ms-full { grid-column: 1 / -1; }
+     from a first Copilot seat to a governed agent estate. Each rung is one
+     full-width block answering the questions a client asks in order — what do
+     I try, what does it get me, how do I turn it on — so the ladder reads
+     top to bottom instead of as a grid of cards. Rung content stays in
+     English like the reference layers; the chrome translates. */
+  /* One rung per row, not a card grid: the ladder has to read top to bottom.
+     Compounded with .cards to outrank the shared two-column .cards rule. */
+  .cards.ms-grid { grid-template-columns: minmax(0, 1fr); gap: 26px; }
+  /* Mechanism figure: where the person sits at each rung. */
+  .ms-figure { margin: 0; }
+  .ms-figure svg { display: block; width: 100%; height: auto; }
+  .ms-figure figcaption { margin-top: 10px; }
+  .flow-person { fill: var(--primary); }
+  .flow-agent { fill: #fff; stroke: var(--primary); stroke-width: 1; }
+  .flow-box-t { font-size: 12px; font-weight: 600; fill: var(--primary); }
+  .flow-box-t.on-fill { fill: #fff; }
+  .flow-n { font-size: 12px; font-weight: 700; fill: var(--muted); font-variant-numeric: tabular-nums; }
+  /* The SVG twin of .stage-lbl — same metrics, but fill rather than color. */
+  .flow-kind { font-size: 10.5px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; fill: var(--muted); }
+  .flow-arrow { stroke: var(--muted); stroke-width: 1; }
+  .flow-arrow-t { font-size: 11px; fill: var(--muted); }
+  .flow-role { font-size: 12.5px; font-weight: 600; fill: var(--primary); }
+  /* One rung. */
   .rung {
-    display: block;
     background: #fff;
     border: 1px solid var(--line);
     border-left: 3px solid var(--accent);
     border-radius: 12px;
-    padding: 18px 20px 20px;
+    padding: 22px 24px 20px;
   }
-  /* The left edge darkens rung by rung — the same "footprint deepening" cue
-     the matrix meters carry, so the two read as one picture. */
+  /* The left edge darkens rung by rung — the same deepening cue the footprint
+     meters carry, so the two read as one picture. */
   .rung-2 { border-left-color: #b9bbe6; }
   .rung-3 { border-left-color: #7b7fc4; }
   .rung-4 { border-left-color: var(--primary); }
-  .rung-head { display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 12px; align-items: center; }
-  .rung-n {
-    font-size: 13px;
+  .rung-head {
+    display: grid;
+    grid-template-columns: 36px minmax(0, 1fr);
+    gap: 4px 14px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--line);
+  }
+  .rung-id { grid-column: 2; }
+  .rung-change { grid-column: 2; }
+  /* Both number chips in the ladder: the rung's, and the setup step's. */
+  .rung-n, .rung-setup li::before {
     font-weight: 700;
     font-variant-numeric: tabular-nums;
     color: var(--primary);
     background: var(--powder);
-    border-radius: 8px;
-    padding: 7px 0;
     text-align: center;
   }
-  .rung-kind {
-    display: block;
-    font-size: 10.5px;
-    font-weight: 700;
-    letter-spacing: 0.09em;
-    text-transform: uppercase;
-    color: var(--muted);
-  }
-  .rung-name { display: block; font-family: var(--font-heading); font-size: 17px; font-weight: 600; color: var(--primary); }
-  .rung-what { font-size: 13.5px; line-height: 1.55; color: var(--muted); margin: 12px 0 13px; text-wrap: pretty; }
-  .rung-row { display: grid; grid-template-columns: 54px minmax(0, 1fr); gap: 10px; margin-bottom: 9px; }
-  .rung-row p { font-size: 13px; line-height: 1.5; text-wrap: pretty; }
-  .rung-lbl {
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--primary);
-    padding-top: 3px;
-  }
-  .rung-gate {
-    margin-top: 12px;
-    padding-top: 11px;
-    border-top: 1px solid var(--line);
+  .rung-n { font-size: 14px; border-radius: 8px; padding: 8px 0; }
+  .rung-change { font-size: 13.5px; line-height: 1.55; color: var(--muted); max-width: 82ch; text-wrap: pretty; }
+  /* Columns ride the shared .stage-grid, so they inherit its auto-fit collapse
+     instead of carrying a hand-maintained breakpoint. Only the heading colour
+     differs from a stage row: these name a question, not a stage field. */
+  .rung-cols { padding: 18px 0 4px; }
+  .rung-cols h4.stage-lbl { color: var(--primary); margin-bottom: 8px; }
+  .rung-watch { margin-top: 12px; color: var(--muted); font-size: 13px; }
+  .rung-watch .stage-lbl { color: var(--warn); }
+  .rung-setup ol { list-style: none; counter-reset: step; }
+  .rung-setup li {
+    counter-increment: step;
+    display: grid;
+    grid-template-columns: 20px minmax(0, 1fr);
+    gap: 9px;
     font-size: 13px;
     line-height: 1.5;
+    margin-bottom: 9px;
     text-wrap: pretty;
   }
-  .rung-gate .rung-lbl { display: inline; margin-right: 7px; padding-top: 0; }
-  .rung .layer-tools { margin-top: 13px; }
+  .rung-setup li::before {
+    content: counter(step);
+    font-size: 10.5px;
+    border-radius: 5px;
+    padding: 2px 0;
+    height: fit-content;
+    margin-top: 1px;
+  }
+  .rung-foot { margin-top: 6px; padding-top: 14px; border-top: 1px solid var(--line); }
+  .rung-gate { margin-top: 12px; font-size: 13px; line-height: 1.5; text-wrap: pretty; }
   /* Footprint matrix: surfaces down the side, rungs across the top. */
   .fp {
     background: linear-gradient(180deg, var(--powder) 0%, #fff 62%);
@@ -429,8 +453,9 @@
     border-radius: 14px;
     padding: 22px 24px 20px;
   }
-  .fp > h3 { font-family: var(--font-heading); font-size: 19px; font-weight: 600; color: var(--primary); }
-  .fp > p { font-size: 13px; line-height: 1.55; color: var(--muted); margin: 5px 0 16px; max-width: 78ch; text-wrap: pretty; }
+  .fp > h3, .rung-name { font-family: var(--font-heading); font-size: 19px; font-weight: 600; color: var(--primary); }
+  .fp > p, .ms-figure figcaption { font-size: 13px; line-height: 1.55; color: var(--muted); max-width: 78ch; text-wrap: pretty; }
+  .fp > p { margin: 5px 0 16px; }
   /* position:relative so the .sr-only cell labels take this scroller as their
      containing block — otherwise they escape its clip and widen the page. */
   .fp-scroll { overflow-x: auto; position: relative; }
@@ -447,10 +472,15 @@
   .fp-meter i.on { background: var(--primary); border-color: var(--primary); }
   .fp-legend { display: flex; flex-wrap: wrap; gap: 8px 18px; margin-top: 14px; font-size: 12px; color: var(--muted); }
   .fp-key { display: inline-flex; align-items: center; gap: 7px; }
+  @media (max-width: 900px) {
+    /* The figure's four panels stop being legible well before the phone
+       breakpoint, so it scrolls in its own track rather than shrinking. */
+    .ms-figure { overflow-x: auto; }
+    .ms-figure svg { width: 860px; max-width: none; }
+  }
   @media (max-width: 720px) {
     .fp { padding: 18px 16px 16px; }
-    .rung { padding: 16px 16px 18px; }
-    .rung-row { grid-template-columns: minmax(0, 1fr); gap: 2px; }
+    .rung { padding: 18px 16px; }
   }
   /* Find-a-tool filter: 32 cards is too many to scan, so offer a direct
      text path alongside browsing by phase. */
@@ -472,8 +502,10 @@
   #toolFilter:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
   #toolFilter::placeholder { color: var(--muted); }
   .filter-status { font-size: 13px; color: var(--muted); margin-top: 8px; min-height: 1.2em; }
-  .phase-head[hidden], .phase-sub[hidden], .cards[hidden], .card[hidden],
-  .layer[hidden], .rung[hidden] { display: none; }
+  /* The UA's [hidden] rule loses to any author display declaration, so the
+     filter needs this. Scoped to main and element-agnostic: every filterable
+     thing lives there, and it never needs an entry adding per element type. */
+  main [hidden] { display: none; }
   .no-results {
     background: #fff; border: 1px solid var(--line); border-radius: 14px;
     padding: 26px; color: var(--muted); font-size: 15px;
@@ -1403,9 +1435,13 @@ const STRINGS = {
     rungsCountLabel: (n) => `${n} rungs`,
     tagMs: 'Microsoft',
     msTitle: 'Microsoft Enterprise Ladder',
-    msSub: 'Most clients here are Microsoft shops, and their AI programme does not begin at architecture — it begins with a Copilot licence somebody already bought. These four rungs are the route from that seat to a governed agent estate: what you ship on each, what actually bites, and the gate before the next rung is worth funding. It runs alongside the delivery phases rather than replacing them — rung 1 is a Phase 1 use case, rung 2 a Phase 4 pilot, rung 4 a Phase 6 governance programme. Rung content stays in English, like the reference layers.',
-    msLblShip: 'Ship',
-    msLblWatch: 'Watch',
+    msSub: 'Most clients here are Microsoft shops, and their AI programme does not begin at architecture — it begins with a Copilot licence somebody already bought. Each rung answers the four questions they ask in order: what do I try first, what does it get me, how do I turn it on, and what has to be true before the next rung is worth funding. It runs alongside the delivery phases rather than replacing them — rung 1 is a Phase 1 use case, rung 2 a Phase 4 pilot, rung 4 a Phase 6 governance programme. Rung content stays in English, like the reference layers.',
+    msLblTry: 'Try this first',
+    msLblGets: 'What it gets you',
+    msLblSetup: 'How to turn it on',
+    msLblWatch: 'Watch out for',
+    msFlowCap: 'The same three steps at every rung; what moves is the person. They do the work, then answer only what the agent cannot, then approve what it produced, then govern the estate that produces it. Which rung a client is on is decided by where their people actually stand in that picture, not by what they have licensed.',
+    msFlowAlt: 'Four panels, one per rung. In each, a person hands work to Microsoft AI and gets something back. Across the four panels the person moves from doing the work, to handling exceptions, to approving deliverables, to governing an estate of agents.',
     fpTitle: 'Enterprise footprint',
     fpSub: 'Which parts of the enterprise each rung actually puts weight on. The footprint spreads down and to the right: rung 1 touches the productivity surface, rung 4 has load-bearing dependencies in data, identity and engineering — which is why the last rung is a programme, not a licence.',
     fpSurface: 'Surface',
@@ -1667,9 +1703,13 @@ const STRINGS = {
     rungsCountLabel: (n) => `${n} trin`,
     tagMs: 'Microsoft',
     msTitle: 'Microsoft-stigen i virksomheden',
-    msSub: 'De fleste kunder her er Microsoft-huse, og deres AI-program starter ikke ved arkitekturen — det starter med en Copilot-licens, nogen allerede har købt. De fire trin er vejen fra den licens til en styret agent-bestand: hvad du leverer på hvert trin, hvad der reelt gør ondt, og den gate der skal passeres, før næste trin er værd at finansiere. Det løber ved siden af leverancefaserne, ikke i stedet for dem — trin 1 er en Fase 1-use case, trin 2 en Fase 4-pilot, trin 4 et Fase 6-governanceprogram. Indholdet på trinnene er på engelsk, ligesom referencelagene.',
-    msLblShip: 'Leverér',
+    msSub: 'De fleste kunder her er Microsoft-huse, og deres AI-program starter ikke ved arkitekturen — det starter med en Copilot-licens, nogen allerede har købt. Hvert trin besvarer de fire spørgsmål de stiller i rækkefølge: hvad prøver vi først, hvad giver det os, hvordan tænder vi det, og hvad skal være på plads, før næste trin er værd at finansiere. Det løber ved siden af leverancefaserne, ikke i stedet for dem — trin 1 er en Fase 1-use case, trin 2 en Fase 4-pilot, trin 4 et Fase 6-governanceprogram. Indholdet på trinnene er på engelsk, ligesom referencelagene.',
+    msLblTry: 'Start med dette',
+    msLblGets: 'Hvad det giver jer',
+    msLblSetup: 'Sådan tændes det',
     msLblWatch: 'Pas på',
+    msFlowCap: 'De samme tre trin på hvert trin på stigen; det der flytter sig, er mennesket. Først udfører de arbejdet, så svarer de kun på det agenten ikke kan, så godkender de det den har lavet, og til sidst styrer de den bestand der laver det. Hvilket trin en kunde står på, afgøres af hvor deres folk reelt står i det billede — ikke af hvad de har licens til.',
+    msFlowAlt: 'Fire paneler, ét per trin. I hvert giver et menneske arbejde videre til Microsoft-AI og får noget tilbage. Hen over de fire paneler flytter mennesket sig fra selv at udføre arbejdet, til at håndtere undtagelser, til at godkende leverancer, til at styre en bestand af agenter.',
     fpTitle: 'Fodaftryk i virksomheden',
     fpSub: 'Hvilke dele af virksomheden hvert trin reelt lægger vægt på. Fodaftrykket breder sig nedad og til højre: trin 1 berører produktivitetsfladen, trin 4 har bærende afhængigheder i data, identitet og engineering — derfor er sidste trin et program og ikke en licens.',
     fpSurface: 'Flade',
@@ -1931,9 +1971,13 @@ const STRINGS = {
     rungsCountLabel: (n) => `${n} steg`,
     tagMs: 'Microsoft',
     msTitle: 'Microsoft-stegen i verksamheten',
-    msSub: 'De flesta kunder här är Microsoft-hus, och deras AI-program börjar inte i arkitekturen — det börjar med en Copilot-licens som någon redan köpt. De fyra stegen är vägen från den licensen till en styrd agentflotta: vad du levererar på varje steg, vad som faktiskt svider, och grinden som ska passeras innan nästa steg är värt att finansiera. Det löper vid sidan av leveransfaserna, inte i stället för dem — steg 1 är ett Fas 1-användningsfall, steg 2 en Fas 4-pilot, steg 4 ett Fas 6-styrningsprogram. Innehållet på stegen är på engelska, precis som referenslagren.',
-    msLblShip: 'Leverera',
-    msLblWatch: 'Se upp',
+    msSub: 'De flesta kunder här är Microsoft-hus, och deras AI-program börjar inte i arkitekturen — det börjar med en Copilot-licens som någon redan köpt. Varje steg besvarar de fyra frågor de ställer i tur och ordning: vad provar vi först, vad ger det oss, hur slår vi på det, och vad måste vara sant innan nästa steg är värt att finansiera. Det löper vid sidan av leveransfaserna, inte i stället för dem — steg 1 är ett Fas 1-användningsfall, steg 2 en Fas 4-pilot, steg 4 ett Fas 6-styrningsprogram. Innehållet på stegen är på engelska, precis som referenslagren.',
+    msLblTry: 'Börja med detta',
+    msLblGets: 'Vad ni får ut av det',
+    msLblSetup: 'Så slår ni på det',
+    msLblWatch: 'Se upp för',
+    msFlowCap: 'Samma tre steg på varje steg i stegen; det som flyttar sig är människan. Först utför de arbetet, sedan svarar de bara på det agenten inte klarar, sedan godkänner de det den producerat, och till sist styr de den flotta som producerar det. Vilket steg en kund står på avgörs av var deras människor faktiskt står i den bilden, inte av vad de har licens för.',
+    msFlowAlt: 'Fyra paneler, en per steg. I varje lämnar en människa över arbete till Microsoft-AI och får något tillbaka. Över de fyra panelerna flyttar sig människan från att själv utföra arbetet, till att hantera undantag, till att godkänna leveranser, till att styra en flotta av agenter.',
     fpTitle: 'Fotavtryck i verksamheten',
     fpSub: 'Vilka delar av verksamheten varje steg faktiskt lägger vikt på. Fotavtrycket breder ut sig nedåt och åt höger: steg 1 berör produktivitetsytan, steg 4 har bärande beroenden i data, identitet och engineering — därför är sista steget ett program och inte en licens.',
     fpSurface: 'Yta',
@@ -2317,6 +2361,11 @@ const LAYERS = [
    'What one request costs, and what that becomes at real volume.', []],
 ];
 
+/* Stack chips, used by the reference layers and the ladder rungs alike. */
+function toolChips(items) {
+  return `<span class="layer-tools">${items.map(x => `<span>${esc(x)}</span>`).join('')}</span>`;
+}
+
 function renderReference() {
   const host = document.getElementById('refArch');
   if (!host) return;
@@ -2328,7 +2377,7 @@ function renderReference() {
         <span>
           <span class="layer-name">${esc(name)}</span>
           <span class="layer-does">${esc(does)}</span>
-          ${tools.length ? `<span class="layer-tools">${tools.map(t => `<span>${esc(t)}</span>`).join('')}</span>` : ''}
+          ${tools.length ? toolChips(tools) : ''}
         </span>
       </a>`).join('');
     return `<div class="ref-band">
@@ -2342,44 +2391,78 @@ function renderReference() {
 /* ── The Microsoft enterprise ladder ──────────────────────────────────
    Most clients in this toolkit's path are Microsoft shops, and their AI
    programme does not start at architecture — it starts with a Copilot
-   licence somebody already bought. These four rungs are the route from
-   that seat to a governed agent estate: what you ship on each, what
-   actually bites, and the gate before the next rung is worth funding.
-   They map onto the delivery phases above rather than replacing them.
-   Rung content stays in English, the same convention the reference
-   layers follow; the chrome around it translates. */
+   licence somebody already bought. Each rung answers the four questions a
+   client actually asks in order: what do I try, what does it get me, how
+   do I turn it on, and what is the gate before the next one. The rungs
+   map onto the delivery phases above rather than replacing them. Rung
+   content stays in English, the same convention the reference layers
+   follow; the chrome around it translates. */
 const MS_LADDER = [
   {
     n: 1, kind: 'Assisted', name: 'Microsoft 365 Copilot',
-    what: 'The first use case is bought, not built. Copilot sits inside Word, Excel, PowerPoint, Outlook and Teams and answers over the tenant the user can already see. The value comes from a handful of named workflows, never from the seat count.',
-    ship: 'Two or three named workflows per role, the prompt patterns that make them work, and a before/after time baseline you can defend to a CFO.',
-    watch: 'Copilot inherits permissions, so the day you switch it on, years of SharePoint oversharing become searchable. Label and restrict first — this is the failure mode that quietly ends pilots.',
-    gate: 'Measured hours back on the named workflows, and oversharing remediated in every site Copilot can reach.',
-    stack: ['Microsoft 365 Copilot', 'Copilot Chat', 'Copilot Notebooks', 'Microsoft Graph', 'Purview sensitivity labels', 'SharePoint Advanced Management'],
+    change: 'A person still does the work. Copilot drafts, summarises and finds, inside the apps they already have open.',
+    flow: { steps: ['Person', 'Copilot in the app', 'Person edits and sends'], arrows: ['asks for a draft', 'returns a draft'], role: 'The person does the work' },
+    tryThis: 'Pick two or three jobs the same people do every week — the Monday status write-up, meeting recaps in Teams, first-draft replies in Outlook — and run only those with Copilot, in one or two teams, for a month.',
+    gets: 'Time back on writing and summarising, visible within weeks. Nothing is built, so the only real question is whether the jobs you picked were worth the licence. This is also the cheapest way to find out who in the business actually wants this.',
+    setup: [
+      'Add Microsoft 365 Copilot licences on top of the existing E3/E5 tenant, and assign them to a pilot group rather than everyone.',
+      'Before a single licence is assigned, run the SharePoint oversharing reports and apply Purview sensitivity labels. Copilot answers over whatever the user could already open.',
+      'Switch Copilot Chat on for everyone else. It is the free front door, and it shows you where the demand really is.',
+      'Write down how long the chosen jobs take today. Without that number, month two is an opinion.',
+    ],
+    watch: 'Copilot inherits permissions, so the day you switch it on, years of SharePoint oversharing become searchable. This is the failure mode that quietly ends pilots.',
+    gate: 'Measured hours back on the jobs you named, and oversharing remediated in every site Copilot can reach.',
+    stack: ['Microsoft 365 Copilot', 'Copilot Chat', 'Microsoft Graph', 'Purview sensitivity labels', 'SharePoint Advanced Management'],
   },
   {
     n: 2, kind: 'Configured', name: 'Agents in Copilot Studio',
-    what: 'The first thing you build. A declarative agent grounded in SharePoint, Graph or Dataverse, given topics, connectors and MCP servers, then published where the work already happens — in Teams and in the Copilot side pane. Low-code, but it is a system now.',
-    ship: 'One scoped agent with a named owner, a tested answer set, a human fallback path, and a containment or deflection number against the process it replaces.',
-    watch: 'Agent sprawl: every department builds one, none has an eval or an owner. Message-based capacity billing turns invisible usage into invisible cost.',
-    gate: 'One agent measured against the human baseline it replaces, with an owner, a rollback, and a known cost per resolved task.',
-    stack: ['Copilot Studio', 'declarative agents', 'Power Platform connectors', 'MCP servers', 'Dataverse', 'Power Automate', 'autonomous triggers'],
+    change: 'The agent answers and a person is the fallback. The first thing you build rather than buy.',
+    flow: { steps: ['Person asks', 'Agent, grounded in one source', 'Person, on exceptions only'], arrows: ['asks a question', 'answers, or escalates'], role: 'The person is the fallback' },
+    tryThis: 'Take one repeat-question queue a team answers by hand all day — HR policy questions, IT triage, "which template do I use" — and ground an agent in the single SharePoint site or Dataverse table that already holds the answer.',
+    gets: 'Deflection you can count. This is the first rung where the work itself moves rather than the speed of the person doing it, so it is the first one that shows up in a business case rather than a satisfaction survey.',
+    setup: [
+      'Create a Power Platform environment for the agent with DLP policies set, so it cannot reach connectors nobody approved.',
+      'Build in Copilot Studio: point it at the knowledge source, write topics for the questions you already know, and set the escalation path to a named human.',
+      'Reach systems through Power Platform connectors or an MCP server rather than copying data into the agent.',
+      'Publish into Teams and the Copilot side pane, where the question already gets asked.',
+      'Buy capacity deliberately. Copilot Studio bills per message, so usage is a line item somebody has to own.',
+    ],
+    watch: 'Agent sprawl: every department builds one, none has an eval or an owner. Message-based billing then turns invisible usage into invisible cost.',
+    gate: 'One agent measured against the queue it replaces, with an owner, a rollback, and a known cost per resolved question.',
+    stack: ['Copilot Studio', 'Power Platform connectors', 'MCP servers', 'Dataverse', 'Power Automate', 'DLP policies'],
   },
   {
     n: 3, kind: 'Delegated', name: 'Copilot Cowork',
-    what: 'Work stops being assisted and starts being delegated. You define the task; Cowork plans it, runs it across Outlook, Teams, Word, Excel, PowerPoint and SharePoint, and hands back a finished deliverable with checkpoints you approve. Generally available since June 2026, grounded by Work IQ and billed on usage credits rather than seats.',
-    ship: 'A delegation policy — which classes of work may be delegated, who reviews each one, where the checkpoint sits — plus a named budget owner per team.',
-    watch: 'Two failure modes arrive together: metered spend nobody owns, and review theatre, where agent deliverables get rubber-stamped because no one owns the quality bar.',
-    gate: 'A named reviewer per deliverable class, a quality bar measured on real output, and credit consumption tracked against a budget in the admin center.',
-    stack: ['Copilot Cowork', 'Work IQ', 'Cost Management Dashboard', 'Purview audit', 'Anthropic models in Copilot'],
+    change: 'The agent runs the steps and a person approves the result. The unit of work stops being a prompt and becomes a deliverable.',
+    flow: { steps: ['Person delegates a task', 'Cowork plans and runs the steps', 'Person approves'], arrows: ['hands over the task', 'returns a deliverable'], role: 'The person reviews' },
+    tryThis: 'Hand over a whole multi-step piece of work rather than a question — assemble the client meeting pack, pull the weekly report together out of mail, files and Teams — and review it at the checkpoints instead of doing the steps.',
+    gets: 'Whole tasks off the plate rather than minutes saved inside one. Generally available since June 2026, grounded by Work IQ, and billed on usage credits rather than seats, so it scales with work done instead of headcount.',
+    setup: [
+      'Enable usage-based billing in the Microsoft 365 admin center. Cowork runs on credits, not seats.',
+      'Set budgets and watch them in the Cost Management Dashboard before opening access up.',
+      'Decide which classes of work may be delegated and who reviews each one, and write it down before the first delegation rather than after.',
+      'Start with teams that already cleared rung 1, so you are delegating on top of a habit that exists.',
+    ],
+    watch: 'Two failure modes arrive together: metered spend nobody owns, and review theatre, where deliverables get rubber-stamped because no one owns the quality bar.',
+    gate: 'A named reviewer per deliverable class, a quality bar measured on real output, and credits tracked against a budget.',
+    stack: ['Copilot Cowork', 'Work IQ', 'Cost Management Dashboard', 'Purview audit'],
   },
   {
-    n: 4, kind: 'Governed estate', name: 'Knowledge, identity and custom engines',
-    what: 'The enterprise rung: agents stop being individual builds and become an estate with a knowledge layer under it and an identity plane around it. Work IQ and Fabric supply governed context, Dataverse and Dynamics 365 are the systems agents actually act in, Foundry is where custom-engine agents get built, and Agent 365 with Entra Agent ID is where every agent — bought, built or inherited — is registered, reviewed and revoked.',
-    ship: 'A curated knowledge layer rather than an index of everything, an agent registry with owners and access reviews, eval suites that run before release, and cost per outcome per agent.',
+    n: 4, kind: 'Governed estate', name: 'Knowledge layer and agent identity',
+    change: 'Agents stop being projects. A person governs an estate that has one knowledge layer under it and one identity plane around it.',
+    flow: { steps: ['Person sets policy', 'Knowledge + identity layer', 'Every agent, built or bought'], arrows: ['governs', 'grounds and constrains'], role: 'The person owns the estate' },
+    tryThis: 'Stop funding agents one at a time. Curate the knowledge they read, register every agent that exists — bought, built or inherited — and let teams build on top of that rather than beside it.',
+    gets: 'Agents that stay correct as the business changes, an answer when an auditor asks who did what on whose data, and cost per outcome instead of cost per licence. This is the rung where AI stops being a set of pilots and becomes infrastructure.',
+    setup: [
+      'Curate the knowledge layer: Fabric and OneLake plus Dataverse for governed data, Work IQ APIs for work context, and a named owner for each source.',
+      'Register every agent in Agent 365 with an Entra Agent ID, including the ones built at rungs 2 and 3.',
+      'Apply Purview labels, DLP and lineage to what agents may read and what they produce.',
+      'Build in Microsoft Foundry when Copilot Studio runs out of road, and publish those agents into the same registry.',
+      'Put eval suites in the release path, so a prompt change cannot quietly regress quality.',
+    ],
     watch: 'The knowledge layer is the whole game. Indexing everything buys confident answers over stale documents; curation, freshness and lineage are what make an enterprise agent trustworthy.',
-    gate: 'Every agent has an identity, an owner, an eval suite and a kill switch — and the data behind it has a lineage you can put in front of an auditor.',
-    stack: ['Work IQ APIs', 'Microsoft Foundry', 'Agent 365', 'Entra Agent ID', 'Fabric / OneLake', 'Dataverse', 'Dynamics 365', 'Purview DLP & lineage', 'Defender'],
+    gate: 'Every agent has an identity, an owner, an eval suite and a kill switch, and the data behind it has a lineage you can put in front of an auditor.',
+    stack: ['Work IQ APIs', 'Microsoft Foundry', 'Agent 365', 'Entra Agent ID', 'Fabric / OneLake', 'Dataverse', 'Dynamics 365', 'Purview', 'Defender'],
   },
 ];
 
@@ -2400,9 +2483,82 @@ function fpMeter(level) {
   return `<span class="fp-meter" aria-hidden="true">${[1, 2, 3].map(i => `<i class="${i <= level ? 'on' : ''}"></i>`).join('')}</span>`;
 }
 
+/* Where the person sits, drawn rather than described. Each panel is the same
+   three-step flow, so the only thing that changes across the four is the
+   person's position in it — which is exactly the claim. The per-rung copy
+   lives on MS_LADDER itself so the panel header and the card below it cannot
+   drift apart. Hand-authored SVG: no library, no runtime, scales with the
+   column. */
+function msFlowFigure() {
+  // Panel geometry, in the SVG's own units. Each panel is drawn at the origin
+  // and translated into place, so nothing here does x-offset arithmetic.
+  const PW = 230, GAP = 20, PAD = 14, BH = 30, TOP = 46, STEP = 66, H = 252;
+  const W = PW * MS_LADDER.length + GAP * (MS_LADDER.length - 1);
+  const y = k => TOP + STEP * k;
+
+  const panels = MS_LADDER.map((r, i) => {
+    // The middle step is the machine; the person holds both ends of every flow.
+    const boxes = r.flow.steps.map((label, k) => {
+      const solid = k !== 1;
+      return `<rect class="${solid ? 'flow-person' : 'flow-agent'}" x="${PAD}" y="${y(k)}" width="${PW - PAD * 2}" height="${BH}" rx="8"></rect>
+        <text class="flow-box-t${solid ? ' on-fill' : ''}" x="${PW / 2}" y="${y(k) + 19}" text-anchor="middle">${esc(label)}</text>`;
+    }).join('');
+    const arrows = r.flow.arrows.map((label, k) => `<line class="flow-arrow" x1="30" y1="${y(k) + BH + 4}" x2="30" y2="${y(k + 1) - 4}" marker-end="url(#msArrow)"></line>
+        <text class="flow-arrow-t" x="40" y="${y(k) + 52}">${esc(label)}</text>`).join('');
+    return `<g transform="translate(${i * (PW + GAP)},0)">
+      <text class="flow-n" x="${PAD}" y="26">${r.n}</text>
+      <text class="flow-kind" x="32" y="26">${esc(r.kind)}</text>
+      ${boxes}${arrows}
+      <text class="flow-role" x="${PW / 2}" y="${H - 14}" text-anchor="middle">${esc(r.flow.role)}</text>
+    </g>`;
+  }).join('');
+
+  return `<figure class="ms-figure">
+    <svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(t('msFlowAlt'))}">
+      <defs>
+        <marker id="msArrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto">
+          <path d="M0 0 L8 4 L0 8 z" fill="var(--muted)"></path>
+        </marker>
+      </defs>
+      ${panels}
+    </svg>
+    <figcaption>${esc(t('msFlowCap'))}</figcaption>
+  </figure>`;
+}
+
 function renderMicrosoft() {
   const host = document.getElementById('msLadder');
   if (!host) return;
+
+  const rungs = MS_LADDER.map(r => `<article class="rung rung-${r.n}">
+    <header class="rung-head">
+      <span class="rung-n">${r.n}</span>
+      <div class="rung-id">
+        <span class="stage-lbl">${esc(r.kind)}</span>
+        <h3 class="rung-name">${esc(r.name)}</h3>
+      </div>
+      <p class="rung-change">${esc(r.change)}</p>
+    </header>
+    <div class="stage-grid rung-cols">
+      <section class="stage-row">
+        <h4 class="stage-lbl">${esc(t('msLblTry'))}</h4>
+        <p>${esc(r.tryThis)}</p>
+        <p class="rung-watch"><span class="stage-lbl">${esc(t('msLblWatch'))}</span>${esc(r.watch)}</p>
+      </section>
+      <section class="stage-row">
+        <h4 class="stage-lbl">${esc(t('msLblGets'))}</h4>
+        <p>${esc(r.gets)}</p>
+      </section>
+      <section class="stage-row rung-setup">
+        <h4 class="stage-lbl">${esc(t('msLblSetup'))}</h4>
+        <ol>${r.setup.map(x => `<li>${esc(x)}</li>`).join('')}</ol>
+      </section>
+    </div>
+    <div class="rung-foot">
+      ${toolChips(r.stack)}
+      <p class="rung-gate"><span class="stage-lbl">${esc(t('lblGate'))}</span>${esc(r.gate)}</p>
+    </div>
+  </article>`).join('');
 
   const head = MS_LADDER.map(r => `<th scope="col"><span class="fp-col-n">${r.n}</span>${esc(r.kind)}</th>`).join('');
   const body = MS_FOOTPRINT.map(([name, examples, levels]) => `
@@ -2412,7 +2568,7 @@ function renderMicrosoft() {
       </tr>`).join('');
   const legend = [0, 1, 2, 3].map(l => `<span class="fp-key">${fpMeter(l)}${esc(t('fpLeg' + l))}</span>`).join('');
 
-  const footprint = `<div class="ms-full fp">
+  const footprint = `<div class="fp">
     <h3>${esc(t('fpTitle'))}</h3>
     <p>${esc(t('fpSub'))}</p>
     <div class="fp-scroll">
@@ -2424,22 +2580,7 @@ function renderMicrosoft() {
     <div class="fp-legend">${legend}</div>
   </div>`;
 
-  const rungs = MS_LADDER.map(r => `<div class="rung rung-${r.n}">
-    <div class="rung-head">
-      <span class="rung-n">${r.n}</span>
-      <span>
-        <span class="rung-kind">${esc(r.kind)}</span>
-        <span class="rung-name">${esc(r.name)}</span>
-      </span>
-    </div>
-    <p class="rung-what">${esc(r.what)}</p>
-    <div class="rung-row"><span class="rung-lbl">${esc(t('msLblShip'))}</span><p>${esc(r.ship)}</p></div>
-    <div class="rung-row"><span class="rung-lbl">${esc(t('msLblWatch'))}</span><p>${esc(r.watch)}</p></div>
-    <p class="rung-gate"><span class="rung-lbl">${esc(t('lblGate'))}</span>${esc(r.gate)}</p>
-    <span class="layer-tools">${r.stack.map(x => `<span>${esc(x)}</span>`).join('')}</span>
-  </div>`).join('');
-
-  host.innerHTML = footprint + rungs;
+  host.innerHTML = msFlowFigure() + rungs + footprint;
 }
 
 function renderPhaseNav() {
@@ -2465,8 +2606,6 @@ function renderPhaseNav() {
   if (rf) rf.textContent = t('navRef');
   const ms = document.getElementById('navMs');
   if (ms) ms.textContent = t('navMs');
-  renderReference();
-  renderMicrosoft();
   renderNavProgress();
   syncNavState();
 }
@@ -2653,6 +2792,8 @@ function applyI18n() {
   const f = document.getElementById('toolFilter');
   if (f) f.placeholder = t('filterPlaceholder');
   renderPhaseNav();
+  renderReference();
+  renderMicrosoft();
   renderPhaseCounts();
   if (f) currentQuery = String(f.value || '').trim().toLowerCase();
   applyView();
