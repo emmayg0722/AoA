@@ -174,14 +174,24 @@ tool, add it to all three; when editing the Python impl, keep EN/中文 in sync.
 
 `skills/` is the one part of the toolkit that does **not** run in a browser. Each
 subfolder is a `SKILL.md` (YAML frontmatter + markdown) that an agent loads and
-follows, with `skills/index.html` as the library and install guide. Five exist:
+follows, with `skills/index.html` as the library and install guide. Six exist:
 `business-problem-sharpener` (Phase 1), `eval-harness-designer` (Phase 4),
 `architecture-tradeoff-analyst`, `architecture-red-team` and
-`context-architecture-designer` (Phase 3/5), and `roi-scenario-model` (Phase 10).
+`context-architecture-designer` (Phase 3/5), `roi-scenario-model` (Phase 10), and
+`brand-skill-generator`, which belongs to no single phase.
 
-The set is spread deliberately across five verbs — **interrogate, design,
-decide, critique, quantify**. Skills whose descriptions overlap compete
+The set is spread deliberately across six verbs — **interrogate, design,
+decide, critique, quantify, distil**. Skills whose descriptions overlap compete
 for the same request and mis-trigger, so keep new ones in a distinct lane.
+
+`brand-skill-generator` is the only meta-skill: it *generates* another skill,
+named after the client's company, from their template, logo, site and LinkedIn.
+Two invariants there, and they are the point of it — the brand profile marks
+every value as extracted, inferred or proposed, and nothing is generated until
+the person who owns the brand approves that profile. `brand_profile.py` reads
+`.pptx` theme colours and `.svg` logo colours with nothing but `zipfile` and
+`xml.etree`, and contrast-tests every colour pairing the profile claims is
+usable.
 
 These differ from the `.claude/agents/` subagents in one load-bearing way, and it
 must be preserved if you edit them: **the agents read methodology out of this
@@ -193,8 +203,9 @@ file here. Keep the invariants:
   reference toolkit phases by name where useful, never by path.
 - **No agent-specific assumptions.** Frontmatter stays at `name` and
   `description`; no named tools or vendor APIs in the body.
-- **Scripts are stdlib-only and optional.** `roi_model.py` imports nothing
-  outside the standard library, and the skill says what to do without Python.
+- **Scripts are stdlib-only and optional.** `roi_model.py` and
+  `brand_profile.py` import nothing outside the standard library, and each
+  skill says what to do without Python.
 - **Nothing is uploaded**, same as every tool here.
 
 `skills/install.py` copies the skills to the right place per agent and OS, and
