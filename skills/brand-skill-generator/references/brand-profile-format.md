@@ -70,6 +70,12 @@ scale — see below).
 
 A hex without a role gets applied at random by whoever loads the skill later.
 
+Every colour is presented with its plain-English name as well as its hex —
+`#1B1474 (deep indigo)`. The script does this everywhere it prints a colour,
+and `--swatch` renders the palette as blocks you can actually look at. A
+person cannot approve a hex code, so a profile that shows only hex codes has
+not really been approved.
+
 ## Pairings
 
 Every combination of text on background that the generated skill will tell

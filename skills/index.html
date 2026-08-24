@@ -236,6 +236,15 @@ python3 install.py --agent cursor --project .  # copies + writes a rule file</co
         <p data-i18n="quickWin" style="color:var(--muted);font-size:13.5px;margin-top:12px"></p>
       </div>
 
+      <div class="panel" style="margin-bottom:18px">
+        <h3 data-i18n="useTitle" style="font-size:16px;margin-bottom:8px"></h3>
+        <p data-i18n="useBody" style="color:var(--muted);font-size:14px"></p>
+        <pre style="margin-top:12px"><code>/roi-scenario-model
+/brand-skill-generator
+/columbus            <span data-i18n="useComment"></span></code></pre>
+        <p data-i18n="useNote" style="color:var(--muted);font-size:13.5px;margin-top:12px"></p>
+      </div>
+
       <div class="panel">
         <p data-i18n="manualBody" style="color:var(--muted);font-size:14px;margin-bottom:14px"></p>
         <div class="tabs" role="tablist">
@@ -368,6 +377,10 @@ const STRINGS = {
     installBody: 'The SKILL.md format — YAML frontmatter plus markdown — is readable by any agent. What changes between them is only where the file goes.',
     quickBody: 'The installer is standard-library Python, so it runs the same on macOS, Linux and Windows with nothing to install first. It copies the skills and, for Codex and Cursor, writes the wiring file that points the agent at them.',
     quickWin: 'On Windows use py install.py … or python install.py … if python3 is not on your PATH. Nothing else differs — ~ resolves to %USERPROFILE%, so the Claude path becomes %USERPROFILE%\\.claude\\skills automatically. Add --dry-run to see what would happen, or --skill NAME for just one.',
+    useTitle: 'Using one once it is installed',
+    useBody: 'On Claude Code a skill\u2019s folder name is a slash command, so an installed skill can be called by name. A company skill the generator produced works the same way.',
+    useComment: '\u2190 a generated company skill',
+    useNote: 'You rarely need to. Each description is written so the right skill loads on its own when the work matches \u2014 ask for an ROI case and roi-scenario-model triggers without being named. The command is for when you want one deliberately. Codex and Cursor have no slash commands for skills; there the wiring file does it.',
     manualBody: 'Or do it by hand — a skill is a folder, and installing it is a copy.',
     tabOther: 'Cursor & others',
     claudeBody: 'Copy the folder into a skills directory. Claude discovers it and loads the instructions when the description matches what you are doing. On claude.ai, upload the folder as a skill in settings instead.',
@@ -443,6 +456,10 @@ const STRINGS = {
     installBody: 'SKILL.md-formatet — YAML-frontmatter plus markdown — kan læses af enhver agent. Det eneste der ændrer sig mellem dem, er hvor filen skal ligge.',
     quickBody: 'Installationsprogrammet er Python med kun standardbiblioteket, så det kører ens på macOS, Linux og Windows uden at installere noget først. Det kopierer færdighederne og skriver — for Codex og Cursor — den fil der peger agenten hen på dem.',
     quickWin: 'På Windows bruges py install.py … eller python install.py …, hvis python3 ikke er på din PATH. Ellers er der ingen forskel — ~ bliver til %USERPROFILE%, så Claude-stien bliver %USERPROFILE%\\.claude\\skills automatisk. Tilføj --dry-run for at se hvad der ville ske, eller --skill NAVN for kun én.',
+    useTitle: 'S\u00e5dan bruges den, n\u00e5r den er installeret',
+    useBody: 'I Claude Code er en f\u00e6rdigheds mappenavn en skr\u00e5streg-kommando, s\u00e5 en installeret f\u00e6rdighed kan kaldes ved navn. En virksomhedsf\u00e6rdighed fra generatoren fungerer p\u00e5 samme m\u00e5de.',
+    useComment: '\u2190 en genereret virksomhedsf\u00e6rdighed',
+    useNote: 'Det er sj\u00e6ldent n\u00f8dvendigt. Hver beskrivelse er skrevet, s\u00e5 den rigtige f\u00e6rdighed indl\u00e6ses af sig selv, n\u00e5r opgaven passer \u2014 bed om en ROI-analyse, og roi-scenario-model udl\u00f8ses uden at blive nævnt. Kommandoen er til, n\u00e5r du bevidst vil have en bestemt. Codex og Cursor har ikke skr\u00e5streg-kommandoer til f\u00e6rdigheder; der klarer wiring-filen det.',
     manualBody: 'Eller gør det manuelt — en færdighed er en mappe, og installation er en kopiering.',
     tabOther: 'Cursor og andre',
     claudeBody: 'Kopiér mappen ind i en skills-mappe. Claude finder den og indlæser instruktionerne, når beskrivelsen matcher det du er i gang med. På claude.ai uploader du i stedet mappen som en skill under indstillinger.',
@@ -518,6 +535,10 @@ const STRINGS = {
     installBody: 'SKILL.md-formatet — YAML-frontmatter plus markdown — kan läsas av vilken agent som helst. Det enda som skiljer dem åt är var filen ska ligga.',
     quickBody: 'Installationsprogrammet är Python med enbart standardbiblioteket, så det körs likadant på macOS, Linux och Windows utan att något behöver installeras först. Det kopierar färdigheterna och skriver — för Codex och Cursor — filen som pekar agenten mot dem.',
     quickWin: 'På Windows används py install.py … eller python install.py … om python3 inte finns i din PATH. I övrigt är det ingen skillnad — ~ blir %USERPROFILE%, så Claude-sökvägen blir %USERPROFILE%\\.claude\\skills automatiskt. Lägg till --dry-run för att se vad som skulle hända, eller --skill NAMN för bara en.',
+    useTitle: 'S\u00e5 anv\u00e4nds den n\u00e4r den \u00e4r installerad',
+    useBody: 'I Claude Code \u00e4r en f\u00e4rdighets mappnamn ett snedstreckskommando, s\u00e5 en installerad f\u00e4rdighet kan anropas vid namn. En f\u00f6retagsf\u00e4rdighet fr\u00e5n generatorn fungerar likadant.',
+    useComment: '\u2190 en genererad f\u00f6retagsf\u00e4rdighet',
+    useNote: 'Det beh\u00f6vs s\u00e4llan. Varje beskrivning \u00e4r skriven s\u00e5 att r\u00e4tt f\u00e4rdighet laddas av sig sj\u00e4lv n\u00e4r arbetet matchar \u2014 be om en ROI-analys s\u00e5 utl\u00f6ses roi-scenario-model utan att n\u00e4mnas. Kommandot \u00e4r till n\u00e4r du medvetet vill ha en viss. Codex och Cursor har inga snedstreckskommandon f\u00f6r f\u00e4rdigheter; d\u00e4r g\u00f6r wiring-filen jobbet.',
     manualBody: 'Eller gör det för hand — en färdighet är en mapp, och installation är en kopiering.',
     tabOther: 'Cursor och andra',
     claudeBody: 'Kopiera mappen till en skills-katalog. Claude hittar den och laddar instruktionerna när beskrivningen matchar det du håller på med. På claude.ai laddar du i stället upp mappen som en skill under inställningar.',

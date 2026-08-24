@@ -94,6 +94,30 @@ For Codex and Cursor the installer also writes the wiring file that points the
 agent at the skills. It inserts a marked block, so re-running updates that block
 and leaves the rest of your `AGENTS.md` untouched.
 
+### Using one once it is installed
+
+On **Claude Code**, a skill's folder name is a slash command. Install
+`roi-scenario-model` and you can type:
+
+```
+/roi-scenario-model
+```
+
+The seven commands are `/business-problem-sharpener`,
+`/eval-harness-designer`, `/architecture-tradeoff-analyst`,
+`/architecture-red-team`, `/context-architecture-designer`,
+`/roi-scenario-model` and `/brand-skill-generator`. A company skill generated
+by the last one is invoked the same way — install `columbus/` and type
+`/columbus`.
+
+You rarely need to. Each skill's description is written so it triggers on its
+own when the work matches: ask for an ROI case and `roi-scenario-model` loads
+without being named. The slash command is for when you want a specific one
+deliberately, or want to be sure it fired.
+
+On **Codex** and **Cursor** there are no slash commands for skills — the
+wiring file is what makes them load, which `install.py` writes for you.
+
 ### Or do it by hand
 
 Nothing here is magic — a skill is a folder, and installing it is a copy.

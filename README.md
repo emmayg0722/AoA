@@ -368,6 +368,12 @@ python3 install.py --agent codex  --project .  # copies + wires AGENTS.md
 python3 install.py --agent cursor --project .  # copies + writes a rule file
 ```
 
+Once installed on Claude Code, each skill's folder name is a slash command —
+`/roi-scenario-model`, `/brand-skill-generator`, and `/columbus` for a company
+skill the generator produced. You rarely need them: the descriptions are
+written so the right skill loads on its own when the work matches. Codex and
+Cursor have no slash commands for skills; there the wiring file does it.
+
 `install.py` is standard-library Python, so nothing needs installing first. For
 Codex and Cursor it also writes the file that points the agent at the skills,
 inserting a marked block so re-running updates that block and leaves the rest of
