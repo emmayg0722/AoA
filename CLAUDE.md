@@ -104,6 +104,12 @@ rungs from "not in play yet" to "load-bearing". The ladder runs alongside the
 phases, not instead of them: rung 1 is a Phase 1 use case, rung 4 a Phase 6
 governance programme. Its product facts age fast — check them against Microsoft's
 own announcements before editing rather than paraphrasing what is already there.
+Last verified against Microsoft sources on 2026-08-24: Copilot Cowork GA 16 June
+2026 (needs a Copilot seat *and* Copilot Credits, not credits instead of seats);
+Copilot Studio's currency changed from messages to Copilot Credits on 1 September
+2025; SharePoint Advanced Management is included with Microsoft 365 Copilot; agents
+built in Copilot Studio and Foundry self-register in Agent 365; Azure AI Foundry is
+now Microsoft Foundry. Licensing and billing lines are the ones that rot first.
 
 All three sections are `is-aux`, so they stay out of the numbered path and out of
 the "43 tools / 10 phases" counts; layer rows are `a.layer` and ladder rungs are
