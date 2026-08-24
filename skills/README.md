@@ -18,6 +18,7 @@ instructions an *agent* loads and follows. Same methodology, different operator.
 | [`architecture-red-team`](architecture-red-team/) | Attacks a proposed design along eight axes, ranked by likelihood and recoverability, each with its cheapest mitigation | Critique | Phase 3/5 · Design & Delivery |
 | [`context-architecture-designer`](context-architecture-designer/) | Designs how information actually reaches the model — retrieved vs prompt vs fine-tuned, chunking, reranking, permissions, caching, and the token/cost budget per request | Design | Phase 3 · Architecture |
 | [`roi-scenario-model`](roi-scenario-model/) | Conservative / base / optimistic ROI for one solution, with NPV, payback, sensitivity, and the breakeven the case hinges on | Quantify | Phase 10 · ROI |
+| [`brand-skill-generator`](brand-skill-generator/) | Distils a company's real brand out of its template, logo, site and LinkedIn into an approved profile, then generates a named, installable skill so later output carries that identity | Distil | Any phase · every deliverable |
 
 Each skill is a self-contained folder:
 
@@ -41,13 +42,15 @@ skill is copied out on its own — which is the normal way it gets used.
 `.claude/`-only conventions inside the skill body. Frontmatter stays at `name`
 and `description`, the two fields every implementation understands.
 
-**Scripts are stdlib-only and optional.** `roi_model.py`, `eval_report.py` and
-`context_budget.py` need nothing but Python 3, and each skill says what to do if Python is
-unavailable. A skill that
+**Scripts are stdlib-only and optional.** `roi_model.py`, `eval_report.py`,
+`context_budget.py` and `brand_profile.py` need nothing but Python 3, and each skill says
+what to do if Python is unavailable. A skill that
 silently requires a package manager is not portable.
+`brand_profile.py` reads `.pptx` and `.svg` without a library at all — both are
+XML, and a `.pptx` is a zip of it.
 
 **One verb each.** The set is deliberately spread across interrogate / design /
-decide / critique / quantify. Skills whose descriptions overlap compete for the same
+decide / critique / quantify / distil. Skills whose descriptions overlap compete for the same
 request and mis-trigger, so each one owns a distinct kind of question.
 
 **Prose explains why, not just what.** These are read by models with good
@@ -69,7 +72,7 @@ git clone https://github.com/emmayg0722/AoA.git
 cd AoA/skills
 
 python3 install.py --list                      # see what is available
-python3 install.py --agent claude              # all five, just for you
+python3 install.py --agent claude              # all of them, just for you
 python3 install.py --agent codex  --project .  # copies + wires AGENTS.md
 python3 install.py --agent cursor --project .  # copies + writes a rule file
 ```
@@ -82,7 +85,7 @@ Useful flags:
 
 | Flag | Effect |
 |---|---|
-| `--skill NAME` | Install one skill instead of all five. Repeatable. |
+| `--skill NAME` | Install one skill instead of all of them. Repeatable. |
 | `--project DIR` | For Claude, install into `DIR/.claude/skills` so the team shares it. Required for Codex and Cursor. |
 | `--force` | Overwrite skills already installed. Without it they are skipped and reported. |
 | `--dry-run` | Print what would happen and change nothing. |

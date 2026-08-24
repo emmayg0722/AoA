@@ -200,6 +200,25 @@
           <li><a href="context-architecture-designer/references/budget-format.md">references/budget-format.md</a> <span data-i18n="s6F4"></span></li>
         </ul>
       </div>
+
+      <div class="skill">
+        <div class="skill-top">
+          <h3 data-i18n="s7Title"></h3>
+          <span class="tag" data-i18n="s7Tag"></span>
+        </div>
+        <p data-i18n="s7Desc"></p>
+        <dl class="meta">
+          <dt data-i18n="lblUse"></dt><dd data-i18n="s7Use"></dd>
+          <dt data-i18n="lblGives"></dt><dd data-i18n="s7Gives"></dd>
+        </dl>
+        <ul class="files">
+          <li><a href="brand-skill-generator/SKILL.md">SKILL.md</a> <span data-i18n="s7F1"></span></li>
+          <li><a href="brand-skill-generator/scripts/brand_profile.py">scripts/brand_profile.py</a> <span data-i18n="s7F2"></span></li>
+          <li><a href="brand-skill-generator/references/extraction.md">references/extraction.md</a> <span data-i18n="s7F3"></span></li>
+          <li><a href="brand-skill-generator/references/brand-profile-format.md">references/brand-profile-format.md</a> <span data-i18n="s7F4"></span></li>
+          <li><a href="brand-skill-generator/references/generated-skill-template.md">references/generated-skill-template.md</a> <span data-i18n="s7F5"></span></li>
+        </ul>
+      </div>
     </section>
 
     <section>
@@ -211,7 +230,7 @@
 cd AoA/skills
 
 python3 install.py --list                      # see what is available
-python3 install.py --agent claude              # all five, just for you
+python3 install.py --agent claude              # all of them, just for you
 python3 install.py --agent codex  --project .  # copies + wires AGENTS.md
 python3 install.py --agent cursor --project .  # copies + writes a rule file</code></pre>
         <p data-i18n="quickWin" style="color:var(--muted);font-size:13.5px;margin-top:12px"></p>
@@ -336,6 +355,15 @@ const STRINGS = {
     s6F2: '— token and cost budget per request, stdlib only',
     s6F3: '— parse, chunk, embed, search, rerank, assemble',
     s6F4: '— the JSON spec fields and how to read the report',
+    s7Title: 'Brand Skill Generator', s7Tag: 'Brand',
+    s7Desc: 'Most branding gets applied by eye, from a screenshot, and is subtly wrong for a whole engagement. This reads the real values out of the artefacts — a .pptx is a zip of XML, an .svg is XML — then generates a named skill for the company so every later deck, document and page carries its identity.',
+    s7Use: 'Someone wants their own or a client\u2019s branding on future output, hands over a template, logo, site or LinkedIn page, or asks to build a skill for their company.',
+    s7Gives: 'A brand profile marking what was extracted, inferred and proposed, contrast-tested colour pairings, and — only after you approve it — an installable company skill with the logo and template inside it.',
+    s7F1: '\u2014 the workflow, the approval gate, and what separates a brand skill from a colour list',
+    s7F2: '\u2014 theme colours from .pptx, colours from .svg and CSS, WCAG contrast, stdlib only',
+    s7F3: '\u2014 per-source recipes: OOXML theme paths, logos, sites, LinkedIn',
+    s7F4: '\u2014 the profile fields, colour roles, and turning values into behaviour',
+    s7F5: '\u2014 the skeleton of the skill that gets generated',
     installTitle: 'Installing',
     installBody: 'The SKILL.md format — YAML frontmatter plus markdown — is readable by any agent. What changes between them is only where the file goes.',
     quickBody: 'The installer is standard-library Python, so it runs the same on macOS, Linux and Windows with nothing to install first. It copies the skills and, for Codex and Cursor, writes the wiring file that points the agent at them.',
@@ -402,6 +430,15 @@ const STRINGS = {
     s6F2: '— token- og omkostningsbudget pr. forespørgsel, kun standardbibliotek',
     s6F3: '— parse, chunk, embed, søg, rerank, saml',
     s6F4: '— felterne i JSON-specifikationen og hvordan rapporten læses',
+    s7Title: 'Generator af brand-f\u00e6rdighed', s7Tag: 'Brand',
+    s7Desc: 'Branding p\u00e5f\u00f8res oftest p\u00e5 \u00f8jem\u00e5l ud fra et sk\u00e6rmbillede og bliver umærkeligt forkert gennem hele opgaven. Denne l\u00e6ser de reelle v\u00e6rdier ud af filerne \u2014 en .pptx er en zip med XML, en .svg er XML \u2014 og genererer derefter en navngiven f\u00e6rdighed til virksomheden, s\u00e5 alt senere materiale b\u00e6rer dens identitet.',
+    s7Use: 'Nogen vil have deres egen eller en kundes branding p\u00e5 fremtidigt output, afleverer en skabelon, et logo, et website eller en LinkedIn-side, eller beder om en f\u00e6rdighed til deres virksomhed.',
+    s7Gives: 'En brandprofil der markerer hvad der er udl\u00e6st, udledt og foresl\u00e5et, kontrasttestede farvepar, og \u2014 f\u00f8rst efter din godkendelse \u2014 en installerbar virksomhedsf\u00e6rdighed med logo og skabelon i.',
+    s7F1: '\u2014 arbejdsgangen, godkendelsesporten, og hvad der adskiller en brandf\u00e6rdighed fra en farveliste',
+    s7F2: '\u2014 temafarver fra .pptx, farver fra .svg og CSS, WCAG-kontrast, kun stdlib',
+    s7F3: '\u2014 opskrifter pr. kilde: OOXML-temastier, logoer, websites, LinkedIn',
+    s7F4: '\u2014 profilfelterne, farveroller, og v\u00e6rdier omsat til adf\u00e6rd',
+    s7F5: '\u2014 skelettet for den f\u00e6rdighed der genereres',
     installTitle: 'Installation',
     installBody: 'SKILL.md-formatet — YAML-frontmatter plus markdown — kan læses af enhver agent. Det eneste der ændrer sig mellem dem, er hvor filen skal ligge.',
     quickBody: 'Installationsprogrammet er Python med kun standardbiblioteket, så det kører ens på macOS, Linux og Windows uden at installere noget først. Det kopierer færdighederne og skriver — for Codex og Cursor — den fil der peger agenten hen på dem.',
@@ -468,6 +505,15 @@ const STRINGS = {
     s6F2: '— token- och kostnadsbudget per förfrågan, endast standardbibliotek',
     s6F3: '— parse, chunk, embed, sök, rerank, sätt ihop',
     s6F4: '— fälten i JSON-specifikationen och hur rapporten läses',
+    s7Title: 'Generator f\u00f6r varum\u00e4rkesf\u00e4rdighet', s7Tag: 'Varum\u00e4rke',
+    s7Desc: 'Varum\u00e4rket appliceras oftast p\u00e5 \u00f6gonm\u00e5tt fr\u00e5n en sk\u00e4rmbild och blir omärkligt fel genom hela uppdraget. Den h\u00e4r l\u00e4ser de verkliga v\u00e4rdena ur filerna \u2014 en .pptx \u00e4r en zip med XML, en .svg \u00e4r XML \u2014 och genererar sedan en namngiven f\u00e4rdighet f\u00f6r f\u00f6retaget, s\u00e5 att allt senare material b\u00e4r dess identitet.',
+    s7Use: 'N\u00e5gon vill ha sitt eget eller en kunds varum\u00e4rke p\u00e5 framtida output, l\u00e4mnar \u00f6ver en mall, en logotyp, en webbplats eller en LinkedIn-sida, eller ber om en f\u00e4rdighet f\u00f6r sitt f\u00f6retag.',
+    s7Gives: 'En varum\u00e4rkesprofil som markerar vad som l\u00e4sts ut, h\u00e4rletts och f\u00f6reslagits, kontrasttestade f\u00e4rgpar, och \u2014 f\u00f6rst efter ditt godk\u00e4nnande \u2014 en installerbar f\u00f6retagsf\u00e4rdighet med logotyp och mall i.',
+    s7F1: '\u2014 arbetsfl\u00f6det, godk\u00e4nnandegrinden, och vad som skiljer en varum\u00e4rkesf\u00e4rdighet fr\u00e5n en f\u00e4rglista',
+    s7F2: '\u2014 temaf\u00e4rger fr\u00e5n .pptx, f\u00e4rger fr\u00e5n .svg och CSS, WCAG-kontrast, endast stdlib',
+    s7F3: '\u2014 recept per k\u00e4lla: OOXML-temav\u00e4gar, logotyper, webbplatser, LinkedIn',
+    s7F4: '\u2014 profilf\u00e4lten, f\u00e4rgroller, och v\u00e4rderingar omsatta till beteende',
+    s7F5: '\u2014 skelettet f\u00f6r den f\u00e4rdighet som genereras',
     installTitle: 'Installation',
     installBody: 'SKILL.md-formatet — YAML-frontmatter plus markdown — kan läsas av vilken agent som helst. Det enda som skiljer dem åt är var filen ska ligga.',
     quickBody: 'Installationsprogrammet är Python med enbart standardbiblioteket, så det körs likadant på macOS, Linux och Windows utan att något behöver installeras först. Det kopierar färdigheterna och skriver — för Codex och Cursor — filen som pekar agenten mot dem.',

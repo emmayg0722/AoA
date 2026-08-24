@@ -59,6 +59,9 @@ WHEN = {
     "roi-scenario-model":
         "Building an ROI case, business case, payback or TCO for an AI "
         "initiative",
+    "brand-skill-generator":
+        "Applying a company's brand to output, or turning its template, logo "
+        "and site into a reusable company skill",
 }
 
 

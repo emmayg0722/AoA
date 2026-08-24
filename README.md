@@ -351,6 +351,7 @@ by hand or driving an agent.
 | `architecture-red-team` | Attacks a proposed design along eight axes — load, model dependency, adversarial input, silent degradation, blast radius, privacy, cost runaway, human factors — ranked by likelihood and recoverability. | Critique | Phase 3/5 |
 | `context-architecture-designer` | Designs how information reaches the model — retrieved vs prompt vs fine-tuned, chunking, reranking, permission filtering, caching — and budgets tokens and cost per request. Bundles a stdlib-only context budget script. | Design | Phase 3 |
 | `roi-scenario-model` | Conservative / base / optimistic ROI with NPV, payback, sensitivity and breakeven. Bundles a stdlib-only Python engine. | Quantify | Phase 10 |
+| `brand-skill-generator` | Reads a company's real brand out of its `.pptx` template, `.svg` logo, site CSS and LinkedIn, marks every value as extracted / inferred / proposed, contrast-tests the palette, and — after you approve the profile — generates a named, installable skill for that company. Bundles a stdlib-only extractor. | Distil | Any phase |
 
 They are deliberately **self-contained** — a skill never reads another file in
 this repository, so copying one out on its own breaks nothing. Frontmatter stays
@@ -362,7 +363,7 @@ Installing is one command, and works the same on macOS, Linux and Windows:
 ```bash
 cd skills
 python3 install.py --list                      # see what is available
-python3 install.py --agent claude              # all five, just for you
+python3 install.py --agent claude              # all of them, just for you
 python3 install.py --agent codex  --project .  # copies + wires AGENTS.md
 python3 install.py --agent cursor --project .  # copies + writes a rule file
 ```
