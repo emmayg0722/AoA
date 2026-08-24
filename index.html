@@ -2747,10 +2747,16 @@ function applyView() {
   let shown = 0, total = 0;
 
   heads.forEach(head => {
-    let sub = head.nextElementSibling;
-    while (sub && !sub.classList.contains('phase-sub')) sub = sub.nextElementSibling;
-    let grid = head.nextElementSibling;
-    while (grid && !grid.classList.contains('cards')) grid = grid.nextElementSibling;
+    /* A section is its heading plus every sibling up to the next heading — the
+       intro line, the stage block, the card grid. Collecting them rather than
+       naming each class is what stops a newly added block (the stage blocks
+       were exactly this) staying on screen after its phase is filtered out. */
+    const body = [];
+    let grid = null;
+    for (let el = head.nextElementSibling; el && !el.classList.contains('phase-head'); el = el.nextElementSibling) {
+      body.push(el);
+      if (!grid && el.classList.contains('cards')) grid = el;
+    }
     if (!grid) return;
 
     const inScope = currentPhase === 'all' || head.id === currentPhase;
@@ -2762,9 +2768,9 @@ function applyView() {
       card.hidden = !match;
       if (match) { visibleHere++; shown++; }
     });
-    head.hidden = visibleHere === 0;
-    if (sub) sub.hidden = visibleHere === 0;
-    grid.hidden = visibleHere === 0;
+    const empty = visibleHere === 0;
+    head.hidden = empty;
+    body.forEach(el => { el.hidden = empty; });
   });
 
   const status = document.getElementById('filterStatus');
