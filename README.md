@@ -380,18 +380,21 @@ inserting a marked block so re-running updates that block and leaves the rest of
 your `AGENTS.md` alone. Manual per-OS paths and the `.skill` package format are
 covered in `skills/README.md` and on the [skills page](skills/).
 
-## Microsoft enterprise ladder (on the hub)
+## Vendor enterprise ladders (on the hub)
 
-Most clients this toolkit is aimed at are Microsoft shops, and their AI programme
-does not start at architecture — it starts with a Copilot licence somebody already
-bought. The hub carries a **Microsoft Enterprise Ladder** section describing the
-four rungs from that first seat to a governed agent estate. Each rung answers the
-four questions a client actually asks, in the order they ask them:
+Clients arrive on a stack before they arrive at an architecture, and their AI
+programme starts from whatever that stack already gave them. The hub carries two
+ladder sections — **Microsoft Enterprise Ladder** and **AWS Enterprise Ladder** —
+with the same four rungs on each, so the same client question can be put to either
+stack and the answers compared. Each rung answers the four questions a client
+actually asks, in the order they ask them:
 
 - **Try this first** — the concrete first move, plus what bites if you skip ahead
 - **What it gets you** — the outcome in business terms, not features
 - **How to turn it on** — the numbered setup: licences, admin steps, prerequisites
 - **Gate to clear** — what has to be true before the next rung is worth funding
+
+### Microsoft
 
 | Rung | What it is | The first move |
 | --- | --- | --- |
@@ -400,24 +403,50 @@ four questions a client actually asks, in the order they ask them:
 | 3 · Delegated | **Copilot Cowork** — define the task, it plans and runs the steps and returns a deliverable | One whole multi-step piece of work handed over, reviewed at checkpoints, on a budget somebody owns |
 | 4 · Governed estate | **Work IQ, Fabric, Dataverse/Dynamics 365, Microsoft Foundry, Agent 365 + Entra Agent ID, Purview** | Curate the knowledge agents read, register every agent that exists, then let teams build on top |
 
-The ladder runs *alongside* the delivery phases rather than replacing them: rung 1
-is a Phase 1 use case, rung 2 a Phase 4 pilot, rung 4 a Phase 6 governance
-programme.
+### AWS
 
-Two visuals frame the rungs. Above them, a hand-authored inline SVG shows the same
-three-step flow at each rung so the only thing that changes is **where the person
-stands**: doing the work, then answering what the agent cannot, then approving what
-it produced, then governing the estate that produces it. That is what decides which
-rung a client is really on, rather than what they have licensed. Below them, an
-**enterprise footprint** matrix scores five enterprise surfaces (productivity,
-business apps and process, knowledge and data, identity and governance, custom
-engineering) against the four rungs, from "not in play yet" to "load-bearing" —
-the footprint spreads down and to the right, which is the argument for why the last
-rung is a programme and not a licence.
+| Rung | What it is | The first move |
+| --- | --- | --- |
+| 1 · Assisted | **Amazon Quick** for the business, **Kiro** for engineers | Two populations judged separately, over one connected source, with IAM Identity Center standing up the ACLs first |
+| 2 · Configured | **Bedrock Managed Knowledge Base** with **AgentCore** in front, tools exposed through AgentCore Gateway | One repeat-question queue whose answer has to be assembled from a system, with the eval set written before the agent |
+| 3 · Delegated | **AgentCore Runtime, Memory and Identity**, with the approval gate modelled in Step Functions | One multi-step back-office job run end to end, with a human approval before anything is committed |
+| 4 · Governed estate | **AWS Agent Registry, Bedrock Guardrails and evaluations, Control Tower/SCPs, Lake Formation** | A paved road with registration as the condition of production access, and an eval gate in CI |
+
+**The mirror is the point.** Microsoft's ladder starts on every desktop and works
+inward to engineering; AWS's starts inside engineering and works outward to the
+business. That one difference drives most of what else diverges — who buys it,
+what the first rung costs, and which rung is the hard one. Both ladders run
+*alongside* the delivery phases rather than replacing them: rung 1 is a Phase 1
+use case, rung 2 a Phase 4 pilot, rung 4 a Phase 6 governance programme.
+
+Three blocks frame each set of rungs. Above them, a hand-authored inline SVG shows
+the same three-step flow at each rung so the only thing that changes is **where the
+person stands**: doing the work, then answering what the agent cannot, then
+approving what it produced, then governing the estate that produces it. That is
+what decides which rung a client is really on, rather than what they have licensed.
+Below them, an **enterprise footprint** matrix scores five enterprise surfaces
+against the four rungs from "not in play yet" to "load-bearing" — on Microsoft the
+footprint spreads down and to the right, which is the argument for why the last rung
+is a programme and not a licence; on AWS it is the engineering row that never goes
+quiet, which is the argument for why the first one is not a purchase order.
+
+Last, an **engagement block** answers the question the rungs provoke — *who
+actually does this, and would anyone pay for it?* It names who buys it, who
+delivers it, who funds it (both vendors co-pay for pilots, and it is worth knowing
+that from either side of the table), how the work is shaped from a few weeks of
+readiness through to an ongoing platform, and where it stops being worth
+outsourcing at all.
+
+Product facts on both ladders age fast, and the AWS side churned hard in mid-2026 —
+Kendra, Bedrock Agents and Amazon Q Business all closed to new customers within two
+days of each other, with Q Developer winding down toward Kiro. The setup steps name
+what replaced them; check them against the vendor's own announcements before quoting
+them. Microsoft facts were last verified 2026-08-24, AWS 2026-08-25.
 
 Like the reference-architecture layers, the rung content stays in English while
-the chrome around it follows the site language selector. The section is `is-aux`,
-so it stays out of the numbered path and out of the "43 tools / 10 phases" counts.
+the chrome around it follows the site language selector. Both sections are
+`is-aux`, so they stay out of the numbered path and out of the "43 tools /
+10 phases" counts.
 
 ## SOP checklists & the Nordkap sample engagement
 
