@@ -363,19 +363,21 @@
     padding: 2px 7px;
   }
   @media (prefers-reduced-motion: reduce) { .layer { transition: none; } .layer:hover { transform: none; } }
-  /* Microsoft enterprise ladder: the four rungs a Microsoft-shop client climbs
-     from a first Copilot seat to a governed agent estate. Each rung is one
-     full-width block answering the questions a client asks in order — what do
-     I try, what does it get me, how do I turn it on — so the ladder reads
-     top to bottom instead of as a grid of cards. Rung content stays in
-     English like the reference layers; the chrome translates. */
+  /* Vendor ladders: the four rungs a client climbs from a first seat to a
+     governed agent estate. Two are rendered from this one set of rules — the
+     Microsoft ladder and the AWS ladder — because the rungs are the same
+     argument about where the person stands, only the products differ. Each
+     rung is one full-width block answering the questions a client asks in
+     order — what do I try, what does it get me, how do I turn it on — so the
+     ladder reads top to bottom instead of as a grid of cards. Rung content
+     stays in English like the reference layers; the chrome translates. */
   /* One rung per row, not a card grid: the ladder has to read top to bottom.
      Compounded with .cards to outrank the shared two-column .cards rule. */
-  .cards.ms-grid { grid-template-columns: minmax(0, 1fr); gap: 26px; }
+  .cards.ladder-grid { grid-template-columns: minmax(0, 1fr); gap: 26px; }
   /* Mechanism figure: where the person sits at each rung. */
-  .ms-figure { margin: 0; }
-  .ms-figure svg { display: block; width: 100%; height: auto; }
-  .ms-figure figcaption { margin-top: 10px; }
+  .ladder-fig { margin: 0; }
+  .ladder-fig svg { display: block; width: 100%; height: auto; }
+  .ladder-fig figcaption { margin-top: 10px; }
   .flow-person { fill: var(--primary); }
   .flow-agent { fill: #fff; stroke: var(--primary); stroke-width: 1; }
   .flow-box-t { font-size: 12px; font-weight: 600; fill: var(--primary); }
@@ -454,7 +456,7 @@
     padding: 22px 24px 20px;
   }
   .fp > h3, .rung-name { font-family: var(--font-heading); font-size: 19px; font-weight: 600; color: var(--primary); }
-  .fp > p, .ms-figure figcaption { font-size: 13px; line-height: 1.55; color: var(--muted); max-width: 78ch; text-wrap: pretty; }
+  .fp > p, .ladder-fig figcaption { font-size: 13px; line-height: 1.55; color: var(--muted); max-width: 78ch; text-wrap: pretty; }
   .fp > p { margin: 5px 0 16px; }
   /* position:relative so the .sr-only cell labels take this scroller as their
      containing block — otherwise they escape its clip and widen the page. */
@@ -475,8 +477,8 @@
   @media (max-width: 900px) {
     /* The figure's four panels stop being legible well before the phone
        breakpoint, so it scrolls in its own track rather than shrinking. */
-    .ms-figure { overflow-x: auto; }
-    .ms-figure svg { width: 860px; max-width: none; }
+    .ladder-fig { overflow-x: auto; }
+    .ladder-fig svg { width: 860px; max-width: none; }
   }
   @media (max-width: 720px) {
     .fp { padding: 18px 16px 16px; }
@@ -782,6 +784,7 @@
       <button type="button" class="nav-all nav-aux" id="navSkills" onclick="selectPhase('skills')"></button>
       <button type="button" class="nav-all nav-aux" id="navRef" onclick="selectPhase('reference')"></button>
       <button type="button" class="nav-all nav-aux" id="navMs" onclick="selectPhase('microsoft')"></button>
+      <button type="button" class="nav-all nav-aux" id="navAws" onclick="selectPhase('aws')"></button>
     </aside>
 
     <div class="main-col">
@@ -1347,7 +1350,16 @@
     </div>
     <p class="phase-sub" data-i18n="msSub"></p>
 
-    <div class="cards is-aux ms-grid" id="msLadder"></div>
+    <div class="cards is-aux ladder-grid" id="msLadder"></div>
+
+    <div class="phase-head is-aux" id="aws" style="margin-top:44px">
+      <h2 data-i18n="awsTitle"></h2>
+      <span class="phase-tag" data-i18n="tagAws"></span>
+      <span class="phase-count"></span>
+    </div>
+    <p class="phase-sub" data-i18n="awsSub"></p>
+
+    <div class="cards is-aux ladder-grid" id="awsLadder"></div>
     </div>
   </main>
 
@@ -1400,6 +1412,7 @@ const STRINGS = {
     navSkills: 'Agent skills',
     navRef: 'Reference architecture',
     navMs: 'Microsoft ladder',
+    navAws: 'AWS ladder',
     tagRef: 'Reference',
     refTitle: 'Reference Architecture',
     refSub: 'The eighteen capability layers a production AI system is actually assembled from, with the tools each layer is usually built with. Pulled up from the Phase 3 Design Layers reference so the stack is visible here; the layer notes themselves stay in English.',
@@ -1444,16 +1457,22 @@ const STRINGS = {
     layersCountLabel: (n) => `${n} layers`,
     rungsCountLabel: (n) => `${n} rungs`,
     tagMs: 'Microsoft',
+    tagAws: 'AWS',
     msTitle: 'Microsoft Enterprise Ladder',
     msSub: 'Most clients here are Microsoft shops, and their AI programme does not begin at architecture — it begins with a Copilot licence somebody already bought. Each rung answers the four questions they ask in order: what do I try first, what does it get me, how do I turn it on, and what has to be true before the next rung is worth funding. It runs alongside the delivery phases rather than replacing them — rung 1 is a Phase 1 use case, rung 2 a Phase 4 pilot, rung 4 a Phase 6 governance programme. Rung content stays in English, like the reference layers.',
-    msLblTry: 'Try this first',
-    msLblGets: 'What it gets you',
-    msLblSetup: 'How to turn it on',
-    msLblWatch: 'Watch out for',
+    ladLblTry: 'Try this first',
+    ladLblGets: 'What it gets you',
+    ladLblSetup: 'How to turn it on',
+    ladLblWatch: 'Watch out for',
     msFlowCap: 'The same three steps at every rung; what moves is the person. They do the work, then answer only what the agent cannot, then approve what it produced, then govern the estate that produces it. Which rung a client is on is decided by where their people actually stand in that picture, not by what they have licensed.',
     msFlowAlt: 'Four panels, one per rung. In each, a person hands work to Microsoft AI and gets something back. Across the four panels the person moves from doing the work, to handling exceptions, to approving deliverables, to governing an estate of agents.',
+    msFpSub: 'Which parts of the enterprise each rung actually puts weight on. The footprint spreads down and to the right: rung 1 touches the productivity surface, rung 4 has load-bearing dependencies in data, identity and engineering — which is why the last rung is a programme, not a licence.',
+    awsTitle: 'AWS Enterprise Ladder',
+    awsSub: 'The same four rungs for a client whose enterprise runs on AWS, and the same question at each one: where does the person stand? Two things differ from the Microsoft ladder. AWS puts engineering on the critical path earlier — rung 2 is already a choice between an app the business builds in Quick and a knowledge base engineering builds on Bedrock — and the product names moved recently, so check which one a client is actually buying: Amazon Q Business closed to new customers on 31 July 2026 with Amazon Quick as its successor, and Kiro replaced Amazon Q Developer in May 2026. Rung content stays in English, like the Microsoft ladder.',
+    awsFlowCap: 'The same three steps at every rung; what moves is the person. They do the work, then answer only what the agent cannot, then approve what it produced, then govern the estate that produces it. A client with a full AWS account and nobody standing in that last position is on rung 2, whatever the architecture diagram says.',
+    awsFlowAlt: 'Four panels, one per rung. In each, a person hands work to AWS AI services and gets something back. Across the four panels the person moves from doing the work, to handling exceptions, to approving deliverables, to governing an estate of agents.',
+    awsFpSub: 'Which parts of the enterprise each rung actually puts weight on. Against the Microsoft ladder the weight sits further back: engineering and the data platform are relied on from rung 2 rather than rung 4, which is why an AWS programme needs a build team earlier and a licence conversation later.',
     fpTitle: 'Enterprise footprint',
-    fpSub: 'Which parts of the enterprise each rung actually puts weight on. The footprint spreads down and to the right: rung 1 touches the productivity surface, rung 4 has load-bearing dependencies in data, identity and engineering — which is why the last rung is a programme, not a licence.',
     fpSurface: 'Surface',
     fpLeg0: 'not in play yet', fpLeg1: 'touched', fpLeg2: 'relied on', fpLeg3: 'load-bearing',
     filterLabel: 'Find a tool',
@@ -1671,6 +1690,7 @@ const STRINGS = {
     navSkills: 'Agentfærdigheder',
     navRef: 'Referencearkitektur',
     navMs: 'Microsoft-stigen',
+    navAws: 'AWS-stigen',
     tagRef: 'Reference',
     refTitle: 'Referencearkitektur',
     refSub: 'De atten kapabilitetslag et AI-system i produktion reelt samles af, med de værktøjer hvert lag typisk bygges med. Hentet op fra Design Layers-referencen i Fase 3, så stakken er synlig her; selve lagnoterne er på engelsk.',
@@ -1715,16 +1735,22 @@ const STRINGS = {
     layersCountLabel: (n) => `${n} lag`,
     rungsCountLabel: (n) => `${n} trin`,
     tagMs: 'Microsoft',
+    tagAws: 'AWS',
     msTitle: 'Microsoft-stigen i virksomheden',
     msSub: 'De fleste kunder her er Microsoft-huse, og deres AI-program starter ikke ved arkitekturen — det starter med en Copilot-licens, nogen allerede har købt. Hvert trin besvarer de fire spørgsmål de stiller i rækkefølge: hvad prøver vi først, hvad giver det os, hvordan tænder vi det, og hvad skal være på plads, før næste trin er værd at finansiere. Det løber ved siden af leverancefaserne, ikke i stedet for dem — trin 1 er en Fase 1-use case, trin 2 en Fase 4-pilot, trin 4 et Fase 6-governanceprogram. Indholdet på trinnene er på engelsk, ligesom referencelagene.',
-    msLblTry: 'Start med dette',
-    msLblGets: 'Hvad det giver jer',
-    msLblSetup: 'Sådan tændes det',
-    msLblWatch: 'Pas på',
+    ladLblTry: 'Start med dette',
+    ladLblGets: 'Hvad det giver jer',
+    ladLblSetup: 'Sådan tændes det',
+    ladLblWatch: 'Pas på',
     msFlowCap: 'De samme tre trin på hvert trin på stigen; det der flytter sig, er mennesket. Først udfører de arbejdet, så svarer de kun på det agenten ikke kan, så godkender de det den har lavet, og til sidst styrer de den bestand der laver det. Hvilket trin en kunde står på, afgøres af hvor deres folk reelt står i det billede — ikke af hvad de har licens til.',
     msFlowAlt: 'Fire paneler, ét per trin. I hvert giver et menneske arbejde videre til Microsoft-AI og får noget tilbage. Hen over de fire paneler flytter mennesket sig fra selv at udføre arbejdet, til at håndtere undtagelser, til at godkende leverancer, til at styre en bestand af agenter.',
+    msFpSub: 'Hvilke dele af virksomheden hvert trin reelt lægger vægt på. Fodaftrykket breder sig nedad og til højre: trin 1 berører produktivitetsfladen, trin 4 har bærende afhængigheder i data, identitet og engineering — derfor er sidste trin et program og ikke en licens.',
+    awsTitle: 'AWS-stigen i virksomheden',
+    awsSub: 'De samme fire trin for en kunde, hvis virksomhed kører på AWS, og det samme spørgsmål på hvert trin: hvor står mennesket? To ting adskiller sig fra Microsoft-stigen. AWS lægger engineering på den kritiske vej tidligere — allerede trin 2 er et valg mellem en app, forretningen bygger i Quick, og en knowledge base, udviklerne bygger på Bedrock — og produktnavnene er skiftet for nylig, så tjek hvad kunden faktisk køber: Amazon Q Business lukkede for nye kunder 31. juli 2026 med Amazon Quick som efterfølger, og Kiro afløste Amazon Q Developer i maj 2026. Indholdet på trinnene er på engelsk, ligesom på Microsoft-stigen.',
+    awsFlowCap: 'De samme tre trin på hvert trin på stigen; det der flytter sig, er mennesket. Først udfører de arbejdet, så svarer de kun på det agenten ikke kan, så godkender de det den har lavet, og til sidst styrer de den bestand der laver det. En kunde med en fuld AWS-konto og ingen i den sidste position står på trin 2, uanset hvad arkitekturdiagrammet siger.',
+    awsFlowAlt: 'Fire paneler, ét per trin. I hvert giver et menneske arbejde videre til AWS-tjenester med AI og får noget tilbage. Hen over de fire paneler flytter mennesket sig fra selv at udføre arbejdet, til at håndtere undtagelser, til at godkende leverancer, til at styre en bestand af agenter.',
+    awsFpSub: 'Hvilke dele af virksomheden hvert trin reelt lægger vægt på. Sammenlignet med Microsoft-stigen ligger vægten længere tilbage: engineering og dataplatformen er der afhængighed af allerede fra trin 2 og ikke først fra trin 4 — derfor kræver et AWS-program et byggehold tidligere og en licenssamtale senere.',
     fpTitle: 'Fodaftryk i virksomheden',
-    fpSub: 'Hvilke dele af virksomheden hvert trin reelt lægger vægt på. Fodaftrykket breder sig nedad og til højre: trin 1 berører produktivitetsfladen, trin 4 har bærende afhængigheder i data, identitet og engineering — derfor er sidste trin et program og ikke en licens.',
     fpSurface: 'Flade',
     fpLeg0: 'ikke i spil endnu', fpLeg1: 'berørt', fpLeg2: 'afhængig af', fpLeg3: 'bærende',
     filterLabel: 'Find et værktøj',
@@ -1942,6 +1968,7 @@ const STRINGS = {
     navSkills: 'Agentfärdigheter',
     navRef: 'Referensarkitektur',
     navMs: 'Microsoft-stegen',
+    navAws: 'AWS-stegen',
     tagRef: 'Referens',
     refTitle: 'Referensarkitektur',
     refSub: 'De arton kapabilitetslager ett AI-system i produktion faktiskt sätts ihop av, med de verktyg varje lager oftast byggs med. Upplyft från Design Layers-referensen i Fas 3 så att stacken syns här; själva lageranteckningarna är på engelska.',
@@ -1986,16 +2013,22 @@ const STRINGS = {
     layersCountLabel: (n) => `${n} lager`,
     rungsCountLabel: (n) => `${n} steg`,
     tagMs: 'Microsoft',
+    tagAws: 'AWS',
     msTitle: 'Microsoft-stegen i verksamheten',
     msSub: 'De flesta kunder här är Microsoft-hus, och deras AI-program börjar inte i arkitekturen — det börjar med en Copilot-licens som någon redan köpt. Varje steg besvarar de fyra frågor de ställer i tur och ordning: vad provar vi först, vad ger det oss, hur slår vi på det, och vad måste vara sant innan nästa steg är värt att finansiera. Det löper vid sidan av leveransfaserna, inte i stället för dem — steg 1 är ett Fas 1-användningsfall, steg 2 en Fas 4-pilot, steg 4 ett Fas 6-styrningsprogram. Innehållet på stegen är på engelska, precis som referenslagren.',
-    msLblTry: 'Börja med detta',
-    msLblGets: 'Vad ni får ut av det',
-    msLblSetup: 'Så slår ni på det',
-    msLblWatch: 'Se upp för',
+    ladLblTry: 'Börja med detta',
+    ladLblGets: 'Vad ni får ut av det',
+    ladLblSetup: 'Så slår ni på det',
+    ladLblWatch: 'Se upp för',
     msFlowCap: 'Samma tre steg på varje steg i stegen; det som flyttar sig är människan. Först utför de arbetet, sedan svarar de bara på det agenten inte klarar, sedan godkänner de det den producerat, och till sist styr de den flotta som producerar det. Vilket steg en kund står på avgörs av var deras människor faktiskt står i den bilden, inte av vad de har licens för.',
     msFlowAlt: 'Fyra paneler, en per steg. I varje lämnar en människa över arbete till Microsoft-AI och får något tillbaka. Över de fyra panelerna flyttar sig människan från att själv utföra arbetet, till att hantera undantag, till att godkänna leveranser, till att styra en flotta av agenter.',
+    msFpSub: 'Vilka delar av verksamheten varje steg faktiskt lägger vikt på. Fotavtrycket breder ut sig nedåt och åt höger: steg 1 berör produktivitetsytan, steg 4 har bärande beroenden i data, identitet och engineering — därför är sista steget ett program och inte en licens.',
+    awsTitle: 'AWS-stegen i verksamheten',
+    awsSub: 'Samma fyra steg för en kund vars verksamhet körs på AWS, och samma fråga på varje steg: var står människan? Två saker skiljer mot Microsoft-stegen. AWS lägger engineering på den kritiska linjen tidigare — redan steg 2 är ett val mellan en app som verksamheten bygger i Quick och en knowledge base som utvecklarna bygger på Bedrock — och produktnamnen har nyligen bytts, så kontrollera vad kunden faktiskt köper: Amazon Q Business stängde för nya kunder 31 juli 2026 med Amazon Quick som efterföljare, och Kiro ersatte Amazon Q Developer i maj 2026. Innehållet på stegen är på engelska, precis som på Microsoft-stegen.',
+    awsFlowCap: 'Samma tre steg på varje steg i stegen; det som flyttar sig är människan. Först utför de arbetet, sedan svarar de bara på det agenten inte klarar, sedan godkänner de det den producerat, och till sist styr de den flotta som producerar det. En kund med ett fullt AWS-konto och ingen som står i den sista positionen står på steg 2, oavsett vad arkitekturdiagrammet säger.',
+    awsFlowAlt: 'Fyra paneler, en per steg. I varje lämnar en människa över arbete till AWS AI-tjänster och får något tillbaka. Över de fyra panelerna flyttar sig människan från att själv utföra arbetet, till att hantera undantag, till att godkänna leveranser, till att styra en flotta av agenter.',
+    awsFpSub: 'Vilka delar av verksamheten varje steg faktiskt lägger vikt på. Jämfört med Microsoft-stegen ligger vikten längre bak: engineering och dataplattformen är man beroende av redan från steg 2 och inte först från steg 4 — därför behöver ett AWS-program ett byggteam tidigare och ett licenssamtal senare.',
     fpTitle: 'Fotavtryck i verksamheten',
-    fpSub: 'Vilka delar av verksamheten varje steg faktiskt lägger vikt på. Fotavtrycket breder ut sig nedåt och åt höger: steg 1 berör produktivitetsytan, steg 4 har bärande beroenden i data, identitet och engineering — därför är sista steget ett program och inte en licens.',
     fpSurface: 'Yta',
     fpLeg0: 'inte i spel ännu', fpLeg1: 'berörd', fpLeg2: 'beroende av', fpLeg3: 'bärande',
     filterLabel: 'Hitta ett verktyg',
@@ -2315,7 +2348,7 @@ function phaseProgress(id) {
 /* Scopes the rail can select. The ten phases are an ordered path; 'skills'
    is an extra section that is deliberately not a step in it. */
 function allScopes() {
-  return PHASE_NAV.map(p => p.id).concat('skills', 'reference', 'microsoft');
+  return PHASE_NAV.map(p => p.id).concat('skills', 'reference', 'microsoft', 'aws');
 }
 
 /* The 18 capability layers from the Phase 3 Design Layers reference, grouped
@@ -2482,6 +2515,86 @@ const MS_LADDER = [
   },
 ];
 
+/* ── The AWS enterprise ladder ────────────────────────────────────────
+   The same four rungs for a client whose enterprise runs on AWS. The spine is
+   identical on purpose — the rung is decided by where the person stands, not
+   by the vendor — so this array carries the same fields the Microsoft one
+   does and renders through the same code. What genuinely differs is where the
+   engineering floor sits: on AWS rung 2 is already a build, and the naming
+   churn is recent enough to mislead a client (Q Business closed to new
+   customers 31 July 2026, Q Developer superseded by Kiro in May 2026).
+   Verified against AWS announcements on 2026-08-26; the licensing, metering
+   and preview/GA lines are the ones that rot first. */
+const AWS_LADDER = [
+  {
+    n: 1, kind: 'Assisted', name: 'Amazon Quick and Kiro',
+    change: 'A person still does the work. Quick answers over the company sources they already have, Kiro drafts the code, both inside tools that are already open.',
+    flow: { steps: ['Person', 'Quick or Kiro in the tool', 'Person edits and ships'], arrows: ['asks for a draft', 'returns a draft'], role: 'The person does the work' },
+    tryThis: 'Pick two or three jobs the same people repeat every week — the weekly numbers write-up, the "where is the answer to this" search across SharePoint, Slack and S3, first-draft tickets — and run only those in Quick, in one or two teams, for a month. Give engineering Kiro at the same time: developers are where AWS-native evidence appears first.',
+    gets: 'Time back on finding and writing, visible within weeks. Nothing is built, so the only real question is whether the jobs you picked were worth the seats. Check which product the client is buying before anything else: Amazon Q Business closed to new customers on 31 July 2026 and Amazon Quick is the successor, and Kiro went GA on 7 May 2026 as the successor to Amazon Q Developer, which is supported until 30 April 2027. Starting a client on a retired product buys them a migration.',
+    setup: [
+      'Buy Quick seats against the jobs you named — Free, Plus at $20 per user/month, Professional at $20 plus a $250 per-account fee, Enterprise at $40 plus that fee — and assign them to a pilot group rather than everyone.',
+      'Build the Quick Index before the seats land. Connect only the sources those jobs need, turn on document-level ACLs for SharePoint, Google Drive and S3, and use the Permission Checker in the sync reports to confirm a named user cannot reach what they should not. Quick answers over whatever that user could already open.',
+      'Give engineering Kiro on its own tier and make spec-driven work the pilot rather than autocomplete, so what you measure is finished changes and not accepted suggestions.',
+      'Write down how long the chosen jobs take today. Without that number, month two is an opinion.',
+    ],
+    watch: 'The index inherits source permissions, so the day you connect S3 and SharePoint, years of loose bucket and site sharing become searchable. Agent hours are metered on top of seats — Professional includes 4 a month, Enterprise 8, then $3 per Flows or Automate hour and $6 per research hour.',
+    gate: 'Measured hours back on the jobs you named, ACLs verified on every connected source, and one owner for the seat and agent-hour bill.',
+    stack: ['Amazon Quick', 'Quick Index', 'Quick Research', 'Kiro', 'Document-level ACLs', 'IAM Identity Center'],
+  },
+  {
+    n: 2, kind: 'Configured', name: 'Apps in Quick and Bedrock knowledge bases',
+    change: 'The agent answers and a person is the fallback. The first thing you build rather than buy — and on AWS this is already a build.',
+    flow: { steps: ['Person asks', 'Agent, grounded in one source', 'Person, on exceptions only'], arrows: ['asks a question', 'answers, or escalates'], role: 'The person is the fallback' },
+    tryThis: 'Take one repeat-question queue a team answers by hand all day — policy questions, support triage, "which runbook covers this" — and ground a single agent in the one source that already holds the answer.',
+    gets: 'Deflection you can count. This is the first rung where the work itself moves rather than the speed of the person doing it, so it is the first one that shows up in a business case rather than a satisfaction survey.',
+    setup: [
+      'Decide which side of the line the use case sits on, because it decides who owns it: an app in Quick when the audience is a business team and the source is already indexed, a Bedrock knowledge base when it needs engineering ownership, a chosen model or a custom retrieval path.',
+      'Ground it in one curated source rather than everything you have. Retrieval quality is what the pilot is actually testing.',
+      'Put Bedrock Guardrails in front of it before anyone outside the build team sees it. Prompt-injection and sensitive-data filters are configuration at this rung, not a project.',
+      'Reach systems through tools — an MCP server, or a Lambda function exposed as one — rather than copying data into the agent, so it stays where it is governed.',
+      'Name the human it escalates to, and publish it where the question already gets asked.',
+    ],
+    watch: 'Agent sprawl, with an AWS twist: business teams build in Quick and engineers build on Bedrock, so the estate splits across two consoles and nobody holds the list of what exists or what it costs per answer.',
+    gate: 'One agent measured against the queue it replaces, with an owner, guardrails, a rollback and a known cost per resolved question.',
+    stack: ['Apps in Quick', 'Quick Flows', 'Bedrock Knowledge Bases', 'S3 Vectors', 'Bedrock Guardrails', 'MCP servers', 'AWS Lambda'],
+  },
+  {
+    n: 3, kind: 'Delegated', name: 'Quick Automate and Bedrock AgentCore',
+    change: 'The agent runs the steps and a person approves the result. The unit of work stops being a prompt and becomes a deliverable.',
+    flow: { steps: ['Person delegates a task', 'Agent plans and runs the steps', 'Person approves'], arrows: ['hands over the task', 'returns a deliverable'], role: 'The person reviews' },
+    tryThis: 'Hand over a whole multi-step piece of work rather than a question — reconcile the month-end exceptions, assemble the account review out of mail, tickets and the warehouse — and review it at checkpoints instead of doing the steps.',
+    gets: 'Whole tasks off the plate rather than minutes saved inside one. AgentCore has been generally available since October 2025 and is deliberately framework- and model-agnostic: Runtime gives eight-hour sessions with per-session isolation, Memory keeps short- and long-term state, Gateway turns APIs, Lambda functions and existing MCP servers into tools, Identity gives the agent credentials of its own.',
+    setup: [
+      'Pick the runtime deliberately: Quick Automate when the steps are business workflow a business owner should be able to read, AgentCore Runtime when it needs custom code, long execution or its own agent framework.',
+      'Give the agent its own identity in AgentCore Identity — workload identity, OAuth to the systems it touches, refresh tokens in the vault — rather than letting it borrow a person credential.',
+      'Expose tools through AgentCore Gateway instead of embedding keys in the agent, and reuse the MCP servers you already run.',
+      'Set the approval points before the first delegation: which classes of work may be delegated, who reviews each, and what the agent may never do unattended.',
+      'Budget for consumption from day one. AgentCore meters about a dozen things separately — Runtime per vCPU-hour, Gateway per thousand tool invocations, Memory per event, Policy per request, with model tokens billed on top — so put AWS Budgets and alarms in place before opening access, not after the first invoice.',
+    ],
+    watch: 'Two failure modes arrive together: metered spend nobody owns — a seat is a fixed cost, agent runtime is not — and review theatre, where deliverables get rubber-stamped because no one owns the quality bar.',
+    gate: 'A named reviewer per deliverable class, a quality bar measured on real output with AgentCore Evaluations, and consumption tracked against a budget.',
+    stack: ['Quick Automate', 'AgentCore Runtime', 'AgentCore Memory', 'AgentCore Gateway', 'AgentCore Identity', 'AgentCore Browser', 'Code Interpreter', 'AWS Budgets'],
+  },
+  {
+    n: 4, kind: 'Governed estate', name: 'Agent registry and a governed lakehouse',
+    change: 'Agents stop being projects. A person governs an estate with one data foundation under it and one identity plane around it.',
+    flow: { steps: ['Person sets policy', 'Registry, lakehouse, identity', 'Every agent, built or bought'], arrows: ['governs', 'grounds and constrains'], role: 'The person owns the estate' },
+    tryThis: 'Stop funding agents one at a time. Curate the data they read, register every agent, tool and MCP server that exists — built, bought or inherited — and have teams build on top of that rather than beside it.',
+    gets: 'Agents that stay correct as the business changes, an answer when an auditor asks which agent read whose data, and cost per outcome instead of cost per seat. This is the rung where AI stops being a set of pilots and becomes infrastructure.',
+    setup: [
+      'Curate the data foundation: S3 and S3 Tables under the SageMaker lakehouse, catalogued in Glue, permissioned in Lake Formation, with lineage in SageMaker Catalog and a named owner per source. Agents querying through Athena or Redshift then inherit those permissions instead of carrying their own copy.',
+      'Catalogue the estate in AWS Agent Registry — in preview since April 2026 inside AgentCore — so agents, tools, skills and MCP servers sit in one governed list reachable from the console, the API, or as an MCP server itself. It only helps if registration is a condition of reaching production.',
+      'Make identity the control plane: AgentCore Identity for agents, IAM Identity Center for people, Cedar policies for fine-grained authorization, and CloudTrail as the immutable record of what each agent called.',
+      'Apply Bedrock Guardrails as estate-wide policy rather than per project — AgentCore has supported Guardrails in policy since June 2026 — and author them as policy-as-code so they get reviewed like code.',
+      'Put AgentCore Evaluations, generally available since March 2026, in the release path, so a prompt or model change cannot quietly regress quality.',
+    ],
+    watch: 'The data foundation is the whole game. Indexing everything buys confident answers over stale data; curation, freshness and lineage are what make an enterprise agent trustworthy.',
+    gate: 'Every agent has an identity, an owner, an eval suite and a kill switch, and the data behind it has a lineage you can put in front of an auditor.',
+    stack: ['AWS Agent Registry', 'AgentCore Identity', 'Cedar policies', 'IAM Identity Center', 'SageMaker Lakehouse', 'Lake Formation', 'Glue Data Catalog', 'Bedrock Guardrails', 'AgentCore Evaluations', 'CloudTrail'],
+  },
+];
+
 /* Footprint matrix: how far into the enterprise each rung reaches.
    0 = not in play yet, 3 = load-bearing (the rung fails without it).
    The point of the picture is the bottom-right corner — rung 4 depends on
@@ -2495,31 +2608,54 @@ const MS_FOOTPRINT = [
   ['Custom engineering', 'Foundry, MCP, eval suites', [0, 1, 1, 3]],
 ];
 
+/* The AWS footprint, scored the same way. The row order matches the Microsoft
+   matrix so the two can be read against each other, and the honest difference
+   is the bottom two rows: engineering and the data platform are load-bearing
+   from rung 2, not rung 4. That is the argument for why an AWS programme
+   needs a build team early and a licence conversation late. */
+const AWS_FOOTPRINT = [
+  ['Everyday work surface', 'Quick, Kiro, chat, the browser', [3, 2, 3, 2]],
+  ['Business systems & workflow', 'Lambda, Step Functions, MCP servers, SaaS connectors', [0, 2, 3, 3]],
+  ['Knowledge & data', 'Quick Index, S3 / S3 Vectors, Glue, SageMaker Lakehouse', [1, 3, 3, 3]],
+  ['Identity & governance', 'IAM Identity Center, AgentCore Identity, Agent Registry, CloudTrail', [1, 2, 3, 3]],
+  ['Custom engineering', 'Bedrock, AgentCore Runtime, evals, IaC', [0, 2, 3, 3]],
+];
+
 function fpMeter(level) {
   return `<span class="fp-meter" aria-hidden="true">${[1, 2, 3].map(i => `<i class="${i <= level ? 'on' : ''}"></i>`).join('')}</span>`;
 }
 
+/* The two vendor ladders share every line of rendering below. All that differs
+   is the data and the language keys, so they are named once here rather than
+   forked into a second renderer that would drift. */
+const LADDERS = [
+  { host: 'msLadder', ns: 'ms', rungs: MS_LADDER, footprint: MS_FOOTPRINT },
+  { host: 'awsLadder', ns: 'aws', rungs: AWS_LADDER, footprint: AWS_FOOTPRINT },
+];
+
 /* Where the person sits, drawn rather than described. Each panel is the same
    three-step flow, so the only thing that changes across the four is the
    person's position in it — which is exactly the claim. The per-rung copy
-   lives on MS_LADDER itself so the panel header and the card below it cannot
-   drift apart. Hand-authored SVG: no library, no runtime, scales with the
-   column. */
-function msFlowFigure() {
+   lives on the ladder array itself so the panel header and the card below it
+   cannot drift apart. Hand-authored SVG: no library, no runtime, scales with
+   the column. */
+function flowFigure(cfg) {
   // Panel geometry, in the SVG's own units. Each panel is drawn at the origin
   // and translated into place, so nothing here does x-offset arithmetic.
   const PW = 230, GAP = 20, PAD = 14, BH = 30, TOP = 46, STEP = 66, H = 252;
-  const W = PW * MS_LADDER.length + GAP * (MS_LADDER.length - 1);
+  const W = PW * cfg.rungs.length + GAP * (cfg.rungs.length - 1);
   const y = k => TOP + STEP * k;
+  // Marker ids are document-wide, so each ladder needs its own.
+  const marker = cfg.ns + 'Arrow';
 
-  const panels = MS_LADDER.map((r, i) => {
+  const panels = cfg.rungs.map((r, i) => {
     // The middle step is the machine; the person holds both ends of every flow.
     const boxes = r.flow.steps.map((label, k) => {
       const solid = k !== 1;
       return `<rect class="${solid ? 'flow-person' : 'flow-agent'}" x="${PAD}" y="${y(k)}" width="${PW - PAD * 2}" height="${BH}" rx="8"></rect>
         <text class="flow-box-t${solid ? ' on-fill' : ''}" x="${PW / 2}" y="${y(k) + 19}" text-anchor="middle">${esc(label)}</text>`;
     }).join('');
-    const arrows = r.flow.arrows.map((label, k) => `<line class="flow-arrow" x1="30" y1="${y(k) + BH + 4}" x2="30" y2="${y(k + 1) - 4}" marker-end="url(#msArrow)"></line>
+    const arrows = r.flow.arrows.map((label, k) => `<line class="flow-arrow" x1="30" y1="${y(k) + BH + 4}" x2="30" y2="${y(k + 1) - 4}" marker-end="url(#${marker})"></line>
         <text class="flow-arrow-t" x="40" y="${y(k) + 52}">${esc(label)}</text>`).join('');
     return `<g transform="translate(${i * (PW + GAP)},0)">
       <text class="flow-n" x="${PAD}" y="26">${r.n}</text>
@@ -2529,24 +2665,24 @@ function msFlowFigure() {
     </g>`;
   }).join('');
 
-  return `<figure class="ms-figure">
-    <svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(t('msFlowAlt'))}">
+  return `<figure class="ladder-fig">
+    <svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(t(cfg.ns + 'FlowAlt'))}">
       <defs>
-        <marker id="msArrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto">
+        <marker id="${marker}" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto">
           <path d="M0 0 L8 4 L0 8 z" fill="var(--muted)"></path>
         </marker>
       </defs>
       ${panels}
     </svg>
-    <figcaption>${esc(t('msFlowCap'))}</figcaption>
+    <figcaption>${esc(t(cfg.ns + 'FlowCap'))}</figcaption>
   </figure>`;
 }
 
-function renderMicrosoft() {
-  const host = document.getElementById('msLadder');
+function renderLadder(cfg) {
+  const host = document.getElementById(cfg.host);
   if (!host) return;
 
-  const rungs = MS_LADDER.map(r => `<article class="rung rung-${r.n}">
+  const rungs = cfg.rungs.map(r => `<article class="rung rung-${r.n}">
     <header class="rung-head">
       <span class="rung-n">${r.n}</span>
       <div class="rung-id">
@@ -2557,16 +2693,16 @@ function renderMicrosoft() {
     </header>
     <div class="stage-grid rung-cols">
       <section class="stage-row">
-        <h4 class="stage-lbl">${esc(t('msLblTry'))}</h4>
+        <h4 class="stage-lbl">${esc(t('ladLblTry'))}</h4>
         <p>${esc(r.tryThis)}</p>
-        <p class="rung-watch"><span class="stage-lbl">${esc(t('msLblWatch'))}</span>${esc(r.watch)}</p>
+        <p class="rung-watch"><span class="stage-lbl">${esc(t('ladLblWatch'))}</span>${esc(r.watch)}</p>
       </section>
       <section class="stage-row">
-        <h4 class="stage-lbl">${esc(t('msLblGets'))}</h4>
+        <h4 class="stage-lbl">${esc(t('ladLblGets'))}</h4>
         <p>${esc(r.gets)}</p>
       </section>
       <section class="stage-row rung-setup">
-        <h4 class="stage-lbl">${esc(t('msLblSetup'))}</h4>
+        <h4 class="stage-lbl">${esc(t('ladLblSetup'))}</h4>
         <ol>${r.setup.map(x => `<li>${esc(x)}</li>`).join('')}</ol>
       </section>
     </div>
@@ -2576,8 +2712,8 @@ function renderMicrosoft() {
     </div>
   </article>`).join('');
 
-  const head = MS_LADDER.map(r => `<th scope="col"><span class="fp-col-n">${r.n}</span>${esc(r.kind)}</th>`).join('');
-  const body = MS_FOOTPRINT.map(([name, examples, levels]) => `
+  const head = cfg.rungs.map(r => `<th scope="col"><span class="fp-col-n">${r.n}</span>${esc(r.kind)}</th>`).join('');
+  const body = cfg.footprint.map(([name, examples, levels]) => `
       <tr>
         <th scope="row"><span class="fp-row-name">${esc(name)}</span><span class="fp-row-ex">${esc(examples)}</span></th>
         ${levels.map(l => `<td>${fpMeter(l)}<span class="sr-only">${esc(t('fpLeg' + l))}</span></td>`).join('')}
@@ -2586,7 +2722,7 @@ function renderMicrosoft() {
 
   const footprint = `<div class="fp">
     <h3>${esc(t('fpTitle'))}</h3>
-    <p>${esc(t('fpSub'))}</p>
+    <p>${esc(t(cfg.ns + 'FpSub'))}</p>
     <div class="fp-scroll">
       <table class="fp-table">
         <thead><tr><th scope="col">${esc(t('fpSurface'))}</th>${head}</tr></thead>
@@ -2596,8 +2732,10 @@ function renderMicrosoft() {
     <div class="fp-legend">${legend}</div>
   </div>`;
 
-  host.innerHTML = msFlowFigure() + rungs + footprint;
+  host.innerHTML = flowFigure(cfg) + rungs + footprint;
 }
+
+function renderLadders() { LADDERS.forEach(renderLadder); }
 
 function renderPhaseNav() {
   const nav = document.getElementById('phaseNav');
@@ -2614,14 +2752,11 @@ function renderPhaseNav() {
       </span>
     </a>`;
   }).join('');
-  const all = document.getElementById('navAll');
-  if (all) all.textContent = t('navAll');
-  const sk = document.getElementById('navSkills');
-  if (sk) sk.textContent = t('navSkills');
-  const rf = document.getElementById('navRef');
-  if (rf) rf.textContent = t('navRef');
-  const ms = document.getElementById('navMs');
-  if (ms) ms.textContent = t('navMs');
+  // Same button list syncNavState walks, labelled from the same key names.
+  ['navAll', 'navSkills', 'navRef', 'navMs', 'navAws'].forEach(id => {
+    const b = document.getElementById(id);
+    if (b) b.textContent = t(id);
+  });
   renderNavProgress();
   syncNavState();
 }
@@ -2646,26 +2781,15 @@ function syncNavState() {
     const pr = phaseProgress(a.getAttribute('data-phase'));
     a.classList.toggle('is-started', pr.started > 0);
   });
-  const all = document.getElementById('navAll');
-  if (all) {
-    all.classList.toggle('is-active', currentPhase === 'all');
-    all.setAttribute('aria-pressed', currentPhase === 'all' ? 'true' : 'false');
-  }
-  const sk = document.getElementById('navSkills');
-  if (sk) {
-    sk.classList.toggle('is-active', currentPhase === 'skills');
-    sk.setAttribute('aria-pressed', currentPhase === 'skills' ? 'true' : 'false');
-  }
-  const rf = document.getElementById('navRef');
-  if (rf) {
-    rf.classList.toggle('is-active', currentPhase === 'reference');
-    rf.setAttribute('aria-pressed', currentPhase === 'reference' ? 'true' : 'false');
-  }
-  const ms = document.getElementById('navMs');
-  if (ms) {
-    ms.classList.toggle('is-active', currentPhase === 'microsoft');
-    ms.setAttribute('aria-pressed', currentPhase === 'microsoft' ? 'true' : 'false');
-  }
+  // The whole-scope buttons above and below the numbered path. One pass, so
+  // adding a section is a row here rather than another copy of this block.
+  [['navAll', 'all'], ['navSkills', 'skills'], ['navRef', 'reference'],
+   ['navMs', 'microsoft'], ['navAws', 'aws']].forEach(([id, scope]) => {
+    const b = document.getElementById(id);
+    if (!b) return;
+    b.classList.toggle('is-active', currentPhase === scope);
+    b.setAttribute('aria-pressed', currentPhase === scope ? 'true' : 'false');
+  });
 }
 
 function selectPhase(id, ev) {
@@ -2711,7 +2835,7 @@ function renderPhaseCounts() {
     const n = cardsEl.querySelectorAll('a.card:not(.card-index), a.layer, .rung').length;
     // The aux section holds skills, not stateful browser tools.
     const key = head.id === 'reference' ? 'layersCountLabel'
-      : head.id === 'microsoft' ? 'rungsCountLabel'
+      : (head.id === 'microsoft' || head.id === 'aws') ? 'rungsCountLabel'
       : head.classList.contains('is-aux') ? 'skillsCountLabel' : 'toolsCountLabel';
     if (n) countEl.textContent = t(key)(n);
   });
@@ -2815,7 +2939,7 @@ function applyI18n() {
   if (f) f.placeholder = t('filterPlaceholder');
   renderPhaseNav();
   renderReference();
-  renderMicrosoft();
+  renderLadders();
   renderPhaseCounts();
   if (f) currentQuery = String(f.value || '').trim().toLowerCase();
   applyView();

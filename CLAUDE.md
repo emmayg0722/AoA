@@ -83,37 +83,65 @@ Architecture** section rendered from the `LAYERS` array in `index.html` — the 
 capability layers lifted out of `Phase 3 - Architecture Design/Design Layers/`
 with the tools each is built with, so the stack vocabulary (LangGraph, MCP,
 Ragas, Lakera, Helicone…) is visible on the hub instead of three levels down.
-Last comes a **Microsoft Enterprise Ladder** section, rendered from `MS_LADDER`
-and `MS_FOOTPRINT` in `index.html` — the four rungs a Microsoft-shop
-client climbs from a bought Microsoft 365 Copilot seat, through configured Copilot
-Studio agents and delegated work in Copilot Cowork, to a governed estate (Work IQ,
-Fabric, Dataverse/Dynamics 365, Foundry, Agent 365 + Entra Agent ID, Purview).
-Each rung is one full-width block answering the questions a client asks in order —
-try this first (with what bites), what it gets you, how to turn it on (numbered
-setup steps), gate to clear — so keep that shape when editing rather than adding a
-fifth column. `msFlowFigure()` draws the framing diagram as hand-authored inline
-SVG: the same three-step flow four times, so the only thing that changes is where
-the person stands (doing the work → handling exceptions → approving → governing).
-Its per-rung copy lives on each `MS_LADDER` entry's `flow` field rather than in a
-parallel array, so the panel and the rung below it cannot describe different
-ladders. The rung blocks reuse the shared `.stage-grid` / `.stage-row` /
-`.stage-lbl` classes the phase stages use — style the ladder by editing those,
-not by adding a second eyebrow rule.
-Below the rungs a footprint matrix scores five enterprise surfaces against the four
-rungs from "not in play yet" to "load-bearing". The ladder runs alongside the
-phases, not instead of them: rung 1 is a Phase 1 use case, rung 4 a Phase 6
-governance programme. Its product facts age fast — check them against Microsoft's
-own announcements before editing rather than paraphrasing what is already there.
-Last verified against Microsoft sources on 2026-08-24: Copilot Cowork GA 16 June
-2026 (needs a Copilot seat *and* Copilot Credits, not credits instead of seats);
-Copilot Studio's currency changed from messages to Copilot Credits on 1 September
-2025; SharePoint Advanced Management is included with Microsoft 365 Copilot; agents
-built in Copilot Studio and Foundry self-register in Agent 365; Azure AI Foundry is
-now Microsoft Foundry. Licensing and billing lines are the ones that rot first.
+Last come two **vendor ladder** sections — **Microsoft Enterprise Ladder**
+(`MS_LADDER` / `MS_FOOTPRINT`) and **AWS Enterprise Ladder** (`AWS_LADDER` /
+`AWS_FOOTPRINT`) — the four rungs a client climbs from a bought seat to a governed
+agent estate. Microsoft: a Microsoft 365 Copilot seat, configured Copilot Studio
+agents, delegated work in Copilot Cowork, then a governed estate (Work IQ, Fabric,
+Dataverse/Dynamics 365, Foundry, Agent 365 + Entra Agent ID, Purview). AWS: Amazon
+Quick and Kiro seats, an app in Quick or a Bedrock knowledge base behind Guardrails,
+delegated work in Quick Automate or Bedrock AgentCore, then a governed estate (AWS
+Agent Registry, AgentCore Identity, Cedar, SageMaker Lakehouse + Lake Formation,
+Guardrails as policy, CloudTrail).
 
-All three sections are `is-aux`, so they stay out of the numbered path and out of
+Both render through the same `renderLadder(cfg)` / `flowFigure(cfg)` pair, driven by
+the `LADDERS` array — a ladder is `{host, ns, rungs, footprint}`, and `ns` is the
+prefix for its language keys (`msFlowCap`, `awsFpSub`, …) and its SVG marker id.
+**Add a third vendor by adding data plus one `LADDERS` row, never a second
+renderer**; the rung labels (`ladLbl*`) and the footprint legend (`fpLeg*`) are
+deliberately shared. Each rung is one full-width block answering the questions a
+client asks in order — try this first (with what bites), what it gets you, how to
+turn it on (numbered setup steps), gate to clear — so keep that shape when editing
+rather than adding a fifth column. `flowFigure()` draws the framing diagram as
+hand-authored inline SVG: the same three-step flow four times, so the only thing
+that changes is where the person stands (doing the work → handling exceptions →
+approving → governing). That spine is what makes the two ladders comparable, so keep
+it identical across vendors; its per-rung copy lives on each entry's `flow` field
+rather than in a parallel array, so the panel and the rung below it cannot describe
+different ladders. The rung blocks reuse the shared `.stage-grid` / `.stage-row` /
+`.stage-lbl` classes the phase stages use, and the ladder-specific CSS is vendor-
+neutral (`.ladder-grid`, `.ladder-fig`, `.rung`, `.fp`) — style the ladders by
+editing those, not by adding a per-vendor rule.
+
+Below each ladder's rungs a footprint matrix scores five enterprise surfaces against
+the four rungs from "not in play yet" to "load-bearing". The two matrices keep the
+same row order so they can be read against each other; the honest difference is that
+AWS is load-bearing on custom engineering and the data platform from rung 2, where
+Microsoft is not until rung 4. The ladders run alongside the phases, not instead of
+them: rung 1 is a Phase 1 use case, rung 4 a Phase 6 governance programme.
+
+Product facts on both age fast — check them against the vendor's own announcements
+before editing rather than paraphrasing what is already there. Licensing, metering
+and preview/GA lines are the ones that rot first. Last verified against Microsoft
+sources on 2026-08-24: Copilot Cowork GA 16 June 2026 (needs a Copilot seat *and*
+Copilot Credits, not credits instead of seats); Copilot Studio's currency changed
+from messages to Copilot Credits on 1 September 2025; SharePoint Advanced Management
+is included with Microsoft 365 Copilot; agents built in Copilot Studio and Foundry
+self-register in Agent 365; Azure AI Foundry is now Microsoft Foundry. Last verified
+against AWS sources on 2026-08-26: Amazon Q Business closed to new customers on
+31 July 2026 with Amazon Quick (GA 9 October 2025) as its successor; Kiro GA
+7 May 2026 superseding Amazon Q Developer (supported to 30 April 2027); Bedrock
+AgentCore GA October 2025, AgentCore Evaluations GA March 2026, Guardrails-in-policy
+June 2026; AWS Agent Registry in preview since April 2026; Quick meters agent hours
+on top of seats.
+
+All four sections are `is-aux`, so they stay out of the numbered path and out of
 the "43 tools / 10 phases" counts; layer rows are `a.layer` and ladder rungs are
 `.rung`, both of which the visibility and count passes handle alongside `a.card`.
+Each also needs a rail button (`navMs`, `navAws`, …) and an entry in `allScopes()`;
+the rail buttons are labelled and highlighted from one list each in
+`renderPhaseNav()` and `syncNavState()`, so a new section is a row in those, not
+another copy of the block.
 
 Layer and rung content stays in English — the same scoping the maturity
 assessment uses — while the chrome around it translates with the site selector.
