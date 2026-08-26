@@ -380,18 +380,22 @@ inserting a marked block so re-running updates that block and leaves the rest of
 your `AGENTS.md` alone. Manual per-OS paths and the `.skill` package format are
 covered in `skills/README.md` and on the [skills page](skills/).
 
-## Microsoft enterprise ladder (on the hub)
+## Vendor ladders (on the hub)
 
-Most clients this toolkit is aimed at are Microsoft shops, and their AI programme
-does not start at architecture — it starts with a Copilot licence somebody already
-bought. The hub carries a **Microsoft Enterprise Ladder** section describing the
-four rungs from that first seat to a governed agent estate. Each rung answers the
-four questions a client actually asks, in the order they ask them:
+A client's AI programme rarely starts at architecture — it starts with a licence
+somebody already bought. The hub carries two ladder sections, **Microsoft
+Enterprise Ladder** and **AWS Enterprise Ladder**, each describing the four rungs
+from that first seat to a governed agent estate. Both render from the same code
+and the same four fields, because the rung is decided by *where the person
+stands*, not by the vendor; only the products differ. Each rung answers the four
+questions a client actually asks, in the order they ask them:
 
 - **Try this first** — the concrete first move, plus what bites if you skip ahead
 - **What it gets you** — the outcome in business terms, not features
 - **How to turn it on** — the numbered setup: licences, admin steps, prerequisites
 - **Gate to clear** — what has to be true before the next rung is worth funding
+
+For a Microsoft shop, where the programme usually starts with a Copilot licence:
 
 | Rung | What it is | The first move |
 | --- | --- | --- |
@@ -400,24 +404,45 @@ four questions a client actually asks, in the order they ask them:
 | 3 · Delegated | **Copilot Cowork** — define the task, it plans and runs the steps and returns a deliverable | One whole multi-step piece of work handed over, reviewed at checkpoints, on a budget somebody owns |
 | 4 · Governed estate | **Work IQ, Fabric, Dataverse/Dynamics 365, Microsoft Foundry, Agent 365 + Entra Agent ID, Purview** | Curate the knowledge agents read, register every agent that exists, then let teams build on top |
 
-The ladder runs *alongside* the delivery phases rather than replacing them: rung 1
+And the same four rungs for a client whose enterprise runs on AWS:
+
+| Rung | What it is | The first move |
+| --- | --- | --- |
+| 1 · Assisted | **Amazon Quick** for the business, **Kiro** for engineering | Two or three named weekly jobs in one or two teams, with a time baseline, after verifying document-level ACLs on every connected source |
+| 2 · Configured | **An app in Quick** over the index, or a **Bedrock knowledge base** over S3, behind **Guardrails** | One repeat-question queue turned into an agent with an owner, an escalation path and a deflection number |
+| 3 · Delegated | **Quick Automate** for business workflow, **Bedrock AgentCore** when it needs real runtime, memory and tools | One whole multi-step piece of work handed over, reviewed at checkpoints, on a consumption budget somebody owns |
+| 4 · Governed estate | **AWS Agent Registry, AgentCore Identity, Cedar, SageMaker Lakehouse + Lake Formation, Guardrails as policy, CloudTrail** | Curate the data agents read, register every agent, tool and MCP server, then let teams build on top |
+
+Reading the two side by side is the point: the AWS ladder puts engineering on the
+critical path earlier (rung 2 is already a build, and the choice of *who* builds it
+splits business teams from engineers across two consoles), while the Microsoft
+ladder buys further up the stack for longer. The AWS product names also moved
+recently — Amazon Q Business closed to new customers on 31 July 2026 with Amazon
+Quick as its successor, and Kiro replaced Amazon Q Developer in May 2026 — so
+check which product a client is actually buying before recommending a rung.
+
+The ladders run *alongside* the delivery phases rather than replacing them: rung 1
 is a Phase 1 use case, rung 2 a Phase 4 pilot, rung 4 a Phase 6 governance
 programme.
 
-Two visuals frame the rungs. Above them, a hand-authored inline SVG shows the same
-three-step flow at each rung so the only thing that changes is **where the person
-stands**: doing the work, then answering what the agent cannot, then approving what
-it produced, then governing the estate that produces it. That is what decides which
-rung a client is really on, rather than what they have licensed. Below them, an
-**enterprise footprint** matrix scores five enterprise surfaces (productivity,
-business apps and process, knowledge and data, identity and governance, custom
-engineering) against the four rungs, from "not in play yet" to "load-bearing" —
-the footprint spreads down and to the right, which is the argument for why the last
-rung is a programme and not a licence.
+Two visuals frame each ladder's rungs. Above them, a hand-authored inline SVG shows
+the same three-step flow at each rung so the only thing that changes is **where the
+person stands**: doing the work, then answering what the agent cannot, then approving
+what it produced, then governing the estate that produces it. That is what decides
+which rung a client is really on, rather than what they have licensed. Below them, an
+**enterprise footprint** matrix scores five enterprise surfaces against the four
+rungs, from "not in play yet" to "load-bearing". Both matrices spread down and to the
+right — that is the argument for why the last rung is a programme and not a licence —
+but the AWS one leans on custom engineering and the data platform from rung 2, where
+the Microsoft one does not until rung 4.
 
-Like the reference-architecture layers, the rung content stays in English while
-the chrome around it follows the site language selector. The section is `is-aux`,
-so it stays out of the numbered path and out of the "43 tools / 10 phases" counts.
+Like the reference-architecture layers, rung content stays in English while the
+chrome around it follows the site language selector. Both sections are `is-aux`, so
+they stay out of the numbered path and out of the "43 tools / 10 phases" counts.
+
+Product facts on both ladders age fast. They were last verified against the vendors'
+own announcements on 2026-08-26; licensing, metering and preview/GA lines are the
+ones that rot first, so check them rather than paraphrasing what is already there.
 
 ## SOP checklists & the Nordkap sample engagement
 
