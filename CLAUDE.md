@@ -48,8 +48,8 @@ when adding new phases or tools so terminology stays consistent.
 │   └── roi-scenario-model/       # SKILL.md + scripts/roi_model.py + references/
 ├── Phase 1 - Discovery & Assessment/    # ai-maturity-assessment, data-readiness-assessment-5c,
 │                                        # infrastructure-audit, organizational-readiness,
-│                                        # use-case-discovery-board, use-case-prioritization,
-│                                        # sample-data/
+│                                        # use-case-discovery-board (+ README, workshop-relay.py),
+│                                        # use-case-prioritization, sample-data/
 ├── Phase 2 - Strategy & Roadmap/        # ai-strategy-planning, business-case-development,
 │                                        # organizational-roadmap, technology-roadmap
 ├── Phase 3 - Architecture Design/       # Design Layers (architecture-builder.html + an
@@ -177,6 +177,19 @@ step that uploads, POSTs, or otherwise transmits client data, and never route ra
 data through an LLM. If you add a tool that touches client data, keep the
 processing in-browser.
 
+**There is exactly one exception, and it is opt-in and self-hosted:** the Use
+Case Discovery Board's live session (`workshop-relay.py`), where a room edits one
+board together through a relay the facilitator runs on their own laptop. It earns
+the exception by conceding nothing that matters — the relay is the consultant's
+own machine, the session lives in memory and is never written to disk, no third
+party is involved, and **the tool makes no network call at all until a person
+presses "Go live"**. That last part is the invariant: the board served from
+GitHub Pages must stay byte-for-byte as local as every other tool here, and there
+is a test asserting an unconnected board issues zero `/sync/` requests. Do not
+make sync automatic, do not default it on, and do not add a hosted relay. Any
+future feature wanting the network needs the same three properties: opt-in,
+self-hosted, and inert until asked.
+
 ### 3. Only synthetic data in the repo
 This repo backs a **public** site. Only fake/demo data belongs in
 `Phase 1 - Discovery & Assessment/sample-data/` — never real client or engagement
@@ -256,6 +269,25 @@ rename the client across the whole toolkit. Keep that flag if you add a fourth.
 All three use the same lane geometry (systems above the spine, friction and
 candidates below), which is what keeps them free of connectors running behind
 blocks.
+
+The board carries ~130 language keys across three languages, and the later
+`Object.assign` merges silently overwrite earlier ones — a new key that collides
+with an existing one replaces it with no error. This has already happened once
+(a live-session `btnConnect` quietly replaced the inspector's Connect button), so
+when adding strings, grep the file for the key first.
+
+**Live sessions** (`workshop-relay.py`, beside the tool; see that folder's
+README) let several people edit one board. The relay is stdlib-only, serves the
+repo's static files *and* relays edits — it must serve them, because an https
+page cannot reach a plain-http relay on a LAN, so the room loads the board from
+the facilitator's laptop. The sync model is last-writer-wins per block; the relay
+hands each peer its own id range on join (`idBase`, peer slot × 1,000,000) so
+simultaneous additions cannot collide on an id. Fine-grained ops carry single
+blocks and edges; whole-document ops carry undo/redo, clear, reset and sample
+loads. Two client-side details are load-bearing and easy to break: `renderBoard`
+takes `{keepInspector}` so a remote edit arriving mid-typing cannot rebuild the
+input under the cursor, and `SY.busy` defers remote renders while a drag or link
+is in progress so the DOM is never swapped out from under the pointer.
 
 The hand-off runs the same direction as the architecture-builder one — the
 downstream tool pulls. `use-case-prioritization` reads `aoa_usecase_board_v1` and
@@ -350,7 +382,8 @@ reasoning) and a fast pre-check before running the full client-facing tools.
 ## The Python maturity-assessment implementation
 
 `Phase 1 - Discovery & Assessment/ai-maturity-assessment/python/` is the only part
-with a real toolchain. It's a Streamlit web app plus a CLI, sharing an
+with a dependency-bearing toolchain (the board's `workshop-relay.py` is Python too,
+but stdlib-only and optional). It's a Streamlit web app plus a CLI, sharing an
 `assessment/` package (`model`, `questions`, `scoring`, `engine`, `report`).
 
 ```bash
