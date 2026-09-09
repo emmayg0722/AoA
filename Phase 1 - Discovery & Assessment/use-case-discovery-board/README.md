@@ -57,10 +57,17 @@ It prints two addresses — one for you, one to read out to the room:
     http://192.168.1.24:8000/Phase%201%20-%20.../use-case-discovery-board/?session=default
 ```
 
-Everyone opens that address, types their name in **Live session**, and presses
-**Go live**. The first person in seeds the session with the board they have
-open; everyone after that adopts it — and is warned first if they had work of
-their own on screen.
+Everyone opens that address. Because the link carries `?session=`, a bar appears
+at the top of the page — *"A live session is waiting on this address — join it
+as: ____ [Go live]"* — so nobody has to scroll past the board hunting for the
+panel. Type a name, press the button, done. (The same controls sit in the **Live
+session** card further down, for changing session or leaving.)
+
+The first person in seeds the session with the board they have open; everyone
+after that adopts it — and is warned first if they had work of their own on
+screen. The banner only appears for a link with `?session=` in it: opened
+normally, the page still makes no network call at all, because it never probes
+to find out whether a relay is there.
 
 Options: `--port`, `--host`, `--session`, `--root`.
 

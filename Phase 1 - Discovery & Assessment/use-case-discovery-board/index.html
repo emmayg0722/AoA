@@ -169,6 +169,13 @@
   .k.system { background: var(--sys-bg); border-color: var(--sys-bd); }
   .k.usecase { background: var(--uc-bg); border-color: var(--uc-bd); }
   .k.note { background: var(--note-bg); border-color: var(--note-bd); }
+  /* Only shown to someone who arrived on a relay's shared link, so joining
+     does not mean scrolling past the whole board to find the panel below it. */
+  .live-invite { display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
+    background: var(--powder); border: 1.5px solid var(--accent); border-radius: 12px;
+    padding: 12px 16px; margin-bottom: 18px; }
+  .live-invite .li-text { font-size: 14px; font-weight: 600; color: var(--primary); }
+  .live-invite input { width: auto; flex: 1 1 180px; min-width: 0; padding: 7px 10px; font-size: 13.5px; }
   .peers { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 10px; }
   .peer { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 600;
     border: 1.5px solid var(--line); border-radius: 999px; padding: 4px 11px 4px 8px; background: #fff; }
@@ -202,6 +209,12 @@
   </div></header>
 
   <main>
+    <div class="live-invite" id="liveInvite" hidden>
+      <span class="li-text" data-i18n="inviteText"></span>
+      <input type="text" id="inviteName" data-ph="phYourName">
+      <button class="btn btn-primary" onclick="joinFromInvite()" data-i18n="btnGoLive"></button>
+    </div>
+
     <div class="note"><strong data-i18n="noteLabel"></strong> <span data-i18n="noteBody"></span></div>
 
     <div class="card">
@@ -710,6 +723,7 @@ const STRINGS = {
       syncAdopted: 'Joined \u2014 this board now shows the session\u2019s board.',
       syncSeeded: 'Session started from the board you had open.',
       syncOffline: 'Not connected. This board is local to this browser.',
+      inviteText: 'A live session is waiting on this address \u2014 join it as:',
       syncReplaceConfirm: 'Join the session? The board open here will be replaced by the session\u2019s board.',
       peerYou: 'you',
       sampleConfirm: 'Load the sample engagement into this tool? This replaces anything currently saved here.',
@@ -738,6 +752,7 @@ const STRINGS = {
       syncAdopted: 'Tilsluttet \u2014 denne tavle viser nu sessionens tavle.',
       syncSeeded: 'Sessionen er startet ud fra den tavle, du havde åben.',
       syncOffline: 'Ikke forbundet. Denne tavle er lokal for denne browser.',
+      inviteText: 'En live session venter p\u00e5 denne adresse \u2014 tilslut dig som:',
       syncReplaceConfirm: 'Tilslut sessionen? Tavlen her erstattes af sessionens tavle.',
       peerYou: 'dig',
       sampleConfirm: 'Indlæs eksempel-engagementet i dette værktøj? Dette erstatter alt, der aktuelt er gemt her.',
@@ -766,6 +781,7 @@ const STRINGS = {
       syncAdopted: 'Ansluten \u2014 denna tavla visar nu sessionens tavla.',
       syncSeeded: 'Sessionen startade från tavlan du hade öppen.',
       syncOffline: 'Inte ansluten. Denna tavla är lokal för denna webbläsare.',
+      inviteText: 'En live-session v\u00e4ntar p\u00e5 denna adress \u2014 anslut dig som:',
       syncReplaceConfirm: 'Ansluta till sessionen? Tavlan här ersätts av sessionens tavla.',
       peerYou: 'du',
       sampleConfirm: 'Läs in exempeluppdraget i detta verktyg? Detta ersätter allt som för närvarande är sparat här.',
@@ -2042,6 +2058,7 @@ async function toggleSync() {
     if (d.adopted) { applyRemoteOp({ t: 'doc', doc: d.doc }); sel = null; }
     renderBoard(); renderPreview(); renderPeers(); save();
     syncBtnLabel();
+    syncInviteVisibility();
     setSyncStatus(d.adopted ? t('syncAdopted') : t('syncSeeded'));
     pollLoop();
   } catch (e) {
@@ -2049,6 +2066,16 @@ async function toggleSync() {
     syncBtnLabel();
     setSyncStatus(t('syncNoRelay'));
   }
+}
+function joinFromInvite() {
+  const from = document.getElementById('inviteName');
+  const to = document.getElementById('syncName');
+  if (from && to && from.value.trim()) to.value = from.value.trim();
+  toggleSync();
+}
+function syncInviteVisibility() {
+  const invite = document.getElementById('liveInvite');
+  if (invite && SY.on) invite.hidden = true;
 }
 function leaveSync() {
   const session = SY.session, peerId = SY.peerId;
@@ -2077,6 +2104,11 @@ window.addEventListener('beforeunload', () => {
   const qs = new URLSearchParams(location.search);
   const sessEl = document.getElementById('syncSession');
   if (sessEl) sessEl.value = qs.get('session') || 'default';
+  // The relay's shared link always carries ?session=; the public site's never
+  // does. Keying the banner off that means arriving here normally still costs
+  // no network call at all — we never probe to find out whether a relay exists.
+  const invite = document.getElementById('liveInvite');
+  if (invite && qs.has('session')) invite.hidden = false;
   syncBtnLabel();
   setSyncStatus(t('syncOffline'));
   renderPeers();

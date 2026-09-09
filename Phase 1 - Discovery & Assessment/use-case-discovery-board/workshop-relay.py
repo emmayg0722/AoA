@@ -185,6 +185,15 @@ class Handler(SimpleHTTPRequestHandler):
             return
         super().log_message(fmt, *args)
 
+    def handle_one_request(self):
+        # Someone closing their laptop mid-poll drops the socket. That is
+        # normal in a room full of people, so it must not print a traceback
+        # and make a healthy relay look like it is crashing.
+        try:
+            super().handle_one_request()
+        except (BrokenPipeError, ConnectionResetError):
+            self.close_connection = True
+
     def _send_json(self, payload, status=200):
         body = json.dumps(payload).encode("utf-8")
         self.send_response(status)
@@ -195,8 +204,11 @@ class Handler(SimpleHTTPRequestHandler):
         self.send_header("Access-Control-Allow-Origin", "*")
         self.send_header("Access-Control-Allow-Headers", "Content-Type")
         self.send_header("Cache-Control", "no-store")
-        self.end_headers()
-        self.wfile.write(body)
+        try:
+            self.end_headers()
+            self.wfile.write(body)
+        except (BrokenPipeError, ConnectionResetError):
+            self.close_connection = True
 
     def _body(self):
         try:
