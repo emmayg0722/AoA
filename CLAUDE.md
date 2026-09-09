@@ -229,10 +229,22 @@ Three more things worth keeping if you edit it:
 - **Connection styling is derived, never stored.** `isFlowEdge()` calls an edge a
   flow arrow only when both endpoints are steps; everything else draws as a dashed
   attachment. A stored style could claim a pain point flows into a use case.
-- **The inspector lives inside the board** so it survives focus mode, which means
-  the canvas pointer handlers must keep ignoring events from `.inspector`, and it
-  goes click-through while a connection is being drawn so a block underneath can
-  still be picked as the target.
+- **The inspector lives inside the board** so it survives full-screen mode, which
+  means the canvas pointer handlers must keep ignoring events from `.inspector`,
+  and it goes click-through while a connection is being drawn so a block
+  underneath can still be picked as the target.
+- **The connect dot counter-scales against the zoom.** `applyView()` publishes the
+  zoom as a `--z` custom property on `.board-world`, and `.node-handle` applies
+  `scale(1 / var(--z))` so the dot stays ~18px on screen however far out the board
+  is; a `::after` ring gives it a grab area larger than it looks. Without this the
+  dot shrank with the canvas — at the 0.72 zoom the sample loads at it rendered at
+  11px, and at 0.3 it was unusable. Do not "simplify" the transform away.
+- **Full screen asks the browser first.** `toggleFocus()` calls
+  `requestFullscreen()` so the browser chrome goes away on a meeting-room
+  projector, and falls back to the fixed full-viewport overlay when that is
+  refused. `fullscreenchange` drives `setFocus()`, so the button label cannot
+  disagree with what the board is doing; Esc is left to the browser in the native
+  case.
 
 The hand-off runs the same direction as the architecture-builder one — the
 downstream tool pulls. `use-case-prioritization` reads `aoa_usecase_board_v1` and

@@ -87,6 +87,7 @@
      a fixed full-viewport panel for projecting in a workshop room. */
   .board-shell { border: 1px solid var(--line); border-radius: 12px; background: #fff; overflow: hidden; display: flex; flex-direction: column; }
   .board-shell.focus { position: fixed; inset: 0; z-index: 60; border-radius: 0; }
+  .board-shell:fullscreen { background: #fff; border-radius: 0; }
   body.focus-on { overflow: hidden; }
   .board-toolbar { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; padding: 9px 10px; border-bottom: 1px solid var(--line); background: #fcfcff; }
   .board-toolbar .sep { width: 1px; align-self: stretch; background: var(--line); margin: 0 4px; }
@@ -126,9 +127,17 @@
   .node.t-usecase { background: var(--uc-bg); border-color: var(--uc-bd); color: var(--uc-bd); }
   .node.t-note { background: var(--note-bg); border-color: var(--note-bd); color: var(--amber); }
   .node .node-title, .node .node-detail { color: var(--ink); }
-  .node-handle { position: absolute; right: -8px; top: 50%; margin-top: -8px; width: 16px; height: 16px; border-radius: 50%;
-    background: #fff; border: 2px solid var(--primary); cursor: crosshair; }
-  .node-handle:hover { background: var(--accent); }
+  /* The dot counter-scales against the board zoom so it stays the same
+     size on screen however far out you are, and ::after gives it a grab
+     area far larger than it looks — at 0.7 zoom the old 16px dot rendered
+     at 11px and was easy to miss entirely. */
+  .node-handle { position: absolute; right: -9px; top: 50%; margin-top: -9px; width: 18px; height: 18px; border-radius: 50%;
+    background: #fff; border: 2.5px solid var(--primary); cursor: crosshair;
+    transform: scale(calc(1 / var(--z, 1))); transform-origin: center;
+    transition: background 0.12s, box-shadow 0.12s; }
+  .node-handle::after { content: ''; position: absolute; inset: -11px; border-radius: 50%; }
+  .node:hover .node-handle { background: var(--accent); box-shadow: 0 0 0 3px rgba(27,20,116,0.16); }
+  .node-handle:hover { background: var(--primary); box-shadow: 0 0 0 4px rgba(27,20,116,0.22); }
   .board-empty { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; text-align: center;
     color: var(--muted); font-size: 14px; padding: 24px; pointer-events: none; }
   .board-status { position: absolute; left: 12px; bottom: 12px; background: rgba(27,20,116,0.92); color: #fff; font-size: 12.5px;
@@ -319,7 +328,7 @@ const STRINGS = {
     lblScope: 'Scope boundary (trigger → outcome)',
     phScope: 'e.g. Starts when a claim is filed, ends when it is approved or declined',
     boardTitle: 'The board',
-    boardHint: 'Click a block type to add it. With a block selected, the new block links to it automatically — that is how a workflow gets drawn fast. Drag the ● handle on a block’s right edge onto another block to connect them by hand.',
+    boardHint: 'Click a block type to add it. With a block selected, the new block links to it automatically — that is how a workflow gets drawn fast. To connect two blocks by hand, drag the ● dot on a block’s right edge onto the other block. ⛶ Full screen puts the board on the whole screen for projecting in the room.',
     boardKeys: 'Keyboard: arrow keys move the selected block, Delete removes it, Ctrl/⌘+Z undoes, Esc cancels a connection. Ctrl/⌘ + scroll zooms; drag the background to pan.',
     boardEmpty: 'Empty board. Add a step to start mapping the workflow — or load the sample engagement at the bottom of the page.',
     ntStep: 'Step',
@@ -335,8 +344,9 @@ const STRINGS = {
     btnUndo: '↶ Undo',
     btnRedo: '↷ Redo',
     btnFit: 'Fit',
-    btnFocus: '⛶ Focus',
-    btnExitFocus: '✕ Exit focus',
+    btnFocus: '⛶ Full screen',
+    btnExitFocus: '✕ Exit full screen',
+    handleTip: 'Drag this dot onto another block to connect them',
     btnClearBoard: 'Clear board',
     clearConfirm: 'Remove every block and connection from the board?',
     btnExportSvg: '🖼 Export board (SVG)',
@@ -434,7 +444,7 @@ const STRINGS = {
     lblScope: 'Afgrænsning (udløser → udfald)',
     phScope: 'fx Starter når en skade anmeldes, slutter når den godkendes eller afvises',
     boardTitle: 'Tavlen',
-    boardHint: 'Klik en bloktype for at tilføje den. Med en blok valgt kobles den nye blok automatisk til den — sådan tegnes en arbejdsgang hurtigt. Træk ●-håndtaget på blokkens højre kant over på en anden blok for at forbinde dem manuelt.',
+    boardHint: 'Klik en bloktype for at tilføje den. Med en blok valgt kobles den nye blok automatisk til den — sådan tegnes en arbejdsgang hurtigt. For at forbinde to blokke manuelt trækkes ●-prikken på blokkens højre kant over på den anden blok. ⛶ Fuld skærm lægger tavlen ud på hele skærmen til projektion i lokalet.',
     boardKeys: 'Tastatur: piletaster flytter den valgte blok, Delete fjerner den, Ctrl/⌘+Z fortryder, Esc annullerer en forbindelse. Ctrl/⌘ + scroll zoomer; træk baggrunden for at panorere.',
     boardEmpty: 'Tom tavle. Tilføj et trin for at begynde kortlægningen — eller indlæs eksempel-engagementet nederst på siden.',
     ntStep: 'Trin',
@@ -450,8 +460,9 @@ const STRINGS = {
     btnUndo: '↶ Fortryd',
     btnRedo: '↷ Gendan',
     btnFit: 'Tilpas',
-    btnFocus: '⛶ Fokus',
-    btnExitFocus: '✕ Forlad fokus',
+    btnFocus: '⛶ Fuld skærm',
+    btnExitFocus: '✕ Forlad fuld skærm',
+    handleTip: 'Træk denne prik over på en anden blok for at forbinde dem',
     btnClearBoard: 'Ryd tavle',
     clearConfirm: 'Fjern alle blokke og forbindelser fra tavlen?',
     btnExportSvg: '🖼 Eksportér tavle (SVG)',
@@ -549,7 +560,7 @@ const STRINGS = {
     lblScope: 'Avgränsning (utlösare → utfall)',
     phScope: 't.ex. Börjar när en skada anmäls, slutar när den godkänns eller avslås',
     boardTitle: 'Tavlan',
-    boardHint: 'Klicka på en blocktyp för att lägga till den. Med ett block valt kopplas det nya blocket automatiskt till det — så ritas ett arbetsflöde snabbt. Dra ●-handtaget på blockets högra kant till ett annat block för att koppla dem manuellt.',
+    boardHint: 'Klicka på en blocktyp för att lägga till den. Med ett block valt kopplas det nya blocket automatiskt till det — så ritas ett arbetsflöde snabbt. För att koppla två block manuellt drar du ●-punkten på blockets högra kant till det andra blocket. ⛶ Helskärm lägger ut tavlan på hela skärmen för projektion i rummet.',
     boardKeys: 'Tangentbord: piltangenter flyttar det valda blocket, Delete tar bort det, Ctrl/⌘+Z ångrar, Esc avbryter en koppling. Ctrl/⌘ + scroll zoomar; dra bakgrunden för att panorera.',
     boardEmpty: 'Tom tavla. Lägg till ett steg för att börja kartlägga — eller läs in exempeluppdraget längst ned på sidan.',
     ntStep: 'Steg',
@@ -565,8 +576,9 @@ const STRINGS = {
     btnUndo: '↶ Ångra',
     btnRedo: '↷ Gör om',
     btnFit: 'Anpassa',
-    btnFocus: '⛶ Fokus',
-    btnExitFocus: '✕ Lämna fokus',
+    btnFocus: '⛶ Helskärm',
+    btnExitFocus: '✕ Lämna helskärm',
+    handleTip: 'Dra denna punkt till ett annat block för att koppla ihop dem',
     btnClearBoard: 'Rensa tavla',
     clearConfirm: 'Ta bort alla block och kopplingar från tavlan?',
     btnExportSvg: '🖼 Exportera tavla (SVG)',
@@ -872,7 +884,7 @@ function renderBoard() {
       <div class="node-title">${esc(n.title)}</div>
       ${n.detail ? `<div class="node-detail">${esc(n.detail)}</div>` : ''}
       ${meta ? `<div class="node-meta">${esc(meta)}</div>` : ''}
-      <span class="node-handle" data-handle="${n.id}" title="${esc(t('btnConnect'))}"></span>
+      <span class="node-handle" data-handle="${n.id}" title="${esc(t('handleTip'))}"></span>
     </div>`;
   }).join('');
   layer.querySelectorAll('.node').forEach(el => { nodeEls[Number(el.getAttribute('data-id'))] = el; });
@@ -1025,7 +1037,9 @@ function updateEdge(id, label) {
 function select(kind, id) { sel = kind ? { kind, id } : null; renderBoard(); }
 
 function applyView() {
-  worldEl().style.transform = `translate(${view.x}px, ${view.y}px) scale(${view.z})`;
+  const w = worldEl();
+  w.style.transform = `translate(${view.x}px, ${view.y}px) scale(${view.z})`;
+  w.style.setProperty('--z', view.z);
 }
 function zoomAt(clientX, clientY, factor) {
   const r = viewEl().getBoundingClientRect();
@@ -1225,7 +1239,7 @@ document.addEventListener('keydown', ev => {
   const typing = tag === 'input' || tag === 'textarea' || tag === 'select';
   if (ev.key === 'Escape') {
     if (linkFrom !== null) { cancelLink(); return; }
-    if (document.getElementById('boardShell').classList.contains('focus')) { toggleFocus(); return; }
+    if (!document.fullscreenElement && document.getElementById('boardShell').classList.contains('focus')) { toggleFocus(); return; }
   }
   if (typing) return;
   if ((ev.ctrlKey || ev.metaKey) && ev.key.toLowerCase() === 'z') {
@@ -1250,14 +1264,33 @@ document.addEventListener('keydown', ev => {
   }
 });
 
-// Focus mode: the board fills the viewport for workshop projection.
-function toggleFocus() {
+// Full screen: ask the browser for real fullscreen so the chrome goes away
+// when the board is on a meeting-room projector, and fall back to a fixed
+// full-viewport overlay where that is refused or unsupported.
+function setFocus(on) {
   const shell = document.getElementById('boardShell');
-  const on = shell.classList.toggle('focus');
+  shell.classList.toggle('focus', on);
   document.body.classList.toggle('focus-on', on);
-  document.getElementById('btnFocus').textContent = on ? t('btnExitFocus') : t('btnFocus');
+  const btn = document.getElementById('btnFocus');
+  if (btn) btn.textContent = on ? t('btnExitFocus') : t('btnFocus');
   setTimeout(() => { renderEdges(); }, 30);
 }
+function toggleFocus() {
+  const shell = document.getElementById('boardShell');
+  if (document.fullscreenElement) { document.exitFullscreen(); return; }
+  if (shell.classList.contains('focus')) { setFocus(false); return; }
+  if (shell.requestFullscreen) {
+    // The class still goes on: it is what grows the canvas to fill the frame.
+    shell.requestFullscreen().then(() => setFocus(true)).catch(() => setFocus(true));
+  } else {
+    setFocus(true);
+  }
+}
+// Esc and the browser's own exit both come back through here, so the button
+// label can never disagree with what the board is actually doing.
+document.addEventListener('fullscreenchange', () => {
+  if (!document.fullscreenElement) setFocus(false);
+});
 
 // ── The deliverable: reading the board back ─────────────────────
 function nodesOf(type) { return nodes.filter(n => n.type === type); }
