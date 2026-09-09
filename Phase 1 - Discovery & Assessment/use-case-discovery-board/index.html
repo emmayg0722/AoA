@@ -77,6 +77,10 @@
   pre.prompt { background: #f5f5fc; border: 1px solid var(--line); border-radius: 10px; padding: 14px; font-size: 12.5px; line-height: 1.5; white-space: pre-wrap; word-break: break-word; color: #2a2a3a; max-height: 320px; overflow: auto; }
   textarea[data-eng="draftDoc"] { min-height: 110px; }
   .saved { font-size: 12.5px; color: var(--green); margin-left: 8px; }
+  /* Sizes to its longest option by default, and the example labels are
+     longer than a phone is wide. min-width:0 lets it shrink inside the
+     flex row rather than pushing the page sideways. */
+  #sampleSelect { width: auto; max-width: 100%; min-width: 0; }
   .preview, .report { overflow-x: auto; }
   h1, h2, h3, h4, p, label, dt, dd, th, td, span, .hint, .crumb { overflow-wrap: break-word; hyphens: auto; }
 
@@ -286,7 +290,7 @@
         <button class="btn btn-primary" onclick="exportDoc('html')" data-i18n="btnExportHtml"></button>
         <button class="btn btn-primary" onclick="exportDoc('md')" data-i18n="btnExportMd"></button>
         <button class="btn btn-secondary" onclick="resetAll()" data-i18n="btnReset"></button>
-        <select class="field" id="sampleSelect" style="width:auto" aria-label="Example board"></select>
+        <select class="field" id="sampleSelect" aria-label="Example board"></select>
         <button class="btn btn-secondary" onclick="loadSample()" data-i18n="btnLoadSample"></button>
         <span class="saved" id="savedFlag"></span>
       </div>
