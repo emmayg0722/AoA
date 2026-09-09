@@ -6,7 +6,7 @@ phase. Live site: https://emmayg0722.github.io/AoA/
 Each consulting phase has its own folder; within a phase, each deliverable/tool has
 its own subfolder. New phases and assets follow the same structure.
 
-All **ten phases** of the delivery lifecycle are built — 43 browser-local tools
+All **ten phases** of the delivery lifecycle are built — 44 browser-local tools
 from first discovery interview through to the quarterly value review after go-live.
 Alongside them sit **agent skills**: portable instructions that give Claude, Codex
 or any other agent the same reasoning, installable outside this repository.
@@ -37,6 +37,7 @@ or any other agent the same reasoning, installable outside this repository.
     │   └── README.md
     ├── infrastructure-audit/          # SOP + intake + auto-generated current-state doc (EN/DA/SV)
     ├── organizational-readiness/      # SOP + intake + auto-generated readiness doc (EN/DA/SV)
+    ├── use-case-discovery-board/      # Workshop canvas: workflow blocks + connections -> discovery doc (EN/DA/SV)
     ├── use-case-prioritization/       # SOP + ROI/feasibility/impact matrix + priority doc (EN/DA/SV)
     └── sample-data/                   # Synthetic demo data only — see its README
         ├── ai-maturity-assessment/
@@ -107,11 +108,17 @@ or any other agent the same reasoning, installable outside this repository.
 - **Organizational Readiness Assessment** — SOP + intake covering team capability,
   culture/change readiness, process maturity, and stakeholder analysis, auto-
   generating a customized readiness document.
+- **Use Case Discovery Board** — a workshop canvas for the session *before*
+  prioritization: draw the client's as-is workflow as connected blocks, mark the
+  friction on the steps that carry it, attach the systems and data each step
+  touches, and hang candidate AI use cases off the pain they address. Reads the
+  board back as a discovery document, and exports the drawing itself as SVG.
 - **Use Case Identification & Prioritization** — SOP plus a live, scorable ROI /
   feasibility / impact matrix that ranks candidate AI use cases, flags quick wins,
-  and auto-generates a priority document.
+  and auto-generates a priority document. Candidates mapped on the discovery board
+  import straight into the matrix.
 
-All three new Phase 1 tools follow the same pattern: an SOP card, a client-intake
+The SOP-driven Phase 1 tools follow the same pattern: an SOP card, a client-intake
 form (autosaved locally), a live document preview built from a `{{field}}` template,
 HTML/Markdown export, and an English/Danish/Swedish language selector — the pattern
 now used across the toolkit.
@@ -438,7 +445,7 @@ the Microsoft one does not until rung 4.
 
 Like the reference-architecture layers, rung content stays in English while the
 chrome around it follows the site language selector. Both sections are `is-aux`, so
-they stay out of the numbered path and out of the "43 tools / 10 phases" counts.
+they stay out of the numbered path and out of the "44 tools / 10 phases" counts.
 
 Product facts on both ladders age fast. They were last verified against the vendors'
 own announcements on 2026-08-26; licensing, metering and preview/GA lines are the
@@ -486,7 +493,7 @@ Client, assessor, and use case are entered **once** and carry across the whole
 toolkit: every tool prefills those fields from a shared browser-local profile
 (`localStorage` key `aoa_engagement_v1`) and writes changes back to it. The hub
 shows an **engagement dashboard** — the current engagement plus a started/empty
-chip for each of the 43 stateful tools. A root-level **`engagement-report.html`**
+chip for each of the 44 stateful tools. A root-level **`engagement-report.html`**
 assembles every tool's saved work into one combined report (HTML/Markdown
 export) and can save or restore the *entire* engagement — all tools at once —
 as a single JSON file. Like everything else here, all of it is browser-local:
@@ -494,7 +501,7 @@ nothing is uploaded anywhere.
 
 ## Site-wide language selector
 
-Every tool in the toolkit — the 40 Phase 1–10 tools above plus the 5 tools
+Every tool in the toolkit — the 41 Phase 1–10 tools above plus the 5 tools
 that predate them (this hub, AI Maturity Assessment, DRA-5C console and
 profiler, and the Design Layers Architecture Builder) — has an
 English/Danish/Swedish language selector in the top-right of its header. The

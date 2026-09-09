@@ -15,7 +15,7 @@ Each tool fetches its sample file from this folder at runtime (same-origin, no
 external network call) and feeds it through the tool's normal loading/restore
 path — there is no separate "demo mode" code path to maintain.
 
-## `engagement-nordkap/` — one sample engagement across all 40 tools
+## `engagement-nordkap/` — one sample engagement across all 41 tools
 
 One consistent **fictional** engagement — *Nordkap Insurance*, real-time claims
 fraud detection at FNOL — with one JSON file per deliverable tool

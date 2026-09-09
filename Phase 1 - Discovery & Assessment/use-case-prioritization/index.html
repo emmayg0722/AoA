@@ -70,6 +70,8 @@
   .preview table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 8px 0; }
   .preview th, .preview td { border: 1px solid var(--line); padding: 6px 9px; text-align: left; }
   .preview th { background: var(--powder); color: var(--primary); }
+  .import-box { background: var(--powder); border: 1px solid var(--accent); border-radius: 10px; padding: 14px 16px; margin-bottom: 16px; font-size: 13px; color: var(--muted); }
+  .import-status { font-size: 13px; color: var(--muted); margin-top: 8px; }
   .prompt-box { display: none; margin-top: 12px; }
   pre.prompt { background: #f5f5fc; border: 1px solid var(--line); border-radius: 10px; padding: 14px; font-size: 12.5px; line-height: 1.5; white-space: pre-wrap; word-break: break-word; color: #2a2a3a; max-height: 320px; overflow: auto; }
   .preview h2 { font-family: var(--font-heading); color: var(--primary); font-size: 18px; margin: 16px 0 6px; }
@@ -133,6 +135,11 @@
     <div class="card">
       <h2 data-i18n="matrixTitle"></h2>
       <p class="hint" data-i18n="matrixHint"></p>
+      <div class="import-box">
+        <div data-i18n="importLabel"></div>
+        <div class="btn-row"><button class="btn btn-secondary" onclick="importFromBoard()" data-i18n="btnImport"></button></div>
+        <div class="import-status" id="importStatus"></div>
+      </div>
       <div class="table-scroll">
       <table class="matrix">
         <thead><tr>
@@ -386,6 +393,40 @@ const STRINGS = {
 })();
 
 
+// ── Discovery-board import strings (merged into STRINGS) ─────────
+(function () {
+  const D = {
+    en: {
+      importLabel: 'Candidates mapped on the Use Case Discovery Board in this browser can be pulled straight in. The board\u2019s value score becomes ROI and its effort score is inverted into feasibility; impact is left at 3 for you to set, because a discovery workshop never asks how broadly the benefit lands.',
+      btnImport: '\u2b07 Import from discovery board',
+      importNone: 'No discovery board found in this browser yet \u2014 map a workflow there first.',
+      importEmpty: 'The discovery board has no candidate use cases on it yet.',
+      importDone: (added, skipped) => added
+        ? `Imported ${added} use case${added === 1 ? '' : 's'}${skipped ? `; ${skipped} already in the matrix` : ''}.`
+        : 'Nothing new to import \u2014 every candidate on the board is already in the matrix.',
+    },
+    da: {
+      importLabel: 'Kandidater kortlagt p\u00e5 Opdagelsestavlen for Use Cases i denne browser kan hentes direkte ind. Tavlens v\u00e6rdiscore bliver til ROI, og dens indsatsscore vendes om til gennemf\u00f8rlighed; effekt efterlades p\u00e5 3, s\u00e5 du selv s\u00e6tter den, da en opdagelsesworkshop aldrig sp\u00f8rger, hvor bredt gevinsten lander.',
+      btnImport: '\u2b07 Import\u00e9r fra opdagelsestavle',
+      importNone: 'Ingen opdagelsestavle fundet i denne browser endnu \u2014 kortl\u00e6g en arbejdsgang der f\u00f8rst.',
+      importEmpty: 'Opdagelsestavlen har ingen kandidat-use cases p\u00e5 sig endnu.',
+      importDone: (added, skipped) => added
+        ? `Importerede ${added} use case${added === 1 ? '' : 's'}${skipped ? `; ${skipped} var allerede i matrixen` : ''}.`
+        : 'Intet nyt at importere \u2014 alle kandidater p\u00e5 tavlen er allerede i matrixen.',
+    },
+    sv: {
+      importLabel: 'Kandidater kartlagda p\u00e5 Uppt\u00e4cktstavlan f\u00f6r Anv\u00e4ndningsfall i denna webbl\u00e4sare kan h\u00e4mtas direkt in. Tavlans v\u00e4rdepo\u00e4ng blir ROI och dess insatspo\u00e4ng v\u00e4nds till genomf\u00f6rbarhet; effekt l\u00e4mnas p\u00e5 3 f\u00f6r dig att s\u00e4tta, eftersom en uppt\u00e4cktsworkshop aldrig fr\u00e5gar hur brett nyttan landar.',
+      btnImport: '\u2b07 Importera fr\u00e5n uppt\u00e4cktstavla',
+      importNone: 'Ingen uppt\u00e4cktstavla hittad i denna webbl\u00e4sare \u00e4n \u2014 kartl\u00e4gg ett arbetsfl\u00f6de d\u00e4r f\u00f6rst.',
+      importEmpty: 'Uppt\u00e4cktstavlan har inga kandidat-anv\u00e4ndningsfall p\u00e5 sig \u00e4n.',
+      importDone: (added, skipped) => added
+        ? `Importerade ${added} anv\u00e4ndningsfall${skipped ? `; ${skipped} fanns redan i matrisen` : ''}.`
+        : 'Inget nytt att importera \u2014 alla kandidater p\u00e5 tavlan finns redan i matrisen.',
+    },
+  };
+  Object.keys(D).forEach(l => { if (STRINGS[l]) Object.assign(STRINGS[l], D[l]); });
+})();
+
 let lang = localStorage.getItem('aoa_lang') || 'en';
 function t(key) { return (STRINGS[lang] && STRINGS[lang][key] !== undefined) ? STRINGS[lang][key] : (STRINGS.en[key] !== undefined ? STRINGS.en[key] : key); }
 function esc(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
@@ -492,6 +533,8 @@ function resetAll() {
   if (!confirm('Clear all fields? / Ryd alle felter? / Rensa alla fält?')) return;
   fieldEls().forEach(el => { el.value = ''; });
   rows = []; nextId = 1;
+  const st = document.getElementById('importStatus');
+  if (st) st.textContent = '';
   renderMatrix(); renderPreview(); save();
 }
 
@@ -721,6 +764,62 @@ save = function () {
 };
 const _sopApplyI18n = applyI18n;
 applyI18n = function () { _sopApplyI18n(); renderSop(); };
+// ── Import candidates from the Use Case Discovery Board ──────────
+// Pull, not push: the board never writes into this tool's state, the
+// same direction the architecture-builder import runs in. Value maps to
+// ROI and effort inverts into feasibility; impact stays at the neutral
+// default because the board never asks how broadly the benefit lands.
+const BOARD_KEY = 'aoa_usecase_board_v1';
+function importFromBoard() {
+  const statusEl = document.getElementById('importStatus');
+  let data;
+  try {
+    const raw = localStorage.getItem(BOARD_KEY);
+    if (!raw) { statusEl.textContent = t('importNone'); return; }
+    data = JSON.parse(raw);
+  } catch (e) { statusEl.textContent = t('importNone'); return; }
+
+  const board = Array.isArray(data.nodes) ? data.nodes : [];
+  const edgeList = Array.isArray(data.edges) ? data.edges : [];
+  const candidates = board.filter(n => n.type === 'usecase' && String(n.title || '').trim());
+  if (!candidates.length) { statusEl.textContent = t('importEmpty'); return; }
+
+  // The pain a candidate hangs off is the pain column here; fall back to
+  // the step it attaches to, so an imported row is never contextless.
+  const byId = {};
+  board.forEach(n => { byId[n.id] = n; });
+  const painOf = uc => {
+    const linked = edgeList
+      .filter(e => e.from === uc.id || e.to === uc.id)
+      .map(e => byId[e.from === uc.id ? e.to : e.from])
+      .filter(Boolean);
+    const pains = linked.filter(n => n.type === 'pain');
+    const src = pains.length ? pains : linked.filter(n => n.type === 'step');
+    return src.map(n => [n.title, n.detail].filter(x => x && String(x).trim()).join(' \u2014 ')).join('; ');
+  };
+
+  const have = rows.map(r => String(r.name || '').trim().toLowerCase());
+  let added = 0, skipped = 0;
+  candidates.forEach(uc => {
+    const name = String(uc.title).trim();
+    if (have.indexOf(name.toLowerCase()) !== -1) { skipped++; return; }
+    const value = Math.max(1, Math.min(5, Number(uc.value) || 3));
+    const effort = Math.max(1, Math.min(5, Number(uc.effort) || 3));
+    rows.push({ id: nextId++, name, pain: painOf(uc), roi: String(value), feas: String(6 - effort), impact: '3' });
+    have.push(name.toLowerCase());
+    added++;
+  });
+
+  // An empty starter row would otherwise sit above the imported ones.
+  rows = rows.filter(r => String(r.name || '').trim() || String(r.pain || '').trim());
+  const fields = data.fields || {};
+  const clientEl = document.querySelector('[data-eng="client"]');
+  if (clientEl && !clientEl.value && fields.client) clientEl.value = fields.client;
+
+  statusEl.textContent = t('importDone')(added, skipped);
+  renderMatrix(); renderPreview(); save();
+}
+
 const SAMPLE_URL = '../sample-data/engagement-nordkap/use-case-prioritization.json';
 function loadSample() {
   if (!confirm(t('sampleConfirm'))) return;

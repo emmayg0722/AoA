@@ -1,0 +1,1697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Use Case Discovery Board — Phase 1</title>
+<meta name="description" content="A workshop canvas for mapping a client's as-is workflow, marking friction, and attaching candidate AI use cases to the steps they would change.">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='16' fill='%231B1474'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #1B1474; --primary-dark: #120D52; --accent: #DCDDF6; --powder: #EEEEFA;
+    --ink: #1c1c28; --muted: #5b5b6b; --line: #e4e4f0;
+    --green: #1a8a5c; --amber: #d4790e; --red: #c0392b;
+    --font-heading: 'Fraunces', Georgia, serif;
+    --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    /* One pair per block type: the board reads as a legend without one. */
+    --step-bg: #ffffff;  --step-bd: #1B1474;
+    --pain-bg: #fff3f0;  --pain-bd: #c0392b;
+    --sys-bg:  #f1f4fb;  --sys-bd:  #4a5c8a;
+    --uc-bg:   #EEEEFA;  --uc-bd:   #5348c4;
+    --note-bg: #fffbe8;  --note-bd: #d4790e;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: var(--font-body); color: var(--ink); background: #fafaff; line-height: 1.6; }
+  :focus-visible { outline: 2px solid var(--primary); outline-offset: 3px; border-radius: 4px; }
+  .hero :focus-visible, .header :focus-visible { outline-color: #fff; }
+  .hero { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: #fff; padding: 44px 24px 36px; }
+  .wrap { max-width: 1100px; margin: 0 auto; }
+  .crumb { font-size: 13px; color: var(--accent); margin-bottom: 10px; }
+  .crumb a { color: var(--accent); text-decoration: none; }
+  .crumb .next-nav a { font-weight: 700; }
+  .hero-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; flex-wrap: wrap; }
+  .hero h1 { font-family: var(--font-heading); font-weight: 700; font-size: 34px; line-height: 1.15; }
+  .hero p { margin-top: 10px; font-size: 15.5px; color: #dcdcf2; max-width: 680px; }
+  select#langSelect { font-family: var(--font-body); font-size: 13px; font-weight: 600; border: 1.5px solid rgba(255,255,255,0.4); background: rgba(255,255,255,0.08); color: #fff; border-radius: 8px; padding: 7px 10px; }
+  select#langSelect option { color: var(--ink); }
+  main { max-width: 1100px; margin: 0 auto; padding: 28px 24px 80px; }
+  .note { background: var(--powder); border: 1px solid var(--accent); border-radius: 12px; padding: 14px 16px; font-size: 14px; color: var(--muted); margin-bottom: 26px; }
+  .note strong { color: var(--primary); }
+  .card { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 22px 24px; margin-bottom: 20px; }
+  .card > h2 { font-family: var(--font-heading); font-weight: 600; font-size: 21px; color: var(--primary); margin-bottom: 4px; }
+  .card .hint { font-size: 13.5px; color: var(--muted); margin-bottom: 14px; }
+  ol.sop { margin-left: 20px; }
+  ol.sop li { margin-bottom: 10px; font-size: 14px; }
+  ol.sop li.done > label.sop-step > span { text-decoration: line-through; color: var(--muted); }
+  label.sop-step { display: flex; gap: 9px; align-items: flex-start; font-weight: 400; margin: 0; cursor: pointer; font-size: 14px; color: var(--ink); }
+  label.sop-step input { width: auto; margin-top: 4px; flex: none; }
+  label.sop-step > span { min-width: 0; overflow-wrap: break-word; }
+  label { display: block; font-size: 13px; font-weight: 600; color: var(--ink); margin: 10px 0 5px; }
+  input[type=text], select.field, textarea { width: 100%; font-family: var(--font-body); font-size: 14px; color: var(--ink); border: 1.5px solid var(--line); border-radius: 8px; padding: 9px 11px; background: #fff; }
+  textarea { resize: vertical; }
+  input:focus, select:focus, textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(27,20,116,0.12); }
+  input:focus:not(:focus-visible), select:focus:not(:focus-visible), textarea:focus:not(:focus-visible) { outline: none; }
+  .grid2 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 0 16px; }
+  .btn { font-family: var(--font-body); font-size: 13.5px; font-weight: 600; padding: 9px 16px; border-radius: 8px; border: none; cursor: pointer; transition: all 0.15s; }
+  .btn-primary { background: var(--accent); color: var(--primary); }
+  .btn-primary:hover { background: #C3C5EC; }
+  .btn-secondary { background: #fff; color: var(--primary); border: 1.5px solid var(--accent); }
+  .btn-secondary:hover { background: var(--powder); }
+  .btn-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px; }
+  .preview { border: 1px dashed var(--line); border-radius: 10px; padding: 18px 20px; background: #fcfcff; font-size: 14px; }
+  .preview h3 { font-family: var(--font-heading); color: var(--primary); font-size: 16px; margin: 14px 0 6px; }
+  .preview h3:first-child { margin-top: 0; }
+  .preview h2 { font-family: var(--font-heading); color: var(--primary); font-size: 18px; margin: 16px 0 6px; }
+  .preview h4, .preview h5 { font-family: var(--font-heading); color: var(--primary); margin: 12px 0 4px; }
+  .preview ul, .preview ol { margin: 8px 0 8px 22px; }
+  .preview li { margin-bottom: 4px; }
+  .preview code { background: #ececf6; padding: 1px 5px; border-radius: 4px; font-size: 12.5px; }
+  .preview pre { background: #f5f5fc; border: 1px solid var(--line); border-radius: 8px; padding: 12px; overflow: auto; font-size: 12.5px; white-space: pre-wrap; word-break: break-word; margin: 10px 0; }
+  .preview table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 8px 0; }
+  .preview th, .preview td { border: 1px solid var(--line); padding: 6px 9px; text-align: left; vertical-align: top; }
+  .preview th { background: var(--powder); color: var(--primary); }
+  .prompt-box { display: none; margin-top: 12px; }
+  pre.prompt { background: #f5f5fc; border: 1px solid var(--line); border-radius: 10px; padding: 14px; font-size: 12.5px; line-height: 1.5; white-space: pre-wrap; word-break: break-word; color: #2a2a3a; max-height: 320px; overflow: auto; }
+  textarea[data-eng="draftDoc"] { min-height: 110px; }
+  .saved { font-size: 12.5px; color: var(--green); margin-left: 8px; }
+  .preview, .report { overflow-x: auto; }
+  h1, h2, h3, h4, p, label, dt, dd, th, td, span, .hint, .crumb { overflow-wrap: break-word; hyphens: auto; }
+
+  /* ── The board ──────────────────────────────────────────────────
+     .board-shell is the frame; .board-view is the clipping window the
+     pan/zoom happens inside; .board-world is the transformed plane the
+     edge SVG and every block live on. Focus mode promotes the shell to
+     a fixed full-viewport panel for projecting in a workshop room. */
+  .board-shell { border: 1px solid var(--line); border-radius: 12px; background: #fff; overflow: hidden; display: flex; flex-direction: column; }
+  .board-shell.focus { position: fixed; inset: 0; z-index: 60; border-radius: 0; }
+  body.focus-on { overflow: hidden; }
+  .board-toolbar { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; padding: 9px 10px; border-bottom: 1px solid var(--line); background: #fcfcff; }
+  .board-toolbar .sep { width: 1px; align-self: stretch; background: var(--line); margin: 0 4px; }
+  .tbtn { font-family: var(--font-body); font-size: 12.5px; font-weight: 600; padding: 6px 10px; border-radius: 7px; border: 1.5px solid var(--line); background: #fff; color: var(--ink); cursor: pointer; white-space: nowrap; }
+  .tbtn:hover { background: var(--powder); border-color: var(--accent); }
+  .tbtn[disabled] { opacity: 0.4; cursor: default; }
+  .tbtn .swatch { display: inline-block; width: 9px; height: 9px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; border: 1.5px solid; }
+  .tbtn.add-step  .swatch { background: var(--step-bg); border-color: var(--step-bd); }
+  .tbtn.add-pain  .swatch { background: var(--pain-bg); border-color: var(--pain-bd); }
+  .tbtn.add-sys   .swatch { background: var(--sys-bg);  border-color: var(--sys-bd); }
+  .tbtn.add-uc    .swatch { background: var(--uc-bg);   border-color: var(--uc-bd); }
+  .tbtn.add-note  .swatch { background: var(--note-bg); border-color: var(--note-bd); }
+  .board-view { position: relative; height: 560px; overflow: hidden; background: #fbfbff;
+    background-image: radial-gradient(#e2e2f2 1px, transparent 1px); background-size: 22px 22px; touch-action: none; cursor: grab; flex: 1 1 auto; }
+  .board-shell.focus .board-view { height: auto; }
+  .board-view.panning { cursor: grabbing; }
+  .board-view.linking { cursor: crosshair; }
+  .board-world { position: absolute; top: 0; left: 0; width: 4000px; height: 3000px; transform-origin: 0 0; }
+  .board-edges { position: absolute; top: 0; left: 0; width: 4000px; height: 3000px; overflow: visible; }
+  .edge-hit { stroke: transparent; stroke-width: 14; fill: none; cursor: pointer; }
+  .edge-line { fill: none; stroke: var(--primary); stroke-width: 2; }
+  .edge-line.soft { stroke: var(--uc-bd); stroke-dasharray: 6 5; }
+  .edge-line.sel { stroke: var(--green); stroke-width: 3.5; }
+  .edge-label { font: 600 11px var(--font-body); fill: var(--muted); paint-order: stroke; stroke: #fbfbff; stroke-width: 4px; }
+  .node { position: absolute; border-radius: 10px; border: 2px solid; padding: 9px 11px 10px; font-size: 13px;
+    box-shadow: 0 1px 3px rgba(27,20,116,0.08); cursor: grab; user-select: none; touch-action: none; }
+  .node:active { cursor: grabbing; }
+  .node.sel { box-shadow: 0 0 0 3px rgba(26,138,92,0.35), 0 2px 8px rgba(27,20,116,0.14); }
+  .node.link-target { box-shadow: 0 0 0 3px rgba(212,121,14,0.45); }
+  .node .node-type { display: block; font-size: 9.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; opacity: 0.72; margin-bottom: 2px; }
+  .node .node-title { font-weight: 700; font-size: 13.5px; line-height: 1.3; overflow-wrap: break-word; }
+  .node .node-detail { margin-top: 3px; color: var(--muted); font-size: 12px; line-height: 1.4; overflow-wrap: break-word; }
+  .node .node-meta { margin-top: 5px; font-size: 11px; font-weight: 600; opacity: 0.8; overflow-wrap: break-word; }
+  .node.t-step { background: var(--step-bg); border-color: var(--step-bd); color: var(--primary); }
+  .node.t-pain { background: var(--pain-bg); border-color: var(--pain-bd); color: var(--red); }
+  .node.t-system { background: var(--sys-bg); border-color: var(--sys-bd); color: var(--sys-bd); }
+  .node.t-usecase { background: var(--uc-bg); border-color: var(--uc-bd); color: var(--uc-bd); }
+  .node.t-note { background: var(--note-bg); border-color: var(--note-bd); color: var(--amber); }
+  .node .node-title, .node .node-detail { color: var(--ink); }
+  .node-handle { position: absolute; right: -8px; top: 50%; margin-top: -8px; width: 16px; height: 16px; border-radius: 50%;
+    background: #fff; border: 2px solid var(--primary); cursor: crosshair; }
+  .node-handle:hover { background: var(--accent); }
+  .board-empty { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; text-align: center;
+    color: var(--muted); font-size: 14px; padding: 24px; pointer-events: none; }
+  .board-status { position: absolute; left: 12px; bottom: 12px; background: rgba(27,20,116,0.92); color: #fff; font-size: 12.5px;
+    font-weight: 600; padding: 6px 12px; border-radius: 8px; pointer-events: none; }
+  /* The inspector rides inside the board so it stays reachable in focus
+     mode, where there is no page around the canvas to put it beside. */
+  .inspector { position: absolute; top: 10px; right: 10px; width: 250px; max-height: calc(100% - 20px); overflow-y: auto;
+    background: #fff; border: 1px solid var(--line); border-radius: 11px; padding: 12px 13px; box-shadow: 0 4px 16px rgba(27,20,116,0.12); }
+  /* Hidden unless something is selected, so it is not sitting on top of
+     the canvas during the part of the workshop that is pure drawing; and
+     click-through while a connection is being drawn, so a block underneath
+     it can still be picked as the target. */
+  .inspector.is-hidden { display: none; }
+  .inspector.dim { pointer-events: none; opacity: 0.35; }
+  .inspector h4 { font-family: var(--font-heading); font-size: 14px; color: var(--primary); margin-bottom: 2px; }
+  .inspector label { font-size: 11.5px; margin: 8px 0 3px; }
+  .inspector input[type=text], .inspector select, .inspector textarea { font-size: 12.5px; padding: 6px 8px; }
+  .inspector textarea { min-height: 52px; }
+  .inspector .btn-row { margin-top: 10px; gap: 6px; }
+  .inspector .btn { font-size: 12px; padding: 6px 10px; }
+  .legend { display: flex; flex-wrap: wrap; gap: 12px; font-size: 12px; color: var(--muted); margin-top: 10px; }
+  .legend span.k { display: inline-block; width: 10px; height: 10px; border-radius: 3px; border: 1.5px solid; margin-right: 5px; vertical-align: -1px; }
+  .k.step { background: var(--step-bg); border-color: var(--step-bd); }
+  .k.pain { background: var(--pain-bg); border-color: var(--pain-bd); }
+  .k.system { background: var(--sys-bg); border-color: var(--sys-bd); }
+  .k.usecase { background: var(--uc-bg); border-color: var(--uc-bd); }
+  .k.note { background: var(--note-bg); border-color: var(--note-bd); }
+  .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+
+  @media (max-width: 720px) {
+    .grid2 { grid-template-columns: minmax(0, 1fr); }
+    .hero h1 { font-size: 27px; }
+    .board-view { height: 420px; }
+    .inspector { position: static; width: auto; max-height: none; margin: 10px; box-shadow: none; }
+  }
+</style>
+</head>
+<body>
+  <header class="hero"><div class="wrap">
+    <div class="hero-top">
+      <div class="crumb"><a href="../../">AI Architect Toolkit</a> · Phase 1 · Discovery &amp; Assessment · <span class="next-nav">Next: <a href="../use-case-prioritization/">Use Case Prioritization →</a></span></div>
+      <select id="langSelect" onchange="setLang(this.value)">
+        <option value="en">English</option>
+        <option value="da">Dansk</option>
+        <option value="sv">Svenska</option>
+      </select>
+    </div>
+    <h1 data-i18n="heroTitle"></h1>
+    <p data-i18n="heroDesc"></p>
+  </div></header>
+
+  <main>
+    <div class="note"><strong data-i18n="noteLabel"></strong> <span data-i18n="noteBody"></span></div>
+
+    <div class="card">
+      <h2 data-i18n="sopTitle"></h2>
+      <p class="hint" data-i18n="sopHint"></p>
+      <ol class="sop" id="sopList"></ol>
+      <p class="hint" id="sopProgress" style="margin:8px 0 0"></p>
+    </div>
+
+    <div class="card">
+      <h2 data-i18n="clientTitle"></h2>
+      <div class="grid2">
+        <div><label data-i18n="lblClient"></label><input type="text" data-eng="client" placeholder="Acme Corp"></div>
+        <div><label data-i18n="lblAssessor"></label><input type="text" data-eng="assessor"></div>
+      </div>
+      <label data-i18n="lblProcess"></label>
+      <input type="text" data-eng="process" data-ph="phProcess">
+      <label data-i18n="lblScope"></label>
+      <input type="text" data-eng="scope" data-ph="phScope">
+    </div>
+
+    <div class="card">
+      <h2 data-i18n="boardTitle"></h2>
+      <p class="hint" data-i18n="boardHint"></p>
+
+      <div class="board-shell" id="boardShell">
+        <div class="board-toolbar">
+          <button type="button" class="tbtn add-step"   onclick="addNode('step')"><span class="swatch"></span><span data-i18n="ntStep"></span></button>
+          <button type="button" class="tbtn add-pain"   onclick="addNode('pain')"><span class="swatch"></span><span data-i18n="ntPain"></span></button>
+          <button type="button" class="tbtn add-sys"    onclick="addNode('system')"><span class="swatch"></span><span data-i18n="ntSystem"></span></button>
+          <button type="button" class="tbtn add-uc"     onclick="addNode('usecase')"><span class="swatch"></span><span data-i18n="ntUsecase"></span></button>
+          <button type="button" class="tbtn add-note"   onclick="addNode('note')"><span class="swatch"></span><span data-i18n="ntNote"></span></button>
+          <span class="sep"></span>
+          <button type="button" class="tbtn" id="btnUndo" onclick="undo()" data-i18n="btnUndo"></button>
+          <button type="button" class="tbtn" id="btnRedo" onclick="redo()" data-i18n="btnRedo"></button>
+          <span class="sep"></span>
+          <button type="button" class="tbtn" onclick="zoomStep(1.2)" aria-label="Zoom in">+</button>
+          <button type="button" class="tbtn" onclick="zoomStep(1/1.2)" aria-label="Zoom out">−</button>
+          <button type="button" class="tbtn" onclick="fitBoard()" data-i18n="btnFit"></button>
+          <button type="button" class="tbtn" id="btnFocus" onclick="toggleFocus()" data-i18n="btnFocus"></button>
+          <span class="sep"></span>
+          <button type="button" class="tbtn" onclick="clearBoard()" data-i18n="btnClearBoard"></button>
+        </div>
+        <div class="board-view" id="boardView">
+          <div class="board-world" id="boardWorld">
+            <svg class="board-edges" id="boardEdges" aria-hidden="true">
+              <defs>
+                <marker id="arrowHead" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto" markerUnits="userSpaceOnUse">
+                  <path d="M0,0 L10,5 L0,10 z" fill="#1B1474"></path>
+                </marker>
+                <marker id="arrowSoft" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto" markerUnits="userSpaceOnUse">
+                  <path d="M0,0 L10,5 L0,10 z" fill="#5348c4"></path>
+                </marker>
+              </defs>
+              <g id="edgeLayer"></g>
+            </svg>
+            <div id="nodeLayer"></div>
+          </div>
+          <div class="board-empty" id="boardEmpty" data-i18n="boardEmpty"></div>
+          <div class="board-status" id="boardStatus" style="display:none"></div>
+          <div class="inspector" id="inspector"></div>
+        </div>
+      </div>
+
+      <div class="legend">
+        <span><span class="k step"></span><span data-i18n="ntStep"></span></span>
+        <span><span class="k pain"></span><span data-i18n="ntPain"></span></span>
+        <span><span class="k system"></span><span data-i18n="ntSystem"></span></span>
+        <span><span class="k usecase"></span><span data-i18n="ntUsecase"></span></span>
+        <span><span class="k note"></span><span data-i18n="ntNote"></span></span>
+      </div>
+      <p class="hint" style="margin-top:10px" data-i18n="boardKeys"></p>
+      <div class="sr-only" aria-live="polite" id="srStatus"></div>
+      <div class="btn-row">
+        <button class="btn btn-secondary" onclick="exportBoardSvg()" data-i18n="btnExportSvg"></button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2 data-i18n="draftTitle"></h2>
+      <p class="hint" data-i18n="draftHint"></p>
+      <div class="btn-row"><button class="btn btn-primary" onclick="genDraftPrompt()" data-i18n="btnGenDraft"></button></div>
+      <div class="prompt-box" id="pbDraft"><pre class="prompt" id="ptDraft"></pre>
+        <div class="btn-row"><button class="btn btn-secondary" onclick="copyDraftPrompt(event)" data-i18n="btnCopyDraft"></button></div></div>
+      <label data-i18n="lblDraftDoc"></label>
+      <textarea data-eng="draftDoc" placeholder="Paste the Markdown document the agent drafted&#8230;"></textarea>
+    </div>
+
+    <div class="card">
+      <h2 data-i18n="previewTitle"></h2>
+      <p class="hint" data-i18n="previewHint"></p>
+      <div class="preview" id="preview"></div>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="exportDoc('html')" data-i18n="btnExportHtml"></button>
+        <button class="btn btn-primary" onclick="exportDoc('md')" data-i18n="btnExportMd"></button>
+        <button class="btn btn-secondary" onclick="resetAll()" data-i18n="btnReset"></button>
+        <button class="btn btn-secondary" onclick="loadSample()" data-i18n="btnLoadSample"></button>
+        <span class="saved" id="savedFlag"></span>
+      </div>
+      <div id="sampleError" style="display:none;color:var(--red);font-size:12.5px;margin-top:8px"></div>
+    </div>
+  </main>
+
+<script>
+// ════════════════════════════════════════════════════════════════
+// Use Case Discovery Board — fully client-side. Nothing is uploaded.
+//
+// The board is deliberately not a blank whiteboard: every block has a
+// type, so the same drawing that a workshop room understands also
+// yields a structured deliverable and a set of candidates that
+// Use Case Prioritization can import and score.
+// ════════════════════════════════════════════════════════════════
+const KEY = 'aoa_usecase_board_v1';
+
+const STRINGS = {
+  en: {
+    heroTitle: 'Use Case Discovery Board',
+    heroDesc: "A workshop canvas for drawing a client's as-is workflow, marking where it hurts, and attaching candidate AI use cases to the steps they would actually change.",
+    noteLabel: 'How this works.',
+    noteBody: 'Add blocks and connect them into the workflow the client actually runs, then hang pain points, systems and candidate AI use cases off the steps that carry them. The discovery document below builds live from the board, and the candidates can be imported straight into Use Case Prioritization for scoring. No API calls — everything autosaves in this browser and can be exported as a file.',
+    sopTitle: 'SOP — how this is usually done',
+    sopHint: 'The order a discovery workshop actually runs in.',
+    sop: [
+      'Agree the scope before the room fills: one end-to-end process, the business owner present, and the trigger and outcome that bound it. A workshop without a bounded process produces a wall of ideas and no workflow.',
+      'Map the as-is workflow first, in the client’s own words — every step, who performs it, how often. Resist naming any technology while the flow is still being drawn; that is what keeps the room out of solution-first thinking.',
+      'Mark friction on the steps that carry it: rework, waiting, manual re-keying, escalations, exceptions. Ask for a number on each one (minutes, %, volume) — unquantified pain cannot be prioritized later.',
+      'Attach the systems and data each step touches. A step whose data lives in a system nobody in the room can name is a Phase 1 finding in its own right, and a hard constraint on anything built on it.',
+      'Only now ideate AI use cases, one block per candidate, linked to the step or pain it changes. Name the pattern — extraction, classification, drafting, retrieval, forecasting — rather than a vendor or a model.',
+      'Close by reading the board back as a story, step by step, and let the owner correct it in the room. Then carry the candidates into the prioritization matrix for ROI / feasibility / impact scoring.',
+    ],
+    clientTitle: 'Client & scope',
+    lblClient: 'Client / engagement',
+    lblAssessor: 'Facilitator',
+    lblProcess: 'Process mapped',
+    phProcess: 'e.g. First notice of loss to claim decision',
+    lblScope: 'Scope boundary (trigger → outcome)',
+    phScope: 'e.g. Starts when a claim is filed, ends when it is approved or declined',
+    boardTitle: 'The board',
+    boardHint: 'Click a block type to add it. With a block selected, the new block links to it automatically — that is how a workflow gets drawn fast. Drag the ● handle on a block’s right edge onto another block to connect them by hand.',
+    boardKeys: 'Keyboard: arrow keys move the selected block, Delete removes it, Ctrl/⌘+Z undoes, Esc cancels a connection. Ctrl/⌘ + scroll zooms; drag the background to pan.',
+    boardEmpty: 'Empty board. Add a step to start mapping the workflow — or load the sample engagement at the bottom of the page.',
+    ntStep: 'Step',
+    ntPain: 'Pain point',
+    ntSystem: 'System / data',
+    ntUsecase: 'AI use case',
+    ntNote: 'Note',
+    newStep: 'New step',
+    newPain: 'New pain point',
+    newSystem: 'New system',
+    newUsecase: 'New use case',
+    newNote: 'New note',
+    btnUndo: '↶ Undo',
+    btnRedo: '↷ Redo',
+    btnFit: 'Fit',
+    btnFocus: '⛶ Focus',
+    btnExitFocus: '✕ Exit focus',
+    btnClearBoard: 'Clear board',
+    clearConfirm: 'Remove every block and connection from the board?',
+    btnExportSvg: '🖼 Export board (SVG)',
+    insBlock: 'Block',
+    insEdge: 'Connection',
+    lblNodeTitle: 'Label',
+    lblNodeDetail: 'Detail',
+    lblRole: 'Who performs it',
+    lblVolume: 'Volume / time',
+    lblPattern: 'AI pattern',
+    lblValue: 'Value (1–5)',
+    lblEffort: 'Effort (1–5)',
+    lblEdgeLabel: 'Connection label',
+    btnConnect: '→ Connect to…',
+    btnDelete: '✕ Delete',
+    connectHint: 'Click the block to connect to — Esc to cancel.',
+    phRole: 'e.g. Claims handler',
+    phVolume: 'e.g. 300/day, 12 min each',
+    phDetail: 'What happens here',
+    pat_none: '— not set —',
+    pat_extract: 'Extraction',
+    pat_classify: 'Classification',
+    pat_draft: 'Generation / drafting',
+    pat_retrieve: 'Retrieval / Q&A',
+    pat_forecast: 'Forecasting / scoring',
+    pat_agent: 'Agentic workflow',
+    pat_recommend: 'Recommendation',
+    draftTitle: 'Agent drafting',
+    draftHint: "Generate a prompt that carries this tool's methodology and the whole board, run it in Claude (or any capable model), then paste the drafted Markdown below. A pasted draft replaces the template preview and both exports; clear it to go back to the template. Prompts are English — ask the agent for another output language if needed.",
+    btnGenDraft: '🤖 Generate drafting prompt',
+    btnCopyDraft: '📋 Copy prompt',
+    lblDraftDoc: 'Drafted document (Markdown, optional)',
+    draftCopied: '✅ Copied!',
+    draftCopyFail: 'Copy failed — select the text manually.',
+    previewTitle: 'Use case discovery document',
+    previewHint: 'This is the actual deliverable — the board read back as a walkable workflow, a friction log, and a candidate list, generated live.',
+    btnExportHtml: '🌐 Export HTML',
+    btnExportMd: '📄 Export Markdown',
+    btnReset: '🔄 Reset',
+    docTitle: 'Use Case Discovery',
+    docFor: 'Prepared for',
+    docAssessor: 'Facilitator',
+    docDate: 'Date',
+    docProcess: 'Process',
+    docScope: 'Scope',
+    secWorkflow: 'As-is workflow',
+    secFriction: 'Friction log',
+    secSystems: 'Systems & data touched',
+    secCandidates: 'Candidate AI use cases',
+    secNotes: 'Open notes',
+    colStep: 'Step',
+    colRole: 'Who',
+    colVolume: 'Volume / time',
+    colPain: 'Pain point',
+    colWhere: 'Where it bites',
+    colTouchedAt: 'Touched at',
+    colSystem: 'System / data',
+    colUseCase: 'Use case',
+    colPattern: 'Pattern',
+    colAttaches: 'Attaches to',
+    colValue: 'Value',
+    colEffort: 'Effort',
+    colRead: 'Read',
+    takeQuick: 'quick win',
+    takeStrategic: 'strategic bet',
+    takeFill: 'fill-in',
+    takeQuestion: 'question it',
+    emptyWorkflow: 'No workflow steps mapped yet.',
+    emptyFriction: 'No pain points marked yet.',
+    emptySystems: 'No systems or data sources attached yet.',
+    emptyCandidates: 'No candidate use cases on the board yet.',
+    unattached: 'not attached to a step',
+    handoffNote: 'Carry these candidates into Use Case Prioritization to score them on ROI, feasibility and impact.',
+  },
+  da: {
+    heroTitle: 'Opdagelsestavle for Use Cases',
+    heroDesc: 'Et workshop-lærred til at tegne kundens nuværende arbejdsgang, markere hvor den gør ondt, og hænge kandidat-AI-use cases på de trin, de faktisk ville ændre.',
+    noteLabel: 'Sådan virker det.',
+    noteBody: 'Tilføj blokke og forbind dem til den arbejdsgang, kunden reelt kører, og hæng derefter smertepunkter, systemer og kandidat-AI-use cases på de trin, der bærer dem. Opdagelsesdokumentet nedenfor bygges live ud fra tavlen, og kandidaterne kan importeres direkte i Use Case-prioritering til scoring. Ingen API-kald — alt gemmes automatisk i denne browser og kan eksporteres som fil.',
+    sopTitle: 'SOP — sådan gøres det normalt',
+    sopHint: 'Rækkefølgen en opdagelsesworkshop reelt kører i.',
+    sop: [
+      'Aftal omfanget før lokalet fyldes: én ende-til-ende-proces, forretningsejeren til stede, og den udløser og det udfald, der afgrænser den. En workshop uden en afgrænset proces producerer en væg af idéer og ingen arbejdsgang.',
+      'Kortlæg den nuværende arbejdsgang først, med kundens egne ord — hvert trin, hvem der udfører det, hvor ofte. Undgå at nævne teknologi, mens flødet stadig tegnes; det er det, der holder lokalet ude af løsning-først-tænkning.',
+      'Markér friktion på de trin, der bærer den: omarbejde, ventetid, manuel gentastning, eskaleringer, undtagelser. Bed om et tal på hver enkelt (minutter, %, volumen) — ukvantificeret smerte kan ikke prioriteres senere.',
+      'Vedhæft de systemer og data, hvert trin berører. Et trin, hvis data ligger i et system, ingen i lokalet kan navngive, er i sig selv et Phase 1-fund og en hård begrænsning for alt, der bygges på det.',
+      'Først nu skal der idéudvikles AI-use cases, én blok per kandidat, koblet til det trin eller smertepunkt, den ændrer. Navngiv mønsteret — udtræk, klassifikation, udkast, opslag, prognose — fremfor en leverandør eller en model.',
+      'Afslut med at læse tavlen tilbage som en fortælling, trin for trin, og lad ejeren rette den i lokalet. Bring derefter kandidaterne over i prioriteringsmatrixen til ROI-/gennemførlighed-/effekt-scoring.',
+    ],
+    clientTitle: 'Kunde og omfang',
+    lblClient: 'Kunde / engagement',
+    lblAssessor: 'Facilitator',
+    lblProcess: 'Kortlagt proces',
+    phProcess: 'fx Fra skadesanmeldelse til skadesafgørelse',
+    lblScope: 'Afgrænsning (udløser → udfald)',
+    phScope: 'fx Starter når en skade anmeldes, slutter når den godkendes eller afvises',
+    boardTitle: 'Tavlen',
+    boardHint: 'Klik en bloktype for at tilføje den. Med en blok valgt kobles den nye blok automatisk til den — sådan tegnes en arbejdsgang hurtigt. Træk ●-håndtaget på blokkens højre kant over på en anden blok for at forbinde dem manuelt.',
+    boardKeys: 'Tastatur: piletaster flytter den valgte blok, Delete fjerner den, Ctrl/⌘+Z fortryder, Esc annullerer en forbindelse. Ctrl/⌘ + scroll zoomer; træk baggrunden for at panorere.',
+    boardEmpty: 'Tom tavle. Tilføj et trin for at begynde kortlægningen — eller indlæs eksempel-engagementet nederst på siden.',
+    ntStep: 'Trin',
+    ntPain: 'Smertepunkt',
+    ntSystem: 'System / data',
+    ntUsecase: 'AI-use case',
+    ntNote: 'Note',
+    newStep: 'Nyt trin',
+    newPain: 'Nyt smertepunkt',
+    newSystem: 'Nyt system',
+    newUsecase: 'Ny use case',
+    newNote: 'Ny note',
+    btnUndo: '↶ Fortryd',
+    btnRedo: '↷ Gendan',
+    btnFit: 'Tilpas',
+    btnFocus: '⛶ Fokus',
+    btnExitFocus: '✕ Forlad fokus',
+    btnClearBoard: 'Ryd tavle',
+    clearConfirm: 'Fjern alle blokke og forbindelser fra tavlen?',
+    btnExportSvg: '🖼 Eksportér tavle (SVG)',
+    insBlock: 'Blok',
+    insEdge: 'Forbindelse',
+    lblNodeTitle: 'Etiket',
+    lblNodeDetail: 'Detalje',
+    lblRole: 'Hvem udfører det',
+    lblVolume: 'Volumen / tid',
+    lblPattern: 'AI-mønster',
+    lblValue: 'Værdi (1–5)',
+    lblEffort: 'Indsats (1–5)',
+    lblEdgeLabel: 'Forbindelsesetiket',
+    btnConnect: '→ Forbind til…',
+    btnDelete: '✕ Slet',
+    connectHint: 'Klik den blok, der skal forbindes til — Esc for at annullere.',
+    phRole: 'fx Skadesbehandler',
+    phVolume: 'fx 300/dag, 12 min pr. stk.',
+    phDetail: 'Hvad sker der her',
+    pat_none: '— ikke sat —',
+    pat_extract: 'Udtræk',
+    pat_classify: 'Klassifikation',
+    pat_draft: 'Generering / udkast',
+    pat_retrieve: 'Opslag / Q&A',
+    pat_forecast: 'Prognose / scoring',
+    pat_agent: 'Agentisk arbejdsgang',
+    pat_recommend: 'Anbefaling',
+    draftTitle: 'Agent-udkast',
+    draftHint: 'Generér en prompt, der bærer dette værktøjs metodik og hele tavlen, kør den i Claude (eller en anden kapabel model), og indsæt derefter det udkastede Markdown nedenfor. Et indsat udkast erstatter skabelon-forhåndsvisningen og begge eksporter; ryd det for at vende tilbage til skabelonen. Prompts er på engelsk — bed agenten om et andet outputsprog efter behov.',
+    btnGenDraft: '🤖 Generér udkast-prompt',
+    btnCopyDraft: '📋 Kopiér prompt',
+    lblDraftDoc: 'Udkastet dokument (Markdown, valgfrit)',
+    draftCopied: '✅ Kopieret!',
+    draftCopyFail: 'Kopiering mislykkedes — markér teksten manuelt.',
+    previewTitle: 'Use case-opdagelsesdokument',
+    previewHint: 'Dette er selve leverancen — tavlen læst tilbage som en gennemgåelig arbejdsgang, en friktionslog og en kandidatliste, genereret live.',
+    btnExportHtml: '🌐 Eksportér HTML',
+    btnExportMd: '📄 Eksportér Markdown',
+    btnReset: '🔄 Nulstil',
+    docTitle: 'Use Case-opdagelse',
+    docFor: 'Udarbejdet for',
+    docAssessor: 'Facilitator',
+    docDate: 'Dato',
+    docProcess: 'Proces',
+    docScope: 'Afgrænsning',
+    secWorkflow: 'Nuværende arbejdsgang',
+    secFriction: 'Friktionslog',
+    secSystems: 'Berørte systemer og data',
+    secCandidates: 'Kandidat-AI-use cases',
+    secNotes: 'Åbne noter',
+    colStep: 'Trin',
+    colRole: 'Hvem',
+    colVolume: 'Volumen / tid',
+    colPain: 'Smertepunkt',
+    colWhere: 'Hvor det bider',
+    colTouchedAt: 'Berøres ved',
+    colSystem: 'System / data',
+    colUseCase: 'Use case',
+    colPattern: 'Mønster',
+    colAttaches: 'Kobler til',
+    colValue: 'Værdi',
+    colEffort: 'Indsats',
+    colRead: 'Vurdering',
+    takeQuick: 'quick win',
+    takeStrategic: 'strategisk satsning',
+    takeFill: 'udfyldning',
+    takeQuestion: 'sæt spørgsmålstegn',
+    emptyWorkflow: 'Ingen arbejdsgangstrin kortlagt endnu.',
+    emptyFriction: 'Ingen smertepunkter markeret endnu.',
+    emptySystems: 'Ingen systemer eller datakilder vedhæftet endnu.',
+    emptyCandidates: 'Ingen kandidat-use cases på tavlen endnu.',
+    unattached: 'ikke koblet til et trin',
+    handoffNote: 'Bring disse kandidater over i Use Case-prioritering for at score dem på ROI, gennemførlighed og effekt.',
+  },
+  sv: {
+    heroTitle: 'Upptäcktstavla för Användningsfall',
+    heroDesc: 'En workshop-duk för att rita kundens nuvarande arbetsflöde, markera var det gör ont, och hänga kandidat-AI-användningsfall på de steg de faktiskt skulle förändra.',
+    noteLabel: 'Så här fungerar det.',
+    noteBody: 'Lägg till block och koppla ihop dem till det arbetsflöde kunden faktiskt kör, och häng sedan smärtpunkter, system och kandidat-AI-användningsfall på de steg som bär dem. Upptäcktsdokumentet nedan byggs live utifrån tavlan, och kandidaterna kan importeras direkt till Prioritering av användningsfall för poängsättning. Inga API-anrop — allt sparas automatiskt i denna webbläsare och kan exporteras som fil.',
+    sopTitle: 'SOP — så här görs det vanligtvis',
+    sopHint: 'Ordningen en upptäcktsworkshop faktiskt körs i.',
+    sop: [
+      'Kom överens om omfattningen innan rummet fylls: en ända-till-ända-process, verksamhetsägaren på plats, och den utlösare och det utfall som avgränsar den. En workshop utan en avgränsad process producerar en vägg av idéer och inget arbetsflöde.',
+      'Kartlägg det nuvarande arbetsflödet först, med kundens egna ord — varje steg, vem som utför det, hur ofta. Undvik att nämna teknik medan flödet fortfarande ritas; det är det som håller rummet borta från lösning-först-tänkande.',
+      'Markera friktion på de steg som bär den: omarbete, väntan, manuell omregistrering, eskaleringar, undantag. Be om en siffra för var och en (minuter, %, volym) — okvantifierad smärta kan inte prioriteras senare.',
+      'Bifoga de system och data varje steg berör. Ett steg vars data ligger i ett system ingen i rummet kan namnge är i sig ett Fas 1-fynd, och en hård begränsning för allt som byggs på det.',
+      'Först nu ska AI-användningsfall idéutvecklas, ett block per kandidat, kopplat till det steg eller den smärtpunkt det förändrar. Namnge mönstret — extraktion, klassificering, utkast, återfinning, prognos — snarare än en leverantör eller en modell.',
+      'Avsluta med att läsa tillbaka tavlan som en berättelse, steg för steg, och låt ägaren rätta den i rummet. Bär sedan kandidaterna vidare till prioriteringsmatrisen för ROI-/genomförbarhet-/effekt-poängsättning.',
+    ],
+    clientTitle: 'Kund och omfattning',
+    lblClient: 'Kund / uppdrag',
+    lblAssessor: 'Facilitator',
+    lblProcess: 'Kartlagd process',
+    phProcess: 't.ex. Från skadeanmälan till skadebeslut',
+    lblScope: 'Avgränsning (utlösare → utfall)',
+    phScope: 't.ex. Börjar när en skada anmäls, slutar när den godkänns eller avslås',
+    boardTitle: 'Tavlan',
+    boardHint: 'Klicka på en blocktyp för att lägga till den. Med ett block valt kopplas det nya blocket automatiskt till det — så ritas ett arbetsflöde snabbt. Dra ●-handtaget på blockets högra kant till ett annat block för att koppla dem manuellt.',
+    boardKeys: 'Tangentbord: piltangenter flyttar det valda blocket, Delete tar bort det, Ctrl/⌘+Z ångrar, Esc avbryter en koppling. Ctrl/⌘ + scroll zoomar; dra bakgrunden för att panorera.',
+    boardEmpty: 'Tom tavla. Lägg till ett steg för att börja kartlägga — eller läs in exempeluppdraget längst ned på sidan.',
+    ntStep: 'Steg',
+    ntPain: 'Smärtpunkt',
+    ntSystem: 'System / data',
+    ntUsecase: 'AI-användningsfall',
+    ntNote: 'Anteckning',
+    newStep: 'Nytt steg',
+    newPain: 'Ny smärtpunkt',
+    newSystem: 'Nytt system',
+    newUsecase: 'Nytt användningsfall',
+    newNote: 'Ny anteckning',
+    btnUndo: '↶ Ångra',
+    btnRedo: '↷ Gör om',
+    btnFit: 'Anpassa',
+    btnFocus: '⛶ Fokus',
+    btnExitFocus: '✕ Lämna fokus',
+    btnClearBoard: 'Rensa tavla',
+    clearConfirm: 'Ta bort alla block och kopplingar från tavlan?',
+    btnExportSvg: '🖼 Exportera tavla (SVG)',
+    insBlock: 'Block',
+    insEdge: 'Koppling',
+    lblNodeTitle: 'Etikett',
+    lblNodeDetail: 'Detalj',
+    lblRole: 'Vem utför det',
+    lblVolume: 'Volym / tid',
+    lblPattern: 'AI-mönster',
+    lblValue: 'Värde (1–5)',
+    lblEffort: 'Insats (1–5)',
+    lblEdgeLabel: 'Kopplingsetikett',
+    btnConnect: '→ Koppla till…',
+    btnDelete: '✕ Ta bort',
+    connectHint: 'Klicka på blocket att koppla till — Esc för att avbryta.',
+    phRole: 't.ex. Skadereglerare',
+    phVolume: 't.ex. 300/dag, 12 min styck',
+    phDetail: 'Vad händer här',
+    pat_none: '— ej satt —',
+    pat_extract: 'Extraktion',
+    pat_classify: 'Klassificering',
+    pat_draft: 'Generering / utkast',
+    pat_retrieve: 'Återfinning / Q&A',
+    pat_forecast: 'Prognos / poängsättning',
+    pat_agent: 'Agentiskt arbetsflöde',
+    pat_recommend: 'Rekommendation',
+    draftTitle: 'Agent-utkast',
+    draftHint: 'Generera en prompt som bär detta verktygs metodik och hela tavlan, kör den i Claude (eller annan kapabel modell), och klistra sedan in det utkastade Markdown nedan. Ett inklistrat utkast ersätter mallförhandsgranskningen och båda exporterna; rensa det för att gå tillbaka till mallen. Prompter är på engelska — be agenten om ett annat utdataspråk vid behov.',
+    btnGenDraft: '🤖 Generera utkast-prompt',
+    btnCopyDraft: '📋 Kopiera prompt',
+    lblDraftDoc: 'Utkastat dokument (Markdown, valfritt)',
+    draftCopied: '✅ Kopierat!',
+    draftCopyFail: 'Kopiering misslyckades — markera texten manuellt.',
+    previewTitle: 'Upptäcktsdokument för användningsfall',
+    previewHint: 'Detta är själva leveransen — tavlan läst tillbaka som ett genomgångsbart arbetsflöde, en friktionslogg och en kandidatlista, genererad live.',
+    btnExportHtml: '🌐 Exportera HTML',
+    btnExportMd: '📄 Exportera Markdown',
+    btnReset: '🔄 Återställ',
+    docTitle: 'Upptäckt av Användningsfall',
+    docFor: 'Framtagen för',
+    docAssessor: 'Facilitator',
+    docDate: 'Datum',
+    docProcess: 'Process',
+    docScope: 'Avgränsning',
+    secWorkflow: 'Nuvarande arbetsflöde',
+    secFriction: 'Friktionslogg',
+    secSystems: 'Berörda system och data',
+    secCandidates: 'Kandidat-AI-användningsfall',
+    secNotes: 'Öppna anteckningar',
+    colStep: 'Steg',
+    colRole: 'Vem',
+    colVolume: 'Volym / tid',
+    colPain: 'Smärtpunkt',
+    colWhere: 'Var det biter',
+    colTouchedAt: 'Berörs vid',
+    colSystem: 'System / data',
+    colUseCase: 'Användningsfall',
+    colPattern: 'Mönster',
+    colAttaches: 'Kopplas till',
+    colValue: 'Värde',
+    colEffort: 'Insats',
+    colRead: 'Bedömning',
+    takeQuick: 'quick win',
+    takeStrategic: 'strategisk satsning',
+    takeFill: 'utfyllnad',
+    takeQuestion: 'ifrågasätt',
+    emptyWorkflow: 'Inga arbetsflödessteg kartlagda än.',
+    emptyFriction: 'Inga smärtpunkter markerade än.',
+    emptySystems: 'Inga system eller datakällor bifogade än.',
+    emptyCandidates: 'Inga kandidat-användningsfall på tavlan än.',
+    unattached: 'inte kopplad till ett steg',
+    handoffNote: 'Bär dessa kandidater vidare till Prioritering av användningsfall för att poängsätta dem på ROI, genomförbarhet och effekt.',
+  },
+};
+
+// ── Checklist + sample-data strings (merged into STRINGS) ────────
+(function () {
+  const D = {
+    en: {
+      sopProgress: (n, total) => `${n} of ${total} steps done`,
+      btnLoadSample: '🧪 Load sample',
+      sampleConfirm: 'Load the sample engagement into this tool? This replaces anything currently saved here.',
+      sampleLoadError2: (msg) => `Could not load the sample (${msg}). This can happen if the page was opened directly from disk rather than served over http(s).`,
+    },
+    da: {
+      sopProgress: (n, total) => `${n} af ${total} trin fuldført`,
+      btnLoadSample: '🧪 Indlæs eksempel',
+      sampleConfirm: 'Indlæs eksempel-engagementet i dette værktøj? Dette erstatter alt, der aktuelt er gemt her.',
+      sampleLoadError2: (msg) => `Kunne ikke indlæse eksemplet (${msg}). Dette kan ske, hvis siden blev åbnet direkte fra disk i stedet for serveret over http(s).`,
+    },
+    sv: {
+      sopProgress: (n, total) => `${n} av ${total} steg klara`,
+      btnLoadSample: '🧪 Läs in exempel',
+      sampleConfirm: 'Läs in exempeluppdraget i detta verktyg? Detta ersätter allt som för närvarande är sparat här.',
+      sampleLoadError2: (msg) => `Kunde inte läsa in exemplet (${msg}). Detta kan hända om sidan öppnades direkt från disk istället för att serveras över http(s).`,
+    },
+  };
+  Object.keys(D).forEach(l => { if (STRINGS[l]) Object.assign(STRINGS[l], D[l]); });
+})();
+
+let lang = localStorage.getItem('aoa_lang') || 'en';
+function t(key) { return (STRINGS[lang] && STRINGS[lang][key] !== undefined) ? STRINGS[lang][key] : (STRINGS.en[key] !== undefined ? STRINGS.en[key] : key); }
+function esc(s) { return String(s === undefined || s === null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+// Markdown table cells: a raw | or newline in a block label would otherwise
+// invent columns or rows in the exported deliverable.
+function mdCell(v) { return String(v === undefined || v === null ? '' : v).replace(/\|/g, '\\|').replace(/\r?\n/g, ' '); }
+function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+
+// ── Board state ─────────────────────────────────────────────────
+// nodes carry meaning, layout carries geometry. Keeping them apart is
+// what lets the master engagement report render `nodes` as a readable
+// table instead of a column of pixel coordinates.
+const TYPES = ['step', 'pain', 'system', 'usecase', 'note'];
+const PATTERNS = ['', 'extract', 'classify', 'draft', 'retrieve', 'forecast', 'agent', 'recommend'];
+const NODE_W = { step: 200, pain: 180, system: 180, usecase: 210, note: 190 };
+
+let nodes = [];   // { id, type, title, detail, role, volume, pattern, value, effort }
+let layout = {};  // id -> { x, y, w }
+let edges = [];   // { id, from, to, label }
+let nextId = 1;
+let view = { x: 40, y: 40, z: 1 };
+let sel = null;       // { kind: 'node'|'edge', id }
+let linkFrom = null;  // node id while a connection is being drawn
+let undoStack = [], redoStack = [];
+
+const viewEl = () => document.getElementById('boardView');
+const worldEl = () => document.getElementById('boardWorld');
+
+function nodeById(id) { return nodes.find(n => n.id === id) || null; }
+function edgeById(id) { return edges.find(e => e.id === id) || null; }
+function typeLabel(type) { return t('nt' + type.charAt(0).toUpperCase() + type.slice(1)); }
+function patternLabel(p) { return t('pat_' + (p || 'none')); }
+
+// ── i18n ────────────────────────────────────────────────────────
+function setLang(l) {
+  lang = l;
+  localStorage.setItem('aoa_lang', l);
+  document.getElementById('langSelect').value = l;
+  applyI18n();
+  renderBoard();
+  renderPreview();
+  save();
+}
+function applyI18n() {
+  document.documentElement.lang = lang;
+  document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.getAttribute('data-i18n')); });
+  document.querySelectorAll('[data-ph]').forEach(el => { el.placeholder = t(el.getAttribute('data-ph')); });
+  document.title = t('heroTitle') + ' — Phase 1';
+  const fb = document.getElementById('btnFocus');
+  if (fb) fb.textContent = document.getElementById('boardShell').classList.contains('focus') ? t('btnExitFocus') : t('btnFocus');
+  renderSop();
+}
+
+// ── Intake fields ───────────────────────────────────────────────
+function fieldEls() { return Array.from(document.querySelectorAll('[data-eng]')); }
+function collectFields() { const o = {}; fieldEls().forEach(el => { o[el.getAttribute('data-eng')] = el.value; }); return o; }
+function restoreFields(o) { fieldEls().forEach(el => { const k = el.getAttribute('data-eng'); if (o[k] !== undefined) el.value = o[k]; }); }
+function val(k) { const el = document.querySelector(`[data-eng="${k}"]`); return el ? el.value : ''; }
+
+// ── Persistence ─────────────────────────────────────────────────
+let sopDone = [];
+let savedTimer;
+function save() {
+  try {
+    localStorage.setItem(KEY, JSON.stringify({ fields: collectFields(), nodes, layout, edges, nextId, view, sopDone, lang }));
+    flashSaved();
+  } catch (e) {}
+}
+function flashSaved() {
+  const f = document.getElementById('savedFlag');
+  f.textContent = '✓'; clearTimeout(savedTimer);
+  savedTimer = setTimeout(() => { f.textContent = ''; }, 1200);
+}
+function loadSaved() {
+  try {
+    const o = JSON.parse(localStorage.getItem(KEY) || '{}');
+    if (o.fields) restoreFields(o.fields);
+    if (Array.isArray(o.nodes)) nodes = o.nodes;
+    if (o.layout && typeof o.layout === 'object') layout = o.layout;
+    if (Array.isArray(o.edges)) edges = o.edges;
+    if (o.nextId) nextId = o.nextId;
+    if (o.view && typeof o.view === 'object') view = Object.assign({ x: 40, y: 40, z: 1 }, o.view);
+    if (Array.isArray(o.sopDone)) sopDone = o.sopDone;
+  } catch (e) {}
+}
+
+// ── Undo / redo ─────────────────────────────────────────────────
+// Snapshots are cheap here (a board is tens of blocks, not thousands),
+// and a mis-drag in a live workshop is the one thing that must never
+// cost the room its work.
+function snapshot() { return JSON.stringify({ nodes, layout, edges, nextId }); }
+function pushUndo() {
+  undoStack.push(snapshot());
+  if (undoStack.length > 60) undoStack.shift();
+  redoStack = [];
+  syncUndoButtons();
+}
+function applySnapshot(s) {
+  const o = JSON.parse(s);
+  nodes = o.nodes; layout = o.layout; edges = o.edges; nextId = o.nextId;
+  sel = null; linkFrom = null;
+  renderBoard(); renderPreview(); save();
+}
+function undo() {
+  if (!undoStack.length) return;
+  redoStack.push(snapshot());
+  applySnapshot(undoStack.pop());
+  syncUndoButtons();
+}
+function redo() {
+  if (!redoStack.length) return;
+  undoStack.push(snapshot());
+  applySnapshot(redoStack.pop());
+  syncUndoButtons();
+}
+function syncUndoButtons() {
+  const u = document.getElementById('btnUndo'), r = document.getElementById('btnRedo');
+  if (u) u.disabled = !undoStack.length;
+  if (r) r.disabled = !redoStack.length;
+}
+
+// ── Adding blocks ───────────────────────────────────────────────
+// A block added while another is selected links to it and lands beside
+// it. Steps chain to the right, everything else hangs below — which is
+// how a facilitator draws a flow without touching the connect handle.
+function addNode(type) {
+  pushUndo();
+  const anchorNode = sel && sel.kind === 'node' ? nodeById(sel.id) : null;
+  const w = NODE_W[type] || 190;
+  let x, y;
+  if (anchorNode && layout[anchorNode.id]) {
+    const a = layout[anchorNode.id];
+    const ah = measuredHeight(anchorNode.id);
+    if (type === 'step' && anchorNode.type === 'step') { x = a.x + a.w + 70; y = a.y; }
+    else { x = a.x + (a.w - w) / 2 + siblingOffset(anchorNode.id); y = a.y + ah + 70; }
+  } else {
+    const c = viewCenterWorld();
+    x = c.x - w / 2 + (nodes.length % 5) * 18;
+    y = c.y - 40 + (nodes.length % 5) * 14;
+  }
+  const node = { id: nextId++, type, title: t('new' + type.charAt(0).toUpperCase() + type.slice(1)), detail: '', role: '', volume: '', pattern: '', value: '3', effort: '3' };
+  nodes.push(node);
+  layout[node.id] = { x: Math.round(x), y: Math.round(y), w };
+  if (anchorNode) edges.push({ id: nextId++, from: anchorNode.id, to: node.id, label: '' });
+  sel = { kind: 'node', id: node.id };
+  renderBoard(); renderPreview(); save();
+  const tf = document.getElementById('insTitle');
+  if (tf) { tf.focus(); tf.select(); }
+}
+// Fan blocks that hang off the same step sideways instead of stacking
+// them on top of each other.
+function siblingOffset(anchorId) {
+  const n = edges.filter(e => e.from === anchorId).length;
+  return (n % 2 === 0 ? 1 : -1) * Math.ceil(n / 2) * 210;
+}
+function viewCenterWorld() {
+  const r = viewEl().getBoundingClientRect();
+  return { x: (r.width / 2 - view.x) / view.z, y: (r.height / 2 - view.y) / view.z };
+}
+
+function deleteSelection() {
+  if (!sel) return;
+  pushUndo();
+  if (sel.kind === 'node') {
+    nodes = nodes.filter(n => n.id !== sel.id);
+    delete layout[sel.id];
+    edges = edges.filter(e => e.from !== sel.id && e.to !== sel.id);
+  } else {
+    edges = edges.filter(e => e.id !== sel.id);
+  }
+  sel = null;
+  renderBoard(); renderPreview(); save();
+}
+function clearBoard() {
+  if (!nodes.length && !edges.length) return;
+  if (!confirm(t('clearConfirm'))) return;
+  pushUndo();
+  nodes = []; layout = {}; edges = []; sel = null; linkFrom = null;
+  renderBoard(); renderPreview(); save();
+}
+
+// ── Rendering: blocks ───────────────────────────────────────────
+const nodeEls = {};
+function measuredHeight(id) { const el = nodeEls[id]; return el ? el.offsetHeight : 80; }
+function nodeRect(id) {
+  const p = layout[id];
+  if (!p) return null;
+  return { x: p.x, y: p.y, w: p.w, h: measuredHeight(id) };
+}
+
+function renderBoard() {
+  const layer = document.getElementById('nodeLayer');
+  Object.keys(nodeEls).forEach(k => delete nodeEls[k]);
+  layer.innerHTML = nodes.map(n => {
+    const p = layout[n.id] || { x: 40, y: 40, w: NODE_W[n.type] || 190 };
+    const meta = nodeMetaLine(n);
+    return `<div class="node t-${esc(n.type)}${sel && sel.kind === 'node' && sel.id === n.id ? ' sel' : ''}${linkFrom === n.id ? ' link-target' : ''}"
+        data-id="${n.id}" tabindex="0" role="button"
+        aria-label="${esc(typeLabel(n.type))}: ${esc(n.title)}"
+        style="left:${p.x}px;top:${p.y}px;width:${p.w}px">
+      <span class="node-type">${esc(typeLabel(n.type))}</span>
+      <div class="node-title">${esc(n.title)}</div>
+      ${n.detail ? `<div class="node-detail">${esc(n.detail)}</div>` : ''}
+      ${meta ? `<div class="node-meta">${esc(meta)}</div>` : ''}
+      <span class="node-handle" data-handle="${n.id}" title="${esc(t('btnConnect'))}"></span>
+    </div>`;
+  }).join('');
+  layer.querySelectorAll('.node').forEach(el => { nodeEls[Number(el.getAttribute('data-id'))] = el; });
+  applyView();
+  renderEdges();
+  renderInspector();
+  document.getElementById('boardEmpty').style.display = nodes.length ? 'none' : 'flex';
+  syncUndoButtons();
+}
+function nodeMetaLine(n) {
+  if (n.type === 'step') return [n.role, n.volume].filter(Boolean).join(' · ');
+  if (n.type === 'usecase') {
+    const bits = [];
+    if (n.pattern) bits.push(patternLabel(n.pattern));
+    bits.push(`${t('colValue')} ${n.value || '3'} · ${t('colEffort')} ${n.effort || '3'}`);
+    return bits.join(' · ');
+  }
+  return '';
+}
+
+// ── Rendering: connections ──────────────────────────────────────
+// The line style is derived from the endpoints rather than stored, so
+// a connection cannot claim to be a flow arrow between a pain point
+// and a use case.
+function isFlowEdge(e) {
+  const a = nodeById(e.from), b = nodeById(e.to);
+  return !!(a && b && a.type === 'step' && b.type === 'step');
+}
+function borderPoint(r, tx, ty) {
+  const cx = r.x + r.w / 2, cy = r.y + r.h / 2;
+  const dx = tx - cx, dy = ty - cy;
+  if (!dx && !dy) return { x: cx, y: cy };
+  const sx = dx === 0 ? Infinity : (r.w / 2) / Math.abs(dx);
+  const sy = dy === 0 ? Infinity : (r.h / 2) / Math.abs(dy);
+  const s = Math.min(sx, sy);
+  return { x: cx + dx * s, y: cy + dy * s };
+}
+function edgePath(e) {
+  const ra = nodeRect(e.from), rb = nodeRect(e.to);
+  if (!ra || !rb) return null;
+  const ca = { x: ra.x + ra.w / 2, y: ra.y + ra.h / 2 };
+  const cb = { x: rb.x + rb.w / 2, y: rb.y + rb.h / 2 };
+  const p1 = borderPoint(ra, cb.x, cb.y);
+  const p2 = borderPoint(rb, ca.x, ca.y);
+  const dx = p2.x - p1.x, dy = p2.y - p1.y;
+  const horiz = Math.abs(dx) >= Math.abs(dy);
+  const k = Math.min(90, Math.max(28, (horiz ? Math.abs(dx) : Math.abs(dy)) * 0.45));
+  const c1 = horiz ? { x: p1.x + Math.sign(dx || 1) * k, y: p1.y } : { x: p1.x, y: p1.y + Math.sign(dy || 1) * k };
+  const c2 = horiz ? { x: p2.x - Math.sign(dx || 1) * k, y: p2.y } : { x: p2.x, y: p2.y - Math.sign(dy || 1) * k };
+  return { d: `M${p1.x},${p1.y} C${c1.x},${c1.y} ${c2.x},${c2.y} ${p2.x},${p2.y}`, mid: { x: (p1.x + p2.x) / 2, y: (p1.y + p2.y) / 2 } };
+}
+function renderEdges() {
+  const layer = document.getElementById('edgeLayer');
+  let h = '';
+  edges.forEach(e => {
+    const g = edgePath(e);
+    if (!g) return;
+    const flow = isFlowEdge(e);
+    const selected = sel && sel.kind === 'edge' && sel.id === e.id;
+    h += `<path class="edge-hit" data-edge="${e.id}" d="${g.d}"></path>`;
+    h += `<path class="edge-line${flow ? '' : ' soft'}${selected ? ' sel' : ''}" d="${g.d}" marker-end="url(#${flow ? 'arrowHead' : 'arrowSoft'})"></path>`;
+    if (e.label) h += `<text class="edge-label" x="${g.mid.x}" y="${g.mid.y - 6}" text-anchor="middle">${esc(e.label)}</text>`;
+  });
+  layer.innerHTML = h;
+}
+
+// ── Rendering: inspector ────────────────────────────────────────
+function renderInspector() {
+  const box = document.getElementById('inspector');
+  box.classList.toggle('dim', linkFrom !== null);
+  if (!sel) { box.classList.add('is-hidden'); box.innerHTML = ''; return; }
+  box.classList.remove('is-hidden');
+  if (sel.kind === 'edge') {
+    const e = edgeById(sel.id);
+    if (!e) { sel = null; return renderInspector(); }
+    box.innerHTML = `<h4>${esc(t('insEdge'))}</h4>
+      <label>${esc(t('lblEdgeLabel'))}</label>
+      <input type="text" id="insEdgeLabel" value="${esc(e.label)}" oninput="updateEdge(${e.id}, this.value)">
+      <div class="btn-row"><button class="btn btn-secondary" onclick="deleteSelection()">${esc(t('btnDelete'))}</button></div>`;
+    return;
+  }
+  const n = nodeById(sel.id);
+  if (!n) { sel = null; return renderInspector(); }
+  let h = `<h4>${esc(typeLabel(n.type))}</h4>
+    <label>${esc(t('lblNodeTitle'))}</label>
+    <input type="text" id="insTitle" value="${esc(n.title)}" oninput="updateNode(${n.id},'title',this.value)">
+    <label>${esc(t('lblNodeDetail'))}</label>
+    <textarea id="insDetail" placeholder="${esc(t('phDetail'))}" oninput="updateNode(${n.id},'detail',this.value)">${esc(n.detail)}</textarea>`;
+  if (n.type === 'step') {
+    h += `<label>${esc(t('lblRole'))}</label>
+      <input type="text" placeholder="${esc(t('phRole'))}" value="${esc(n.role)}" oninput="updateNode(${n.id},'role',this.value)">
+      <label>${esc(t('lblVolume'))}</label>
+      <input type="text" placeholder="${esc(t('phVolume'))}" value="${esc(n.volume)}" oninput="updateNode(${n.id},'volume',this.value)">`;
+  }
+  if (n.type === 'usecase') {
+    h += `<label>${esc(t('lblPattern'))}</label>
+      <select class="field" onchange="updateNode(${n.id},'pattern',this.value)">
+        ${PATTERNS.map(p => `<option value="${p}" ${p === (n.pattern || '') ? 'selected' : ''}>${esc(patternLabel(p))}</option>`).join('')}
+      </select>
+      <label>${esc(t('lblValue'))}</label>
+      <select class="field" onchange="updateNode(${n.id},'value',this.value)">${scoreOpts(n.value)}</select>
+      <label>${esc(t('lblEffort'))}</label>
+      <select class="field" onchange="updateNode(${n.id},'effort',this.value)">${scoreOpts(n.effort)}</select>`;
+  }
+  h += `<div class="btn-row">
+      <button class="btn btn-secondary" onclick="startLink(${n.id})">${esc(t('btnConnect'))}</button>
+      <button class="btn btn-secondary" onclick="deleteSelection()">${esc(t('btnDelete'))}</button>
+    </div>`;
+  box.innerHTML = h;
+}
+function scoreOpts(v) { return [1,2,3,4,5].map(s => `<option value="${s}" ${String(s) === String(v || '3') ? 'selected' : ''}>${s}</option>`).join(''); }
+
+function updateNode(id, field, value) {
+  const n = nodeById(id);
+  if (!n) return;
+  n[field] = value;
+  const el = nodeEls[id];
+  if (el) {
+    // Repaint just this block so typing never rebuilds the whole board
+    // (which would blur the input on every keystroke).
+    const titleEl = el.querySelector('.node-title');
+    if (titleEl && field === 'title') titleEl.textContent = value;
+    if (field === 'detail') {
+      let d = el.querySelector('.node-detail');
+      if (value && !d) { d = document.createElement('div'); d.className = 'node-detail'; el.insertBefore(d, el.querySelector('.node-meta') || el.querySelector('.node-handle')); }
+      if (d) { if (value) d.textContent = value; else d.remove(); }
+    }
+    if (['role','volume','pattern','value','effort'].indexOf(field) !== -1) {
+      const line = nodeMetaLine(n);
+      let m = el.querySelector('.node-meta');
+      if (line && !m) { m = document.createElement('div'); m.className = 'node-meta'; el.insertBefore(m, el.querySelector('.node-handle')); }
+      if (m) { if (line) m.textContent = line; else m.remove(); }
+    }
+    el.setAttribute('aria-label', typeLabel(n.type) + ': ' + n.title);
+  }
+  renderEdges();
+  renderPreview();
+  save();
+}
+function updateEdge(id, label) {
+  const e = edgeById(id);
+  if (!e) return;
+  e.label = label;
+  renderEdges();
+  renderPreview();
+  save();
+}
+
+// ── Selection, dragging, panning, zooming ───────────────────────
+function select(kind, id) { sel = kind ? { kind, id } : null; renderBoard(); }
+
+function applyView() {
+  worldEl().style.transform = `translate(${view.x}px, ${view.y}px) scale(${view.z})`;
+}
+function zoomAt(clientX, clientY, factor) {
+  const r = viewEl().getBoundingClientRect();
+  const px = clientX - r.left, py = clientY - r.top;
+  const wx = (px - view.x) / view.z, wy = (py - view.y) / view.z;
+  view.z = clamp(view.z * factor, 0.3, 2.2);
+  view.x = px - wx * view.z;
+  view.y = py - wy * view.z;
+  applyView(); save();
+}
+function zoomStep(factor) {
+  const r = viewEl().getBoundingClientRect();
+  zoomAt(r.left + r.width / 2, r.top + r.height / 2, factor);
+}
+function boardBBox() {
+  if (!nodes.length) return null;
+  let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+  nodes.forEach(n => {
+    const r = nodeRect(n.id);
+    if (!r) return;
+    x0 = Math.min(x0, r.x); y0 = Math.min(y0, r.y);
+    x1 = Math.max(x1, r.x + r.w); y1 = Math.max(y1, r.y + r.h);
+  });
+  if (x0 === Infinity) return null;
+  return { x: x0, y: y0, w: Math.max(1, x1 - x0), h: Math.max(1, y1 - y0) };
+}
+function fitBoard() {
+  const bb = boardBBox();
+  const r = viewEl().getBoundingClientRect();
+  if (!bb) { view = { x: 40, y: 40, z: 1 }; applyView(); save(); return; }
+  const pad = 44;
+  view.z = clamp(Math.min((r.width - pad * 2) / bb.w, (r.height - pad * 2) / bb.h), 0.3, 1.4);
+  view.x = (r.width - bb.w * view.z) / 2 - bb.x * view.z;
+  view.y = (r.height - bb.h * view.z) / 2 - bb.y * view.z;
+  applyView(); save();
+}
+
+function startLink(fromId) {
+  linkFrom = fromId;
+  viewEl().classList.add('linking');
+  showStatus(t('connectHint'));
+  renderBoard();
+}
+function cancelLink() {
+  linkFrom = null;
+  viewEl().classList.remove('linking');
+  hideStatus();
+  renderBoard();
+}
+function completeLink(toId) {
+  if (linkFrom === null || toId === linkFrom) return cancelLink();
+  const dup = edges.some(e => (e.from === linkFrom && e.to === toId) || (e.from === toId && e.to === linkFrom));
+  if (!dup) {
+    pushUndo();
+    edges.push({ id: nextId++, from: linkFrom, to: toId, label: '' });
+  }
+  linkFrom = null;
+  viewEl().classList.remove('linking');
+  hideStatus();
+  sel = { kind: 'node', id: toId };
+  renderBoard(); renderPreview(); save();
+}
+function showStatus(msg) {
+  const s = document.getElementById('boardStatus');
+  s.textContent = msg; s.style.display = 'block';
+  document.getElementById('srStatus').textContent = msg;
+}
+function hideStatus() {
+  document.getElementById('boardStatus').style.display = 'none';
+  document.getElementById('srStatus').textContent = '';
+}
+
+(function wireBoardPointer() {
+  const vw = viewEl();
+  let mode = null;           // 'drag' | 'pan' | 'link'
+  let dragId = null, dragDX = 0, dragDY = 0, panSX = 0, panSY = 0, panVX = 0, panVY = 0;
+  let moved = false, rubber = null;
+
+  function toWorld(clientX, clientY) {
+    const r = vw.getBoundingClientRect();
+    return { x: (clientX - r.left - view.x) / view.z, y: (clientY - r.top - view.y) / view.z };
+  }
+
+  vw.addEventListener('pointerdown', ev => {
+    // The inspector sits inside the viewport so it survives focus mode.
+    // Without this, panning would capture the pointer and the click would
+    // retarget to the canvas — leaving its inputs and buttons dead.
+    if (ev.target.closest('.inspector')) return;
+    const handle = ev.target.closest('.node-handle');
+    const nodeEl = ev.target.closest('.node');
+    const edgeEl = ev.target.closest('.edge-hit');
+    moved = false;
+
+    if (handle) {
+      ev.preventDefault();
+      mode = 'link';
+      linkFrom = Number(handle.getAttribute('data-handle'));
+      vw.classList.add('linking');
+      rubber = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      rubber.setAttribute('class', 'edge-line soft');
+      document.getElementById('edgeLayer').appendChild(rubber);
+      vw.setPointerCapture(ev.pointerId);
+      return;
+    }
+    if (nodeEl) {
+      const id = Number(nodeEl.getAttribute('data-id'));
+      if (linkFrom !== null) { completeLink(id); return; }
+      ev.preventDefault();
+      pushUndo();
+      mode = 'drag'; dragId = id;
+      const w = toWorld(ev.clientX, ev.clientY);
+      const p = layout[id];
+      dragDX = w.x - p.x; dragDY = w.y - p.y;
+      select('node', id);
+      vw.setPointerCapture(ev.pointerId);
+      return;
+    }
+    if (edgeEl) {
+      select('edge', Number(edgeEl.getAttribute('data-edge')));
+      return;
+    }
+    if (linkFrom !== null) { cancelLink(); return; }
+    mode = 'pan';
+    panSX = ev.clientX; panSY = ev.clientY; panVX = view.x; panVY = view.y;
+    vw.classList.add('panning');
+    vw.setPointerCapture(ev.pointerId);
+  });
+
+  vw.addEventListener('pointermove', ev => {
+    if (!mode) return;
+    moved = true;
+    if (mode === 'drag') {
+      const w = toWorld(ev.clientX, ev.clientY);
+      const p = layout[dragId];
+      p.x = Math.round(clamp(w.x - dragDX, 0, 3900));
+      p.y = Math.round(clamp(w.y - dragDY, 0, 2900));
+      const el = nodeEls[dragId];
+      if (el) { el.style.left = p.x + 'px'; el.style.top = p.y + 'px'; }
+      renderEdges();
+    } else if (mode === 'pan') {
+      view.x = panVX + (ev.clientX - panSX);
+      view.y = panVY + (ev.clientY - panSY);
+      applyView();
+    } else if (mode === 'link' && rubber) {
+      const r0 = nodeRect(linkFrom);
+      const w = toWorld(ev.clientX, ev.clientY);
+      if (r0) {
+        const p1 = borderPoint(r0, w.x, w.y);
+        rubber.setAttribute('d', `M${p1.x},${p1.y} L${w.x},${w.y}`);
+      }
+    }
+  });
+
+  function endPointer(ev) {
+    if (!mode) return;
+    if (mode === 'drag') {
+      if (!moved) undoStack.pop();   // a click, not a move: nothing to undo
+      save();
+    } else if (mode === 'pan') {
+      vw.classList.remove('panning');
+      if (!moved) select(null);
+      save();
+    } else if (mode === 'link') {
+      if (rubber) { rubber.remove(); rubber = null; }
+      const el = document.elementFromPoint(ev.clientX, ev.clientY);
+      const target = el && el.closest ? el.closest('.node') : null;
+      if (target) completeLink(Number(target.getAttribute('data-id')));
+      else cancelLink();
+    }
+    mode = null; dragId = null;
+    syncUndoButtons();
+  }
+  vw.addEventListener('pointerup', endPointer);
+  vw.addEventListener('pointercancel', endPointer);
+
+  // Plain wheel is left to the page so the board never traps a scroll;
+  // in focus mode there is no page behind it, so it zooms directly.
+  vw.addEventListener('wheel', ev => {
+    if (ev.target.closest('.inspector')) return;
+    const focus = document.getElementById('boardShell').classList.contains('focus');
+    if (!(ev.ctrlKey || ev.metaKey || focus)) return;
+    ev.preventDefault();
+    zoomAt(ev.clientX, ev.clientY, ev.deltaY < 0 ? 1.1 : 1 / 1.1);
+  }, { passive: false });
+
+  vw.addEventListener('dblclick', ev => {
+    const nodeEl = ev.target.closest('.node');
+    if (!nodeEl) return;
+    select('node', Number(nodeEl.getAttribute('data-id')));
+    const tf = document.getElementById('insTitle');
+    if (tf) { tf.focus(); tf.select(); }
+  });
+})();
+
+document.addEventListener('keydown', ev => {
+  const tag = (ev.target.tagName || '').toLowerCase();
+  const typing = tag === 'input' || tag === 'textarea' || tag === 'select';
+  if (ev.key === 'Escape') {
+    if (linkFrom !== null) { cancelLink(); return; }
+    if (document.getElementById('boardShell').classList.contains('focus')) { toggleFocus(); return; }
+  }
+  if (typing) return;
+  if ((ev.ctrlKey || ev.metaKey) && ev.key.toLowerCase() === 'z') {
+    ev.preventDefault();
+    ev.shiftKey ? redo() : undo();
+    return;
+  }
+  if (!sel) return;
+  if (ev.key === 'Delete' || ev.key === 'Backspace') { ev.preventDefault(); deleteSelection(); return; }
+  if (sel.kind === 'node' && ev.key.indexOf('Arrow') === 0) {
+    const p = layout[sel.id];
+    if (!p) return;
+    ev.preventDefault();
+    const d = ev.shiftKey ? 20 : 10;
+    if (ev.key === 'ArrowLeft') p.x = clamp(p.x - d, 0, 3900);
+    if (ev.key === 'ArrowRight') p.x = clamp(p.x + d, 0, 3900);
+    if (ev.key === 'ArrowUp') p.y = clamp(p.y - d, 0, 2900);
+    if (ev.key === 'ArrowDown') p.y = clamp(p.y + d, 0, 2900);
+    const el = nodeEls[sel.id];
+    if (el) { el.style.left = p.x + 'px'; el.style.top = p.y + 'px'; }
+    renderEdges(); save();
+  }
+});
+
+// Focus mode: the board fills the viewport for workshop projection.
+function toggleFocus() {
+  const shell = document.getElementById('boardShell');
+  const on = shell.classList.toggle('focus');
+  document.body.classList.toggle('focus-on', on);
+  document.getElementById('btnFocus').textContent = on ? t('btnExitFocus') : t('btnFocus');
+  setTimeout(() => { renderEdges(); }, 30);
+}
+
+// ── The deliverable: reading the board back ─────────────────────
+function nodesOf(type) { return nodes.filter(n => n.type === type); }
+function neighbours(id) {
+  const out = [];
+  edges.forEach(e => {
+    if (e.from === id) out.push(nodeById(e.to));
+    else if (e.to === id) out.push(nodeById(e.from));
+  });
+  return out.filter(Boolean);
+}
+function neighboursOfType(id, type) { return neighbours(id).filter(n => n.type === type); }
+function nodeLabel(n) { return (n.title || '').trim() || typeLabel(n.type); }
+
+// Walk the step graph so the document reads in the order the work
+// actually happens, not the order blocks were dropped on the canvas.
+function orderedSteps() {
+  const steps = nodesOf('step');
+  if (!steps.length) return [];
+  const ids = new Set(steps.map(s => s.id));
+  const flow = edges.filter(e => ids.has(e.from) && ids.has(e.to));
+  const incoming = {}, outgoing = {};
+  steps.forEach(s => { incoming[s.id] = []; outgoing[s.id] = []; });
+  flow.forEach(e => { outgoing[e.from].push(e.to); incoming[e.to].push(e.from); });
+  const byX = (a, b) => (layout[a] ? layout[a].x : 0) - (layout[b] ? layout[b].x : 0);
+  const roots = steps.filter(s => !incoming[s.id].length).map(s => s.id).sort(byX);
+  const seen = new Set(), order = [];
+  const walk = id => {
+    if (seen.has(id)) return;
+    seen.add(id); order.push(id);
+    outgoing[id].slice().sort(byX).forEach(walk);
+  };
+  roots.forEach(walk);
+  // A cycle or an island leaves steps unvisited; append them left-to-right
+  // rather than dropping them from the deliverable.
+  steps.map(s => s.id).sort(byX).forEach(id => { if (!seen.has(id)) walk(id); });
+  return order.map(id => nodeById(id)).filter(Boolean);
+}
+
+function quickTake(n) {
+  const v = Number(n.value || 3), e = Number(n.effort || 3);
+  if (v >= 4 && e <= 3) return t('takeQuick');
+  if (v >= 4) return t('takeStrategic');
+  if (e <= 3) return t('takeFill');
+  return t('takeQuestion');
+}
+function attachedTo(n) {
+  const rel = neighbours(n.id).filter(x => x.type === 'step' || x.type === 'pain');
+  return rel.length ? rel.map(nodeLabel).join(', ') : t('unattached');
+}
+
+function renderPreview() {
+  const draft = val('draftDoc');
+  const el = document.getElementById('preview');
+  if (draft && draft.trim()) { el.innerHTML = mdToHtml(draft); return; }
+
+  const date = new Date().toISOString().slice(0, 10);
+  const steps = orderedSteps();
+  let h = `<div class="meta"><strong>${esc(t('docFor'))}:</strong> ${esc(val('client')) || '—'} &nbsp;·&nbsp; <strong>${esc(t('docAssessor'))}:</strong> ${esc(val('assessor')) || '—'} &nbsp;·&nbsp; <strong>${esc(t('docDate'))}:</strong> ${date}</div>`;
+  if (val('process')) h += `<p><strong>${esc(t('docProcess'))}:</strong> ${esc(val('process'))}</p>`;
+  if (val('scope')) h += `<p><strong>${esc(t('docScope'))}:</strong> ${esc(val('scope'))}</p>`;
+
+  h += `<h3>${esc(t('secWorkflow'))}</h3>`;
+  if (steps.length) {
+    h += '<ol>';
+    steps.forEach(s => {
+      const bits = [s.role, s.volume].filter(Boolean).join(' · ');
+      const pains = neighboursOfType(s.id, 'pain').map(nodeLabel);
+      const sys = neighboursOfType(s.id, 'system').map(nodeLabel);
+      const ucs = neighboursOfType(s.id, 'usecase').map(nodeLabel);
+      h += `<li><strong>${esc(nodeLabel(s))}</strong>`;
+      if (bits) h += ` <span style="color:var(--muted)">(${esc(bits)})</span>`;
+      if (s.detail) h += `<br>${esc(s.detail)}`;
+      if (pains.length) h += `<br><em>${esc(t('colPain'))}:</em> ${esc(pains.join(', '))}`;
+      if (sys.length) h += `<br><em>${esc(t('colSystem'))}:</em> ${esc(sys.join(', '))}`;
+      if (ucs.length) h += `<br><em>${esc(t('colUseCase'))}:</em> ${esc(ucs.join(', '))}`;
+      h += '</li>';
+    });
+    h += '</ol>';
+  } else { h += `<p><em>${esc(t('emptyWorkflow'))}</em></p>`; }
+
+  const pains = nodesOf('pain');
+  h += `<h3>${esc(t('secFriction'))}</h3>`;
+  if (pains.length) {
+    h += `<table><thead><tr><th>${esc(t('colPain'))}</th><th>${esc(t('colWhere'))}</th><th>${esc(t('lblNodeDetail'))}</th></tr></thead><tbody>`;
+    h += pains.map(p => {
+      const where = neighboursOfType(p.id, 'step').map(nodeLabel).join(', ') || t('unattached');
+      return `<tr><td>${esc(nodeLabel(p))}</td><td>${esc(where)}</td><td>${esc(p.detail)}</td></tr>`;
+    }).join('');
+    h += '</tbody></table>';
+  } else { h += `<p><em>${esc(t('emptyFriction'))}</em></p>`; }
+
+  const sys = nodesOf('system');
+  h += `<h3>${esc(t('secSystems'))}</h3>`;
+  if (sys.length) {
+    h += `<table><thead><tr><th>${esc(t('colSystem'))}</th><th>${esc(t('colTouchedAt'))}</th><th>${esc(t('lblNodeDetail'))}</th></tr></thead><tbody>`;
+    h += sys.map(s => {
+      const where = neighboursOfType(s.id, 'step').map(nodeLabel).join(', ') || t('unattached');
+      return `<tr><td>${esc(nodeLabel(s))}</td><td>${esc(where)}</td><td>${esc(s.detail)}</td></tr>`;
+    }).join('');
+    h += '</tbody></table>';
+  } else { h += `<p><em>${esc(t('emptySystems'))}</em></p>`; }
+
+  const ucs = nodesOf('usecase');
+  h += `<h3>${esc(t('secCandidates'))}</h3>`;
+  if (ucs.length) {
+    h += `<table><thead><tr><th>${esc(t('colUseCase'))}</th><th>${esc(t('colPattern'))}</th><th>${esc(t('colAttaches'))}</th><th>${esc(t('colValue'))}</th><th>${esc(t('colEffort'))}</th><th>${esc(t('colRead'))}</th></tr></thead><tbody>`;
+    h += ucs.map(u => `<tr><td><strong>${esc(nodeLabel(u))}</strong>${u.detail ? '<br>' + esc(u.detail) : ''}</td><td>${esc(u.pattern ? patternLabel(u.pattern) : '—')}</td><td>${esc(attachedTo(u))}</td><td>${esc(u.value || '3')}</td><td>${esc(u.effort || '3')}</td><td>${esc(quickTake(u))}</td></tr>`).join('');
+    h += '</tbody></table>';
+    h += `<p style="color:var(--muted);font-size:13px">${esc(t('handoffNote'))}</p>`;
+  } else { h += `<p><em>${esc(t('emptyCandidates'))}</em></p>`; }
+
+  const notes = nodesOf('note').filter(n => nodeLabel(n) || n.detail);
+  if (notes.length) {
+    h += `<h3>${esc(t('secNotes'))}</h3><ul>`;
+    h += notes.map(n => `<li>${esc(nodeLabel(n))}${n.detail ? ' — ' + esc(n.detail) : ''}</li>`).join('');
+    h += '</ul>';
+  }
+  el.innerHTML = h;
+}
+
+function docMarkdown() {
+  const draft = val('draftDoc');
+  if (draft && draft.trim()) return draft;
+  const date = new Date().toISOString().slice(0, 10);
+  const steps = orderedSteps();
+  let m = `# ${t('docTitle')} — ${val('client') || '[client]'}\n\n`;
+  m += `**${t('docFor')}:** ${val('client') || '—'}  \n**${t('docAssessor')}:** ${val('assessor') || '—'}  \n**${t('docDate')}:** ${date}\n`;
+  if (val('process')) m += `**${t('docProcess')}:** ${val('process')}  \n`;
+  if (val('scope')) m += `**${t('docScope')}:** ${val('scope')}  \n`;
+  m += `\n## ${t('secWorkflow')}\n\n`;
+  if (steps.length) {
+    steps.forEach((s, i) => {
+      const bits = [s.role, s.volume].filter(Boolean).join(' · ');
+      m += `${i + 1}. **${nodeLabel(s)}**${bits ? ` (${bits})` : ''}\n`;
+      if (s.detail) m += `   - ${s.detail}\n`;
+      const pains = neighboursOfType(s.id, 'pain').map(nodeLabel);
+      const sys = neighboursOfType(s.id, 'system').map(nodeLabel);
+      const ucs = neighboursOfType(s.id, 'usecase').map(nodeLabel);
+      if (pains.length) m += `   - *${t('colPain')}:* ${pains.join(', ')}\n`;
+      if (sys.length) m += `   - *${t('colSystem')}:* ${sys.join(', ')}\n`;
+      if (ucs.length) m += `   - *${t('colUseCase')}:* ${ucs.join(', ')}\n`;
+    });
+    m += '\n';
+  } else { m += `${t('emptyWorkflow')}\n\n`; }
+
+  const pains = nodesOf('pain');
+  m += `## ${t('secFriction')}\n\n`;
+  if (pains.length) {
+    m += `| ${t('colPain')} | ${t('colWhere')} | ${t('lblNodeDetail')} |\n|---|---|---|\n`;
+    m += pains.map(p => `| ${mdCell(nodeLabel(p))} | ${mdCell(neighboursOfType(p.id, 'step').map(nodeLabel).join(', ') || t('unattached'))} | ${mdCell(p.detail)} |`).join('\n') + '\n\n';
+  } else { m += `${t('emptyFriction')}\n\n`; }
+
+  const sys = nodesOf('system');
+  m += `## ${t('secSystems')}\n\n`;
+  if (sys.length) {
+    m += `| ${t('colSystem')} | ${t('colTouchedAt')} | ${t('lblNodeDetail')} |\n|---|---|---|\n`;
+    m += sys.map(s => `| ${mdCell(nodeLabel(s))} | ${mdCell(neighboursOfType(s.id, 'step').map(nodeLabel).join(', ') || t('unattached'))} | ${mdCell(s.detail)} |`).join('\n') + '\n\n';
+  } else { m += `${t('emptySystems')}\n\n`; }
+
+  const ucs = nodesOf('usecase');
+  m += `## ${t('secCandidates')}\n\n`;
+  if (ucs.length) {
+    m += `| ${t('colUseCase')} | ${t('colPattern')} | ${t('colAttaches')} | ${t('colValue')} | ${t('colEffort')} | ${t('colRead')} |\n|---|---|---|---|---|---|\n`;
+    m += ucs.map(u => `| ${mdCell(nodeLabel(u))}${u.detail ? ' — ' + mdCell(u.detail) : ''} | ${mdCell(u.pattern ? patternLabel(u.pattern) : '—')} | ${mdCell(attachedTo(u))} | ${mdCell(u.value || '3')} | ${mdCell(u.effort || '3')} | ${mdCell(quickTake(u))} |`).join('\n') + '\n\n';
+    m += `${t('handoffNote')}\n\n`;
+  } else { m += `${t('emptyCandidates')}\n\n`; }
+
+  const notes = nodesOf('note').filter(n => nodeLabel(n) || n.detail);
+  if (notes.length) {
+    m += `## ${t('secNotes')}\n\n`;
+    m += notes.map(n => `- ${nodeLabel(n)}${n.detail ? ' — ' + n.detail : ''}`).join('\n') + '\n';
+  }
+  return m;
+}
+
+function docHtml() {
+  const draft = val('draftDoc');
+  const body = (draft && draft.trim()) ? mdToHtml(draft) : document.getElementById('preview').innerHTML;
+  return '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>' + esc(t('docTitle')) + ' — ' + esc(val('client') || 'client') + '</title>'
+    + '<style>body{font-family:Inter,Segoe UI,sans-serif;color:#1c1c28;max-width:880px;margin:40px auto;padding:0 22px;line-height:1.6}'
+    + 'h1,h2,h3,h4{color:#1B1474;font-family:Georgia,serif}table{width:100%;border-collapse:collapse;font-size:14px;margin:12px 0}'
+    + 'th,td{border:1px solid #e4e4f0;padding:7px 10px;text-align:left;vertical-align:top}th{background:#EEEEFA;color:#1B1474}'
+    + 'code{background:#ececf6;padding:1px 5px;border-radius:4px}pre{background:#f5f5fc;border:1px solid #e4e4f0;border-radius:8px;padding:12px;overflow:auto;font-size:12.5px}'
+    + 'ol li{margin-bottom:8px}</style></head><body><h1>' + esc(t('docTitle')) + ' — ' + esc(val('client') || 'client') + '</h1>'
+    + body + '</body></html>';
+}
+
+function download(text, fname, mime) {
+  const blob = new Blob([text], { type: mime });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = fname; a.click();
+  URL.revokeObjectURL(a.href);
+}
+function slug() { return (val('client') || 'use_case_board').replace(/\W+/g, '_'); }
+function exportDoc(fmt) {
+  if (fmt === 'md') download(docMarkdown(), 'use_case_board_' + slug() + '.md', 'text/markdown');
+  else download(docHtml(), 'use_case_board_' + slug() + '.html', 'text/html');
+}
+
+// ── Board as SVG ────────────────────────────────────────────────
+// The picture is half the deliverable: this is the version that goes
+// into the client deck, so it is generated as real vector text rather
+// than a screenshot.
+const SVG_FILL = { step: '#ffffff', pain: '#fff3f0', system: '#f1f4fb', usecase: '#EEEEFA', note: '#fffbe8' };
+const SVG_STROKE = { step: '#1B1474', pain: '#c0392b', system: '#4a5c8a', usecase: '#5348c4', note: '#d4790e' };
+function wrapWords(text, maxChars) {
+  const words = String(text || '').split(/\s+/).filter(Boolean);
+  const lines = [];
+  let line = '';
+  words.forEach(w => {
+    if (!line) { line = w; return; }
+    if ((line + ' ' + w).length <= maxChars) line += ' ' + w;
+    else { lines.push(line); line = w; }
+  });
+  if (line) lines.push(line);
+  return lines;
+}
+function exportBoardSvg() {
+  const bb = boardBBox();
+  if (!bb) return;
+  const pad = 30;
+  const W = bb.w + pad * 2, H = bb.h + pad * 2;
+  const ox = pad - bb.x, oy = pad - bb.y;
+  let body = '';
+  edges.forEach(e => {
+    const g = edgePath(e);
+    if (!g) return;
+    const flow = isFlowEdge(e);
+    body += `<path d="${g.d}" fill="none" stroke="${flow ? '#1B1474' : '#5348c4'}" stroke-width="2"${flow ? '' : ' stroke-dasharray="6 5"'} marker-end="url(#ah${flow ? 'F' : 'S'})"/>`;
+    if (e.label) body += `<text x="${g.mid.x}" y="${g.mid.y - 6}" text-anchor="middle" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#5b5b6b">${esc(e.label)}</text>`;
+  });
+  nodes.forEach(n => {
+    const r = nodeRect(n.id);
+    if (!r) return;
+    body += `<rect x="${r.x}" y="${r.y}" width="${r.w}" height="${r.h}" rx="10" fill="${SVG_FILL[n.type]}" stroke="${SVG_STROKE[n.type]}" stroke-width="2"/>`;
+    let ty = r.y + 18;
+    body += `<text x="${r.x + 11}" y="${ty}" font-family="Inter, sans-serif" font-size="9" font-weight="700" letter-spacing="0.6" fill="${SVG_STROKE[n.type]}">${esc(typeLabel(n.type).toUpperCase())}</text>`;
+    ty += 15;
+    wrapWords(nodeLabel(n), Math.floor((r.w - 22) / 6.6)).forEach(l => {
+      body += `<text x="${r.x + 11}" y="${ty}" font-family="Inter, sans-serif" font-size="13" font-weight="700" fill="#1c1c28">${esc(l)}</text>`;
+      ty += 16;
+    });
+    if (n.detail) wrapWords(n.detail, Math.floor((r.w - 22) / 5.9)).forEach(l => {
+      body += `<text x="${r.x + 11}" y="${ty}" font-family="Inter, sans-serif" font-size="11.5" fill="#5b5b6b">${esc(l)}</text>`;
+      ty += 14;
+    });
+    const meta = nodeMetaLine(n);
+    if (meta) wrapWords(meta, Math.floor((r.w - 22) / 5.5)).forEach(l => {
+      body += `<text x="${r.x + 11}" y="${ty + 3}" font-family="Inter, sans-serif" font-size="10.5" font-weight="600" fill="${SVG_STROKE[n.type]}">${esc(l)}</text>`;
+      ty += 13;
+    });
+  });
+  const svg = `<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="${Math.round(W)}" height="${Math.round(H)}" viewBox="0 0 ${Math.round(W)} ${Math.round(H)}">
+<defs>
+<marker id="ahF" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L10,5 L0,10 z" fill="#1B1474"/></marker>
+<marker id="ahS" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L10,5 L0,10 z" fill="#5348c4"/></marker>
+</defs>
+<rect width="100%" height="100%" fill="#ffffff"/>
+<g transform="translate(${ox},${oy})">${body}</g>
+</svg>`;
+  download(svg, 'use_case_board_' + slug() + '.svg', 'image/svg+xml');
+}
+
+// ── Markdown rendering for a pasted agent draft ──────────────────
+function _mdInline(s) { return esc(s).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/`(.+?)`/g, '<code>$1</code>'); }
+function _mdRow(line) { return line.trim().replace(/^\|/, '').replace(/\|$/, '').split('|').map(c => c.trim()); }
+function mdToHtml(md) {
+  if (!md || !md.trim()) return '';
+  const L = md.replace(/\r/g, '').split('\n');
+  let html = '', i = 0;
+  while (i < L.length) {
+    const line = L[i];
+    if (/^\s*$/.test(line)) { i++; continue; }
+    if (/^```/.test(line.trim())) {
+      i++; const buf = [];
+      while (i < L.length && !/^```/.test(L[i].trim())) { buf.push(L[i]); i++; }
+      i++;
+      html += '<pre>' + esc(buf.join('\n')) + '</pre>';
+      continue;
+    }
+    if (line.includes('|') && i + 1 < L.length && /-/.test(L[i + 1]) && /^[\s:|-]+$/.test(L[i + 1].trim())) {
+      const head = _mdRow(line); i += 2; const body = [];
+      while (i < L.length && L[i].includes('|') && L[i].trim() !== '') { body.push(_mdRow(L[i])); i++; }
+      html += '<table><thead><tr>' + head.map(h => '<th>' + _mdInline(h) + '</th>').join('') + '</tr></thead><tbody>'
+            + body.map(r => '<tr>' + r.map(c => '<td>' + _mdInline(c) + '</td>').join('') + '</tr>').join('') + '</tbody></table>';
+      continue;
+    }
+    let m;
+    if (m = line.match(/^(#{1,4})\s+(.*)/)) { const lv = m[1].length + 1; html += '<h' + lv + '>' + _mdInline(m[2]) + '</h' + lv + '>'; i++; continue; }
+    if (/^\s*[-*]\s+/.test(line)) { const it = []; while (i < L.length && /^\s*[-*]\s+/.test(L[i])) { it.push(L[i].replace(/^\s*[-*]\s+/, '')); i++; } html += '<ul>' + it.map(x => '<li>' + _mdInline(x) + '</li>').join('') + '</ul>'; continue; }
+    if (/^\s*\d+\.\s+/.test(line)) { const it = []; while (i < L.length && /^\s*\d+\.\s+/.test(L[i])) { it.push(L[i].replace(/^\s*\d+\.\s+/, '')); i++; } html += '<ol>' + it.map(x => '<li>' + _mdInline(x) + '</li>').join('') + '</ol>'; continue; }
+    const para = [line]; i++;
+    while (i < L.length && !/^\s*$/.test(L[i]) && !/^(#{1,4}\s|[-*]\s|\d+\.\s)/.test(L[i]) && !L[i].includes('|')) { para.push(L[i]); i++; }
+    html += '<p>' + _mdInline(para.join(' ')) + '</p>';
+  }
+  return html;
+}
+
+// ── Agent drafting prompt ───────────────────────────────────────
+function _humanizeKey(k) { return String(k).replace(/_/g, ' ').replace(/([a-z0-9])([A-Z])/g, '$1 $2').replace(/\b[a-z]/g, c => c.toUpperCase()).trim(); }
+function buildDraftPrompt() {
+  let p = 'You are an expert AI-architecture consultant. Draft the complete "' + STRINGS.en.docTitle + '" deliverable for the engagement below as clean, client-ready Markdown.\n\n';
+  p += "Methodology to follow (this tool's SOP):\n";
+  STRINGS.en.sop.forEach((s, i) => { p += (i + 1) + '. ' + s + '\n'; });
+  p += "\nConsultant intake (verbatim — build on it, don't merely restate it):\n";
+  document.querySelectorAll('[data-eng]').forEach(el => {
+    const k = el.getAttribute('data-eng');
+    if (k === 'draftDoc') return;
+    if (el.value && el.value.trim()) p += '- ' + _humanizeKey(k) + ': ' + el.value + '\n';
+  });
+  // The board itself: blocks with their types, and the connections that
+  // give them meaning. Sent as JSON so the agent reads the same graph
+  // the document is generated from.
+  if (nodes.length) {
+    const blocks = nodes.map(n => {
+      const o = { type: n.type, label: n.title };
+      if (n.detail) o.detail = n.detail;
+      if (n.type === 'step') { if (n.role) o.performedBy = n.role; if (n.volume) o.volume = n.volume; }
+      if (n.type === 'usecase') { o.pattern = n.pattern ? STRINGS.en['pat_' + n.pattern] : 'not set'; o.value = n.value; o.effort = n.effort; }
+      return o;
+    });
+    p += '\nWorkshop board — blocks (JSON):\n' + JSON.stringify(blocks, null, 2) + '\n';
+    if (edges.length) {
+      const links = edges.map(e => {
+        const a = nodeById(e.from), b = nodeById(e.to);
+        if (!a || !b) return null;
+        return { from: a.title, to: b.title, kind: (a.type === 'step' && b.type === 'step') ? 'flow' : 'attachment', label: e.label || undefined };
+      }).filter(Boolean);
+      p += '\nWorkshop board — connections (JSON):\n' + JSON.stringify(links, null, 2) + '\n';
+    }
+    const walk = orderedSteps().map((s, i) => (i + 1) + '. ' + (s.title || ''));
+    if (walk.length) p += '\nThe workflow in order, as the board connects it:\n' + walk.join('\n') + '\n';
+  }
+  p += '\nRequirements: professional consulting tone; walk the workflow step by step in the order given; expand thin inputs into complete, specific sections; keep every candidate use case tied to the step or pain point it attaches to; never invent client facts — where information is missing, add it to a final "Open questions for the client" section; structure with clear Markdown headings; output only the document.';
+  return p;
+}
+function genDraftPrompt() {
+  document.getElementById('ptDraft').textContent = buildDraftPrompt();
+  document.getElementById('pbDraft').style.display = 'block';
+}
+function copyDraftPrompt(ev) {
+  const txt = document.getElementById('ptDraft').textContent;
+  const btn = ev && ev.target;
+  navigator.clipboard.writeText(txt).then(() => {
+    if (!btn) return;
+    const o = btn.textContent;
+    btn.textContent = t('draftCopied');
+    setTimeout(() => { btn.textContent = o; }, 1800);
+  }).catch(() => alert(t('draftCopyFail')));
+}
+
+// ── SOP checklist ───────────────────────────────────────────────
+function renderSop() {
+  const steps = t('sop');
+  document.getElementById('sopList').innerHTML = steps.map((s, i) =>
+    `<li class="${sopDone[i] ? 'done' : ''}"><label class="sop-step"><input type="checkbox" ${sopDone[i] ? 'checked' : ''} onchange="toggleSop(${i}, this.checked)"><span>${esc(s)}</span></label></li>`
+  ).join('');
+  const pl = document.getElementById('sopProgress');
+  if (pl) pl.textContent = t('sopProgress')(sopDone.filter(Boolean).length, steps.length);
+}
+function toggleSop(i, v) { sopDone[i] = v; renderSop(); save(); }
+
+// ── Intake wiring, reset, shared engagement profile ─────────────
+document.addEventListener('input', e => { if (e.target.matches('[data-eng]')) { renderPreview(); save(); } });
+document.addEventListener('change', e => { if (e.target.matches('[data-eng]')) { renderPreview(); save(); } });
+
+function resetAll() {
+  if (!confirm('Clear all fields? / Ryd alle felter? / Rensa alla fält?')) return;
+  fieldEls().forEach(el => { el.value = ''; });
+  pushUndo();
+  nodes = []; layout = {}; edges = []; nextId = 1; sel = null; sopDone = [];
+  view = { x: 40, y: 40, z: 1 };
+  renderBoard(); renderSop(); renderPreview(); save();
+}
+
+const ENG_KEY = 'aoa_engagement_v1';
+const ENG_FIELDS = ['client', 'assessor', 'useCase'];
+function prefillEngagement() {
+  try {
+    const eng = JSON.parse(localStorage.getItem(ENG_KEY) || '{}');
+    ENG_FIELDS.forEach(k => {
+      const el = document.querySelector('[data-eng="' + k + '"]');
+      if (el && !el.value && eng[k]) el.value = eng[k];
+    });
+  } catch (e) {}
+}
+document.addEventListener('input', e => {
+  const k = e.target.getAttribute && e.target.getAttribute('data-eng');
+  if (!k || ENG_FIELDS.indexOf(k) === -1 || !e.target.value) return;
+  try {
+    const eng = JSON.parse(localStorage.getItem(ENG_KEY) || '{}');
+    eng[k] = e.target.value;
+    localStorage.setItem(ENG_KEY, JSON.stringify(eng));
+  } catch (e2) {}
+});
+
+// ── Sample engagement ───────────────────────────────────────────
+const SAMPLE_URL = '../sample-data/engagement-nordkap/use-case-discovery-board.json';
+function loadSample() {
+  if (!confirm(t('sampleConfirm'))) return;
+  const errEl = document.getElementById('sampleError');
+  if (errEl) errEl.style.display = 'none';
+  fetch(SAMPLE_URL)
+    .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+    .then(o => {
+      localStorage.setItem(KEY, JSON.stringify(o));
+      try {
+        const f = (o && o.fields) || {};
+        const eng = JSON.parse(localStorage.getItem(ENG_KEY) || '{}');
+        ENG_FIELDS.forEach(k => { if (f[k]) eng[k] = f[k]; });
+        localStorage.setItem(ENG_KEY, JSON.stringify(eng));
+      } catch (e) {}
+      location.reload();
+    })
+    .catch(err => {
+      if (errEl) { errEl.textContent = t('sampleLoadError2')(err.message); errEl.style.display = 'block'; }
+    });
+}
+
+// ── Init ────────────────────────────────────────────────────────
+(function init() {
+  document.getElementById('langSelect').value = lang;
+  loadSaved();
+  prefillEngagement();
+  applyI18n();
+  renderBoard();
+  renderPreview();
+  // Heights are only known once the blocks are laid out, so the first
+  // fit has to wait a frame or every edge anchors to a guessed box.
+  requestAnimationFrame(() => { renderEdges(); if (nodes.length) fitBoard(); });
+  window.addEventListener('resize', () => { renderEdges(); });
+})();
+</script>
+</body>
+</html>
