@@ -38,6 +38,8 @@ or any other agent the same reasoning, installable outside this repository.
     ├── infrastructure-audit/          # SOP + intake + auto-generated current-state doc (EN/DA/SV)
     ├── organizational-readiness/      # SOP + intake + auto-generated readiness doc (EN/DA/SV)
     ├── use-case-discovery-board/      # Workshop canvas: workflow blocks + connections -> discovery doc (EN/DA/SV)
+    │   ├── index.html                 # The board itself — single-user and fully browser-local
+    │   └── workshop-relay.py          # Optional, stdlib-only: self-hosted relay for a room editing one board
     ├── use-case-prioritization/       # SOP + ROI/feasibility/impact matrix + priority doc (EN/DA/SV)
     └── sample-data/                   # Synthetic demo data only — see its README
         ├── ai-maturity-assessment/

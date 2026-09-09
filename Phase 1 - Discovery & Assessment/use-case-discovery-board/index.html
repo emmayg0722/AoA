@@ -169,6 +169,21 @@
   .k.system { background: var(--sys-bg); border-color: var(--sys-bd); }
   .k.usecase { background: var(--uc-bg); border-color: var(--uc-bd); }
   .k.note { background: var(--note-bg); border-color: var(--note-bd); }
+  /* Only shown to someone who arrived on a relay's shared link, so joining
+     does not mean scrolling past the whole board to find the panel below it. */
+  .live-invite { display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
+    background: var(--powder); border: 1.5px solid var(--accent); border-radius: 12px;
+    padding: 12px 16px; margin-bottom: 18px; }
+  .live-invite .li-text { font-size: 14px; font-weight: 600; color: var(--primary); }
+  .live-invite input { width: auto; flex: 1 1 180px; min-width: 0; padding: 7px 10px; font-size: 13.5px; }
+  .peers { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 10px; }
+  .peer { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 600;
+    border: 1.5px solid var(--line); border-radius: 999px; padding: 4px 11px 4px 8px; background: #fff; }
+  .peer .dot { width: 9px; height: 9px; border-radius: 50%; flex: none; }
+  .peer.me { border-color: var(--accent); background: var(--powder); }
+  .peer-strip { display: inline-flex; gap: 4px; align-items: center; margin-left: auto; padding-left: 8px; }
+  .peer-strip .pip { width: 15px; height: 15px; border-radius: 50%; border: 2px solid #fff;
+    box-shadow: 0 0 0 1px var(--line); }
   .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
 
   @media (max-width: 720px) {
@@ -194,6 +209,12 @@
   </div></header>
 
   <main>
+    <div class="live-invite" id="liveInvite" hidden>
+      <span class="li-text" data-i18n="inviteText"></span>
+      <input type="text" id="inviteName" data-ph="phYourName">
+      <button class="btn btn-primary" onclick="joinFromInvite()" data-i18n="btnGoLive"></button>
+    </div>
+
     <div class="note"><strong data-i18n="noteLabel"></strong> <span data-i18n="noteBody"></span></div>
 
     <div class="card">
@@ -236,6 +257,7 @@
           <button type="button" class="tbtn" id="btnFocus" onclick="toggleFocus()" data-i18n="btnFocus"></button>
           <span class="sep"></span>
           <button type="button" class="tbtn" onclick="clearBoard()" data-i18n="btnClearBoard"></button>
+          <span class="peer-strip" id="peerStrip"></span>
         </div>
         <div class="board-view" id="boardView">
           <div class="board-world" id="boardWorld">
@@ -270,6 +292,21 @@
       <div class="btn-row">
         <button class="btn btn-secondary" onclick="exportBoardSvg()" data-i18n="btnExportSvg"></button>
       </div>
+    </div>
+
+    <div class="card">
+      <h2 data-i18n="syncTitle"></h2>
+      <p class="hint" data-i18n="syncHint"></p>
+      <div class="grid2">
+        <div><label data-i18n="lblYourName"></label><input type="text" id="syncName" data-ph="phYourName"></div>
+        <div><label data-i18n="lblSessionName"></label><input type="text" id="syncSession" data-ph="phSessionName"></div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-primary" id="syncBtn" onclick="toggleSync()" data-i18n="btnGoLive"></button>
+      </div>
+      <div class="import-status" id="syncStatus"></div>
+      <div class="peers" id="syncPeers"></div>
+      <p class="hint" style="margin-top:12px" data-i18n="syncPrivacy"></p>
     </div>
 
     <div class="card">
@@ -670,6 +707,25 @@ const STRINGS = {
       sampleNordkap: 'Nordkap Insurance — claims at first notice of loss',
       sampleFurniture: 'Nordvik Furniture — furniture supply chain',
       sampleFood: 'Grønhøj Foods — food supply chain',
+      syncTitle: 'Live session — several people, one board',
+      syncHint: 'Everyone in the room edits the same board at the same time. This needs the workshop relay running on the facilitator\u2019s own laptop: run workshop-relay.py (it sits next to this file), then share the address it prints and have the room open the board from there.',
+      syncPrivacy: 'The relay runs on that laptop and holds the session in memory only \u2014 nothing is written to disk, and nothing reaches any third party. Stop the relay and the session is gone. Opened from the public site this panel simply reports that no relay is there, and the board makes no network calls at all.',
+      lblYourName: 'Your name',
+      phYourName: 'e.g. Emma',
+      lblSessionName: 'Session',
+      phSessionName: 'default',
+      btnGoLive: '\u25cf Go live',
+      btnLeaveLive: '\u25a0 Leave session',
+      syncConnecting: 'Connecting\u2026',
+      syncLive: (n) => n <= 1 ? 'Live \u2014 you are the only one here so far.' : `Live \u2014 ${n} people on this board.`,
+      syncLost: 'Lost the relay \u2014 retrying\u2026',
+      syncNoRelay: 'No relay answered here. Run workshop-relay.py on the facilitator\u2019s laptop and open the board from the address it prints \u2014 the public site cannot reach a relay on your network.',
+      syncAdopted: 'Joined \u2014 this board now shows the session\u2019s board.',
+      syncSeeded: 'Session started from the board you had open.',
+      syncOffline: 'Not connected. This board is local to this browser.',
+      inviteText: 'A live session is waiting on this address \u2014 join it as:',
+      syncReplaceConfirm: 'Join the session? The board open here will be replaced by the session\u2019s board.',
+      peerYou: 'you',
       sampleConfirm: 'Load the sample engagement into this tool? This replaces anything currently saved here.',
       sampleLoadError2: (msg) => `Could not load the sample (${msg}). This can happen if the page was opened directly from disk rather than served over http(s).`,
     },
@@ -680,6 +736,25 @@ const STRINGS = {
       sampleNordkap: 'Nordkap Insurance — skader ved anmeldelse',
       sampleFurniture: 'Nordvik Furniture — møbelforsyningskæde',
       sampleFood: 'Grønhøj Foods — fødevareforsyningskæde',
+      syncTitle: 'Live session \u2014 flere personer, én tavle',
+      syncHint: 'Alle i lokalet redigerer den samme tavle samtidig. Det kræver workshop-relayet kørende på facilitatorens egen bærbare: kør workshop-relay.py (den ligger ved siden af denne fil), del derefter adressen den udskriver, og lad lokalet åbne tavlen derfra.',
+      syncPrivacy: 'Relayet kører på den bærbare og holder kun sessionen i hukommelsen \u2014 intet skrives til disk, og intet når nogen tredjepart. Stop relayet, og sessionen er væk. Åbnet fra det offentlige site melder dette panel blot, at der ikke er noget relay, og tavlen foretager slet ingen netværkskald.',
+      lblYourName: 'Dit navn',
+      phYourName: 'fx Emma',
+      lblSessionName: 'Session',
+      phSessionName: 'default',
+      btnGoLive: '\u25cf G\u00e5 live',
+      btnLeaveLive: '\u25a0 Forlad session',
+      syncConnecting: 'Forbinder\u2026',
+      syncLive: (n) => n <= 1 ? 'Live \u2014 du er den eneste her indtil videre.' : `Live \u2014 ${n} personer p\u00e5 denne tavle.`,
+      syncLost: 'Mistede relayet \u2014 pr\u00f8ver igen\u2026',
+      syncNoRelay: 'Intet relay svarede her. K\u00f8r workshop-relay.py p\u00e5 facilitatorens bærbare og åbn tavlen fra den adresse, den udskriver \u2014 det offentlige site kan ikke nå et relay på dit netværk.',
+      syncAdopted: 'Tilsluttet \u2014 denne tavle viser nu sessionens tavle.',
+      syncSeeded: 'Sessionen er startet ud fra den tavle, du havde åben.',
+      syncOffline: 'Ikke forbundet. Denne tavle er lokal for denne browser.',
+      inviteText: 'En live session venter p\u00e5 denne adresse \u2014 tilslut dig som:',
+      syncReplaceConfirm: 'Tilslut sessionen? Tavlen her erstattes af sessionens tavle.',
+      peerYou: 'dig',
       sampleConfirm: 'Indlæs eksempel-engagementet i dette værktøj? Dette erstatter alt, der aktuelt er gemt her.',
       sampleLoadError2: (msg) => `Kunne ikke indlæse eksemplet (${msg}). Dette kan ske, hvis siden blev åbnet direkte fra disk i stedet for serveret over http(s).`,
     },
@@ -690,6 +765,25 @@ const STRINGS = {
       sampleNordkap: 'Nordkap Insurance — skador vid anmälan',
       sampleFurniture: 'Nordvik Furniture — möbelförsörjningskedja',
       sampleFood: 'Grønhøj Foods — livsmedelsförsörjningskedja',
+      syncTitle: 'Live-session \u2014 flera personer, en tavla',
+      syncHint: 'Alla i rummet redigerar samma tavla samtidigt. Det kräver workshop-reläet igång på facilitatorns egen dator: kör workshop-relay.py (den ligger bredvid denna fil), dela sedan adressen den skriver ut och låt rummet öppna tavlan därifrån.',
+      syncPrivacy: 'Reläet körs på den datorn och håller sessionen enbart i minnet \u2014 inget skrivs till disk och inget når någon tredje part. Stoppa reläet så är sessionen borta. Öppnad från den publika sajten rapporterar denna panel bara att inget relä finns, och tavlan gör inga nätverksanrop alls.',
+      lblYourName: 'Ditt namn',
+      phYourName: 't.ex. Emma',
+      lblSessionName: 'Session',
+      phSessionName: 'default',
+      btnGoLive: '\u25cf G\u00e5 live',
+      btnLeaveLive: '\u25a0 L\u00e4mna sessionen',
+      syncConnecting: 'Ansluter\u2026',
+      syncLive: (n) => n <= 1 ? 'Live \u2014 du är hittills ensam här.' : `Live \u2014 ${n} personer p\u00e5 denna tavla.`,
+      syncLost: 'Tappade reläet \u2014 försöker igen\u2026',
+      syncNoRelay: 'Inget relä svarade här. Kör workshop-relay.py på facilitatorns dator och öppna tavlan från adressen den skriver ut \u2014 den publika sajten kan inte nå ett relä på ditt nätverk.',
+      syncAdopted: 'Ansluten \u2014 denna tavla visar nu sessionens tavla.',
+      syncSeeded: 'Sessionen startade från tavlan du hade öppen.',
+      syncOffline: 'Inte ansluten. Denna tavla är lokal för denna webbläsare.',
+      inviteText: 'En live-session v\u00e4ntar p\u00e5 denna adress \u2014 anslut dig som:',
+      syncReplaceConfirm: 'Ansluta till sessionen? Tavlan här ersätts av sessionens tavla.',
+      peerYou: 'du',
       sampleConfirm: 'Läs in exempeluppdraget i detta verktyg? Detta ersätter allt som för närvarande är sparat här.',
       sampleLoadError2: (msg) => `Kunde inte läsa in exemplet (${msg}). Detta kan hända om sidan öppnades direkt från disk istället för att serveras över http(s).`,
     },
@@ -749,6 +843,9 @@ function applyI18n() {
   if (fb) fb.textContent = document.getElementById('boardShell').classList.contains('focus') ? t('btnExitFocus') : t('btnFocus');
   renderSop();
   renderSampleOptions();
+  syncBtnLabel();
+  if (!SY.on) setSyncStatus(t('syncOffline'));
+  renderPeers();
 }
 
 // ── Intake fields ───────────────────────────────────────────────
@@ -800,6 +897,7 @@ function applySnapshot(s) {
   nodes = o.nodes; layout = o.layout; edges = o.edges; nextId = o.nextId;
   sel = null; linkFrom = null;
   renderBoard(); renderPreview(); save();
+  syncDoc();
 }
 function undo() {
   if (!undoStack.length) return;
@@ -841,9 +939,12 @@ function addNode(type) {
   const node = { id: nextId++, type, title: t('new' + type.charAt(0).toUpperCase() + type.slice(1)), detail: '', role: '', volume: '', pattern: '', value: '3', effort: '3' };
   nodes.push(node);
   layout[node.id] = { x: Math.round(x), y: Math.round(y), w };
-  if (anchorNode) edges.push({ id: nextId++, from: anchorNode.id, to: node.id, label: '' });
+  let newEdge = null;
+  if (anchorNode) { newEdge = { id: nextId++, from: anchorNode.id, to: node.id, label: '' }; edges.push(newEdge); }
   sel = { kind: 'node', id: node.id };
   renderBoard(); renderPreview(); save();
+  syncNode(node.id);
+  if (newEdge) syncEdgeOp(newEdge.id);
   const tf = document.getElementById('insTitle');
   if (tf) { tf.focus(); tf.select(); }
 }
@@ -865,8 +966,10 @@ function deleteSelection() {
     nodes = nodes.filter(n => n.id !== sel.id);
     delete layout[sel.id];
     edges = edges.filter(e => e.from !== sel.id && e.to !== sel.id);
+    syncNodeDel(sel.id);
   } else {
     edges = edges.filter(e => e.id !== sel.id);
+    syncEdgeDel(sel.id);
   }
   sel = null;
   renderBoard(); renderPreview(); save();
@@ -877,6 +980,7 @@ function clearBoard() {
   pushUndo();
   nodes = []; layout = {}; edges = []; sel = null; linkFrom = null;
   renderBoard(); renderPreview(); save();
+  syncDoc();
 }
 
 // ── Rendering: blocks ───────────────────────────────────────────
@@ -888,7 +992,7 @@ function nodeRect(id) {
   return { x: p.x, y: p.y, w: p.w, h: measuredHeight(id) };
 }
 
-function renderBoard() {
+function renderBoard(opts) {
   const layer = document.getElementById('nodeLayer');
   Object.keys(nodeEls).forEach(k => delete nodeEls[k]);
   layer.innerHTML = nodes.map(n => {
@@ -908,7 +1012,7 @@ function renderBoard() {
   layer.querySelectorAll('.node').forEach(el => { nodeEls[Number(el.getAttribute('data-id'))] = el; });
   applyView();
   renderEdges();
-  renderInspector();
+  if (!(opts && opts.keepInspector)) renderInspector();
   document.getElementById('boardEmpty').style.display = nodes.length ? 'none' : 'flex';
   syncUndoButtons();
 }
@@ -1041,6 +1145,7 @@ function updateNode(id, field, value) {
   renderEdges();
   renderPreview();
   save();
+  syncNode(id);
 }
 function updateEdge(id, label) {
   const e = edgeById(id);
@@ -1049,6 +1154,7 @@ function updateEdge(id, label) {
   renderEdges();
   renderPreview();
   save();
+  syncEdgeOp(id);
 }
 
 // ── Selection, dragging, panning, zooming ───────────────────────
@@ -1110,15 +1216,18 @@ function cancelLink() {
 function completeLink(toId) {
   if (linkFrom === null || toId === linkFrom) return cancelLink();
   const dup = edges.some(e => (e.from === linkFrom && e.to === toId) || (e.from === toId && e.to === linkFrom));
+  let madeEdge = null;
   if (!dup) {
     pushUndo();
-    edges.push({ id: nextId++, from: linkFrom, to: toId, label: '' });
+    madeEdge = { id: nextId++, from: linkFrom, to: toId, label: '' };
+    edges.push(madeEdge);
   }
   linkFrom = null;
   viewEl().classList.remove('linking');
   hideStatus();
   sel = { kind: 'node', id: toId };
   renderBoard(); renderPreview(); save();
+  if (madeEdge) syncEdgeOp(madeEdge.id);
 }
 function showStatus(msg) {
   const s = document.getElementById('boardStatus');
@@ -1153,7 +1262,7 @@ function hideStatus() {
 
     if (handle) {
       ev.preventDefault();
-      mode = 'link';
+      mode = 'link'; SY.busy = true;
       linkFrom = Number(handle.getAttribute('data-handle'));
       vw.classList.add('linking');
       rubber = document.createElementNS('http://www.w3.org/2000/svg', 'path');
@@ -1167,7 +1276,7 @@ function hideStatus() {
       if (linkFrom !== null) { completeLink(id); return; }
       ev.preventDefault();
       pushUndo();
-      mode = 'drag'; dragId = id;
+      mode = 'drag'; dragId = id; SY.busy = true;
       const w = toWorld(ev.clientX, ev.clientY);
       const p = layout[id];
       dragDX = w.x - p.x; dragDY = w.y - p.y;
@@ -1216,6 +1325,7 @@ function hideStatus() {
     if (mode === 'drag') {
       if (!moved) undoStack.pop();   // a click, not a move: nothing to undo
       save();
+      if (moved) syncNode(dragId);
     } else if (mode === 'pan') {
       vw.classList.remove('panning');
       if (!moved) select(null);
@@ -1228,6 +1338,8 @@ function hideStatus() {
       else cancelLink();
     }
     mode = null; dragId = null;
+    SY.busy = false;
+    syncCatchUp();
     syncUndoButtons();
   }
   vw.addEventListener('pointerup', endPointer);
@@ -1279,6 +1391,7 @@ document.addEventListener('keydown', ev => {
     const el = nodeEls[sel.id];
     if (el) { el.style.left = p.x + 'px'; el.style.top = p.y + 'px'; }
     renderEdges(); save();
+    syncNode(sel.id);
   }
 });
 
@@ -1674,7 +1787,11 @@ function renderSop() {
 function toggleSop(i, v) { sopDone[i] = v; renderSop(); save(); }
 
 // ── Intake wiring, reset, shared engagement profile ─────────────
-document.addEventListener('input', e => { if (e.target.matches('[data-eng]')) { renderPreview(); save(); } });
+document.addEventListener('input', e => {
+  if (!e.target.matches('[data-eng]')) return;
+  renderPreview(); save();
+  if (SY.on) syncEmit({ t: 'field', k: e.target.getAttribute('data-eng'), v: e.target.value });
+});
 document.addEventListener('change', e => { if (e.target.matches('[data-eng]')) { renderPreview(); save(); } });
 
 function resetAll() {
@@ -1684,6 +1801,7 @@ function resetAll() {
   nodes = []; layout = {}; edges = []; nextId = 1; sel = null; sopDone = [];
   view = { x: 40, y: 40, z: 1 };
   renderBoard(); renderSop(); renderPreview(); save();
+  syncDoc();
 }
 
 const ENG_KEY = 'aoa_engagement_v1';
@@ -1736,6 +1854,11 @@ function loadSample() {
     .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
     .then(o => {
       localStorage.setItem(KEY, JSON.stringify(o));
+      // The page is about to reload, so push the new board before it goes.
+      if (SY.on) {
+        syncEmit({ t: 'doc', doc: { fields: o.fields || {}, nodes: o.nodes || [], layout: o.layout || {}, edges: o.edges || [] } });
+        flushSync(true);
+      }
       // Only the Nordkap board belongs to the engagement every other tool
       // is working on. The supply-chain boards are illustrations, so they
       // must not rename the client across the whole toolkit.
@@ -1754,6 +1877,220 @@ function loadSample() {
     });
 }
 
+// ── Live session ────────────────────────────────────────────────
+// Opt-in multi-user editing against a relay the facilitator runs on their own
+// laptop (workshop-relay.py, next to this file). Until someone presses "Go
+// live" this block makes no network call whatsoever, so the board served from
+// the public site stays exactly as local as every other tool in the toolkit.
+//
+// Conflict model is last-writer-wins per block, which is what a room of people
+// drawing on one canvas actually expects: two people editing different blocks
+// never collide, and two people dragging the same block is a social problem,
+// not a technical one. Node ids are minted from a per-peer range the relay
+// hands out, so simultaneous additions can never collide on an id.
+const SY = {
+  on: false, peerId: null, session: 'default', seq: 0,
+  peers: [], queue: [], flushTimer: null, poll: null,
+  busy: false, dirty: false, errs: 0,
+};
+
+function syncPost(path, body, extra) {
+  return fetch(path, Object.assign({
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  }, extra || {}));
+}
+function setSyncStatus(msg) {
+  const el = document.getElementById('syncStatus');
+  if (el) el.textContent = msg || '';
+}
+function syncBtnLabel() {
+  const b = document.getElementById('syncBtn');
+  if (b) b.textContent = SY.on ? t('btnLeaveLive') : t('btnGoLive');
+}
+function renderPeers() {
+  const box = document.getElementById('syncPeers');
+  const strip = document.getElementById('peerStrip');
+  const list = SY.on ? SY.peers : [];
+  if (box) box.innerHTML = list.map(p =>
+    `<span class="peer${p.id === SY.peerId ? ' me' : ''}"><span class="dot" style="background:${esc(p.colour)}"></span>${esc(p.name)}${p.id === SY.peerId ? ' · ' + esc(t('peerYou')) : ''}</span>`).join('');
+  if (strip) strip.innerHTML = list.map(p =>
+    `<span class="pip" style="background:${esc(p.colour)}" title="${esc(p.name)}"></span>`).join('');
+}
+
+// ── outbound ────────────────────────────────────────────────────
+function syncEmit(op) {
+  if (!SY.on) return;
+  SY.queue.push(op);
+  if (SY.flushTimer) return;
+  // Coalesced on a short timer so holding a key down is one request, not thirty.
+  SY.flushTimer = setTimeout(() => { SY.flushTimer = null; flushSync(); }, 120);
+}
+function syncNode(id) { if (SY.on) { const n = nodeById(id); if (n) syncEmit({ t: 'node', node: n, layout: layout[id] }); } }
+function syncNodeDel(id) { if (SY.on) syncEmit({ t: 'nodeDel', id }); }
+function syncEdgeOp(id) { if (SY.on) { const e = edgeById(id); if (e) syncEmit({ t: 'edge', edge: e }); } }
+function syncEdgeDel(id) { if (SY.on) syncEmit({ t: 'edgeDel', id }); }
+function syncDoc() { if (SY.on) syncEmit({ t: 'doc', doc: { fields: collectFields(), nodes, layout, edges } }); }
+
+function flushSync(keepalive) {
+  if (!SY.on || !SY.queue.length) return;
+  let q = SY.queue;
+  SY.queue = [];
+  // A whole-document op makes everything queued before it redundant.
+  let lastDoc = -1;
+  q.forEach((o, i) => { if (o.t === 'doc') lastDoc = i; });
+  if (lastDoc >= 0) q = q.slice(lastDoc);
+  // Keep only the newest op per block, preserving order otherwise.
+  const seen = {}, out = [];
+  for (let i = q.length - 1; i >= 0; i--) {
+    const o = q[i];
+    const k = o.t === 'node' ? 'n' + o.node.id : (o.t === 'edge' ? 'e' + o.edge.id : null);
+    if (k) { if (seen[k]) continue; seen[k] = 1; }
+    out.unshift(o);
+  }
+  syncPost('/sync/ops', { session: SY.session, peerId: SY.peerId, ops: out },
+           keepalive ? { keepalive: true } : null).catch(() => {});
+}
+
+// ── inbound ─────────────────────────────────────────────────────
+function applyRemoteOp(op) {
+  if (op.t === 'doc') {
+    const d = op.doc || {};
+    nodes = Array.isArray(d.nodes) ? d.nodes : [];
+    layout = d.layout && typeof d.layout === 'object' ? d.layout : {};
+    edges = Array.isArray(d.edges) ? d.edges : [];
+    if (d.fields) {
+      // Never yank a field out from under someone who is typing in it.
+      Object.keys(d.fields).forEach(k => {
+        const el = document.querySelector('[data-eng="' + k + '"]');
+        if (el && document.activeElement !== el) el.value = d.fields[k];
+      });
+    }
+    if (sel && !(sel.kind === 'node' ? nodeById(sel.id) : edgeById(sel.id))) sel = null;
+  } else if (op.t === 'node' && op.node) {
+    // A block someone else moved while we are dragging our own is fine; a
+    // remote write to the block *we* are dragging would fight the pointer.
+    if (SY.busy && sel && sel.kind === 'node' && sel.id === op.node.id) return;
+    const i = nodes.findIndex(n => n.id === op.node.id);
+    if (i >= 0) nodes[i] = op.node; else nodes.push(op.node);
+    if (op.layout) layout[op.node.id] = op.layout;
+  } else if (op.t === 'nodeDel') {
+    nodes = nodes.filter(n => n.id !== op.id);
+    delete layout[op.id];
+    edges = edges.filter(e => e.from !== op.id && e.to !== op.id);
+    if (sel && sel.kind === 'node' && sel.id === op.id) sel = null;
+  } else if (op.t === 'edge' && op.edge) {
+    const i = edges.findIndex(e => e.id === op.edge.id);
+    if (i >= 0) edges[i] = op.edge; else edges.push(op.edge);
+  } else if (op.t === 'edgeDel') {
+    edges = edges.filter(e => e.id !== op.id);
+    if (sel && sel.kind === 'edge' && sel.id === op.id) sel = null;
+  } else if (op.t === 'field') {
+    const el = document.querySelector('[data-eng="' + op.k + '"]');
+    if (el && document.activeElement !== el) el.value = op.v;
+  }
+}
+function remoteRender() {
+  // Mid-drag the DOM must not be rebuilt under the pointer; catch up after.
+  if (SY.busy) { SY.dirty = true; return; }
+  const ae = document.activeElement;
+  const keep = !!(ae && ae.closest && ae.closest('.inspector'));
+  renderBoard({ keepInspector: keep });
+  renderPreview();
+  save();
+}
+function syncCatchUp() { if (SY.dirty) { SY.dirty = false; remoteRender(); } }
+
+async function pollLoop() {
+  while (SY.on) {
+    try {
+      const url = '/sync/poll?session=' + encodeURIComponent(SY.session) +
+                  '&peerId=' + encodeURIComponent(SY.peerId) + '&since=' + SY.seq;
+      const r = await fetch(url);
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      const d = await r.json();
+      if (!SY.on) return;
+      let changed = false;
+      if (d.resync) { applyRemoteOp({ t: 'doc', doc: d.doc }); changed = true; }
+      else if (d.ops && d.ops.length) { d.ops.forEach(o => applyRemoteOp(o.op)); changed = true; }
+      if (typeof d.seq === 'number') SY.seq = d.seq;
+      const rosterChanged = JSON.stringify(d.peers || []) !== JSON.stringify(SY.peers);
+      SY.peers = d.peers || [];
+      if (rosterChanged) { renderPeers(); setSyncStatus(t('syncLive')(SY.peers.length)); }
+      if (changed) remoteRender();
+      SY.errs = 0;
+    } catch (e) {
+      if (!SY.on) return;
+      SY.errs++;
+      setSyncStatus(t('syncLost'));
+      await new Promise(res => setTimeout(res, Math.min(8000, 400 * SY.errs)));
+    }
+  }
+}
+
+// ── connect / disconnect ────────────────────────────────────────
+async function toggleSync() {
+  if (SY.on) return leaveSync();
+  const session = ((document.getElementById('syncSession') || {}).value || 'default').trim() || 'default';
+  const name = ((document.getElementById('syncName') || {}).value || '').trim();
+  setSyncStatus(t('syncConnecting'));
+  try {
+    // Look before joining, so a board about to be replaced can be defended.
+    const pre = await fetch('/sync/state?session=' + encodeURIComponent(session));
+    if (!pre.ok) throw new Error('HTTP ' + pre.status);
+    const state = await pre.json();
+    if (state.seeded && nodes.length && !confirm(t('syncReplaceConfirm'))) {
+      setSyncStatus(t('syncOffline'));
+      return;
+    }
+    const r = await syncPost('/sync/join', {
+      session, name, doc: { fields: collectFields(), nodes, layout, edges },
+    });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const d = await r.json();
+    SY.on = true; SY.peerId = d.peerId; SY.session = session;
+    SY.seq = d.seq; SY.peers = d.peers || []; SY.errs = 0;
+    // Mint new blocks from this peer's own id range.
+    nextId = Math.max(nextId, d.idBase);
+    // Adopting replaces the board, so whatever was selected is gone. Seeding
+    // keeps your own board, so keep your place in it too.
+    if (d.adopted) { applyRemoteOp({ t: 'doc', doc: d.doc }); sel = null; }
+    renderBoard(); renderPreview(); renderPeers(); save();
+    syncBtnLabel();
+    syncInviteVisibility();
+    setSyncStatus(d.adopted ? t('syncAdopted') : t('syncSeeded'));
+    pollLoop();
+  } catch (e) {
+    SY.on = false;
+    syncBtnLabel();
+    setSyncStatus(t('syncNoRelay'));
+  }
+}
+function joinFromInvite() {
+  const from = document.getElementById('inviteName');
+  const to = document.getElementById('syncName');
+  if (from && to && from.value.trim()) to.value = from.value.trim();
+  toggleSync();
+}
+function syncInviteVisibility() {
+  const invite = document.getElementById('liveInvite');
+  if (invite && SY.on) invite.hidden = true;
+}
+function leaveSync() {
+  const session = SY.session, peerId = SY.peerId;
+  SY.on = false; SY.peers = []; SY.queue = [];
+  if (SY.flushTimer) { clearTimeout(SY.flushTimer); SY.flushTimer = null; }
+  if (peerId) syncPost('/sync/leave', { session, peerId }, { keepalive: true }).catch(() => {});
+  SY.peerId = null;
+  renderPeers(); syncBtnLabel(); setSyncStatus(t('syncOffline'));
+}
+window.addEventListener('beforeunload', () => {
+  if (!SY.on) return;
+  flushSync(true);
+  syncPost('/sync/leave', { session: SY.session, peerId: SY.peerId }, { keepalive: true }).catch(() => {});
+});
+
 // ── Init ────────────────────────────────────────────────────────
 (function init() {
   document.getElementById('langSelect').value = lang;
@@ -1764,6 +2101,17 @@ function loadSample() {
   renderPreview();
   // Heights are only known once the blocks are laid out, so the first
   // fit has to wait a frame or every edge anchors to a guessed box.
+  const qs = new URLSearchParams(location.search);
+  const sessEl = document.getElementById('syncSession');
+  if (sessEl) sessEl.value = qs.get('session') || 'default';
+  // The relay's shared link always carries ?session=; the public site's never
+  // does. Keying the banner off that means arriving here normally still costs
+  // no network call at all — we never probe to find out whether a relay exists.
+  const invite = document.getElementById('liveInvite');
+  if (invite && qs.has('session')) invite.hidden = false;
+  syncBtnLabel();
+  setSyncStatus(t('syncOffline'));
+  renderPeers();
   requestAnimationFrame(() => { renderEdges(); if (nodes.length) fitBoard(); });
   window.addEventListener('resize', () => { renderEdges(); });
 })();
