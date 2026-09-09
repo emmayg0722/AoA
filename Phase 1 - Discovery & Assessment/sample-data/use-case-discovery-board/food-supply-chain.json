@@ -1,0 +1,452 @@
+{
+ "fields": {
+  "client": "Grønhøj Foods",
+  "assessor": "E. Gao",
+  "process": "Grower contract to product on the shelf",
+  "scope": "Starts when a grower contract is committed, ends when the product is on the retailer's shelf inside its shelf life",
+  "draftDoc": ""
+ },
+ "nodes": [
+  {
+   "id": 1,
+   "type": "step",
+   "title": "Grower contracts and crop plan",
+   "detail": "Agronomists commit volumes with growers ahead of the season",
+   "role": "Sourcing agronomist",
+   "volume": "~140 growers, committed 6 months ahead",
+   "pattern": "",
+   "value": "3",
+   "effort": "3"
+  },
+  {
+   "id": 2,
+   "type": "step",
+   "title": "Raw intake and quality check",
+   "detail": "Loads are inspected, sampled and booked in",
+   "role": "QA technician",
+   "volume": "~90 loads/day, 25 min per load",
+   "pattern": "",
+   "value": "3",
+   "effort": "3"
+  },
+  {
+   "id": 3,
+   "type": "step",
+   "title": "Production and batching",
+   "detail": "Chilled lines convert raw produce into finished batches",
+   "role": "Line supervisor",
+   "volume": "4 chilled lines, 2 shifts",
+   "pattern": "",
+   "value": "3",
+   "effort": "3"
+  },
+  {
+   "id": 4,
+   "type": "step",
+   "title": "Cold storage and shelf-life allocation",
+   "detail": "Pallets are stored and allocated by remaining shelf life",
+   "role": "Warehouse",
+   "volume": "~11,000 pallets, 7-14 day shelf life",
+   "pattern": "",
+   "value": "3",
+   "effort": "3"
+  },
+  {
+   "id": 5,
+   "type": "step",
+   "title": "Retailer order and allocation",
+   "detail": "EDI orders are received and allocated against stock",
+   "role": "Customer service",
+   "volume": "6 retail chains, daily cut-off",
+   "pattern": "",
+   "value": "3",
+   "effort": "3"
+  },
+  {
+   "id": 6,
+   "type": "step",
+   "title": "Distribution to stores",
+   "detail": "Chilled vehicles run store drops overnight",
+   "role": "Chilled 3PL",
+   "volume": "~600 store drops/day",
+   "pattern": "",
+   "value": "3",
+   "effort": "3"
+  },
+  {
+   "id": 7,
+   "type": "system",
+   "title": "LIMS and QA records",
+   "detail": "Lab results and supplier certificates of analysis, mostly scanned PDFs",
+   "role": "",
+   "volume": "",
+   "pattern": "",
+   "value": "3",
+   "effort": "3"
+  },
+  {
+   "id": 8,
+   "type": "system",
+   "title": "MES batch records",
+   "detail": "Line, batch and pallet genealogy; held separately from the ERP",
+   "role": "",
+   "volume": "",
+   "pattern": "",
+   "value": "3",
+   "effort": "3"
+  },
+  {
+   "id": 9,
+   "type": "system",
+   "title": "ERP with retailer EDI",
+   "detail": "Orders, allocations and invoices across six chains",
+   "role": "",
+   "volume": "",
+   "pattern": "",
+   "value": "3",
+   "effort": "3"
+  },
+  {
+   "id": 10,
+   "type": "system",
+   "title": "Cold-chain IoT loggers",
+   "detail": "Per-trailer temperature traces, downloaded on return rather than streamed",
+   "role": "",
+   "volume": "",
+   "pattern": "",
+   "value": "3",
+   "effort": "3"
+  },
+  {
+   "id": 11,
+   "type": "pain",
+   "title": "Quality paperwork is keyed by hand",
+   "detail": "25 min per load re-keying certificate and spec data out of supplier PDFs",
+   "role": "",
+   "volume": "",
+   "pattern": "",
+   "value": "3",
+   "effort": "3"
+  },
+  {
+   "id": 12,
+   "type": "pain",
+   "title": "Recall traceability takes days",
+   "detail": "Tracing a batch across intake, line and pallet takes 2-3 days; the regulator expects 4 hours",
+   "role": "",
+   "volume": "",
+   "pattern": "",
+   "value": "3",
+   "effort": "3"
+  },
+  {
+   "id": 13,
+   "type": "pain",
+   "title": "Promotion weeks break the forecast",
+   "detail": "28% forecast error on promotion weeks; 3.4% of product written off",
+   "role": "",
+   "volume": "",
+   "pattern": "",
+   "value": "3",
+   "effort": "3"
+  },
+  {
+   "id": 14,
+   "type": "pain",
+   "title": "Cold-chain breaches found at the store",
+   "detail": "Temperature excursions surface on arrival, not in transit; ~90 incidents a year",
+   "role": "",
+   "volume": "",
+   "pattern": "",
+   "value": "3",
+   "effort": "3"
+  },
+  {
+   "id": 15,
+   "type": "usecase",
+   "title": "Certificate and spec extraction",
+   "detail": "Reads the supplier document and pre-fills the intake record for the technician to confirm",
+   "role": "",
+   "volume": "",
+   "pattern": "extract",
+   "value": "4",
+   "effort": "2"
+  },
+  {
+   "id": 16,
+   "type": "usecase",
+   "title": "Recall trace assistant",
+   "detail": "Answers a batch trace across intake, line and pallet records in minutes",
+   "role": "",
+   "volume": "",
+   "pattern": "retrieve",
+   "value": "3",
+   "effort": "3"
+  },
+  {
+   "id": 17,
+   "type": "usecase",
+   "title": "Short-horizon demand forecast",
+   "detail": "Forecasts daily demand with weather and promotion signals so allocation stops guessing",
+   "role": "",
+   "volume": "",
+   "pattern": "forecast",
+   "value": "5",
+   "effort": "3"
+  },
+  {
+   "id": 18,
+   "type": "usecase",
+   "title": "In-transit excursion prediction",
+   "detail": "Predicts a temperature breach while the vehicle can still be diverted",
+   "role": "",
+   "volume": "",
+   "pattern": "forecast",
+   "value": "4",
+   "effort": "4"
+  },
+  {
+   "id": 19,
+   "type": "note",
+   "title": "Shelf life is the hard constraint",
+   "detail": "A forecast that lifts availability but adds a day of stock destroys margin - score against waste, not fill rate",
+   "role": "",
+   "volume": "",
+   "pattern": "",
+   "value": "3",
+   "effort": "3"
+  },
+  {
+   "id": 20,
+   "type": "note",
+   "title": "Loggers are downloaded, not streamed",
+   "detail": "In-transit prediction needs a live feed first; that is an infrastructure decision before it is a model one",
+   "role": "",
+   "volume": "",
+   "pattern": "",
+   "value": "3",
+   "effort": "3"
+  }
+ ],
+ "layout": {
+  "1": {
+   "x": 80,
+   "y": 260,
+   "w": 200
+  },
+  "2": {
+   "x": 360,
+   "y": 260,
+   "w": 200
+  },
+  "3": {
+   "x": 640,
+   "y": 260,
+   "w": 200
+  },
+  "4": {
+   "x": 920,
+   "y": 260,
+   "w": 200
+  },
+  "5": {
+   "x": 1200,
+   "y": 260,
+   "w": 200
+  },
+  "6": {
+   "x": 1480,
+   "y": 260,
+   "w": 200
+  },
+  "7": {
+   "x": 360,
+   "y": 60,
+   "w": 185
+  },
+  "8": {
+   "x": 640,
+   "y": 60,
+   "w": 185
+  },
+  "9": {
+   "x": 1200,
+   "y": 60,
+   "w": 185
+  },
+  "10": {
+   "x": 1480,
+   "y": 60,
+   "w": 185
+  },
+  "11": {
+   "x": 350,
+   "y": 470,
+   "w": 185
+  },
+  "12": {
+   "x": 630,
+   "y": 470,
+   "w": 185
+  },
+  "13": {
+   "x": 1190,
+   "y": 470,
+   "w": 185
+  },
+  "14": {
+   "x": 1470,
+   "y": 470,
+   "w": 185
+  },
+  "15": {
+   "x": 340,
+   "y": 660,
+   "w": 205
+  },
+  "16": {
+   "x": 620,
+   "y": 660,
+   "w": 205
+  },
+  "17": {
+   "x": 1180,
+   "y": 660,
+   "w": 205
+  },
+  "18": {
+   "x": 1460,
+   "y": 660,
+   "w": 205
+  },
+  "19": {
+   "x": 60,
+   "y": 660,
+   "w": 190
+  },
+  "20": {
+   "x": 885,
+   "y": 660,
+   "w": 190
+  }
+ },
+ "edges": [
+  {
+   "id": 1001,
+   "from": 1,
+   "to": 2,
+   "label": ""
+  },
+  {
+   "id": 1002,
+   "from": 2,
+   "to": 3,
+   "label": ""
+  },
+  {
+   "id": 1003,
+   "from": 3,
+   "to": 4,
+   "label": ""
+  },
+  {
+   "id": 1004,
+   "from": 4,
+   "to": 5,
+   "label": ""
+  },
+  {
+   "id": 1005,
+   "from": 5,
+   "to": 6,
+   "label": ""
+  },
+  {
+   "id": 1006,
+   "from": 2,
+   "to": 7,
+   "label": ""
+  },
+  {
+   "id": 1007,
+   "from": 3,
+   "to": 8,
+   "label": ""
+  },
+  {
+   "id": 1008,
+   "from": 5,
+   "to": 9,
+   "label": ""
+  },
+  {
+   "id": 1009,
+   "from": 6,
+   "to": 10,
+   "label": ""
+  },
+  {
+   "id": 1010,
+   "from": 2,
+   "to": 11,
+   "label": ""
+  },
+  {
+   "id": 1011,
+   "from": 3,
+   "to": 12,
+   "label": ""
+  },
+  {
+   "id": 1012,
+   "from": 5,
+   "to": 13,
+   "label": ""
+  },
+  {
+   "id": 1013,
+   "from": 6,
+   "to": 14,
+   "label": ""
+  },
+  {
+   "id": 1014,
+   "from": 11,
+   "to": 15,
+   "label": ""
+  },
+  {
+   "id": 1015,
+   "from": 12,
+   "to": 16,
+   "label": ""
+  },
+  {
+   "id": 1016,
+   "from": 13,
+   "to": 17,
+   "label": ""
+  },
+  {
+   "id": 1017,
+   "from": 14,
+   "to": 18,
+   "label": ""
+  }
+ ],
+ "nextId": 2021,
+ "view": {
+  "x": 20,
+  "y": 20,
+  "z": 0.72
+ },
+ "sopDone": [
+  true,
+  true,
+  true,
+  true,
+  true,
+  true
+ ],
+ "lang": "en"
+}
