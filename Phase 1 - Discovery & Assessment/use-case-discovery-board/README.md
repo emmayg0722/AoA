@@ -87,6 +87,31 @@ Options: `--port`, `--host`, `--session`, `--root`.
   trusted network and is not fine on a public one — do not expose the port to
   the internet.
 
+## Before you rely on this at a client site
+
+Live sync assumes the room can reach your laptop. On your own network that is
+true. **In a client's building it often is not**, and it is better to know that
+in advance than to find out with eight people waiting:
+
+| What you hit | Why it breaks |
+|---|---|
+| **Guest wifi with client isolation** | Most common by far. Guest SSIDs routinely stop devices seeing each other at all, precisely so visitors cannot reach one another. Your relay is unreachable even though everyone is "on the same wifi". |
+| **You on guest, them on corporate** | Two different networks. Nothing routes between them. |
+| **Your laptop's firewall** | macOS will prompt to allow incoming connections the first time; Windows may block silently. Allow it before the session, not during. |
+| **Managed laptops** | Corporate policy may stop participants joining another network, or block plain `http://` to a private address. |
+| **A client-issued machine** | You may not be allowed to run a server on it at all. |
+
+**The workaround that usually works: bring your own network.** Turn on your
+phone's hotspot (or your laptop's), have the room join *that*, and run the relay
+on it. You control the network, so there is no client isolation and no IT
+involvement. It needs no mobile data — the traffic never leaves the hotspot —
+so this works fine on a phone with no signal.
+
+**When even that fails, do not fight it.** Put the board on the projector in Full
+screen and hold the pen yourself. A single scribe is the stronger facilitation
+choice anyway: it makes the room converge instead of splitting into six private
+boards. You lose parallel typing, not the workshop.
+
 ## How the syncing behaves
 
 - **Last writer wins, per block.** Two people editing different blocks never
