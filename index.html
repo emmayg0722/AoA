@@ -152,7 +152,7 @@
     gap: 44px;
     align-items: start;
   }
-  /* The phase list is the primary way around 43 tools, so it rides along in a
+  /* The phase list is the primary way around 44 tools, so it rides along in a
      sticky rail instead of scrolling out of reach at the top of the page. */
   .side-nav { position: sticky; top: 24px; align-self: start; }
   .side-nav-title {
@@ -845,6 +845,13 @@
         <span class="go" data-i18n="c_org_c"></span>
       </a>
 
+      <a class="card" href="Phase%201%20-%20Discovery%20%26%20Assessment/use-case-discovery-board/">
+        <div class="icon">🗺️</div>
+        <h3 data-i18n="c_ucb_t"></h3>
+        <p data-i18n="c_ucb_d"></p>
+        <span class="go" data-i18n="c_ucb_c"></span>
+      </a>
+
       <a class="card" href="Phase%201%20-%20Discovery%20%26%20Assessment/use-case-prioritization/">
         <div class="icon">🎯</div>
         <h3 data-i18n="c_ucp_t"></h3>
@@ -1376,7 +1383,7 @@ const STRINGS = {
     navTitle: 'Delivery phases',
     lblDecide: 'Decide', lblProduce: 'Produce', lblStack: 'Stack decisions', lblGate: 'Gate to clear',
     p1Decide: "Is there a real problem here, and is the client's data ready for it?",
-    p1Produce: "A maturity baseline, a 5C data-readiness scorecard, and a ranked list of use cases.",
+    p1Produce: "A mapped as-is workflow, a maturity baseline, a 5C data-readiness scorecard, and a ranked list of use cases.",
     p1Gate: "One use case with a named owner, a measurable baseline, and data that survives a spot-check.",
     p2Decide: 'Which use cases get funded, in what order, and on what business case.',
     p2Produce: "AI strategy, a business case with payback, and technology and organisational roadmaps.",
@@ -1498,6 +1505,9 @@ const STRINGS = {
     c_org_t: 'Organizational Readiness Assessment',
     c_org_d: 'SOP, client intake, and an auto-generated readiness document — team capability, culture, process maturity, and stakeholders. EN / DA / SV.',
     c_org_c: 'Open assessment →',
+    c_ucb_t: 'Use Case Discovery Board',
+    c_ucb_d: "A workshop canvas for drawing a client's as-is workflow, marking the friction on it, and hanging candidate AI use cases off the steps they would change. Generates a discovery document and exports the board as SVG. EN / DA / SV.",
+    c_ucb_c: 'Open board →',
     c_ucp_t: 'Use Case Identification & Prioritization',
     c_ucp_d: 'SOP and a scorable ROI / feasibility / impact matrix that ranks candidate AI use cases and flags quick wins, with an auto-generated priority document. EN / DA / SV.',
     c_ucp_c: 'Open matrix →',
@@ -1654,7 +1664,7 @@ const STRINGS = {
     navTitle: 'Leveringsfaser',
     lblDecide: 'Beslut', lblProduce: 'Leverance', lblStack: 'Stack-valg', lblGate: 'Gate der skal passeres',
     p1Decide: 'Er der et reelt problem her, og er kundens data klar til det?',
-    p1Produce: "En modenhedsbaseline, et 5C data-readiness scorecard og en prioriteret liste over use cases.",
+    p1Produce: "En kortlagt nuværende arbejdsgang, en modenhedsbaseline, et 5C data-readiness scorecard og en prioriteret liste over use cases.",
     p1Gate: "Én use case med en navngivet ejer, en målbar baseline, og data der overlever en stikprøve.",
     p2Decide: 'Hvilke use cases bliver finansieret, i hvilken rækkefølge, og på hvilken business case.',
     p2Produce: "AI-strategi, business case med tilbagebetaling, samt teknologi- og organisationsroadmaps.",
@@ -1776,6 +1786,9 @@ const STRINGS = {
     c_org_t: 'Organisatorisk Parathedsvurdering',
     c_org_d: 'SOP, kundeoptag, og et automatisk genereret parathedsdokument — teamkapabilitet, kultur, procesmodenhed og interessenter. EN / DA / SV.',
     c_org_c: 'Åbn vurdering →',
+    c_ucb_t: 'Opdagelsestavle for Use Cases',
+    c_ucb_d: 'Et workshop-lærred til at tegne kundens nuværende arbejdsgang, markere friktionen på den og hænge kandidat-AI-use cases på de trin, de ville ændre. Genererer et opdagelsesdokument og eksporterer tavlen som SVG. EN / DA / SV.',
+    c_ucb_c: 'Åbn tavle →',
     c_ucp_t: 'Identifikation og Prioritering af Use Cases',
     c_ucp_d: 'SOP og en scorbar ROI-/gennemførlighed-/effekt-matrix, der rangerer kandidat-AI-use cases og markerer quick wins, med et automatisk genereret prioritetsdokument. EN / DA / SV.',
     c_ucp_c: 'Åbn matrix →',
@@ -1932,7 +1945,7 @@ const STRINGS = {
     navTitle: 'Leveransfaser',
     lblDecide: 'Beslut', lblProduce: 'Leverans', lblStack: 'Stack-val', lblGate: 'Grind att passera',
     p1Decide: 'Finns det ett verkligt problem här, och är kundens data redo för det?',
-    p1Produce: "En mognadsbaslinje, ett 5C data-readiness-scorecard och en rangordnad lista över use cases.",
+    p1Produce: "Ett kartlagt nuvarande arbetsflöde, en mognadsbaslinje, ett 5C data-readiness-scorecard och en rangordnad lista över use cases.",
     p1Gate: "Ett use case med en namngiven ägare, en mätbar baslinje, och data som klarar en stickprovskontroll.",
     p2Decide: 'Vilka use cases finansieras, i vilken ordning, och på vilken business case.',
     p2Produce: "AI-strategi, business case med återbetalning, samt teknik- och organisationsroadmaps.",
@@ -2054,6 +2067,9 @@ const STRINGS = {
     c_org_t: 'Organisatorisk Beredskapsbedömning',
     c_org_d: 'SOP, kundintag, och ett automatiskt genererat beredskapsdokument — teamförmåga, kultur, processmognad och intressenter. EN / DA / SV.',
     c_org_c: 'Öppna bedömning →',
+    c_ucb_t: 'Upptäcktstavla för Användningsfall',
+    c_ucb_d: 'En workshop-duk för att rita kundens nuvarande arbetsflöde, markera friktionen på det och hänga kandidat-AI-användningsfall på de steg de skulle förändra. Genererar ett upptäcktsdokument och exporterar tavlan som SVG. EN / DA / SV.',
+    c_ucb_c: 'Öppna tavla →',
     c_ucp_t: 'Identifiering och Prioritering av Användningsfall',
     c_ucp_d: 'SOP och en poängsatt ROI-/genomförbarhet-/effekt-matris som rankar kandidat-AI-användningsfall och flaggar quick wins, med ett automatiskt genererat prioritetsdokument. EN / DA / SV.',
     c_ucp_c: 'Öppna matris →',
@@ -2209,6 +2225,7 @@ const TOOL_REGISTRY = [
   { key: 'dra5c_engagement_v1', titleKey: 'c_dra5c_t', href: 'Phase%201%20-%20Discovery%20%26%20Assessment/data-readiness-assessment-5c/console.html' },
   { key: 'aoa_infra_audit_v1', titleKey: 'c_infra_t', href: 'Phase%201%20-%20Discovery%20%26%20Assessment/infrastructure-audit/' },
   { key: 'aoa_org_readiness_v1', titleKey: 'c_org_t', href: 'Phase%201%20-%20Discovery%20%26%20Assessment/organizational-readiness/' },
+  { key: 'aoa_usecase_board_v1', titleKey: 'c_ucb_t', href: 'Phase%201%20-%20Discovery%20%26%20Assessment/use-case-discovery-board/' },
   { key: 'aoa_usecase_priority_v1', titleKey: 'c_ucp_t', href: 'Phase%201%20-%20Discovery%20%26%20Assessment/use-case-prioritization/' },
   { key: 'aoa_ai_strategy_v1', titleKey: 'c_strat_t', href: 'Phase%202%20-%20Strategy%20%26%20Roadmap/ai-strategy-planning/' },
   { key: 'aoa_business_case_v1', titleKey: 'c_biz_t', href: 'Phase%202%20-%20Strategy%20%26%20Roadmap/business-case-development/' },

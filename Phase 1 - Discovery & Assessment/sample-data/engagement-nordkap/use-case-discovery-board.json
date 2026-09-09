@@ -1,0 +1,452 @@
+{
+ "fields": {
+  "client": "Nordkap Insurance",
+  "assessor": "E. Gao",
+  "process": "First notice of loss to claim decision",
+  "scope": "Starts when a customer reports a loss, ends when the claim is settled, declined or referred to SIU",
+  "draftDoc": ""
+ },
+ "nodes": [
+  {
+   "id": 1,
+   "type": "step",
+   "title": "Loss reported (FNOL)",
+   "detail": "Customer reports a loss by phone or through the portal",
+   "role": "Contact centre agent",
+   "volume": "~1,100/day, 6-9 min per call",
+   "pattern": "",
+   "value": "3",
+   "effort": "3"
+  },
+  {
+   "id": 2,
+   "type": "step",
+   "title": "Claim registered in ClaimCenter",
+   "detail": "Agent keys the claim into the claims core and attaches documents",
+   "role": "Intake agent",
+   "volume": "12 min re-keying per claim",
+   "pattern": "",
+   "value": "3",
+   "effort": "3"
+  },
+  {
+   "id": 3,
+   "type": "step",
+   "title": "Rules-based fraud screening",
+   "detail": "Static rule set flags claims for SIU referral overnight",
+   "role": "Automated rule set",
+   "volume": "Flags ~4% of claims",
+   "pattern": "",
+   "value": "3",
+   "effort": "3"
+  },
+  {
+   "id": 4,
+   "type": "step",
+   "title": "Triage and assign",
+   "detail": "Claim segmented by value and complexity, routed to a handling queue",
+   "role": "Team lead",
+   "volume": "~1,100/day",
+   "pattern": "",
+   "value": "3",
+   "effort": "3"
+  },
+  {
+   "id": 5,
+   "type": "step",
+   "title": "Assess and decide",
+   "detail": "Handler gathers history, validates cover and reaches a decision",
+   "role": "Claims handler",
+   "volume": "2.5 days average",
+   "pattern": "",
+   "value": "3",
+   "effort": "3"
+  },
+  {
+   "id": 6,
+   "type": "step",
+   "title": "Settle, decline or refer to SIU",
+   "detail": "Payment released, claim declined, or file passed to investigations",
+   "role": "Claims handler / SIU",
+   "volume": "~4% referred",
+   "pattern": "",
+   "value": "3",
+   "effort": "3"
+  },
+  {
+   "id": 7,
+   "type": "pain",
+   "title": "Manual re-keying at intake",
+   "detail": "12 min per claim; transcription errors surface later as rework",
+   "role": "",
+   "volume": "",
+   "pattern": "",
+   "value": "3",
+   "effort": "3"
+  },
+  {
+   "id": 8,
+   "type": "pain",
+   "title": "Rule set misses organised fraud",
+   "detail": "Est. 30% of fraud undetected; average detection lag 45 days",
+   "role": "",
+   "volume": "",
+   "pattern": "",
+   "value": "3",
+   "effort": "3"
+  },
+  {
+   "id": 9,
+   "type": "pain",
+   "title": "Handler rebuilds claim history by hand",
+   "detail": "~2h/day across the team searching policy and prior claims",
+   "role": "",
+   "volume": "",
+   "pattern": "",
+   "value": "3",
+   "effort": "3"
+  },
+  {
+   "id": 10,
+   "type": "pain",
+   "title": "Recovery opportunities spotted too late",
+   "detail": "Subrogation potential missed in ~15% of eligible claims",
+   "role": "",
+   "volume": "",
+   "pattern": "",
+   "value": "3",
+   "effort": "3"
+  },
+  {
+   "id": 11,
+   "type": "system",
+   "title": "Guidewire ClaimCenter (on-prem)",
+   "detail": "Claim records since 2016; REST APIs rate-limited, FNOL events exported nightly only",
+   "role": "",
+   "volume": "",
+   "pattern": "",
+   "value": "3",
+   "effort": "3"
+  },
+  {
+   "id": 12,
+   "type": "system",
+   "title": "Synapse data warehouse",
+   "detail": "3 years of labelled SIU outcomes; refreshed nightly",
+   "role": "",
+   "volume": "",
+   "pattern": "",
+   "value": "3",
+   "effort": "3"
+  },
+  {
+   "id": 13,
+   "type": "system",
+   "title": "Policy admin (Azure)",
+   "detail": "Policy and customer history; API available",
+   "role": "",
+   "volume": "",
+   "pattern": "",
+   "value": "3",
+   "effort": "3"
+  },
+  {
+   "id": 14,
+   "type": "system",
+   "title": "Loss report documents",
+   "detail": "Scanned PDFs and email, Danish-language, unstructured",
+   "role": "",
+   "volume": "",
+   "pattern": "",
+   "value": "3",
+   "effort": "3"
+  },
+  {
+   "id": 15,
+   "type": "usecase",
+   "title": "Real-time fraud scoring at FNOL",
+   "detail": "Scores every claim at intake and routes high-risk files straight to SIU",
+   "role": "",
+   "volume": "",
+   "pattern": "forecast",
+   "value": "5",
+   "effort": "3"
+  },
+  {
+   "id": 16,
+   "type": "usecase",
+   "title": "Claim document intake extraction",
+   "detail": "Reads the loss report and pre-fills the claim record for the agent to confirm",
+   "role": "",
+   "volume": "",
+   "pattern": "extract",
+   "value": "4",
+   "effort": "2"
+  },
+  {
+   "id": 17,
+   "type": "usecase",
+   "title": "Claim history summariser",
+   "detail": "Drafts a claim-and-policy summary so the handler starts from a brief, not a search",
+   "role": "",
+   "volume": "",
+   "pattern": "retrieve",
+   "value": "3",
+   "effort": "2"
+  },
+  {
+   "id": 18,
+   "type": "usecase",
+   "title": "Subrogation opportunity detection",
+   "detail": "Flags recoverable claims while the file is still open",
+   "role": "",
+   "volume": "",
+   "pattern": "classify",
+   "value": "4",
+   "effort": "4"
+  },
+  {
+   "id": 19,
+   "type": "note",
+   "title": "Works councils must be consulted",
+   "detail": "Required before any go-live that changes adjuster work - brief in month 1",
+   "role": "",
+   "volume": "",
+   "pattern": "",
+   "value": "3",
+   "effort": "3"
+  },
+  {
+   "id": 20,
+   "type": "note",
+   "title": "SIU referral thresholds have no owner",
+   "detail": "Nobody in the room owns the threshold; the enterprise data office owns the claims data",
+   "role": "",
+   "volume": "",
+   "pattern": "",
+   "value": "3",
+   "effort": "3"
+  }
+ ],
+ "layout": {
+  "1": {
+   "x": 80,
+   "y": 80,
+   "w": 200
+  },
+  "2": {
+   "x": 360,
+   "y": 80,
+   "w": 200
+  },
+  "3": {
+   "x": 640,
+   "y": 80,
+   "w": 200
+  },
+  "4": {
+   "x": 920,
+   "y": 80,
+   "w": 200
+  },
+  "5": {
+   "x": 1200,
+   "y": 80,
+   "w": 200
+  },
+  "6": {
+   "x": 1480,
+   "y": 80,
+   "w": 200
+  },
+  "7": {
+   "x": 330,
+   "y": 290,
+   "w": 190
+  },
+  "8": {
+   "x": 600,
+   "y": 290,
+   "w": 190
+  },
+  "9": {
+   "x": 1170,
+   "y": 290,
+   "w": 190
+  },
+  "10": {
+   "x": 1450,
+   "y": 290,
+   "w": 190
+  },
+  "14": {
+   "x": 80,
+   "y": 480,
+   "w": 190
+  },
+  "11": {
+   "x": 330,
+   "y": 480,
+   "w": 190
+  },
+  "12": {
+   "x": 600,
+   "y": 480,
+   "w": 190
+  },
+  "13": {
+   "x": 1170,
+   "y": 480,
+   "w": 190
+  },
+  "16": {
+   "x": 300,
+   "y": 680,
+   "w": 215
+  },
+  "15": {
+   "x": 560,
+   "y": 680,
+   "w": 215
+  },
+  "17": {
+   "x": 1140,
+   "y": 680,
+   "w": 215
+  },
+  "18": {
+   "x": 1420,
+   "y": 680,
+   "w": 215
+  },
+  "19": {
+   "x": 40,
+   "y": 680,
+   "w": 190
+  },
+  "20": {
+   "x": 840,
+   "y": 680,
+   "w": 190
+  }
+ },
+ "edges": [
+  {
+   "id": 101,
+   "from": 1,
+   "to": 2,
+   "label": ""
+  },
+  {
+   "id": 102,
+   "from": 2,
+   "to": 3,
+   "label": ""
+  },
+  {
+   "id": 103,
+   "from": 3,
+   "to": 4,
+   "label": ""
+  },
+  {
+   "id": 104,
+   "from": 4,
+   "to": 5,
+   "label": ""
+  },
+  {
+   "id": 105,
+   "from": 5,
+   "to": 6,
+   "label": ""
+  },
+  {
+   "id": 106,
+   "from": 1,
+   "to": 14,
+   "label": ""
+  },
+  {
+   "id": 107,
+   "from": 2,
+   "to": 11,
+   "label": ""
+  },
+  {
+   "id": 108,
+   "from": 3,
+   "to": 12,
+   "label": ""
+  },
+  {
+   "id": 109,
+   "from": 5,
+   "to": 13,
+   "label": ""
+  },
+  {
+   "id": 110,
+   "from": 2,
+   "to": 7,
+   "label": ""
+  },
+  {
+   "id": 111,
+   "from": 3,
+   "to": 8,
+   "label": ""
+  },
+  {
+   "id": 112,
+   "from": 5,
+   "to": 9,
+   "label": ""
+  },
+  {
+   "id": 113,
+   "from": 6,
+   "to": 10,
+   "label": ""
+  },
+  {
+   "id": 114,
+   "from": 7,
+   "to": 16,
+   "label": ""
+  },
+  {
+   "id": 115,
+   "from": 8,
+   "to": 15,
+   "label": ""
+  },
+  {
+   "id": 116,
+   "from": 9,
+   "to": 17,
+   "label": ""
+  },
+  {
+   "id": 117,
+   "from": 10,
+   "to": 18,
+   "label": ""
+  }
+ ],
+ "nextId": 200,
+ "view": {
+  "x": 20,
+  "y": 20,
+  "z": 0.62
+ },
+ "sopDone": [
+  true,
+  true,
+  true,
+  true,
+  true,
+  true
+ ],
+ "lang": "en"
+}

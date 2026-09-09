@@ -48,7 +48,8 @@ when adding new phases or tools so terminology stays consistent.
 │   └── roi-scenario-model/       # SKILL.md + scripts/roi_model.py + references/
 ├── Phase 1 - Discovery & Assessment/    # ai-maturity-assessment, data-readiness-assessment-5c,
 │                                        # infrastructure-audit, organizational-readiness,
-│                                        # use-case-prioritization, sample-data/
+│                                        # use-case-discovery-board, use-case-prioritization,
+│                                        # sample-data/
 ├── Phase 2 - Strategy & Roadmap/        # ai-strategy-planning, business-case-development,
 │                                        # organizational-roadmap, technology-roadmap
 ├── Phase 3 - Architecture Design/       # Design Layers (architecture-builder.html + an
@@ -136,7 +137,7 @@ June 2026; AWS Agent Registry in preview since April 2026; Quick meters agent ho
 on top of seats.
 
 All four sections are `is-aux`, so they stay out of the numbered path and out of
-the "43 tools / 10 phases" counts; layer rows are `a.layer` and ladder rungs are
+the "44 tools / 10 phases" counts; layer rows are `a.layer` and ladder rungs are
 `.rung`, both of which the visibility and count passes handle alongside `a.card`.
 Each also needs a rail button (`navMs`, `navAws`, …) and an entry in `allScopes()`;
 the rail buttons are labelled and highlighted from one list each in
@@ -152,7 +153,7 @@ than `data-i18n` — `applyI18n` writes `textContent` for the former and
 
 **All 10 phases above are fully built** — every subfolder listed is a real, working tool,
 not a placeholder, and the delivery lifecycle this toolkit follows is now complete end to
-end (43 stateful tools). Almost every tool folder is `index.html`; the two
+end (44 stateful tools). Almost every tool folder is `index.html`; the two
 exceptions are `data-readiness-assessment-5c/` (`console.html` + `profiler.html`) and
 `Design Layers/` (`architecture-builder.html`) — the hub's cards link to those files
 directly. **Folder names contain spaces and `&`** (e.g. `Phase 1 - Discovery & Assessment`)
@@ -204,6 +205,40 @@ use an **English / Dansk / Svenska** language selector instead — this is the p
 every HTML tool in the repo, not just the newer ones. When adding a language to an HTML
 tool, add it to all three; when editing the Python impl, keep EN/中文 in sync.
 
+## The Use Case Discovery Board
+
+`Phase 1 - Discovery & Assessment/use-case-discovery-board/index.html` is the only
+tool with a canvas rather than a form. It is a workshop instrument: you draw the
+client's as-is workflow as connected blocks, mark the friction, attach the systems
+each step touches, and hang candidate AI use cases off the pain they address.
+
+It is deliberately **not** a blank whiteboard, and that is the invariant to
+preserve: every block has one of five types (`step`, `pain`, `system`, `usecase`,
+`note`), which is what lets the same drawing yield a structured deliverable and a
+candidate list that Use Case Prioritization can import. A block with free-form
+semantics would turn this back into a drawing app that produces nothing.
+
+Three more things worth keeping if you edit it:
+
+- **Meaning and geometry are stored apart.** `nodes` holds the semantic fields and
+  `layout` maps id → `{x, y, w}`. That split is what lets `engagement-report.html`
+  render the board as a readable table instead of a column of pixel coordinates —
+  its normalizer walks arrays of objects and ignores plain objects like `layout`.
+  Heights are never stored; they are measured from the DOM so a block always fits
+  its own text.
+- **Connection styling is derived, never stored.** `isFlowEdge()` calls an edge a
+  flow arrow only when both endpoints are steps; everything else draws as a dashed
+  attachment. A stored style could claim a pain point flows into a use case.
+- **The inspector lives inside the board** so it survives focus mode, which means
+  the canvas pointer handlers must keep ignoring events from `.inspector`, and it
+  goes click-through while a connection is being drawn so a block underneath can
+  still be picked as the target.
+
+The hand-off runs the same direction as the architecture-builder one — the
+downstream tool pulls. `use-case-prioritization` reads `aoa_usecase_board_v1` and
+maps value → ROI and 6 − effort → feasibility, leaving impact at the neutral
+default because a discovery workshop never asks how broadly the benefit lands.
+
 ## The portable agent skills
 
 `skills/` is the one part of the toolkit that does **not** run in a browser. Each
@@ -253,9 +288,9 @@ add a skill, add a line to its `WHEN` map so the generated wiring describes it.
 When you add a skill: create the folder under `skills/`, keep `SKILL.md` under
 ~500 lines with detail pushed into `references/`, then update `skills/README.md`,
 `skills/index.html` (all three languages), the root `index.html` card, and this
-file. The hub counts skills separately from the 43 tools — the skills card grid
+file. The hub counts skills separately from the 44 tools — the skills card grid
 carries `class="cards is-aux"` and its section heading `class="phase-head is-aux"`,
-which is what keeps the "43 tools / 10 delivery phases" stats honest.
+which is what keeps the "44 tools / 10 delivery phases" stats honest.
 
 ## The Claude Code agents
 
