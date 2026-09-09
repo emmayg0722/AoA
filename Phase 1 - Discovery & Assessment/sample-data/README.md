@@ -10,10 +10,18 @@
 | `ai-maturity-assessment/sample-payload.json` | AI Maturity Assessment's "🧪 View sample results" link | A fake completed assessment ("Acme Corp") in the same shape `shareResults()` produces — jumps straight to a populated results page. |
 | `data-readiness-assessment-5c/sample-engagement.json` | DRA-5C console's "🧪 Load sample engagement" button | A fake engagement ("Northwind Lending" — the running example used throughout this asset's docs) covering all four steps and the final scorecard. |
 | `data-readiness-assessment-5c/sample-transactions.csv` | DRA-5C profiler's "🧪 Load sample data" button | A 20-row synthetic dataset with intentional imperfections (nulls, one duplicate row, a wide date span) so the profiler demo shows a non-trivial report. |
+| `use-case-discovery-board/furniture-supply-chain.json` | Discovery Board's example picker | *Nordvik Furniture* — a made-to-order furniture supply chain from range plan to home installation. Six steps, four pain points, four systems, four candidate use cases. |
+| `use-case-discovery-board/food-supply-chain.json` | Discovery Board's example picker | *Grønhøj Foods* — a chilled-food supply chain from grower contract to retail shelf, where shelf life is the binding constraint. Same shape as the furniture board. |
 
 Each tool fetches its sample file from this folder at runtime (same-origin, no
 external network call) and feeds it through the tool's normal loading/restore
 path — there is no separate "demo mode" code path to maintain.
+
+The two `use-case-discovery-board/` boards are **standalone illustrations, not
+part of the Nordkap engagement**, so loading one deliberately does *not* write to
+the shared `aoa_engagement_v1` profile. Demonstrating the board on a furniture
+supply chain must not rename the client every other tool is working on. Only the
+Nordkap board carries `sharesEngagement` in the tool's `SAMPLES` list.
 
 ## `engagement-nordkap/` — one sample engagement across all 41 tools
 

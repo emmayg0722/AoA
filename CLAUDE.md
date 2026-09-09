@@ -246,6 +246,17 @@ Three more things worth keeping if you edit it:
   disagree with what the board is doing; Esc is left to the browser in the native
   case.
 
+The board ships **three** worked examples, listed in its `SAMPLES` array and
+offered through a picker beside the load button: the Nordkap claims board that
+belongs to the shared engagement, plus a furniture and a chilled-food supply
+chain under `sample-data/use-case-discovery-board/`. Only the Nordkap entry
+carries `sharesEngagement: true` — the supply-chain boards are illustrations, so
+loading one must never write the example company into `aoa_engagement_v1` and
+rename the client across the whole toolkit. Keep that flag if you add a fourth.
+All three use the same lane geometry (systems above the spine, friction and
+candidates below), which is what keeps them free of connectors running behind
+blocks.
+
 The hand-off runs the same direction as the architecture-builder one — the
 downstream tool pulls. `use-case-prioritization` reads `aoa_usecase_board_v1` and
 maps value → ROI and 6 − effort → feasibility, leaving impact at the neutral
