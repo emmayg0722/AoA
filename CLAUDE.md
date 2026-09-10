@@ -278,6 +278,15 @@ with an existing one replaces it with no error. This has already happened once
 (a live-session `btnConnect` quietly replaced the inspector's Connect button), so
 when adding strings, grep the file for the key first.
 
+**Breakout boards** are the network-free counterpart to live sessions, and the
+only mode that survives a client site where nothing can reach anything:
+`exportBoardJson()` writes the board in exactly the shape `save()` persists (so
+an export doubles as a new `sample-data/` example), and `mergeBoard()` folds
+another board in as a band below the current content. It remaps every incoming
+id rather than trusting them — two groups both starting from a blank board both
+begin at id 1 — reports duplicate labels instead of resolving them, and pushes a
+single undo entry so a wrong file is one Ctrl+Z away.
+
 **Live sessions** (`workshop-relay.py`, beside the tool; see that folder's
 README) let several people edit one board. The relay is stdlib-only, serves the
 repo's static files *and* relays edits — it must serve them, because an https

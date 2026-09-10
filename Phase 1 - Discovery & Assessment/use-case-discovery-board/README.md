@@ -34,7 +34,51 @@ rename the client across the rest of the toolkit.
 
 ---
 
-# Running a workshop with several people — `workshop-relay.py`
+# Two ways to run a workshop with several people
+
+| | Needs | Use it when |
+|---|---|---|
+| **Live session** (`workshop-relay.py`) | The room can reach your laptop over a network | Your own office, a co-working space, or a room running off your phone hotspot |
+| **Breakout boards** (export + merge) | Nothing at all | A client site where the network is against you — or genuinely parallel group work |
+
+Live sync is the nicer experience when the network allows it. Breakout boards
+are the one that **cannot be blocked by anybody's IT**, so it is worth knowing
+both before you are standing in the room.
+
+---
+
+# Breakout boards — export and merge
+
+No network, no relay, no shared wifi. Split the room into groups, give each a
+laptop, and have every group map their part of the process on their own board.
+Then collect them:
+
+1. Each group presses **💾 Export board (JSON)** and hands you the file — USB
+   stick, email, chat, AirDrop, whatever the client's world allows.
+2. On your board, press **➕ Merge a board in…** and pick their file.
+
+The incoming board lands as **its own band below** whatever is already there,
+with fresh ids for every block and connection. So:
+
+- **Two groups that both started from a blank board cannot collide.** Ids are
+  remapped on the way in, never trusted.
+- **Each group's work stays readable as a group** rather than being interleaved
+  into an unattributable mess. Drag the bands together as you reconcile.
+- **Merging is one undo.** Ctrl/⌘+Z puts it back if you merged the wrong file.
+- **Duplicate labels are reported, not silently resolved.** If a group's block
+  shares a label with one already on the board, the status line names it. Two
+  groups describing the same step differently is a conversation to have in the
+  room, not something a merge should quietly decide.
+
+The exported file is exactly the shape the tool saves in, so a board you export
+can also be dropped into `sample-data/` as a new worked example, and a shipped
+example can be merged into a live board.
+
+This also works as a plain backup: export before a risky edit.
+
+---
+
+# Live sessions — `workshop-relay.py`
 
 By default the board is single-user and completely local: nothing leaves the
 browser, which is what makes it safe to open in front of a client.

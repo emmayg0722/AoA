@@ -289,9 +289,14 @@
       </div>
       <p class="hint" style="margin-top:10px" data-i18n="boardKeys"></p>
       <div class="sr-only" aria-live="polite" id="srStatus"></div>
+      <p class="hint" style="margin-top:14px;margin-bottom:6px" data-i18n="mergeHint"></p>
       <div class="btn-row">
         <button class="btn btn-secondary" onclick="exportBoardSvg()" data-i18n="btnExportSvg"></button>
+        <button class="btn btn-secondary" onclick="exportBoardJson()" data-i18n="btnExportJson"></button>
+        <button class="btn btn-secondary" onclick="document.getElementById('mergeFile').click()" data-i18n="btnMergeBoard"></button>
+        <input type="file" id="mergeFile" accept="application/json,.json" style="display:none" onchange="mergeBoardFile(this)">
       </div>
+      <div class="import-status" id="mergeStatus"></div>
     </div>
 
     <div class="card">
@@ -724,6 +729,13 @@ const STRINGS = {
       syncSeeded: 'Session started from the board you had open.',
       syncOffline: 'Not connected. This board is local to this browser.',
       inviteText: 'A live session is waiting on this address \u2014 join it as:',
+      btnExportJson: '\ud83d\udcbe Export board (JSON)',
+      btnMergeBoard: '\u2795 Merge a board in\u2026',
+      mergeHint: 'Working in breakout groups, or on a network where nobody can reach anybody? Each group maps on their own laptop and exports the board; you merge the files here. The incoming board lands as its own band below what is already here, with fresh ids, so nothing collides and each group\u2019s work stays readable as a group.',
+      mergeBad: 'That file is not a board export.',
+      mergeEmpty: 'That board has no blocks on it.',
+      mergeDone: (n, e, dupes) => `Merged ${n} block${n === 1 ? '' : 's'} and ${e} connection${e === 1 ? '' : 's'}.` +
+        (dupes.length ? ` ${dupes.length} share a label with something already on the board: ${dupes.slice(0, 3).join(', ')}${dupes.length > 3 ? '\u2026' : ''} \u2014 worth reconciling by hand.` : ''),
       syncReplaceConfirm: 'Join the session? The board open here will be replaced by the session\u2019s board.',
       peerYou: 'you',
       sampleConfirm: 'Load the sample engagement into this tool? This replaces anything currently saved here.',
@@ -753,6 +765,13 @@ const STRINGS = {
       syncSeeded: 'Sessionen er startet ud fra den tavle, du havde åben.',
       syncOffline: 'Ikke forbundet. Denne tavle er lokal for denne browser.',
       inviteText: 'En live session venter p\u00e5 denne adresse \u2014 tilslut dig som:',
+      btnExportJson: '\ud83d\udcbe Eksport\u00e9r tavle (JSON)',
+      btnMergeBoard: '\u2795 Flet en tavle ind\u2026',
+      mergeHint: 'Arbejder I i breakout-grupper, eller p\u00e5 et netv\u00e6rk hvor ingen kan n\u00e5 hinanden? Hver gruppe kortl\u00e6gger p\u00e5 egen b\u00e6rbar og eksporterer tavlen; du fletter filerne ind her. Den indkommende tavle lander som sit eget b\u00e5nd under det, der allerede er her, med friske id\u2019er, s\u00e5 intet kolliderer, og hver gruppes arbejde forbliver l\u00e6sbart som en gruppe.',
+      mergeBad: 'Den fil er ikke en tavle-eksport.',
+      mergeEmpty: 'Den tavle har ingen blokke p\u00e5 sig.',
+      mergeDone: (n, e, dupes) => `Flettede ${n} blok${n === 1 ? '' : 'ke'} og ${e} forbindelse${e === 1 ? '' : 'r'} ind.` +
+        (dupes.length ? ` ${dupes.length} deler etiket med noget, der allerede er p\u00e5 tavlen: ${dupes.slice(0, 3).join(', ')}${dupes.length > 3 ? '\u2026' : ''} \u2014 v\u00e6rd at afstemme manuelt.` : ''),
       syncReplaceConfirm: 'Tilslut sessionen? Tavlen her erstattes af sessionens tavle.',
       peerYou: 'dig',
       sampleConfirm: 'Indlæs eksempel-engagementet i dette værktøj? Dette erstatter alt, der aktuelt er gemt her.',
@@ -782,6 +801,13 @@ const STRINGS = {
       syncSeeded: 'Sessionen startade från tavlan du hade öppen.',
       syncOffline: 'Inte ansluten. Denna tavla är lokal för denna webbläsare.',
       inviteText: 'En live-session v\u00e4ntar p\u00e5 denna adress \u2014 anslut dig som:',
+      btnExportJson: '\ud83d\udcbe Exportera tavla (JSON)',
+      btnMergeBoard: '\u2795 Sl\u00e5 ihop en tavla\u2026',
+      mergeHint: 'Arbetar ni i breakout-grupper, eller p\u00e5 ett n\u00e4tverk d\u00e4r ingen n\u00e5r n\u00e5gon? Varje grupp kartl\u00e4gger p\u00e5 egen dator och exporterar tavlan; du sl\u00e5r ihop filerna h\u00e4r. Den inkommande tavlan hamnar som ett eget band under det som redan finns, med f\u00e4rska id:n, s\u00e5 inget krockar och varje grupps arbete f\u00f6rblir l\u00e4sbart som en grupp.',
+      mergeBad: 'Den filen \u00e4r ingen tavelexport.',
+      mergeEmpty: 'Den tavlan har inga block p\u00e5 sig.',
+      mergeDone: (n, e, dupes) => `Slog ihop ${n} block och ${e} koppling${e === 1 ? '' : 'ar'}.` +
+        (dupes.length ? ` ${dupes.length} delar etikett med n\u00e5got som redan finns p\u00e5 tavlan: ${dupes.slice(0, 3).join(', ')}${dupes.length > 3 ? '\u2026' : ''} \u2014 v\u00e4rt att st\u00e4mma av f\u00f6r hand.` : ''),
       syncReplaceConfirm: 'Ansluta till sessionen? Tavlan här ersätts av sessionens tavla.',
       peerYou: 'du',
       sampleConfirm: 'Läs in exempeluppdraget i detta verktyg? Detta ersätter allt som för närvarande är sparat här.',
@@ -1685,6 +1711,80 @@ function exportBoardSvg() {
 <g transform="translate(${ox},${oy})">${body}</g>
 </svg>`;
   download(svg, 'use_case_board_' + slug() + '.svg', 'image/svg+xml');
+}
+
+// ── Breakout boards: export one, merge one in ───────────────────
+// The fallback for a client site where nobody can reach anybody: groups map
+// in parallel on their own laptops, then their boards are merged here. It is
+// pure file work, so no network, no relay and no IT conversation can block it.
+function exportBoardJson() {
+  const doc = { fields: collectFields(), nodes, layout, edges, nextId, view, sopDone, lang };
+  download(JSON.stringify(doc, null, 1), 'use_case_board_' + slug() + '.json', 'application/json');
+}
+function setMergeStatus(msg) {
+  const el = document.getElementById('mergeStatus');
+  if (el) el.textContent = msg || '';
+}
+function mergeBoardFile(input) {
+  const file = input.files && input.files[0];
+  input.value = '';                      // so the same file can be picked twice
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    let o;
+    try { o = JSON.parse(reader.result); } catch (e) { setMergeStatus(t('mergeBad')); return; }
+    mergeBoard(o);
+  };
+  reader.onerror = () => setMergeStatus(t('mergeBad'));
+  reader.readAsText(file);
+}
+function minCorner(ns, lay) {
+  let x = Infinity, y = Infinity;
+  ns.forEach(n => {
+    const l = lay[n.id] !== undefined ? lay[n.id] : lay[String(n.id)];
+    if (!l) return;
+    x = Math.min(x, l.x); y = Math.min(y, l.y);
+  });
+  return { x: x === Infinity ? 0 : x, y: y === Infinity ? 0 : y };
+}
+function mergeBoard(o) {
+  const inNodes = Array.isArray(o && o.nodes) ? o.nodes : null;
+  if (!inNodes) { setMergeStatus(t('mergeBad')); return; }
+  if (!inNodes.length) { setMergeStatus(t('mergeEmpty')); return; }
+  const inEdges = Array.isArray(o.edges) ? o.edges : [];
+  const inLayout = (o.layout && typeof o.layout === 'object') ? o.layout : {};
+
+  pushUndo();
+  // Drop the incoming board in as its own band underneath, so each group's
+  // work stays legible as a group rather than being interleaved into a mess.
+  const here = boardBBox();
+  const corner = minCorner(inNodes, inLayout);
+  const dx = (here ? here.x : 40) - corner.x;
+  const dy = (here ? here.y + here.h + 200 : 40) - corner.y;
+
+  // Ids are remapped rather than trusted: two groups both started from id 1.
+  const seen = {};
+  nodes.forEach(n => { const k = String(n.title || '').trim().toLowerCase(); if (k) seen[k] = 1; });
+  const map = {}, dupes = [];
+  inNodes.forEach(n => {
+    const id = nextId++;
+    map[n.id] = id;
+    nodes.push(Object.assign({}, n, { id }));
+    const l = inLayout[n.id] !== undefined ? inLayout[n.id] : inLayout[String(n.id)];
+    const w = (l && l.w) || NODE_W[n.type] || 190;
+    layout[id] = { x: Math.round((l ? l.x : 0) + dx), y: Math.round((l ? l.y : 0) + dy), w };
+    const k = String(n.title || '').trim().toLowerCase();
+    if (k && seen[k]) dupes.push(n.title);
+  });
+  inEdges.forEach(e => {
+    if (map[e.from] === undefined || map[e.to] === undefined) return;
+    edges.push({ id: nextId++, from: map[e.from], to: map[e.to], label: e.label || '' });
+  });
+
+  sel = null;
+  renderBoard(); renderPreview(); save(); syncDoc();
+  requestAnimationFrame(() => fitBoard());
+  setMergeStatus(t('mergeDone')(inNodes.length, inEdges.length, dupes));
 }
 
 // ── Markdown rendering for a pasted agent draft ──────────────────
