@@ -1,0 +1,33 @@
+{
+  "fields": {
+    "client": "Nordkap Insurance",
+    "assessor": "Emma Gao",
+    "ucName": "Fraud triage at first notification of loss",
+    "pain": "Claims analysts work the FNOL queue in arrival order, so a claim that is obviously fraudulent sits behind forty routine ones and is often paid before anyone looks at it properly. The team already knows roughly which claims smell wrong — they just cannot get to them in time, and the ones they do catch are caught by whoever happens to pick up the file. Two analysts described re-keying the same claim into the fraud spreadsheet and the claims system separately because neither view shows the other's flags.",
+    "decision": "Which FNOL claims a human reviews first, and in what order. The model ranks; the analyst still decides. It does not decline, hold, or pay anything on its own.",
+    "owner": "Head of Claims Operations (Mette Lindqvist) — owns the queue, the analyst headcount, and the fraud-leakage number this is measured against.",
+    "conditions": "Get the reinsurance recovery estimate confirmed in writing by the broker before it appears in any ROI figure shown to the board.",
+    "nextAction": "45 minutes with the Head of Claims Ops to baseline the two ROI metrics (fraud caught per 1000 claims, analyst minutes per claim) from the last four quarters, so the pilot has something to be measured against rather than an estimate."
+  },
+  "scores": {
+    "roi": 4,
+    "feas": 4,
+    "impact": 4,
+    "tech": 3,
+    "accept": 2,
+    "bizimp": 4
+  },
+  "assume": {
+    "tech": true
+  },
+  "notes": {
+    "roi": "Two named metrics with real baselines pulled from the claims warehouse: fraud caught per 1000 claims is 4.1, analyst minutes per scored claim is 18. Both are already reported monthly, so nobody has to build a measurement pipeline to prove the change. The third benefit management raised — reinsurance recovery — is excluded until the broker confirms it in writing, so it is not carrying any of this score.",
+    "feas": "Four years of FNOL history in the claims warehouse with adjudicated fraud outcomes, which is the label this needs and the reason it scores 4 rather than 3. Access is granted through the existing analytics role. The integration is the actual work: the FNOL system has no outbound API, so scoring has to hang off the nightly extract until Phase 5 builds the real path — which caps latency, not feasibility.",
+    "impact": "The whole 14-person FNOL analyst team's daily queue changes, not a subset, and the change is to the first thing they do each morning. Two analysts asked for exactly this in the discovery interviews. Scored 4 rather than 5 because the benefit is concentrated in one team — the wider claims organization sees it only through the leakage number.",
+    "tech": "Scored from assumption, not evidence. A sensible task-specific bar would be precision at the top 5% of ranked claims, since that is the slice analysts will actually work, but nobody has run the naive baseline yet — we do not know what simple rules on claim amount and channel already achieve. Until that number exists, a 3 here is a guess and is labelled as one.",
+    "accept": "This is the weak point and it is not a training problem. Analysts were not consulted before the use case was written, and the first draft design had no override path at all — a ranked queue they cannot reorder. Worse, override rate is currently framed as a compliance metric, which teaches analysts to hide disagreement rather than record it. The fix is design work in Phase 8, not a workshop: a real reorder path, and override treated as signal.",
+    "bizimp": "A controlled comparison is genuinely available: half the FNOL volume can be scored and half left in arrival order for six months, which makes the fraud figure attributable rather than coincidental. Nordkap is also changing its claims intake script in the same window, so without the A/B split this would be unmeasurable — that is precisely why it is worth designing now rather than after go-live."
+  },
+  "step": 7,
+  "lang": "en"
+}

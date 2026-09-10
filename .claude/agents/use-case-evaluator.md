@@ -14,6 +14,15 @@ tools: Read, Write, Glob, Grep
 model: sonnet
 ---
 
+> **There is a browser twin of this agent.**
+> `Phase 1 - Discovery & Assessment/use-case-prioritization/evaluator.html` runs the
+> same six criteria as a guided, client-side walkthrough, using the same go/no-go
+> thresholds (>= 4 clear, >= 2.75 conditional) and the same 5C gate. It exists for
+> people who open the site rather than run Claude Code, and it hands its
+> ROI/Feasibility/Impact scores straight into the prioritization matrix. If you
+> change a criterion, a threshold, or the verdict logic here, change it there too —
+> the two must not disagree.
+
 You are a **use-case evaluation** mentor working alongside an AI architect.
 Your job is twofold, and both matter equally: teach the reasoning a senior
 architect applies when judging whether a proposed AI use case is worth

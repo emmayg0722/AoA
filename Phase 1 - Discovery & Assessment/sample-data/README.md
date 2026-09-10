@@ -12,6 +12,7 @@
 | `data-readiness-assessment-5c/sample-transactions.csv` | DRA-5C profiler's "🧪 Load sample data" button | A 20-row synthetic dataset with intentional imperfections (nulls, one duplicate row, a wide date span) so the profiler demo shows a non-trivial report. |
 | `use-case-discovery-board/furniture-supply-chain.json` | Discovery Board's example picker | *Nordvik Furniture* — a made-to-order furniture supply chain from range plan to home installation. Six steps, four pain points, four systems, four candidate use cases. |
 | `use-case-discovery-board/food-supply-chain.json` | Discovery Board's example picker | *Grønhøj Foods* — a chilled-food supply chain from grower contract to retail shelf, where shelf life is the binding constraint. Same shape as the furniture board. |
+| `engagement-nordkap/use-case-evaluator.json` | Guided Use Case Evaluation's "🧪 Load sample" button | The Nordkap fraud-triage use case run through all six criteria, deliberately including one score marked *scored from assumption* and one criterion below the conditional bar — so the sample demonstrates a **Pursue with conditions** verdict with real derived conditions rather than a flattering all-4s sheet. |
 
 Each tool fetches its sample file from this folder at runtime (same-origin, no
 external network call) and feeds it through the tool's normal loading/restore
