@@ -36,7 +36,8 @@ when adding new phases or tools so terminology stays consistent.
 ├── AI-Architect-Consulting-Work-Research.md   # Phase 1–10 reference this toolkit follows
 ├── .claude/agents/               # Claude Code agents (MUST live here to be loadable)
 │   ├── dra-5c.md                 # Data Readiness Assessment (5C) orchestrating agent
-│   └── use-case-evaluator.md     # Use-case evaluation mentor (scores against Phase 1/4 rubrics)
+│   └── use-case-evaluator.md     # Use-case evaluation mentor (scores against Phase 1/4
+│                                 #   rubrics; browser twin is use-case-prioritization/evaluator.html)
 ├── skills/                       # Portable agent skills — SKILL.md files, not browser tools
 │   ├── index.html                # Skills library + per-agent install guide (EN/DA/SV)
 │   ├── install.py                # Cross-platform installer (Claude/Codex/Cursor, stdlib only)
@@ -137,7 +138,7 @@ June 2026; AWS Agent Registry in preview since April 2026; Quick meters agent ho
 on top of seats.
 
 All four sections are `is-aux`, so they stay out of the numbered path and out of
-the "44 tools / 10 phases" counts; layer rows are `a.layer` and ladder rungs are
+the "45 tools / 10 phases" counts; layer rows are `a.layer` and ladder rungs are
 `.rung`, both of which the visibility and count passes handle alongside `a.card`.
 Each also needs a rail button (`navMs`, `navAws`, …) and an entry in `allScopes()`;
 the rail buttons are labelled and highlighted from one list each in
@@ -153,9 +154,10 @@ than `data-i18n` — `applyI18n` writes `textContent` for the former and
 
 **All 10 phases above are fully built** — every subfolder listed is a real, working tool,
 not a placeholder, and the delivery lifecycle this toolkit follows is now complete end to
-end (44 stateful tools). Almost every tool folder is `index.html`; the two
-exceptions are `data-readiness-assessment-5c/` (`console.html` + `profiler.html`) and
-`Design Layers/` (`architecture-builder.html`) — the hub's cards link to those files
+end (45 stateful tools). Almost every tool folder is `index.html`; the exceptions are
+`data-readiness-assessment-5c/` (`console.html` + `profiler.html`), `Design Layers/`
+(`architecture-builder.html`), and `use-case-prioritization/` (`index.html` plus
+`evaluator.html`, the guided evaluation) — the hub's cards link to those files
 directly. **Folder names contain spaces and `&`** (e.g. `Phase 1 - Discovery & Assessment`)
 — always quote paths in shell commands and URL-encode them in HTML links
 (`Phase%201%20-%20Discovery%20%26%20Assessment/…`).
@@ -352,9 +354,9 @@ add a skill, add a line to its `WHEN` map so the generated wiring describes it.
 When you add a skill: create the folder under `skills/`, keep `SKILL.md` under
 ~500 lines with detail pushed into `references/`, then update `skills/README.md`,
 `skills/index.html` (all three languages), the root `index.html` card, and this
-file. The hub counts skills separately from the 44 tools — the skills card grid
+file. The hub counts skills separately from the 45 tools — the skills card grid
 carries `class="cards is-aux"` and its section heading `class="phase-head is-aux"`,
-which is what keeps the "44 tools / 10 delivery phases" stats honest.
+which is what keeps the "45 tools / 10 delivery phases" stats honest.
 
 ## The Claude Code agents
 
@@ -377,6 +379,17 @@ inventing formats. Two invariants baked into the agent, keep them if you edit it
 Claude Code requires agents to live in `.claude/agents/`; don't move it.
 
 ### `use-case-evaluator`
+
+**There are two of these, and they must stay in agreement.** `evaluator.html` in
+`Phase 1 - Discovery & Assessment/use-case-prioritization/` is the in-browser version
+(reachable from the hub and from the matrix tool itself); the agent below is the
+conversational one. Both score the *same six criteria* quoted from the same two source
+tools, and both apply the go/no-go thresholds from `evaluation-godecision` (>= 4 clear,
+>= 2.75 conditional). If you change a criterion, a threshold, or the verdict logic,
+change it in both — a browser verdict that contradicts the agent's is worse than having
+only one of them. The browser version additionally reads the DRA-5C scorecard straight
+out of `localStorage` as a gate, and writes its ROI/Feasibility/Impact scores back into
+the prioritization matrix's own row shape.
 
 `.claude/agents/use-case-evaluator.md` defines a subagent (model: sonnet; tools:
 Read, Write, Glob, Grep) that interviews the architect about a proposed client use case

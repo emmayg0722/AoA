@@ -1,0 +1,1247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guided Use Case Evaluation — Phase 1</title>
+<meta name="description" content="A guided walkthrough that teaches the reasoning a senior architect applies to a proposed AI use case, scores it against this toolkit's own rubrics, and ends in a Pursue / Pursue-with-conditions / Don't-pursue verdict.">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='16' fill='%231B1474'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #1B1474; --primary-dark: #120D52; --accent: #DCDDF6; --powder: #EEEEFA;
+    --ink: #1c1c28; --muted: #5b5b6b; --line: #e4e4f0;
+    --green: #1a8a5c; --amber: #d4790e; --red: #c0392b;
+    --font-heading: 'Fraunces', Georgia, serif;
+    --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: var(--font-body); color: var(--ink); background: #fafaff; line-height: 1.6; }
+  :focus-visible { outline: 2px solid var(--primary); outline-offset: 3px; border-radius: 4px; }
+  .hero :focus-visible { outline-color: #fff; }
+  .hero { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: #fff; padding: 44px 24px 36px; }
+  .wrap { max-width: 900px; margin: 0 auto; }
+  .crumb { font-size: 13px; color: var(--accent); margin-bottom: 10px; }
+  .crumb a { color: var(--accent); text-decoration: none; }
+  .crumb .next-nav a { font-weight: 700; }
+  .hero-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; flex-wrap: wrap; }
+  .hero h1 { font-family: var(--font-heading); font-weight: 700; font-size: 34px; line-height: 1.15; }
+  .hero p { margin-top: 10px; font-size: 15.5px; color: #dcdcf2; max-width: 680px; }
+  select#langSelect { font-family: var(--font-body); font-size: 13px; font-weight: 600; border: 1.5px solid rgba(255,255,255,0.4); background: rgba(255,255,255,0.08); color: #fff; border-radius: 8px; padding: 7px 10px; width: auto; flex: none; }
+  select#langSelect option { color: var(--ink); }
+  main { max-width: 900px; margin: 0 auto; padding: 28px 24px 80px; }
+  .note { background: var(--powder); border: 1px solid var(--accent); border-radius: 12px; padding: 14px 16px; font-size: 14px; color: var(--muted); margin-bottom: 22px; }
+  .note strong { color: var(--primary); }
+  .card { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 22px 24px; margin-bottom: 20px; }
+  .card > h2 { font-family: var(--font-heading); font-weight: 600; font-size: 21px; color: var(--primary); margin-bottom: 4px; }
+  .card .hint { font-size: 13.5px; color: var(--muted); margin-bottom: 14px; }
+  label { display: block; font-size: 13px; font-weight: 600; color: var(--ink); margin: 12px 0 5px; }
+  input[type=text], textarea, select.field { width: 100%; font-family: var(--font-body); font-size: 16px; color: var(--ink); border: 1.5px solid var(--line); border-radius: 8px; padding: 9px 11px; background: #fff; }
+  textarea { min-height: 74px; resize: vertical; line-height: 1.55; }
+  input:focus, textarea:focus, select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(27,20,116,0.12); }
+  input:focus:not(:focus-visible), textarea:focus:not(:focus-visible), select:focus:not(:focus-visible) { outline: none; }
+  .grid2 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 0 16px; }
+  .btn { font-family: var(--font-body); font-size: 13.5px; font-weight: 600; padding: 11px 18px; border-radius: 8px; border: none; cursor: pointer; transition: all 0.15s; min-height: 44px; }
+  .btn-primary { background: var(--accent); color: var(--primary); }
+  .btn-primary:hover { background: #C3C5EC; }
+  .btn-secondary { background: #fff; color: var(--primary); border: 1.5px solid var(--accent); }
+  .btn-secondary:hover { background: var(--powder); }
+  .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+  .btn-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; align-items: center; }
+  .saved { font-size: 12.5px; color: var(--green); margin-left: 4px; }
+
+  /* ── step rail ─────────────────────────────────────────────── */
+  .rail { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 18px; }
+  .rail button {
+    font-family: var(--font-body); font-size: 12px; font-weight: 600; cursor: pointer;
+    border: 1.5px solid var(--line); background: #fff; color: var(--muted);
+    border-radius: 20px; padding: 6px 12px; min-height: 34px; transition: all 0.15s;
+  }
+  .rail button:hover { border-color: var(--accent); background: var(--powder); }
+  .rail button[aria-current="step"] { background: var(--primary); border-color: var(--primary); color: #fff; }
+  .rail button.answered { border-color: var(--accent); color: var(--primary); background: var(--powder); }
+  .rail button[aria-current="step"].answered { background: var(--primary); color: #fff; }
+
+  .step-meta { font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+  .rubric-tag { display: inline-block; font-size: 10.5px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--primary); background: var(--accent); padding: 2px 9px; border-radius: 10px; margin-left: 8px; vertical-align: 2px; }
+
+  /* the question a senior architect would actually ask */
+  .ask { border-left: 3px solid var(--primary); background: #fcfcff; border-radius: 0 10px 10px 0; padding: 12px 16px; margin: 14px 0; }
+  .ask .ask-lbl { font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); display: block; margin-bottom: 4px; }
+  .ask p { font-size: 15.5px; font-weight: 500; color: var(--ink); }
+
+  /* what separates a 2 from a 4 */
+  .anchors { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px; margin: 14px 0; }
+  .anchor { border: 1px solid var(--line); border-radius: 10px; padding: 10px 13px; font-size: 13.5px; color: var(--muted); background: #fff; }
+  .anchor b { display: block; font-family: var(--font-heading); font-size: 15px; margin-bottom: 3px; }
+  .anchor.lo { border-color: #f0dcd9; } .anchor.lo b { color: var(--red); }
+  .anchor.hi { border-color: #d3e9df; } .anchor.hi b { color: var(--green); }
+
+  .why { font-size: 13.5px; color: var(--muted); background: var(--powder); border-radius: 10px; padding: 11px 14px; margin: 14px 0; }
+  .why b { color: var(--primary); }
+
+  /* 1-5 segmented scorer */
+  fieldset { border: none; margin: 16px 0 0; }
+  legend { font-size: 13px; font-weight: 600; color: var(--ink); margin-bottom: 6px; padding: 0; }
+  .scale { display: flex; gap: 8px; flex-wrap: wrap; }
+  .scale label {
+    margin: 0; flex: 1 1 56px; min-width: 56px; min-height: 46px;
+    display: flex; align-items: center; justify-content: center;
+    border: 1.5px solid var(--line); border-radius: 10px; background: #fff;
+    font-size: 16px; font-weight: 700; color: var(--muted); cursor: pointer; transition: all 0.15s;
+  }
+  .scale label:hover { border-color: var(--accent); background: var(--powder); }
+  .scale input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+  .scale input:checked + span { color: #fff; }
+  .scale label:has(input:checked) { background: var(--primary); border-color: var(--primary); color: #fff; }
+  .scale label:has(input:focus-visible) { outline: 2px solid var(--primary); outline-offset: 3px; }
+  .scale-ends { display: flex; justify-content: space-between; font-size: 11.5px; color: var(--muted); margin-top: 5px; }
+
+  .assume { display: flex; gap: 9px; align-items: flex-start; font-weight: 400; font-size: 13.5px; color: var(--ink); margin: 14px 0 0; cursor: pointer; }
+  .assume input { width: auto; flex: none; margin-top: 5px; min-width: 18px; min-height: 18px; }
+  .assume > span { min-width: 0; overflow-wrap: break-word; }
+
+  .warn { border: 1px solid #f0dcd9; background: #fdf6f5; border-radius: 10px; padding: 11px 14px; margin-top: 14px; font-size: 13.5px; color: #8d3a2f; }
+  .warn b { color: var(--red); }
+
+  /* verdict */
+  .verdict-chip { display: inline-block; font-family: var(--font-heading); font-size: 17px; font-weight: 700; padding: 5px 15px; border-radius: 22px; }
+  .v-pursue { background: #e7f5ee; color: var(--green); }
+  .v-cond { background: #fdf3e3; color: var(--amber); }
+  .v-no { background: #fbeaea; color: var(--red); }
+  .v-none { background: var(--powder); color: var(--muted); }
+  .live-verdict { font-size: 13px; color: var(--muted); margin-left: auto; text-align: right; }
+  .scoreboard { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin: 16px 0; }
+  .sb { border: 1px solid var(--line); border-radius: 10px; padding: 11px 13px; background: #fff; }
+  .sb .sb-lbl { font-size: 11px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); }
+  .sb .sb-val { font-family: var(--font-heading); font-size: 24px; font-weight: 700; color: var(--primary); }
+  .sb .sb-sub { font-size: 12px; color: var(--muted); }
+
+  .preview { border: 1px dashed var(--line); border-radius: 10px; padding: 18px 20px; background: #fcfcff; font-size: 14px; overflow-x: auto; }
+  .preview h3 { font-family: var(--font-heading); color: var(--primary); font-size: 16px; margin: 14px 0 6px; }
+  .preview h3:first-child { margin-top: 0; }
+  .preview table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 8px 0; }
+  .preview th, .preview td { border: 1px solid var(--line); padding: 6px 9px; text-align: left; vertical-align: top; }
+  .preview th { background: var(--powder); color: var(--primary); }
+  .preview ul, .preview ol { margin: 8px 0 8px 22px; }
+  .preview em { color: var(--muted); }
+  .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .table-scroll table { min-width: 460px; }
+
+  h1, h2, h3, h4, p, label, dt, dd, th, td, span, legend, .hint, .crumb { overflow-wrap: break-word; hyphens: auto; }
+  @media (max-width: 720px) {
+    .grid2, .anchors { grid-template-columns: minmax(0, 1fr); }
+    .hero h1 { font-size: 27px; }
+    .live-verdict { margin-left: 0; text-align: left; width: 100%; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+  <header class="hero"><div class="wrap">
+    <div class="hero-top">
+      <div class="crumb"><a href="../../">AI Architect Toolkit</a> · Phase 1 · Discovery &amp; Assessment · <span class="next-nav">Next: <a href="./">Use Case Prioritization Matrix →</a></span></div>
+      <select id="langSelect" onchange="setLang(this.value)" aria-label="Language">
+        <option value="en">English</option>
+        <option value="da">Dansk</option>
+        <option value="sv">Svenska</option>
+      </select>
+    </div>
+    <h1 data-i18n="heroTitle"></h1>
+    <p data-i18n="heroDesc"></p>
+  </div></header>
+
+  <main>
+    <div class="note"><strong data-i18n="noteLabel"></strong> <span data-i18n="noteBody"></span></div>
+
+    <div class="card">
+      <h2 data-i18n="clientTitle"></h2>
+      <p class="hint" data-i18n="clientHint"></p>
+      <div class="grid2">
+        <div><label data-i18n="lblClient"></label><input type="text" data-eng="client" placeholder="Acme Corp"></div>
+        <div><label data-i18n="lblAssessor"></label><input type="text" data-eng="assessor"></div>
+      </div>
+    </div>
+
+    <nav class="rail" id="rail" aria-label="Evaluation steps"></nav>
+
+    <div class="card" id="stepCard"></div>
+
+    <div class="card">
+      <h2 data-i18n="briefTitle"></h2>
+      <p class="hint" data-i18n="briefHint"></p>
+      <div class="preview" id="preview"></div>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="sendToMatrix()" data-i18n="btnToMatrix"></button>
+        <button class="btn btn-secondary" onclick="exportDoc('md')" data-i18n="btnExportMd"></button>
+        <button class="btn btn-secondary" onclick="exportDoc('html')" data-i18n="btnExportHtml"></button>
+        <button class="btn btn-secondary" onclick="resetAll()" data-i18n="btnReset"></button>
+        <button class="btn btn-secondary" onclick="loadSample()" data-i18n="btnLoadSample"></button>
+        <span class="saved" id="savedFlag"></span>
+      </div>
+      <div id="matrixMsg" style="display:none;font-size:13px;margin-top:10px"></div>
+      <div id="sampleError" style="display:none;color:var(--red);font-size:12.5px;margin-top:8px"></div>
+    </div>
+  </main>
+
+<script>
+// ════════════════════════════════════════════════════════════════
+// Guided Use Case Evaluation — fully client-side, no API calls.
+//
+// This is the browser counterpart to the `use-case-evaluator` Claude Code
+// agent in .claude/agents/. It follows the same operating principle: it does
+// NOT invent rubrics. Every criterion below comes from a rubric that already
+// exists in this toolkit —
+//   • ROI / Feasibility / Impact          → use-case-prioritization/index.html
+//   • technical / acceptance / business   → Phase 4 evaluation-godecision
+//   • the 5C data-readiness gate          → data-readiness-assessment-5c
+// — and the verdict thresholds are the ones evaluation-godecision already
+// uses, so a favourable reading here cannot contradict the tool downstream.
+// ════════════════════════════════════════════════════════════════
+
+const KEY = 'aoa_usecase_evaluator_v1';
+const MATRIX_KEY = 'aoa_usecase_priority_v1';   // the tool this feeds
+const DRA5C_KEY = 'dra5c_engagement_v1';        // read-only 5C gate
+
+// The six scored criteria, in the order an architect works them.
+// rubric: which existing tool the criterion is quoted from.
+const CRITERIA = [
+  { id: 'roi',    rubric: 'prio' },
+  { id: 'feas',   rubric: 'prio' },
+  { id: 'impact', rubric: 'prio' },
+  { id: 'tech',   rubric: 'gng'  },
+  { id: 'accept', rubric: 'gng'  },
+  { id: 'bizimp', rubric: 'gng'  },
+];
+const STEPS = ['frame'].concat(CRITERIA.map(c => c.id), ['verdict']);
+
+// Verdict thresholds, lifted verbatim from evaluation-godecision's
+// verdictOf(): >= 4 is a clear yes, >= 2.75 is conditional, below is a no.
+const T_CLEAR = 4;
+const T_COND = 2.75;
+
+// Technology-first tripwire for the framing step. The single most common way
+// an engagement picks the wrong use case is describing a tool instead of a
+// problem, so the pain field is checked for exactly that.
+const TECH_WORDS = ['ai', 'ml', 'llm', 'gpt', 'chatgpt', 'claude', 'copilot', 'chatbot', 'rag',
+  'machine learning', 'deep learning', 'neural', 'genai', 'generative', 'agent', 'automation',
+  'automatisering', 'kunstig intelligens', 'artificiell intelligens', 'maskinlæring', 'maskininlärning'];
+
+const STRINGS = {
+  en: {
+    heroTitle: 'Guided Use Case Evaluation',
+    heroDesc: "A walkthrough that teaches the reasoning behind each score, then scores a proposed use case against this toolkit's own rubrics and ends in a Pursue / Pursue-with-conditions / Don't-pursue verdict.",
+    noteLabel: 'How this works.',
+    noteBody: "Six criteria, one at a time. Each shows the question a senior architect would actually ask, what separates a 2 from a 4 in practice, and why the criterion earns its place. Nothing here invents new criteria — they are quoted from the prioritization matrix next door and the Phase 4 go/no-go tool. Everything autosaves locally; no API calls.",
+    clientTitle: 'Client & engagement',
+    clientHint: 'Shared with the rest of the toolkit, so you only enter this once.',
+    lblClient: 'Client / engagement',
+    lblAssessor: 'Assessor',
+
+    stepOf: (n, total) => `Step ${n} of ${total}`,
+    rubricPrio: 'Prioritization rubric',
+    rubricGng: 'Go/no-go preview',
+    askLabel: 'Ask the client',
+    whatSeparates: 'What separates a 2 from a 4',
+    lowAnchor: 'Scores 2',
+    highAnchor: 'Scores 4',
+    whyLabel: 'Why this criterion earns its place.',
+    scoreLegend: 'Score, 1 (low) to 5 (high)',
+    scaleLow: '1 — low',
+    scaleHigh: '5 — high',
+    assumeLabel: "I'm scoring this from assumption, not evidence",
+    assumeHint: 'Checked scores still count, but they are labelled as assumptions in the brief and become conditions in the verdict — an honest gap beats a confident guess.',
+    lblEvidence: 'Evidence or open question (optional)',
+    phEvidence: 'What you actually heard, or what you still need to find out…',
+    btnBack: '← Back',
+    btnNext: 'Next →',
+    btnToVerdict: 'See the verdict →',
+
+    frameTitle: 'Frame the use case',
+    frameHint: 'Before anything is scored: a vague "we want AI in claims" is not a use case. Pin it down first.',
+    frameWhy: 'Technology-first framing is the most common way a consulting engagement picks the wrong use case. Asking where work gets stuck, repeated, or delayed surfaces problems worth solving; asking where AI could go surfaces demos.',
+    lblUcName: 'Use case name',
+    phUcName: 'e.g. Fraud triage at first notification of loss',
+    lblPain: "The pain point, in the business's own words",
+    phPain: 'Where does work get stuck, repeated, or delayed today? Not "we could use AI for…" but "our analysts re-key the same claim three times because…"',
+    lblDecision: 'The decision or prediction this drives',
+    phDecision: 'e.g. which claims a human reviews first, and in what order',
+    lblOwner: 'Who owns this pain (named role, not a department)',
+    phOwner: 'e.g. Head of Claims Operations',
+    techWarnLabel: 'This reads technology-first.',
+    techWarnBody: 'The pain point describes a tool rather than a problem. Rewrite it as what goes wrong today, in the words the business would use — then the scoring below measures something real.',
+
+    c_roi_name: 'ROI — expected value',
+    c_roi_q: 'If this works exactly as hoped, which number on which report changes, and what is that number today?',
+    c_roi_lo: 'The benefit is real but nobody can name the metric, or nobody knows its current value.',
+    c_roi_hi: 'A named metric with a current baseline and a defensible estimate of the change.',
+    c_roi_why: 'The baseline matters more than the projection. Without it you cannot prove the change later, and an ROI nobody can measure is an ROI nobody will defend at renewal.',
+
+    c_feas_name: 'Feasibility — data, tech & org readiness',
+    c_feas_q: 'What would have to be true for this to run in production in 90 days, and which of those is not true today?',
+    c_feas_lo: "Needs data that isn't collected yet, or a system with no realistic integration path.",
+    c_feas_hi: 'The data exists and is reachable; the remaining work is integration and evaluation, not invention.',
+    c_feas_why: 'Feasibility failures are almost always data access or organizational, not modelling. Asking what is missing gets you a real answer; asking what is possible gets you an optimistic one.',
+
+    c_impact_name: 'Impact — breadth & depth of benefit',
+    c_impact_q: "How many people's work changes, how much does it change for each, and would they describe it as help or as surveillance?",
+    c_impact_lo: 'A handful of people, marginally — or a benefit felt only by management.',
+    c_impact_hi: "A whole team's daily work measurably improves, and they would say so themselves.",
+    c_impact_why: "Breadth without depth builds a tool nobody opens; depth without breadth builds a pilot that can't justify a platform. And a benefit felt only upward is the clearest early predictor of adoption failure.",
+
+    c_tech_name: 'Technical performance (projected)',
+    c_tech_q: 'What is the task-specific bar this must clear, and what does the naive baseline already achieve?',
+    c_tech_lo: 'No bar defined, or only generic metrics (accuracy, F1) with no mapping to a business outcome.',
+    c_tech_hi: 'A task-specific bar tied to the business outcome, and a known baseline it has to beat.',
+    c_tech_why: 'Without a baseline you cannot tell a good model from an easy dataset. Generic ML metrics rarely map onto a business outcome on their own — that is why Phase 4 asks for task-specific benchmarks set before evaluation begins.',
+
+    c_accept_name: 'User acceptance (projected)',
+    c_accept_q: 'Who has to change how they work, what happens to them if they ignore it, and what is the override path?',
+    c_accept_lo: "The affected users weren't consulted, or the design assumes they will simply comply.",
+    c_accept_hi: 'The affected users helped shape it, and there is a real override path with a feedback loop behind it.',
+    c_accept_why: 'A system users cannot override gets worked around, and the workaround is invisible to everyone measuring adoption. Acceptance is a design property, not a training problem.',
+
+    c_bizimp_name: 'Business impact (projected)',
+    c_bizimp_q: "If this ships and the metric doesn't move, what would you conclude — and could you even tell it was this rather than something else?",
+    c_bizimp_lo: 'The metric moves for many reasons and nothing isolates this change from the others.',
+    c_bizimp_hi: 'An A/B or controlled before/after is possible, so the result will be attributable to this work.',
+    c_bizimp_why: 'Attribution is what separates a defensible result from a coincidence, and it cannot be retrofitted — you cannot add a control group after go-live. Design it now or accept that the number will be arguable forever.',
+
+    verdictTitle: 'Verdict',
+    verdictHint: "Composite of the two rubrics, using the same thresholds the Phase 4 go/no-go tool applies, gated on data readiness. Assumptions never improve the verdict — they become conditions.",
+    sbPrio: 'Prioritization',
+    sbGng: 'Go/no-go preview',
+    sbData: 'Data readiness (5C)',
+    sbAvgOf: n => `average of ${n}`,
+    sbQuickWin: '★ likely quick win',
+    sbNoData: 'no scorecard found',
+    sbFrom5c: 'from DRA-5C, lowest C',
+    vPursue: 'Pursue',
+    vCond: 'Pursue with conditions',
+    vNo: "Don't pursue",
+    vNone: 'Not yet scored',
+    vIncomplete: n => `${n} criterion${n === 1 ? '' : 'a'} still unscored — the verdict below is provisional.`,
+    condTitle: 'Conditions',
+    condNone: 'No conditions — but see the flagged risks below.',
+    flagTitle: 'What a senior architect would flag here',
+    nextActionTitle: 'Next concrete action',
+    lblConditions: 'Conditions you would add (optional — the derived ones above are already included)',
+    phConditions: 'e.g. baseline the analyst override rate before the pilot starts',
+    lblNextAction: 'Next concrete action',
+    phNextAction: 'e.g. book 45 minutes with the Head of Claims Ops to baseline the two ROI metrics',
+
+    briefTitle: 'Use Case Evaluation Brief',
+    briefHint: 'The deliverable — a fast pre-check, not a replacement for running the full prioritization matrix and Phase 4 go/no-go for the client.',
+    btnToMatrix: '→ Add to prioritization matrix',
+    btnExportMd: '📄 Export Markdown',
+    btnExportHtml: '🌐 Export HTML',
+    btnReset: '🔄 Reset',
+    btnLoadSample: '🧪 Load sample',
+    sampleConfirm: 'Load the sample evaluation into this tool? This replaces anything currently saved here.',
+    sampleLoadError: 'Could not load the sample file. If you opened this page directly from disk, serve the folder over HTTP instead.',
+    resetConfirm: 'Clear this evaluation? / Ryd denne evaluering? / Rensa denna utvärdering?',
+    matrixNeedName: 'Give the use case a name first — the matrix row needs something to call it.',
+    matrixAdded: name => `Added "${name}" to the prioritization matrix. Open the matrix to see it scored alongside the other candidates.`,
+    matrixUpdated: name => `"${name}" was already in the matrix — its ROI, Feasibility and Impact scores have been updated.`,
+    matrixLink: 'Open the matrix →',
+    matrixFailed: 'Could not write to the matrix (browser storage is unavailable).',
+
+    docTitle: 'Use Case Evaluation Brief',
+    docFor: 'Prepared for',
+    docAssessor: 'Assessor',
+    docDate: 'Date',
+    secFrame: '1. Use Case Framing',
+    secScores: '2. Scores',
+    secVerdict: '3. Verdict',
+    secFlag: '4. What a senior architect would flag',
+    thCriterion: 'Criterion',
+    thRubric: 'Rubric source',
+    thScore: 'Score',
+    thBasis: 'Basis',
+    thNote: 'Evidence / open question',
+    basisEvidence: 'Evidence',
+    basisAssumption: 'Assumption',
+    emptyNote: '(not yet documented)',
+    notScored: 'not scored',
+    srcPrio: 'Phase 1 prioritization matrix',
+    srcGng: 'Phase 4 evaluation & go/no-go',
+    fiveCTitle: 'Data readiness (5C)',
+    fiveCGap: 'No DRA-5C scorecard found in this browser. Data readiness gates everything else, so this is an open gap rather than a pass — run the 5C assessment before treating a favourable verdict as settled.',
+    fiveCFrom: 'Pulled from the DRA-5C scorecard saved in this browser.',
+    closingNote: 'This brief is a pre-check. A favourable verdict still means running the prioritization matrix and the Phase 4 go/no-go end to end for the client-ready deliverable.',
+  },
+  da: {
+    heroTitle: 'Guidet use case-evaluering',
+    heroDesc: 'Et gennemløb, der forklarer ræsonnementet bag hver score, derefter scorer en foreslået use case mod værktøjssættets egne rubrikker og ender i en Forfølg / Forfølg med betingelser / Forfølg ikke-afgørelse.',
+    noteLabel: 'Sådan virker det.',
+    noteBody: 'Seks kriterier, ét ad gangen. Hvert viser det spørgsmål en senior arkitekt reelt ville stille, hvad der adskiller en 2 fra en 4 i praksis, og hvorfor kriteriet fortjener sin plads. Intet her opfinder nye kriterier — de er citeret fra prioriteringsmatricen ved siden af og Fase 4-go/no-go-værktøjet. Alt gemmes automatisk lokalt; ingen API-kald.',
+    clientTitle: 'Kunde & engagement',
+    clientHint: 'Deles med resten af værktøjssættet, så du kun indtaster dette én gang.',
+    lblClient: 'Kunde / engagement',
+    lblAssessor: 'Vurderingsmand',
+
+    stepOf: (n, total) => `Trin ${n} af ${total}`,
+    rubricPrio: 'Prioriteringsrubrik',
+    rubricGng: 'Go/no-go-forhåndsvisning',
+    askLabel: 'Spørg kunden',
+    whatSeparates: 'Hvad adskiller en 2 fra en 4',
+    lowAnchor: 'Scorer 2',
+    highAnchor: 'Scorer 4',
+    whyLabel: 'Hvorfor dette kriterium fortjener sin plads.',
+    scoreLegend: 'Score, 1 (lav) til 5 (høj)',
+    scaleLow: '1 — lav',
+    scaleHigh: '5 — høj',
+    assumeLabel: 'Jeg scorer dette ud fra antagelse, ikke evidens',
+    assumeHint: 'Afkrydsede scorer tæller stadig, men de mærkes som antagelser i briefen og bliver betingelser i afgørelsen — et ærligt hul slår et selvsikkert gæt.',
+    lblEvidence: 'Evidens eller åbent spørgsmål (valgfrit)',
+    phEvidence: 'Hvad du faktisk hørte, eller hvad du stadig skal finde ud af…',
+    btnBack: '← Tilbage',
+    btnNext: 'Næste →',
+    btnToVerdict: 'Se afgørelsen →',
+
+    frameTitle: 'Indram use casen',
+    frameHint: 'Før noget scores: et vagt "vi vil bruge AI i skadesbehandling" er ikke en use case. Få den fastlagt først.',
+    frameWhy: 'Teknologi-først-indramning er den mest almindelige måde, et rådgivningsengagement vælger den forkerte use case. At spørge, hvor arbejde går i stå, gentages eller forsinkes, afdækker problemer værd at løse; at spørge, hvor AI kunne bruges, afdækker demoer.',
+    lblUcName: 'Use case-navn',
+    phUcName: 'f.eks. Svindeltriage ved første skadesanmeldelse',
+    lblPain: 'Smertepunktet, med forretningens egne ord',
+    phPain: 'Hvor går arbejde i stå, gentages eller forsinkes i dag? Ikke "vi kunne bruge AI til…" men "vores analytikere indtaster den samme sag tre gange, fordi…"',
+    lblDecision: 'Beslutningen eller forudsigelsen, dette driver',
+    phDecision: 'f.eks. hvilke sager et menneske gennemgår først, og i hvilken rækkefølge',
+    lblOwner: 'Hvem ejer dette smertepunkt (navngivet rolle, ikke en afdeling)',
+    phOwner: 'f.eks. chef for skadesoperationer',
+    techWarnLabel: 'Dette læses som teknologi-først.',
+    techWarnBody: 'Smertepunktet beskriver et værktøj snarere end et problem. Skriv det om til, hvad der går galt i dag, med de ord forretningen ville bruge — så måler scoringen nedenfor noget virkeligt.',
+
+    c_roi_name: 'ROI — forventet værdi',
+    c_roi_q: 'Hvis dette virker præcis som håbet, hvilket tal på hvilken rapport ændrer sig, og hvad er det tal i dag?',
+    c_roi_lo: 'Gevinsten er reel, men ingen kan navngive metrikken, eller ingen kender dens nuværende værdi.',
+    c_roi_hi: 'En navngivet metrik med en nuværende baseline og et forsvarligt skøn over ændringen.',
+    c_roi_why: 'Baselinen betyder mere end fremskrivningen. Uden den kan du ikke bevise ændringen senere, og et ROI ingen kan måle, er et ROI ingen vil forsvare ved fornyelse.',
+
+    c_feas_name: 'Gennemførlighed — data, teknologi & organisatorisk parathed',
+    c_feas_q: 'Hvad skulle være sandt, for at dette kunne køre i produktion om 90 dage, og hvad af det er ikke sandt i dag?',
+    c_feas_lo: 'Kræver data, der endnu ikke indsamles, eller et system uden realistisk integrationsvej.',
+    c_feas_hi: 'Dataene findes og er tilgængelige; det resterende arbejde er integration og evaluering, ikke opfindelse.',
+    c_feas_why: 'Gennemførlighedsfejl handler næsten altid om dataadgang eller organisation, ikke modellering. At spørge, hvad der mangler, giver dig et reelt svar; at spørge, hvad der er muligt, giver et optimistisk et.',
+
+    c_impact_name: 'Effekt — bredde & dybde af gevinst',
+    c_impact_q: 'Hvor mange menneskers arbejde ændrer sig, hvor meget ændrer det sig for hver, og ville de beskrive det som hjælp eller som overvågning?',
+    c_impact_lo: 'En håndfuld mennesker, marginalt — eller en gevinst, der kun mærkes af ledelsen.',
+    c_impact_hi: 'Et helt teams daglige arbejde forbedres målbart, og de ville selv sige det.',
+    c_impact_why: 'Bredde uden dybde bygger et værktøj, ingen åbner; dybde uden bredde bygger en pilot, der ikke kan retfærdiggøre en platform. Og en gevinst, der kun mærkes opad, er den tydeligste tidlige forudsigelse af adoptionssvigt.',
+
+    c_tech_name: 'Teknisk ydeevne (fremskrevet)',
+    c_tech_q: 'Hvad er den opgavespecifikke tærskel, dette skal klare, og hvad opnår den naive baseline allerede?',
+    c_tech_lo: 'Ingen tærskel defineret, eller kun generiske metrikker (nøjagtighed, F1) uden kobling til et forretningsudfald.',
+    c_tech_hi: 'En opgavespecifik tærskel koblet til forretningsudfaldet, og en kendt baseline den skal slå.',
+    c_tech_why: 'Uden en baseline kan du ikke skelne en god model fra et let datasæt. Generiske ML-metrikker kobler sjældent til et forretningsudfald alene — derfor beder Fase 4 om opgavespecifikke benchmarks fastsat før evalueringen begynder.',
+
+    c_accept_name: 'Brugeraccept (fremskrevet)',
+    c_accept_q: 'Hvem skal ændre, hvordan de arbejder, hvad sker der med dem, hvis de ignorerer det, og hvad er tilsidesættelsesvejen?',
+    c_accept_lo: 'De berørte brugere blev ikke spurgt, eller designet antager, at de blot vil efterleve det.',
+    c_accept_hi: 'De berørte brugere hjalp med at forme det, og der er en reel tilsidesættelsesvej med en feedbackløkke bag.',
+    c_accept_why: 'Et system, brugere ikke kan tilsidesætte, bliver omgået, og omgåelsen er usynlig for alle, der måler adoption. Accept er en designegenskab, ikke et uddannelsesproblem.',
+
+    c_bizimp_name: 'Forretningseffekt (fremskrevet)',
+    c_bizimp_q: 'Hvis dette går i drift, og metrikken ikke flytter sig, hvad ville du konkludere — og kunne du overhovedet se, at det var dette og ikke noget andet?',
+    c_bizimp_lo: 'Metrikken flytter sig af mange grunde, og intet isolerer denne ændring fra de andre.',
+    c_bizimp_hi: 'En A/B eller kontrolleret før/efter er mulig, så resultatet kan tilskrives dette arbejde.',
+    c_bizimp_why: 'Attribuering er det, der adskiller et forsvarligt resultat fra et sammentræf, og det kan ikke eftermonteres — du kan ikke tilføje en kontrolgruppe efter go-live. Design den nu, eller accepter at tallet vil kunne diskuteres for altid.',
+
+    verdictTitle: 'Afgørelse',
+    verdictHint: 'Sammensat af de to rubrikker med de samme tærskler, som Fase 4-go/no-go-værktøjet anvender, betinget af data-parathed. Antagelser forbedrer aldrig afgørelsen — de bliver betingelser.',
+    sbPrio: 'Prioritering',
+    sbGng: 'Go/no-go-forhåndsvisning',
+    sbData: 'Data-parathed (5C)',
+    sbAvgOf: n => `gennemsnit af ${n}`,
+    sbQuickWin: '★ sandsynlig quick win',
+    sbNoData: 'intet scorecard fundet',
+    sbFrom5c: 'fra DRA-5C, laveste C',
+    vPursue: 'Forfølg',
+    vCond: 'Forfølg med betingelser',
+    vNo: 'Forfølg ikke',
+    vNone: 'Endnu ikke scoret',
+    vIncomplete: n => `${n} kriteri${n === 1 ? 'um' : 'er'} stadig uscoret — afgørelsen nedenfor er foreløbig.`,
+    condTitle: 'Betingelser',
+    condNone: 'Ingen betingelser — men se de markerede risici nedenfor.',
+    flagTitle: 'Hvad en senior arkitekt ville markere her',
+    nextActionTitle: 'Næste konkrete handling',
+    lblConditions: 'Betingelser du ville tilføje (valgfrit — de udledte ovenfor er allerede med)',
+    phConditions: 'f.eks. baseline analytikernes tilsidesættelsesrate før piloten starter',
+    lblNextAction: 'Næste konkrete handling',
+    phNextAction: 'f.eks. book 45 minutter med chefen for skadesoperationer for at baseline de to ROI-metrikker',
+
+    briefTitle: 'Use case-evalueringsbrief',
+    briefHint: 'Leverancen — et hurtigt forcheck, ikke en erstatning for at køre den fulde prioriteringsmatrix og Fase 4-go/no-go for kunden.',
+    btnToMatrix: '→ Tilføj til prioriteringsmatrix',
+    btnExportMd: '📄 Eksportér Markdown',
+    btnExportHtml: '🌐 Eksportér HTML',
+    btnReset: '🔄 Nulstil',
+    btnLoadSample: '🧪 Indlæs eksempel',
+    sampleConfirm: 'Indlæs eksempelevalueringen i dette værktøj? Dette erstatter alt, der aktuelt er gemt her.',
+    sampleLoadError: 'Kunne ikke indlæse eksempelfilen. Hvis du åbnede denne side direkte fra disken, så server mappen over HTTP i stedet.',
+    resetConfirm: 'Clear this evaluation? / Ryd denne evaluering? / Rensa denna utvärdering?',
+    matrixNeedName: 'Giv use casen et navn først — matrixrækken skal have noget at kalde den.',
+    matrixAdded: name => `Tilføjede "${name}" til prioriteringsmatricen. Åbn matricen for at se den scoret sammen med de øvrige kandidater.`,
+    matrixUpdated: name => `"${name}" var allerede i matricen — dens ROI-, gennemførlighed- og effektscorer er opdateret.`,
+    matrixLink: 'Åbn matricen →',
+    matrixFailed: 'Kunne ikke skrive til matricen (browserlagring er utilgængelig).',
+
+    docTitle: 'Use case-evalueringsbrief',
+    docFor: 'Udarbejdet for',
+    docAssessor: 'Vurderingsmand',
+    docDate: 'Dato',
+    secFrame: '1. Indramning af use case',
+    secScores: '2. Scorer',
+    secVerdict: '3. Afgørelse',
+    secFlag: '4. Hvad en senior arkitekt ville markere',
+    thCriterion: 'Kriterium',
+    thRubric: 'Rubrikkilde',
+    thScore: 'Score',
+    thBasis: 'Grundlag',
+    thNote: 'Evidens / åbent spørgsmål',
+    basisEvidence: 'Evidens',
+    basisAssumption: 'Antagelse',
+    emptyNote: '(endnu ikke dokumenteret)',
+    notScored: 'ikke scoret',
+    srcPrio: 'Fase 1-prioriteringsmatrix',
+    srcGng: 'Fase 4-evaluering & go/no-go',
+    fiveCTitle: 'Data-parathed (5C)',
+    fiveCGap: 'Intet DRA-5C-scorecard fundet i denne browser. Data-parathed betinger alt andet, så dette er et åbent hul snarere end en godkendelse — kør 5C-vurderingen, før en gunstig afgørelse behandles som afgjort.',
+    fiveCFrom: 'Hentet fra DRA-5C-scorecardet gemt i denne browser.',
+    closingNote: 'Denne brief er et forcheck. En gunstig afgørelse betyder stadig, at prioriteringsmatricen og Fase 4-go/no-go skal køres ende til ende for den kundeklare leverance.',
+  },
+  sv: {
+    heroTitle: 'Guidad use case-utvärdering',
+    heroDesc: 'En genomgång som förklarar resonemanget bakom varje poäng, sedan poängsätter ett föreslaget användningsfall mot verktygssamlingens egna rubriker och slutar i ett Fortsätt / Fortsätt med villkor / Fortsätt inte-utlåtande.',
+    noteLabel: 'Så här fungerar det.',
+    noteBody: 'Sex kriterier, ett i taget. Varje visar frågan en senior arkitekt faktiskt skulle ställa, vad som skiljer en 2 från en 4 i praktiken, och varför kriteriet förtjänar sin plats. Inget här uppfinner nya kriterier — de är citerade från prioriteringsmatrisen intill och Fas 4-go/no-go-verktyget. Allt sparas automatiskt lokalt; inga API-anrop.',
+    clientTitle: 'Kund & uppdrag',
+    clientHint: 'Delas med resten av verktygssamlingen, så du anger detta bara en gång.',
+    lblClient: 'Kund / uppdrag',
+    lblAssessor: 'Bedömare',
+
+    stepOf: (n, total) => `Steg ${n} av ${total}`,
+    rubricPrio: 'Prioriteringsrubrik',
+    rubricGng: 'Go/no-go-förhandsvisning',
+    askLabel: 'Fråga kunden',
+    whatSeparates: 'Vad skiljer en 2 från en 4',
+    lowAnchor: 'Ger 2',
+    highAnchor: 'Ger 4',
+    whyLabel: 'Varför detta kriterium förtjänar sin plats.',
+    scoreLegend: 'Poäng, 1 (låg) till 5 (hög)',
+    scaleLow: '1 — låg',
+    scaleHigh: '5 — hög',
+    assumeLabel: 'Jag poängsätter detta utifrån antagande, inte evidens',
+    assumeHint: 'Markerade poäng räknas fortfarande, men de märks som antaganden i briefen och blir villkor i utlåtandet — en ärlig lucka slår en självsäker gissning.',
+    lblEvidence: 'Evidens eller öppen fråga (valfritt)',
+    phEvidence: 'Vad du faktiskt hörde, eller vad du fortfarande behöver ta reda på…',
+    btnBack: '← Tillbaka',
+    btnNext: 'Nästa →',
+    btnToVerdict: 'Se utlåtandet →',
+
+    frameTitle: 'Rama in användningsfallet',
+    frameHint: 'Innan något poängsätts: ett vagt "vi vill använda AI i skadehantering" är inte ett användningsfall. Fastställ det först.',
+    frameWhy: 'Teknik-först-inramning är det vanligaste sättet ett konsultuppdrag väljer fel användningsfall. Att fråga var arbete fastnar, upprepas eller fördröjs blottlägger problem värda att lösa; att fråga var AI skulle kunna användas blottlägger demos.',
+    lblUcName: 'Användningsfallets namn',
+    phUcName: 't.ex. Bedrägerisortering vid första skadeanmälan',
+    lblPain: 'Smärtpunkten, med verksamhetens egna ord',
+    phPain: 'Var fastnar, upprepas eller fördröjs arbete idag? Inte "vi skulle kunna använda AI för…" utan "våra analytiker registrerar samma ärende tre gånger eftersom…"',
+    lblDecision: 'Beslutet eller prediktionen detta driver',
+    phDecision: 't.ex. vilka ärenden en människa granskar först, och i vilken ordning',
+    lblOwner: 'Vem äger denna smärtpunkt (namngiven roll, inte en avdelning)',
+    phOwner: 't.ex. chef för skadeoperationer',
+    techWarnLabel: 'Detta läses som teknik-först.',
+    techWarnBody: 'Smärtpunkten beskriver ett verktyg snarare än ett problem. Skriv om det till vad som går fel idag, med de ord verksamheten skulle använda — då mäter poängsättningen nedan något verkligt.',
+
+    c_roi_name: 'ROI — förväntat värde',
+    c_roi_q: 'Om detta fungerar precis som hoppats, vilket tal i vilken rapport ändras, och vad är det talet idag?',
+    c_roi_lo: 'Nyttan är verklig men ingen kan namnge måttet, eller ingen känner dess nuvarande värde.',
+    c_roi_hi: 'Ett namngivet mått med en nuvarande baslinje och en försvarbar uppskattning av förändringen.',
+    c_roi_why: 'Baslinjen betyder mer än prognosen. Utan den kan du inte bevisa förändringen senare, och ett ROI ingen kan mäta är ett ROI ingen kommer försvara vid förnyelse.',
+
+    c_feas_name: 'Genomförbarhet — data, teknik & organisatorisk beredskap',
+    c_feas_q: 'Vad skulle behöva vara sant för att detta kunde köras i produktion om 90 dagar, och vad av det är inte sant idag?',
+    c_feas_lo: 'Kräver data som ännu inte samlas in, eller ett system utan realistisk integrationsväg.',
+    c_feas_hi: 'Data finns och är åtkomlig; det återstående arbetet är integration och utvärdering, inte uppfinnande.',
+    c_feas_why: 'Genomförbarhetsmisslyckanden handlar nästan alltid om dataåtkomst eller organisation, inte modellering. Att fråga vad som saknas ger dig ett verkligt svar; att fråga vad som är möjligt ger ett optimistiskt.',
+
+    c_impact_name: 'Effekt — bredd & djup av nytta',
+    c_impact_q: 'Hur många människors arbete förändras, hur mycket förändras det för var och en, och skulle de beskriva det som hjälp eller som övervakning?',
+    c_impact_lo: 'En handfull människor, marginellt — eller en nytta som bara känns av ledningen.',
+    c_impact_hi: 'Ett helt teams dagliga arbete förbättras mätbart, och de skulle säga det själva.',
+    c_impact_why: 'Bredd utan djup bygger ett verktyg ingen öppnar; djup utan bredd bygger en pilot som inte kan motivera en plattform. Och en nytta som bara känns uppåt är den tydligaste tidiga prediktorn för adoptionsmisslyckande.',
+
+    c_tech_name: 'Teknisk prestanda (prognos)',
+    c_tech_q: 'Vad är den uppgiftsspecifika ribban detta måste klara, och vad uppnår den naiva baslinjen redan?',
+    c_tech_lo: 'Ingen ribba definierad, eller bara generiska mått (träffsäkerhet, F1) utan koppling till ett verksamhetsutfall.',
+    c_tech_hi: 'En uppgiftsspecifik ribba kopplad till verksamhetsutfallet, och en känd baslinje den måste slå.',
+    c_tech_why: 'Utan en baslinje kan du inte skilja en bra modell från ett lätt dataset. Generiska ML-mått kopplar sällan till ett verksamhetsutfall på egen hand — därför ber Fas 4 om uppgiftsspecifika riktmärken satta innan utvärderingen börjar.',
+
+    c_accept_name: 'Användaracceptans (prognos)',
+    c_accept_q: 'Vem måste ändra hur de arbetar, vad händer med dem om de ignorerar det, och vad är åsidosättningsvägen?',
+    c_accept_lo: 'De berörda användarna tillfrågades inte, eller designen antar att de helt enkelt kommer att följa den.',
+    c_accept_hi: 'De berörda användarna hjälpte till att forma det, och det finns en verklig åsidosättningsväg med en återkopplingsloop bakom.',
+    c_accept_why: 'Ett system användare inte kan åsidosätta blir kringgått, och kringgåendet är osynligt för alla som mäter adoption. Acceptans är en designegenskap, inte ett utbildningsproblem.',
+
+    c_bizimp_name: 'Verksamhetseffekt (prognos)',
+    c_bizimp_q: 'Om detta driftsätts och måttet inte rör sig, vad skulle du dra för slutsats — och skulle du ens kunna se att det var detta och inte något annat?',
+    c_bizimp_lo: 'Måttet rör sig av många skäl och inget isolerar denna förändring från de andra.',
+    c_bizimp_hi: 'En A/B eller kontrollerad före/efter är möjlig, så resultatet kan tillskrivas detta arbete.',
+    c_bizimp_why: 'Attribution är vad som skiljer ett försvarbart resultat från en tillfällighet, och det kan inte eftermonteras — du kan inte lägga till en kontrollgrupp efter go-live. Designa den nu, eller acceptera att talet kommer att kunna ifrågasättas för alltid.',
+
+    verdictTitle: 'Utlåtande',
+    verdictHint: 'Sammansatt av de två rubrikerna med samma trösklar som Fas 4-go/no-go-verktyget tillämpar, villkorat av databeredskap. Antaganden förbättrar aldrig utlåtandet — de blir villkor.',
+    sbPrio: 'Prioritering',
+    sbGng: 'Go/no-go-förhandsvisning',
+    sbData: 'Databeredskap (5C)',
+    sbAvgOf: n => `medelvärde av ${n}`,
+    sbQuickWin: '★ sannolik quick win',
+    sbNoData: 'inget scorecard hittat',
+    sbFrom5c: 'från DRA-5C, lägsta C',
+    vPursue: 'Fortsätt',
+    vCond: 'Fortsätt med villkor',
+    vNo: 'Fortsätt inte',
+    vNone: 'Ännu inte poängsatt',
+    vIncomplete: n => `${n} kriteri${n === 1 ? 'um' : 'er'} fortfarande opoängsatt — utlåtandet nedan är preliminärt.`,
+    condTitle: 'Villkor',
+    condNone: 'Inga villkor — men se de flaggade riskerna nedan.',
+    flagTitle: 'Vad en senior arkitekt skulle flagga här',
+    nextActionTitle: 'Nästa konkreta åtgärd',
+    lblConditions: 'Villkor du skulle lägga till (valfritt — de härledda ovan är redan med)',
+    phConditions: 't.ex. baslinjemät analytikernas åsidosättningsfrekvens innan piloten startar',
+    lblNextAction: 'Nästa konkreta åtgärd',
+    phNextAction: 't.ex. boka 45 minuter med chefen för skadeoperationer för att baslinjemäta de två ROI-måtten',
+
+    briefTitle: 'Use case-utvärderingsbrief',
+    briefHint: 'Leveransen — en snabb förkontroll, inte en ersättning för att köra hela prioriteringsmatrisen och Fas 4-go/no-go för kunden.',
+    btnToMatrix: '→ Lägg till i prioriteringsmatrisen',
+    btnExportMd: '📄 Exportera Markdown',
+    btnExportHtml: '🌐 Exportera HTML',
+    btnReset: '🔄 Återställ',
+    btnLoadSample: '🧪 Läs in exempel',
+    sampleConfirm: 'Läs in exempelutvärderingen i detta verktyg? Detta ersätter allt som för närvarande är sparat här.',
+    sampleLoadError: 'Kunde inte läsa in exempelfilen. Om du öppnade denna sida direkt från disken, servera mappen över HTTP i stället.',
+    resetConfirm: 'Clear this evaluation? / Ryd denne evaluering? / Rensa denna utvärdering?',
+    matrixNeedName: 'Ge användningsfallet ett namn först — matrisraden behöver något att kalla det.',
+    matrixAdded: name => `Lade till "${name}" i prioriteringsmatrisen. Öppna matrisen för att se det poängsatt jämte de andra kandidaterna.`,
+    matrixUpdated: name => `"${name}" fanns redan i matrisen — dess ROI-, genomförbarhets- och effektpoäng har uppdaterats.`,
+    matrixLink: 'Öppna matrisen →',
+    matrixFailed: 'Kunde inte skriva till matrisen (webbläsarlagring är otillgänglig).',
+
+    docTitle: 'Use case-utvärderingsbrief',
+    docFor: 'Framtagen för',
+    docAssessor: 'Bedömare',
+    docDate: 'Datum',
+    secFrame: '1. Inramning av användningsfall',
+    secScores: '2. Poäng',
+    secVerdict: '3. Utlåtande',
+    secFlag: '4. Vad en senior arkitekt skulle flagga',
+    thCriterion: 'Kriterium',
+    thRubric: 'Rubrikkälla',
+    thScore: 'Poäng',
+    thBasis: 'Grund',
+    thNote: 'Evidens / öppen fråga',
+    basisEvidence: 'Evidens',
+    basisAssumption: 'Antagande',
+    emptyNote: '(ännu inte dokumenterat)',
+    notScored: 'inte poängsatt',
+    srcPrio: 'Fas 1-prioriteringsmatris',
+    srcGng: 'Fas 4-utvärdering & go/no-go',
+    fiveCTitle: 'Databeredskap (5C)',
+    fiveCGap: 'Inget DRA-5C-scorecard hittat i denna webbläsare. Databeredskap villkorar allt annat, så detta är en öppen lucka snarare än ett godkännande — kör 5C-bedömningen innan ett gynnsamt utlåtande behandlas som avgjort.',
+    fiveCFrom: 'Hämtat från DRA-5C-scorecardet sparat i denna webbläsare.',
+    closingNote: 'Denna brief är en förkontroll. Ett gynnsamt utlåtande betyder fortfarande att prioriteringsmatrisen och Fas 4-go/no-go ska köras från början till slut för den kundfärdiga leveransen.',
+  },
+};
+
+let lang = localStorage.getItem('aoa_lang') || 'en';
+let step = 0;
+let scores = {};      // { criterionId: 1..5 }
+let assume = {};      // { criterionId: true }
+let notes = {};       // { criterionId: 'evidence note' }
+// Only the current step is in the DOM, so text answers cannot be read back out
+// of it — a field belonging to another step simply isn't there. `fields` is the
+// single source of truth; the DOM is an input surface that syncs into it.
+let fields = {};      // { ucName, pain, decision, owner, client, assessor, ... }
+
+function t(key) { return (STRINGS[lang] && STRINGS[lang][key] !== undefined) ? STRINGS[lang][key] : (STRINGS.en[key] !== undefined ? STRINGS.en[key] : key); }
+function esc(s) { return String(s === undefined || s === null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function mdCell(v) { return String(v === undefined || v === null ? '' : v).replace(/\|/g, '\\|').replace(/\r?\n/g, ' '); }
+function orEmpty(v) { return v && v.trim() ? esc(v) : `<em>${esc(t('emptyNote'))}</em>`; }
+
+function setLang(l) {
+  lang = l;
+  localStorage.setItem('aoa_lang', l);
+  document.documentElement.lang = l;
+  document.getElementById('langSelect').value = l;
+  applyI18n();
+  renderRail(); renderStep(); renderPreview();
+  save();
+}
+
+function applyI18n() {
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const v = t(el.getAttribute('data-i18n'));
+    if (typeof v === 'string') el.textContent = v;
+  });
+  document.title = t('heroTitle') + ' — Phase 1';
+  document.documentElement.lang = lang;
+}
+
+// ── persistence ─────────────────────────────────────────────────
+function fieldEls() { return Array.from(document.querySelectorAll('[data-eng]')); }
+function collectFields() { return Object.assign({}, fields); }
+function val(k) { return fields[k] !== undefined ? fields[k] : ''; }
+// Push state into whichever inputs happen to be mounted right now.
+function applyFieldsToDom() {
+  fieldEls().forEach(el => {
+    const k = el.getAttribute('data-eng');
+    el.value = fields[k] !== undefined ? fields[k] : '';
+  });
+}
+
+let savedTimer;
+function flashSaved() {
+  const f = document.getElementById('savedFlag');
+  if (!f) return;
+  f.textContent = '✓';
+  clearTimeout(savedTimer);
+  savedTimer = setTimeout(() => { f.textContent = ''; }, 1200);
+}
+function save() {
+  try {
+    localStorage.setItem(KEY, JSON.stringify({ fields: collectFields(), scores, assume, notes, step, lang }));
+    flashSaved();
+  } catch (e) {}
+}
+function loadSaved() {
+  try {
+    const o = JSON.parse(localStorage.getItem(KEY) || 'null');
+    if (!o) return false;
+    // `lang` is deliberately NOT restored from here. Language is a site-wide
+    // preference (`aoa_lang`), the same as in every other tool — reading it back
+    // out of this tool's own state would make the page ignore the selector
+    // whenever saved work existed. It is still written on save so that
+    // whole-engagement export/import matches the other tools' shape.
+    scores = o.scores || {}; assume = o.assume || {}; notes = o.notes || {};
+    fields = o.fields || {};
+    step = typeof o.step === 'number' ? Math.max(0, Math.min(STEPS.length - 1, o.step)) : 0;
+    return true;
+  } catch (e) { return false; }
+}
+
+// ── shared engagement profile ───────────────────────────────────
+const ENG_KEY = 'aoa_engagement_v1';
+const ENG_FIELDS = ['client', 'assessor', 'useCase'];
+function prefillEngagement() {
+  try {
+    const eng = JSON.parse(localStorage.getItem(ENG_KEY) || '{}');
+    ENG_FIELDS.forEach(k => {
+      if (!val(k) && eng[k]) fields[k] = eng[k];
+    });
+  } catch (e) {}
+}
+function syncEngagement(k) {
+  if (ENG_FIELDS.indexOf(k) === -1 || !fields[k]) return;
+  try {
+    const eng = JSON.parse(localStorage.getItem(ENG_KEY) || '{}');
+    eng[k] = fields[k];
+    localStorage.setItem(ENG_KEY, JSON.stringify(eng));
+  } catch (e) {}
+}
+
+// ── 5C data-readiness gate (read-only) ──────────────────────────
+const CS = ['context', 'clarity', 'coverage', 'credibility', 'capacity'];
+function read5C() {
+  try {
+    const o = JSON.parse(localStorage.getItem(DRA5C_KEY) || 'null');
+    if (!o) return null;
+    const vals = CS.map(c => Number(o['sc_' + c])).filter(n => n >= 1 && n <= 5);
+    if (vals.length !== CS.length) return null;   // partial scorecard is not a gate
+    const per = {};
+    CS.forEach(c => { per[c] = Number(o['sc_' + c]); });
+    return { per, min: Math.min.apply(null, vals), avg: vals.reduce((a, b) => a + b, 0) / vals.length };
+  } catch (e) { return null; }
+}
+
+// ── scoring ─────────────────────────────────────────────────────
+function avgOf(ids) {
+  const vals = ids.map(id => Number(scores[id])).filter(n => n >= 1 && n <= 5);
+  if (!vals.length) return null;
+  return { avg: vals.reduce((a, b) => a + b, 0) / vals.length, n: vals.length, total: ids.length };
+}
+function prioScore() { return avgOf(CRITERIA.filter(c => c.rubric === 'prio').map(c => c.id)); }
+function gngScore() { return avgOf(CRITERIA.filter(c => c.rubric === 'gng').map(c => c.id)); }
+function unscoredCount() { return CRITERIA.filter(c => !scores[c.id]).length; }
+
+// Composite verdict. Deliberately conservative: a clear "Pursue" needs both
+// rubrics at or above the go bar AND a clean data-readiness gate AND no score
+// resting on an assumption. Anything a rubric would fail outright fails here.
+function verdict() {
+  const p = prioScore(), g = gngScore();
+  if (!p || !g) return 'none';
+  const lo = Math.min(p.avg, g.avg);
+  if (lo < T_COND) return 'no';
+  const fc = read5C();
+  const dataClean = fc && fc.min > 2;
+  const noAssumptions = CRITERIA.every(c => !assume[c.id]);
+  if (p.avg >= T_CLEAR && g.avg >= T_CLEAR && dataClean && noAssumptions) return 'pursue';
+  return 'cond';
+}
+const VERDICT_KEY = { pursue: 'vPursue', cond: 'vCond', no: 'vNo', none: 'vNone' };
+const VERDICT_CLS = { pursue: 'v-pursue', cond: 'v-cond', no: 'v-no', none: 'v-none' };
+
+// Conditions and flags are derived, not typed — so they cannot drift from the
+// scores that produced them.
+function derivedConditions() {
+  const out = [];
+  const fc = read5C();
+  if (!fc) out.push(t('fiveCGap'));
+  else if (fc.min <= 2) {
+    const weak = CS.filter(c => fc.per[c] <= 2).map(c => c[0].toUpperCase() + c.slice(1));
+    out.push(cLabel5C(weak, fc));
+  }
+  CRITERIA.forEach(c => {
+    if (assume[c.id] && scores[c.id]) out.push(condAssumption(c));
+  });
+  CRITERIA.forEach(c => {
+    const s = Number(scores[c.id]);
+    if (s && s < T_COND) out.push(condWeak(c, s));
+  });
+  return out;
+}
+function cLabel5C(weak, fc) {
+  const j = weak.join(', ');
+  return { en: `Data readiness is the binding constraint: ${j} scored ${fc.min} or below on the DRA-5C scorecard. Close that before the pilot, not during it.`,
+           da: `Data-parathed er den bindende begrænsning: ${j} scorede ${fc.min} eller lavere på DRA-5C-scorecardet. Luk det før piloten, ikke undervejs.`,
+           sv: `Databeredskap är den bindande begränsningen: ${j} fick ${fc.min} eller lägre på DRA-5C-scorecardet. Stäng det före piloten, inte under.` }[lang];
+}
+function condAssumption(c) {
+  const n = t('c_' + c.id + '_name');
+  return { en: `${n} is scored from assumption. Get evidence before this score is used in a client-facing recommendation.`,
+           da: `${n} er scoret ud fra antagelse. Skaf evidens, før denne score bruges i en kundevendt anbefaling.`,
+           sv: `${n} är poängsatt utifrån antagande. Skaffa evidens innan denna poäng används i en kundvänd rekommendation.` }[lang];
+}
+function condWeak(c, s) {
+  const n = t('c_' + c.id + '_name');
+  return { en: `${n} scores ${s}, below the conditional bar of ${T_COND}. Either it improves or the use case does not proceed on this basis.`,
+           da: `${n} scorer ${s}, under den betingede tærskel på ${T_COND}. Enten forbedres den, eller use casen fortsætter ikke på dette grundlag.`,
+           sv: `${n} får ${s}, under den villkorade ribban på ${T_COND}. Antingen förbättras den eller så fortsätter användningsfallet inte på denna grund.` }[lang];
+}
+
+// The teaching payoff: name the riskiest assumptions even when the verdict is
+// favourable. Always returns something — a clean sheet is itself worth saying.
+function derivedFlags() {
+  const out = [];
+  const assumed = CRITERIA.filter(c => assume[c.id] && scores[c.id]);
+  const scored = CRITERIA.filter(c => scores[c.id]);
+  if (assumed.length) {
+    const names = assumed.map(c => t('c_' + c.id + '_name')).join('; ');
+    out.push({ en: `${assumed.length} of ${scored.length} scores rest on assumption rather than evidence (${names}). A composite average hides that unevenness — the verdict is only as solid as its weakest input.`,
+               da: `${assumed.length} af ${scored.length} scorer hviler på antagelse snarere end evidens (${names}). Et sammensat gennemsnit skjuler den ujævnhed — afgørelsen er kun så solid som dens svageste input.`,
+               sv: `${assumed.length} av ${scored.length} poäng vilar på antagande snarare än evidens (${names}). Ett sammansatt medelvärde döljer den ojämnheten — utlåtandet är bara så solitt som dess svagaste indata.` }[lang]);
+  }
+  if (scored.length) {
+    const lowest = scored.slice().sort((a, b) => Number(scores[a.id]) - Number(scores[b.id]))[0];
+    out.push({ en: `The lowest score is ${t('c_' + lowest.id + '_name')} at ${scores[lowest.id]}. In practice this is what will stall the work, whatever the average says — plan against it explicitly.`,
+               da: `Den laveste score er ${t('c_' + lowest.id + '_name')} på ${scores[lowest.id]}. I praksis er det dette, der vil bremse arbejdet, uanset hvad gennemsnittet siger — planlæg eksplicit imod det.`,
+               sv: `Den lägsta poängen är ${t('c_' + lowest.id + '_name')} på ${scores[lowest.id]}. I praktiken är det detta som kommer att stoppa arbetet, vad än medelvärdet säger — planera explicit mot det.` }[lang]);
+  }
+  const g = gngScore();
+  if (g && g.n === g.total) {
+    out.push({ en: 'The go/no-go scores above are projections, not measurements — Phase 4 exists to replace them with evidence. Treating them as findings this early is the most common way a favourable pre-check becomes an over-committed roadmap.',
+               da: 'Go/no-go-scorerne ovenfor er fremskrivninger, ikke målinger — Fase 4 findes for at erstatte dem med evidens. At behandle dem som fund så tidligt er den mest almindelige måde, et gunstigt forcheck bliver en overforpligtet roadmap.',
+               sv: 'Go/no-go-poängen ovan är prognoser, inte mätningar — Fas 4 finns för att ersätta dem med evidens. Att behandla dem som fynd så tidigt är det vanligaste sättet en gynnsam förkontroll blir en överkommitterad färdplan.' }[lang]);
+  }
+  if (isTechFirst()) {
+    out.push({ en: 'The pain point is still framed around a technology. Every score above inherits that framing, so re-run the framing step before trusting any of them.',
+               da: 'Smertepunktet er stadig indrammet omkring en teknologi. Alle scorer ovenfor arver den indramning, så kør indramningstrinnet igen, før du stoler på nogen af dem.',
+               sv: 'Smärtpunkten är fortfarande inramad kring en teknik. Alla poäng ovan ärver den inramningen, så kör om inramningssteget innan du litar på någon av dem.' }[lang]);
+  }
+  return out;
+}
+
+function isTechFirst() {
+  const pain = (val('pain') || '').toLowerCase().trim();
+  if (!pain) return false;
+  // Only the opening clause is checked: mentioning a model later while
+  // describing a real problem is fine, leading with one is the tell.
+  const opening = pain.split(/[.;\n]/)[0];
+  return TECH_WORDS.some(w => new RegExp('(^|[^\\p{L}])' + w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '([^\\p{L}]|$)', 'u').test(opening));
+}
+
+// ── step rail ───────────────────────────────────────────────────
+function stepLabel(i) {
+  const id = STEPS[i];
+  if (id === 'frame') return t('frameTitle');
+  if (id === 'verdict') return t('verdictTitle');
+  return t('c_' + id + '_name');
+}
+function stepAnswered(i) {
+  const id = STEPS[i];
+  if (id === 'frame') return !!(val('ucName') || '').trim();
+  if (id === 'verdict') return unscoredCount() === 0;
+  return !!scores[id];
+}
+function renderRail() {
+  document.getElementById('rail').innerHTML = STEPS.map((id, i) => {
+    const cur = i === step ? ' aria-current="step"' : '';
+    const done = stepAnswered(i) ? ' answered' : '';
+    return `<button type="button" class="${done.trim()}"${cur} onclick="goStep(${i})">${i + 1}. ${esc(stepLabel(i))}</button>`;
+  }).join('');
+}
+function goStep(i) {
+  step = Math.max(0, Math.min(STEPS.length - 1, i));
+  renderRail(); renderStep(); save();
+  document.getElementById('stepCard').scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+}
+
+// ── step rendering ──────────────────────────────────────────────
+function navRow() {
+  const last = step === STEPS.length - 1;
+  const nextLbl = step === STEPS.length - 2 ? t('btnToVerdict') : t('btnNext');
+  return `<div class="btn-row">
+    <button class="btn btn-secondary" onclick="goStep(${step - 1})" ${step === 0 ? 'disabled' : ''}>${esc(t('btnBack'))}</button>
+    ${last ? '' : `<button class="btn btn-primary" onclick="goStep(${step + 1})">${esc(nextLbl)}</button>`}
+    <span class="live-verdict">${liveVerdictHtml()}</span>
+  </div>`;
+}
+function liveVerdictHtml() {
+  const v = verdict();
+  const un = unscoredCount();
+  const chip = `<span class="verdict-chip ${VERDICT_CLS[v]}" style="font-size:13px;padding:3px 11px">${esc(t(VERDICT_KEY[v]))}</span>`;
+  return (un && v !== 'none' ? esc(t('vIncomplete')(un)) + '<br>' : '') + chip;
+}
+
+function renderStep() {
+  const id = STEPS[step];
+  const card = document.getElementById('stepCard');
+  const meta = `<div class="step-meta">${esc(t('stepOf')(step + 1, STEPS.length))}</div>`;
+
+  if (id === 'frame') {
+    card.innerHTML = meta + `
+      <h2>${esc(t('frameTitle'))}</h2>
+      <p class="hint">${esc(t('frameHint'))}</p>
+      <div class="why"><b>${esc(t('whyLabel'))}</b> ${esc(t('frameWhy'))}</div>
+      <label for="f-ucName">${esc(t('lblUcName'))}</label>
+      <input type="text" id="f-ucName" data-eng="ucName" placeholder="${esc(t('phUcName'))}">
+      <label for="f-pain">${esc(t('lblPain'))}</label>
+      <textarea id="f-pain" data-eng="pain" placeholder="${esc(t('phPain'))}"></textarea>
+      <div id="techWarn"></div>
+      <label for="f-decision">${esc(t('lblDecision'))}</label>
+      <textarea id="f-decision" data-eng="decision" placeholder="${esc(t('phDecision'))}"></textarea>
+      <label for="f-owner">${esc(t('lblOwner'))}</label>
+      <input type="text" id="f-owner" data-eng="owner" placeholder="${esc(t('phOwner'))}">
+      ` + navRow();
+    applyFieldsToDom();
+    renderTechWarn();
+  } else if (id === 'verdict') {
+    card.innerHTML = meta + `
+      <h2>${esc(t('verdictTitle'))}</h2>
+      <p class="hint">${esc(t('verdictHint'))}</p>
+      <div id="verdictBody"></div>
+      <label for="f-conditions">${esc(t('lblConditions'))}</label>
+      <textarea id="f-conditions" data-eng="conditions" placeholder="${esc(t('phConditions'))}"></textarea>
+      <label for="f-nextAction">${esc(t('lblNextAction'))}</label>
+      <textarea id="f-nextAction" data-eng="nextAction" placeholder="${esc(t('phNextAction'))}"></textarea>
+      ` + navRow();
+    applyFieldsToDom();
+    renderVerdictBody();
+  } else {
+    const c = CRITERIA.find(x => x.id === id);
+    const rubricLbl = c.rubric === 'prio' ? t('rubricPrio') : t('rubricGng');
+    card.innerHTML = meta + `
+      <h2>${esc(t('c_' + id + '_name'))}<span class="rubric-tag">${esc(rubricLbl)}</span></h2>
+      <div class="ask"><span class="ask-lbl">${esc(t('askLabel'))}</span><p>${esc(t('c_' + id + '_q'))}</p></div>
+      <div class="step-meta" style="margin:18px 0 0">${esc(t('whatSeparates'))}</div>
+      <div class="anchors">
+        <div class="anchor lo"><b>${esc(t('lowAnchor'))}</b>${esc(t('c_' + id + '_lo'))}</div>
+        <div class="anchor hi"><b>${esc(t('highAnchor'))}</b>${esc(t('c_' + id + '_hi'))}</div>
+      </div>
+      <div class="why"><b>${esc(t('whyLabel'))}</b> ${esc(t('c_' + id + '_why'))}</div>
+      <fieldset>
+        <legend>${esc(t('scoreLegend'))}</legend>
+        <div class="scale">
+          ${[1,2,3,4,5].map(n => `<label><input type="radio" name="sc-${id}" value="${n}" ${Number(scores[id]) === n ? 'checked' : ''} onchange="setScore('${id}',${n})"><span>${n}</span></label>`).join('')}
+        </div>
+        <div class="scale-ends"><span>${esc(t('scaleLow'))}</span><span>${esc(t('scaleHigh'))}</span></div>
+      </fieldset>
+      <label class="assume"><input type="checkbox" ${assume[id] ? 'checked' : ''} onchange="setAssume('${id}',this.checked)"><span>${esc(t('assumeLabel'))} <span style="color:var(--muted)">— ${esc(t('assumeHint'))}</span></span></label>
+      <label for="n-${id}">${esc(t('lblEvidence'))}</label>
+      <textarea id="n-${id}" placeholder="${esc(t('phEvidence'))}" oninput="setNote('${id}',this.value)">${esc(notes[id] || '')}</textarea>
+      ` + navRow();
+  }
+}
+
+function renderTechWarn() {
+  const el = document.getElementById('techWarn');
+  if (!el) return;
+  el.innerHTML = isTechFirst()
+    ? `<div class="warn"><b>${esc(t('techWarnLabel'))}</b> ${esc(t('techWarnBody'))}</div>`
+    : '';
+}
+
+function renderVerdictBody() {
+  const el = document.getElementById('verdictBody');
+  if (!el) return;
+  const p = prioScore(), g = gngScore(), fc = read5C(), v = verdict();
+  const fmt = x => x === null ? '—' : (Math.round(x * 100) / 100).toFixed(2);
+
+  let h = `<div style="margin:14px 0"><span class="verdict-chip ${VERDICT_CLS[v]}">${esc(t(VERDICT_KEY[v]))}</span></div>`;
+  const un = unscoredCount();
+  if (un) h += `<p class="hint">${esc(t('vIncomplete')(un))}</p>`;
+
+  h += '<div class="scoreboard">';
+  h += `<div class="sb"><div class="sb-lbl">${esc(t('sbPrio'))}</div><div class="sb-val">${p ? fmt(p.avg) : '—'}</div><div class="sb-sub">${p ? esc(t('sbAvgOf')(p.n)) + (p.avg >= T_CLEAR ? ' · ' + esc(t('sbQuickWin')) : '') : '—'}</div></div>`;
+  h += `<div class="sb"><div class="sb-lbl">${esc(t('sbGng'))}</div><div class="sb-val">${g ? fmt(g.avg) : '—'}</div><div class="sb-sub">${g ? esc(t('sbAvgOf')(g.n)) : '—'}</div></div>`;
+  h += `<div class="sb"><div class="sb-lbl">${esc(t('sbData'))}</div><div class="sb-val">${fc ? fc.min : '—'}</div><div class="sb-sub">${esc(fc ? t('sbFrom5c') : t('sbNoData'))}</div></div>`;
+  h += '</div>';
+
+  const conds = derivedConditions();
+  h += `<h3 style="font-family:var(--font-heading);color:var(--primary);font-size:16px;margin:18px 0 6px">${esc(t('condTitle'))}</h3>`;
+  h += conds.length ? '<ul style="margin:0 0 0 20px;font-size:14px">' + conds.map(c => `<li style="margin-bottom:6px">${esc(c)}</li>`).join('') + '</ul>'
+                    : `<p class="hint">${esc(t('condNone'))}</p>`;
+
+  const flags = derivedFlags();
+  if (flags.length) {
+    h += `<h3 style="font-family:var(--font-heading);color:var(--primary);font-size:16px;margin:18px 0 6px">${esc(t('flagTitle'))}</h3>`;
+    h += '<ul style="margin:0 0 0 20px;font-size:14px">' + flags.map(f => `<li style="margin-bottom:6px">${esc(f)}</li>`).join('') + '</ul>';
+  }
+  el.innerHTML = h;
+}
+
+function setScore(id, n) { scores[id] = n; afterChange(); }
+function setAssume(id, on) { if (on) assume[id] = true; else delete assume[id]; afterChange(); }
+function setNote(id, v) { if (v) notes[id] = v; else delete notes[id]; renderPreview(); save(); }
+function afterChange() {
+  renderRail();
+  const nav = document.querySelector('#stepCard .live-verdict');
+  if (nav) nav.innerHTML = liveVerdictHtml();
+  renderVerdictBody();
+  renderPreview();
+  save();
+}
+
+document.addEventListener('input', e => {
+  if (!e.target.matches('[data-eng]')) return;
+  const k = e.target.getAttribute('data-eng');
+  fields[k] = e.target.value;
+  syncEngagement(k);
+  renderTechWarn();
+  renderRail();
+  renderPreview();
+  save();
+});
+
+// ── the brief ───────────────────────────────────────────────────
+function rubricSrc(c) { return c.rubric === 'prio' ? t('srcPrio') : t('srcGng'); }
+function basisOf(c) { return assume[c.id] ? t('basisAssumption') : t('basisEvidence'); }
+
+function renderPreview() {
+  const date = new Date().toISOString().slice(0, 10);
+  const v = verdict(), p = prioScore(), g = gngScore(), fc = read5C();
+  const fmt = x => x === null ? '—' : (Math.round(x * 100) / 100).toFixed(2);
+
+  let h = `<div style="font-size:13px;color:var(--muted);margin-bottom:12px"><strong>${esc(t('docFor'))}:</strong> ${esc(val('client')) || '—'} &nbsp;·&nbsp; <strong>${esc(t('docAssessor'))}:</strong> ${esc(val('assessor')) || '—'} &nbsp;·&nbsp; <strong>${esc(t('docDate'))}:</strong> ${date}</div>`;
+
+  h += `<h3>${esc(t('secFrame'))}</h3>`;
+  h += `<p><strong>${esc(t('lblUcName'))}:</strong> ${orEmpty(val('ucName'))}</p>`;
+  h += `<p><strong>${esc(t('lblPain'))}:</strong> ${orEmpty(val('pain'))}</p>`;
+  h += `<p><strong>${esc(t('lblDecision'))}:</strong> ${orEmpty(val('decision'))}</p>`;
+  h += `<p><strong>${esc(t('lblOwner'))}:</strong> ${orEmpty(val('owner'))}</p>`;
+
+  h += `<h3>${esc(t('secScores'))}</h3><div class="table-scroll"><table><thead><tr>`
+     + `<th>${esc(t('thCriterion'))}</th><th>${esc(t('thRubric'))}</th><th>${esc(t('thScore'))}</th><th>${esc(t('thBasis'))}</th><th>${esc(t('thNote'))}</th>`
+     + '</tr></thead><tbody>';
+  CRITERIA.forEach(c => {
+    h += `<tr><td>${esc(t('c_' + c.id + '_name'))}</td><td>${esc(rubricSrc(c))}</td>`
+       + `<td>${scores[c.id] ? scores[c.id] : '<em>' + esc(t('notScored')) + '</em>'}</td>`
+       + `<td>${scores[c.id] ? esc(basisOf(c)) : '—'}</td>`
+       + `<td>${notes[c.id] ? esc(notes[c.id]) : '—'}</td></tr>`;
+  });
+  h += '</tbody></table></div>';
+  h += `<p style="margin-top:8px"><strong>${esc(t('sbPrio'))}:</strong> ${p ? fmt(p.avg) : '—'} &nbsp;·&nbsp; <strong>${esc(t('sbGng'))}:</strong> ${g ? fmt(g.avg) : '—'}</p>`;
+
+  h += `<h3>${esc(t('fiveCTitle'))}</h3>`;
+  if (fc) {
+    h += `<p>${esc(t('fiveCFrom'))} ` + CS.map(c => `${esc(c[0].toUpperCase() + c.slice(1))}: <strong>${fc.per[c]}</strong>`).join(' &nbsp;·&nbsp; ') + '</p>';
+  } else {
+    h += `<p><em>${esc(t('fiveCGap'))}</em></p>`;
+  }
+
+  h += `<h3>${esc(t('secVerdict'))}</h3>`;
+  h += `<p><span class="verdict-chip ${VERDICT_CLS[v]}" style="font-size:14px;padding:3px 12px">${esc(t(VERDICT_KEY[v]))}</span></p>`;
+  const conds = derivedConditions();
+  const typed = (val('conditions') || '').trim();
+  h += `<p><strong>${esc(t('condTitle'))}:</strong></p>`;
+  if (conds.length || typed) {
+    h += '<ul>' + conds.map(c => `<li>${esc(c)}</li>`).join('') + (typed ? `<li>${esc(typed)}</li>` : '') + '</ul>';
+  } else {
+    h += `<p><em>${esc(t('condNone'))}</em></p>`;
+  }
+  h += `<p><strong>${esc(t('nextActionTitle'))}:</strong> ${orEmpty(val('nextAction'))}</p>`;
+
+  const flags = derivedFlags();
+  if (flags.length) {
+    h += `<h3>${esc(t('secFlag'))}</h3><ul>` + flags.map(f => `<li>${esc(f)}</li>`).join('') + '</ul>';
+  }
+  h += `<p style="margin-top:14px"><em>${esc(t('closingNote'))}</em></p>`;
+
+  document.getElementById('preview').innerHTML = h;
+}
+
+function docMarkdown() {
+  const date = new Date().toISOString().slice(0, 10);
+  const v = verdict(), p = prioScore(), g = gngScore(), fc = read5C();
+  const fmt = x => x === null ? '—' : (Math.round(x * 100) / 100).toFixed(2);
+  let m = `# ${t('docTitle')} — ${val('client') || '[client]'}\n\n`;
+  m += `**${t('docFor')}:** ${val('client') || '—'}  \n**${t('docAssessor')}:** ${val('assessor') || '—'}  \n**${t('docDate')}:** ${date}\n\n`;
+
+  m += `## ${t('secFrame')}\n\n`;
+  m += `- **${t('lblUcName')}:** ${val('ucName') || t('emptyNote')}\n`;
+  m += `- **${t('lblPain')}:** ${val('pain') || t('emptyNote')}\n`;
+  m += `- **${t('lblDecision')}:** ${val('decision') || t('emptyNote')}\n`;
+  m += `- **${t('lblOwner')}:** ${val('owner') || t('emptyNote')}\n\n`;
+
+  m += `## ${t('secScores')}\n\n`;
+  m += `| ${t('thCriterion')} | ${t('thRubric')} | ${t('thScore')} | ${t('thBasis')} | ${t('thNote')} |\n|---|---|---|---|---|\n`;
+  CRITERIA.forEach(c => {
+    m += `| ${mdCell(t('c_' + c.id + '_name'))} | ${mdCell(rubricSrc(c))} | ${scores[c.id] || t('notScored')} | ${scores[c.id] ? mdCell(basisOf(c)) : '—'} | ${mdCell(notes[c.id] || '—')} |\n`;
+  });
+  m += `\n**${t('sbPrio')}:** ${p ? fmt(p.avg) : '—'}  \n**${t('sbGng')}:** ${g ? fmt(g.avg) : '—'}\n\n`;
+
+  m += `### ${t('fiveCTitle')}\n\n`;
+  m += fc ? `${t('fiveCFrom')} ` + CS.map(c => `${c[0].toUpperCase() + c.slice(1)}: ${fc.per[c]}`).join(', ') + '\n\n'
+          : `${t('fiveCGap')}\n\n`;
+
+  m += `## ${t('secVerdict')}\n\n**${t(VERDICT_KEY[v])}**\n\n`;
+  const conds = derivedConditions();
+  const typed = (val('conditions') || '').trim();
+  m += `**${t('condTitle')}:**\n\n`;
+  if (conds.length || typed) {
+    conds.forEach(c => { m += `- ${c}\n`; });
+    if (typed) m += `- ${typed}\n`;
+    m += '\n';
+  } else { m += `${t('condNone')}\n\n`; }
+  m += `**${t('nextActionTitle')}:** ${val('nextAction') || t('emptyNote')}\n\n`;
+
+  const flags = derivedFlags();
+  if (flags.length) {
+    m += `## ${t('secFlag')}\n\n`;
+    flags.forEach(f => { m += `- ${f}\n`; });
+    m += '\n';
+  }
+  m += `_${t('closingNote')}_\n`;
+  return m;
+}
+
+function docHtml() {
+  return '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>' + esc(t('docTitle')) + ' — ' + esc(val('client') || 'client') + '</title>'
+    + '<style>body{font-family:-apple-system,Segoe UI,sans-serif;max-width:820px;margin:40px auto;padding:0 20px;color:#1c1c28;line-height:1.6}'
+    + 'h1,h3{color:#1B1474;font-family:Georgia,serif}table{width:100%;border-collapse:collapse;font-size:14px}th,td{border:1px solid #e4e4f0;padding:7px 10px;text-align:left;vertical-align:top}th{background:#EEEEFA;color:#1B1474}'
+    + '.verdict-chip{font-weight:700;padding:3px 12px;border-radius:20px;background:#EEEEFA;color:#1B1474}em{color:#5b5b6b}</style></head><body>'
+    + '<h1>' + esc(t('docTitle')) + '</h1>'
+    + document.getElementById('preview').innerHTML
+    + '</body></html>';
+}
+
+function download(text, fname, mime) {
+  const b = new Blob([text], { type: mime + ';charset=utf-8' });
+  const u = URL.createObjectURL(b);
+  const a = document.createElement('a');
+  a.href = u; a.download = fname; document.body.appendChild(a); a.click();
+  document.body.removeChild(a); setTimeout(() => URL.revokeObjectURL(u), 1500);
+}
+function slug() { return (val('client') || 'use_case_evaluation').replace(/\W+/g, '_'); }
+function exportDoc(fmt) {
+  if (fmt === 'md') download(docMarkdown(), 'use_case_evaluation_' + slug() + '.md', 'text/markdown');
+  else download(docHtml(), 'use_case_evaluation_' + slug() + '.html', 'text/html');
+}
+
+// ── hand off to the prioritization matrix ────────────────────────
+// Writes one row into the neighbouring tool's own localStorage shape:
+//   { id, name, pain, roi, feas, impact }
+// Merges rather than replaces, and updates in place if the use case is
+// already there, so running this twice doesn't duplicate the candidate.
+function sendToMatrix() {
+  const msg = document.getElementById('matrixMsg');
+  const name = (val('ucName') || '').trim();
+  const show = (text, ok) => {
+    msg.style.display = 'block';
+    msg.style.color = ok ? 'var(--green)' : 'var(--red)';
+    msg.innerHTML = esc(text) + (ok ? ` <a href="./" style="color:var(--primary);font-weight:600">${esc(t('matrixLink'))}</a>` : '');
+  };
+  if (!name) { show(t('matrixNeedName'), false); return; }
+  try {
+    const o = JSON.parse(localStorage.getItem(MATRIX_KEY) || '{}');
+    const rows = Array.isArray(o.rows) ? o.rows : [];
+    let nextId = typeof o.nextId === 'number' ? o.nextId : 1;
+    const payload = {
+      name: name,
+      pain: (val('pain') || '').trim(),
+      roi: scores.roi ? String(scores.roi) : '',
+      feas: scores.feas ? String(scores.feas) : '',
+      impact: scores.impact ? String(scores.impact) : '',
+    };
+    const existing = rows.find(r => (r.name || '').trim().toLowerCase() === name.toLowerCase());
+    let updated = false;
+    if (existing) { Object.assign(existing, payload); updated = true; }
+    else { rows.push(Object.assign({ id: nextId++ }, payload)); }
+    o.rows = rows;
+    o.nextId = Math.max(nextId, rows.reduce((m, r) => Math.max(m, (Number(r.id) || 0) + 1), 1));
+    o.fields = o.fields || {};
+    if (val('client')) o.fields.client = val('client');
+    if (val('assessor')) o.fields.assessor = val('assessor');
+    localStorage.setItem(MATRIX_KEY, JSON.stringify(o));
+    show((updated ? t('matrixUpdated') : t('matrixAdded'))(name), true);
+  } catch (e) { show(t('matrixFailed'), false); }
+}
+
+function resetAll() {
+  if (!confirm(t('resetConfirm'))) return;
+  fields = {}; scores = {}; assume = {}; notes = {}; step = 0;
+  applyFieldsToDom();
+  document.getElementById('matrixMsg').style.display = 'none';
+  renderRail(); renderStep(); renderPreview(); save();
+}
+
+// ── sample loader ───────────────────────────────────────────────
+const SAMPLE_URL = '../sample-data/engagement-nordkap/use-case-evaluator.json';
+function loadSample() {
+  if (!confirm(t('sampleConfirm'))) return;
+  const errEl = document.getElementById('sampleError');
+  errEl.style.display = 'none';
+  fetch(SAMPLE_URL)
+    .then(r => { if (!r.ok) throw new Error('http ' + r.status); return r.json(); })
+    .then(d => {
+      scores = d.scores || {}; assume = d.assume || {}; notes = d.notes || {};
+      fields = d.fields || {};
+      step = 0;
+      // carry client/assessor into the shared engagement profile
+      try {
+        const eng = JSON.parse(localStorage.getItem(ENG_KEY) || '{}');
+        ENG_FIELDS.forEach(k => { if (fields[k]) eng[k] = fields[k]; });
+        localStorage.setItem(ENG_KEY, JSON.stringify(eng));
+      } catch (e) {}
+      applyFieldsToDom();
+      renderRail(); renderStep(); renderPreview(); save();
+    })
+    .catch(() => { errEl.textContent = t('sampleLoadError'); errEl.style.display = 'block'; });
+}
+
+// ── boot ────────────────────────────────────────────────────────
+loadSaved();
+document.getElementById('langSelect').value = lang;
+applyI18n();
+prefillEngagement();
+applyFieldsToDom();   // the always-mounted client/assessor inputs
+renderRail();
+renderStep();         // mounts the current step and fills it from `fields`
+renderPreview();
+</script>
+</body>
+</html>
