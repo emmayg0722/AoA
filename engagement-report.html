@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script src="project-workspace/tool-storage.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Master Engagement Report — AI Architect Toolkit</title>
@@ -196,7 +197,13 @@ const STRINGS = {
 };
 
 let lang = localStorage.getItem('aoa_lang') || 'en';
-function t(key) { const v = (STRINGS[lang] && STRINGS[lang][key] !== undefined) ? STRINGS[lang][key] : STRINGS.en[key]; return v; }
+function t(key) {
+  if (window.AoaProjectTool) {
+    const projectText = {statPrivacy:'Reads this project’s saved work from GitHub.',noteBody:'This report assembles only the selected client project. Imports queue for GitHub saving; check the workspace status above.',manageHint:'Export this project’s tool state as one JSON backup, or import a backup into this project.',importDone:'Project backup imported. Check the GitHub save status above.',emptyReport:'No saved tool work in this project yet. Open a phase tool to start.'};
+    if (projectText[key]) return projectText[key];
+  }
+  const v = (STRINGS[lang] && STRINGS[lang][key] !== undefined) ? STRINGS[lang][key] : STRINGS.en[key]; return v;
+}
 function setLang(l) { lang = l; localStorage.setItem('aoa_lang', l); document.getElementById('langSelect').value = l; applyI18n(); renderReport(); }
 function applyI18n() {
   document.documentElement.lang = lang;

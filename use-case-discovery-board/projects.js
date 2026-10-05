@@ -198,6 +198,16 @@ async function copyProjectLink() {
 }
 
 async function initProjects() {
+  let toolkitProject = false;
+  try { toolkitProject = parent !== window && parent.ToolkitWorkspace?.bridge.active; } catch (_) {}
+  if (toolkitProject) {
+    // The toolkit project owns storage and membership; keep this original canvas.
+    SY.github = null; SY.project = null; SY.on = false;
+    openBrowserBoard();
+    byId('projectBar').hidden = true;
+    byId('syncBtn').closest('.card').hidden = true;
+    return;
+  }
   byId('projectForm').addEventListener('submit', submitProject);
   byId('projectList').addEventListener('change', () => { byId('joinProjectId').value = byId('projectList').value; });
   const query = new URLSearchParams(location.search);
