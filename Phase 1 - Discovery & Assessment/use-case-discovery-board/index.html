@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script src="../../project-workspace/tool-storage.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Use Case Discovery Board — Phase 1</title>
@@ -228,8 +229,11 @@ button:disabled { opacity: .55; cursor: default; }
 
   <section class="wrap project-entry" id="projectEntry" aria-label="Choose a project">
     <div class="card">
-      <h2>Start a discovery project</h2>
-      <p class="hint">Create a shared board or join your team’s project. The original discovery workshop is inside.</p>
+      <h2>Work on a client project</h2>
+      <p class="hint">For a client engagement across all ten phases, create or join a toolkit project. It includes this original discovery board and every saved tool.</p>
+      <div class="btn-row"><a class="btn btn-primary" href="../../project-workspace/">Create or join a toolkit project →</a></div>
+      <h3 style="margin-top:24px">Previous board-only projects</h3>
+      <p class="hint">Use the controls below for earlier discovery-board sessions, or open your browser draft at the bottom.</p>
       <div class="btn-row" role="group" aria-label="Project action">
         <button type="button" class="btn btn-secondary" id="createProjectTab" aria-pressed="true" onclick="chooseProjectMode('create')">Create a project</button>
         <button type="button" class="btn btn-secondary" id="joinProjectTab" aria-pressed="false" onclick="chooseProjectMode('join')">Join an existing project</button>
@@ -2404,7 +2408,7 @@ window.addEventListener('beforeunload', () => {
   window.addEventListener('resize', () => { renderEdges(); });
 })();
 </script>
-<script src="../../use-case-discovery-board/github-projects.js?v=20261005-github-1"></script>
-<script src="../../use-case-discovery-board/projects.js?v=20261005-github-1"></script>
+<script src="../../use-case-discovery-board/github-projects.js?v=20261005-workspace-1"></script>
+<script src="../../use-case-discovery-board/projects.js?v=20261005-workspace-1"></script>
 </body>
 </html>
