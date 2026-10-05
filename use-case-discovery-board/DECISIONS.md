@@ -35,3 +35,7 @@ The user requested Create/Join projects with named participants and all project 
 ## 2026-10-05 — Repository visibility disclosed before entry
 
 The current AoA repository is public. Participants acknowledge that project names, display names, and board content will be visible there before creating or joining a GitHub-backed project. The server determines the actual storage mode and repository visibility; the frontend cannot assert a GitHub save on its own.
+
+## 2026-10-05 — Separate project-data branch
+
+Keep project records at the same standalone-folder path on `codex/discovery-data` in the AoA repository. This supersedes main as the default data branch: board edits must not trigger repeated Pages website builds. The code remains on main; storage notices include the actual data branch and path. Serialize GitHub write attempts to keep save traffic bounded.

@@ -2,6 +2,7 @@
 import base64
 import json
 import re
+import time
 from urllib.error import HTTPError, URLError
 from urllib.parse import quote
 from urllib.request import Request, urlopen
@@ -14,7 +15,7 @@ class RepositoryConflict(Exception):
 
 
 class GitHubRepository:
-    def __init__(self, repository, token, branch='main', path='use-case-discovery-board/data/sessions.json'):
+    def __init__(self, repository, token, branch='codex/discovery-data', path='use-case-discovery-board/data/sessions.json'):
         if not re.fullmatch(r'[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+', repository):
             raise ValueError('Invalid GitHub repository')
         if not token or not path or path.startswith('/') or '..' in path.split('/'):
@@ -62,6 +63,9 @@ class GitHubRepository:
                     content=base64.b64encode((json.dumps(state, ensure_ascii=False, indent=2, allow_nan=False) + '\n').encode()).decode())
         if self.sha:
             body['sha'] = self.sha
+        # Serialize repository writes at a modest rate; the relay owns one store lock.
+        time.sleep(max(0, 2 - (time.monotonic() - getattr(self, 'last_write', 0))))
+        self.last_write = time.monotonic()
         try:
             result = self.request(self.route(), body)
         except HTTPError as exc:

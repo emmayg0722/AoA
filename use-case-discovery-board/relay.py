@@ -469,7 +469,7 @@ def main():
         ap.error('Set AOA_RELAY_TOKEN when binding beyond localhost')
     github_token = os.environ.get('AOA_GITHUB_TOKEN')
     github = GitHubRepository(os.environ.get('AOA_GITHUB_REPOSITORY', 'emmayg0722/AoA'), github_token,
-                              os.environ.get('AOA_GITHUB_BRANCH', 'main'),
+                              os.environ.get('AOA_GITHUB_BRANCH', 'codex/discovery-data'),
                               os.environ.get('AOA_GITHUB_DATA_PATH', 'use-case-discovery-board/data/sessions.json')) if github_token else None
     server = create_server(args.host, args.port, args.data, args.root, args.allow_origin, token, github)
     print(f'Original discovery workshop: http://localhost:{args.port}/use-case-discovery-board/?session={args.session}', flush=True)
