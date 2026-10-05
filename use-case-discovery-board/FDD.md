@@ -13,3 +13,7 @@
 | GitHub save | Server token and current blob SHA | Commit complete project data; conflicts refresh without overwriting and failures keep edits pending. |
 | Recovery | Reload / server restart | Rejoin the existing project using the participant name; protect project-specific browser drafts. |
 | Offline board | Explicit local-board action | Retain the original local workshop and its browser key; never imply project collaboration or GitHub saving. |
+
+| GitHub-only connection | Participant token | Verify GitHub identity, read actual repository visibility and saved projects; hold credential only in memory and never include it in drafts, exports, URLs, or configuration. |
+| Repository collaboration | Original operations | Commit changes to the data branch, retry conflicts against the latest saved state, and poll every 12 seconds; show project members without claiming active presence. |
+| Missing credential | Public entry | Read public projects, explain required write access, and disable create/join until the participant connects; browser-only workshop remains available. |

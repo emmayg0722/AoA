@@ -1,3 +1,8 @@
 {
-  "relayUrl": ""
+  "storage": "github",
+  "github": {
+    "repository": "emmayg0722/AoA",
+    "branch": "codex/discovery-data",
+    "path": "use-case-discovery-board/data/sessions.json"
+  }
 }

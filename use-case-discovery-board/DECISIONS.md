@@ -39,3 +39,7 @@ The current AoA repository is public. Participants acknowledge that project name
 ## 2026-10-05 — Separate project-data branch
 
 Keep project records at the same standalone-folder path on `codex/discovery-data` in the AoA repository. This supersedes main as the default data branch: board edits must not trigger repeated Pages website builds. The code remains on main; storage notices include the actual data branch and path. Serialize GitHub write attempts to keep save traffic bounded.
+
+## 2026-10-05 — GitHub-only collaboration (supersedes external hosting requirement)
+
+The user clarified "no on github" when offered Vercel or Azure. Keep the published frontend and project data entirely on GitHub. GitHub Pages cannot execute the relay, so the browser commits through GitHub REST using each participant's own repository-scoped token. Names remain labels; GitHub permissions authorize writes. Credentials remain in memory, and the UI explains that a reload requires reconnection. Project membership is durable; 12-second polling is disclosed rather than implying websocket presence. Retain the existing Python relay for optional local use.
