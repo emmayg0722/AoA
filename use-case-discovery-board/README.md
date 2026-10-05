@@ -1,63 +1,42 @@
-# Use case discovery board
+# Use Case Discovery Board
 
-A standalone workshop board for adding, arranging, connecting, and reviewing AI use cases. All durable board data is saved in this folder's `data/board.json`.
+The original workshop interface is retained: workflow steps, pain points, systems, candidate use cases, notes, scoring, document preview, SOP, languages, merge, and exports.
 
-Published entry: [Phase 1 discovery board](https://emmayg0722.github.io/AoA/Phase%201%20-%20Discovery%20%26%20Assessment/use-case-discovery-board/). The previous workflow workshop is retained through the header link. GitHub Pages shows the repository snapshot read-only; the server below enables edits and live updates.
-
-## Run
-
-Requires Node.js 22 or newer. No dependency installation or build step is needed.
+## Start a shared workshop
 
 ```sh
 cd use-case-discovery-board
 npm start
 ```
 
-Open **http://127.0.0.1:4317**. To choose another port: `PORT=4318 npm start`.
+Open `http://localhost:4317/use-case-discovery-board/`, enter your name and a session name, then press **Go live**. Participants using the same server and session edit one board. The first participant seeds it from their existing browser board; later participants review adopting the saved session. Browser editing remains available offline.
 
-## Use
+## Repository storage
 
-- Add a use case or note, enter its title and context, and select **Save card**.
-- Drag saved cards to arrange them. The card position fields provide a keyboard alternative.
-- Select a saved card and use **Connect to** to add a labeled, directed connection.
-- Set an owner, review status, and optional ROI, feasibility, and impact scores. No scores are filled in automatically.
-- Search the card list, pan the canvas, or use **Fit board**.
-- **Export JSON** downloads the complete saved board. **Import JSON** accepts a board export or the existing prioritization tool's JSON export. Board imports replace after confirmation; prioritization imports append and preserve the entire source payload.
+`data/sessions.json` stores every named live session and its complete original board document. Writes are validated and atomic; the server confirms a save and publishes it only after disk persistence succeeds. Sessions and ID allocations survive a restart. Pending failed edits retry and remain in browser autosave.
 
-## Data and Git
+`data/board.json` preserves the user's data from the superseded replacement interface. It is not silently substituted for an existing workshop. The earlier Node implementation remains available in source, but `npm start` launches the original workshop's durable Python relay.
 
-| Data | Location |
-| --- | --- |
-| Board name, saved revision, timestamp | `data/board.json` |
-| Cards, notes, owners, statuses, and scores | `data/board.json` → `nodes` |
-| Card positions | `data/board.json` → `nodes` → `x`, `y` |
-| Directed connections and labels | `data/board.json` → `edges` |
-| Original prioritization import payloads | `data/board.json` → `imports` |
+Disk saves update the repository checkout on the **server**. They are not automatic Git commits or pushes. Commit and push the JSON when you want it in GitHub history. This repository is public; only publish content you intend to make public.
 
-Changes are written atomically before success is shown. They survive reloads and server restarts and appear in `git diff`. Git commits and pushes remain explicit actions; the server never commits or pushes. Pan, zoom, search, and unsaved drafts are session-only UI state. Export contains saved data, so save a draft before exporting it.
+## Public GitHub Pages connection
 
-The board was initialized empty; its checked-in JSON contains the user's saved content at publication time. No existing browser data is silently imported.
+The original board is published at its existing Phase 1 URL. GitHub Pages serves static files; shared repository writes need a separate running service. In the board's **Connection settings**, enter that service's HTTPS URL and access code, then use the same session name as other participants. The access code stays in memory and is never placed in board exports or committed configuration.
 
-## Live collaboration
-
-Open the same server in two browser windows: saved edits appear in both through server-sent events. Concurrent stale edits are rejected instead of overwriting a newer graph. Unsaved card drafts are retained when another browser edits the card; use **Review saved card** to resolve the conflict.
-
-For participants on a trusted private network:
+A hosted relay needs Python, one server process, a persistent checkout/disk, and HTTPS at a reverse proxy. Set `AOA_RELAY_TOKEN` through the host's secret settings and launch:
 
 ```sh
-HOST=0.0.0.0 npm start
+python3 relay.py --host 0.0.0.0 --port 4317 \
+  --allow-origin https://emmayg0722.github.io
 ```
 
-Share `http://<this-computer-private-IP>:4317`. All participants edit the same repo file on the server computer. This mode permits anyone who can reach that server to edit the board; use it only on a trusted network. The default binds only to this computer.
+For a trusted LAN, the same command can be used with the machine's LAN address. No service has been provisioned by this change. Named-session files are excluded from the relay's static file serving; API access requires the configured access code.
 
-People on different networks need a hosted server with persistent storage, HTTPS, and authentication. Run one writer process for this JSON file. Cloud provisioning and public access control are outside this implementation.
-
-GitHub Pages serves the checked-in board as a **read-only snapshot**. It cannot save files back to this repository or provide live edits. Private workshop data should only be committed when its repository visibility is appropriate.
-
-## Verify
+## Verify and publish the entry
 
 ```sh
 npm test
+npm run publish-entry
 ```
 
-Tests use temporary JSON files, never the real board. They cover durable saves, restart readback, simultaneous writes, live events, invalid input, origin checks, and deletion of incident connections.
+`index.html` is the canonical original workshop. `publish-entry.py` generates the Phase 1 entry and adjusts only toolkit/sample links. The existing Phase 1 `workshop-relay.py` command delegates to this relay.

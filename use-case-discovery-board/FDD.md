@@ -1,15 +1,11 @@
 # Function design
 
-| Feature | Inputs | Behavior and edge cases |
-| --- | --- | --- |
-| Add/edit | Title, problem, owner, type, status, optional 1–5 scores | Explicit save; blank titles rejected; incomplete scores remain unscored. |
-| Move | Pointer drag or inspector X/Y coordinates | Save card position on drop; keyboard users can edit coordinates. |
-| Connect | Source, target, label | Directed connection; reject self-links, duplicate pairs, or missing endpoints. |
-| Remove | Selected card/connection | Confirm card deletion; remove incident connections with the card. |
-| Navigate | Search, card selection, pan, zoom, fit | Sidebar and inspector provide alternatives to canvas interactions; responsive stacked layout on mobile. |
-| Live updates | Server-sent saved snapshots | Other browsers update; unsaved inspector drafts stay intact and conflicts require review. |
-| Persistence | Revision and operation | Success only after disk save; failures and stale edits leave the persisted board intact. |
-| Import/export | Board JSON or existing prioritization export | Export complete board; validate imports before writing; no synthetic seed data. |
-| Static view | No writable API | Load checked-in JSON, disable writes, and show the command to start the server. |
-| Confirmation | Delete, import, discard, or edit-label action | Accessible in-page dialog with Cancel/Continue; preserve the initiating revision while the dialog is open. |
-| Public Phase 1 route | GitHub Pages URL | Loads the shared standalone assets and repository JSON; previous workflow workshop remains accessible through the header link. |
+| Feature | Behavior |
+| --- | --- |
+| Existing workshop | Preserve typed blocks, auto-connections, inspector, workflow preview, undo/redo, fit/zoom, checklist, scoring, languages, sample loading, merge, and exports. |
+| Go live | First participant seeds the session from their existing board; later participants adopt the saved session after reviewing replacement. |
+| Repository save | Validate and atomically write the complete session document before reporting success; failed saves leave the authoritative board intact. |
+| Live edits | Broadcast existing block, connection, intake, checklist, and whole-document operations; preserve typing/drag behavior. |
+| Restart | Reload all named sessions and allocation counters from disk; a returning participant rejoins the saved session. |
+| Connection settings | Optional server URL and access code connect the same public interface to a hosted relay; access code remains in memory only. |
+| Offline editing | Keep existing browser autosaves; pending live edits retry while connected and must be saved before leaving. |

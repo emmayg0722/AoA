@@ -1,6 +1,5 @@
-# Previous workflow workshop
+> Historical documentation for the unmodified `workshop.html` backup. The primary page retains the original workshop with durable live storage; the in-memory relay behavior below is superseded.
 
-The previous discovery board is preserved as `workshop.html`; its existing browser storage and sample assets are unchanged. The original documentation follows; references to the previous `index.html` now refer to `workshop.html`.
 
 # Use Case Discovery Board
 

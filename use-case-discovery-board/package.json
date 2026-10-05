@@ -4,5 +4,5 @@
   "private": true,
   "type": "module",
   "engines": { "node": ">=22" },
-  "scripts": { "start": "node server.mjs", "test": "node --test test/*.test.mjs" }
+  "scripts": { "start": "python3 relay.py", "test": "python3 -m unittest discover -s test -p 'test_*.py'", "publish-entry": "python3 publish-entry.py" }
 }

@@ -13,7 +13,7 @@ or any other agent the same reasoning, installable outside this repository.
 
 ## Repository-backed discovery board
 
-The [Phase 1 discovery board](Phase%201%20-%20Discovery%20%26%20Assessment/use-case-discovery-board/) displays saved repository data from the standalone [use-case-discovery-board](use-case-discovery-board/README.md) app. GitHub Pages shows that snapshot read-only; run the standalone Node.js server for repo saves and live updates. The previous typed workflow workshop is preserved at [workshop.html](Phase%201%20-%20Discovery%20%26%20Assessment/use-case-discovery-board/workshop.html), with its existing browser data and assets retained.
+The [Phase 1 discovery board](Phase%201%20-%20Discovery%20%26%20Assessment/use-case-discovery-board/) retains the original workflow workshop and adds durable live sessions. The standalone [use-case-discovery-board](use-case-discovery-board/README.md) folder contains its interface, Python relay, and repository JSON. Browser-local editing and existing autosaves remain available; **Go live** saves named sessions on the connected server and synchronizes participants. The public page can connect to a separately hosted HTTPS relay through Connection settings. Disk saves are not automatic Git commits or pushes.
 
 ## Structure
 
