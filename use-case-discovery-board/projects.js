@@ -16,7 +16,7 @@ function persistProjectPending() {
 function projectMessage(message) { byId('projectMessage').textContent = message; }
 function storageDescription(storage) {
   if (storage.mode === 'github') {
-    return `Project boards, engagement fields, checklist, project details and participant names are committed to ${storage.repository} on GitHub. ${storage.visibility === 'public' ? 'This repository is public: anyone can read this data and its commit history.' : 'The repository is private: people with repository access can read this data and its commit history.'} Display names do not create private accounts.`;
+    return `Project boards, engagement fields, checklist, project details and participant names are committed to ${storage.repository} on GitHub, in branch ${storage.branch} at ${storage.path}. ${storage.visibility === 'public' ? 'This repository is public: anyone can read this data and its commit history.' : 'The repository is private: people with repository access can read this data and its commit history.'} Display names do not create private accounts.`;
   }
   return 'This server saves project boards, engagement fields, checklist, project details and participant names to its repository folder. Automatic GitHub saving is not configured on this server. Display names do not create private accounts.';
 }
@@ -30,7 +30,7 @@ function chooseProjectMode(mode) {
   byId('projectName').required = mode === 'create';
   byId('projectName').disabled = mode !== 'create';
   byId('projectSubmit').textContent = mode === 'create' ? 'Create project & open board' : 'Join project & open board';
-  projectMessage('');
+  if (PROJECT.ready) projectMessage(mode === 'create' ? 'Enter a project name to create a board.' : 'Select a project or enter its project ID.');
 }
 
 async function projectRequest(path, body) {

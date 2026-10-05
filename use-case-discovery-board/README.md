@@ -23,7 +23,7 @@ Run one Python relay process behind HTTPS. Configure these values in the hosting
 | --- | --- |
 | `AOA_GITHUB_TOKEN` | Server-only GitHub credential with Contents read/write for the selected repository. |
 | `AOA_GITHUB_REPOSITORY` | `emmayg0722/AoA` (default). |
-| `AOA_GITHUB_BRANCH` | `main` (default); the credential must be allowed to write this branch. |
+| `AOA_GITHUB_BRANCH` | `codex/discovery-data` (default); the credential must be allowed to write this branch. |
 | `AOA_GITHUB_DATA_PATH` | `use-case-discovery-board/data/sessions.json` (default). |
 | `AOA_RELAY_TOKEN` | Service access code shared with collaborators; required beyond localhost. |
 | `PORT` | Host-provided listening port, or `4317`. |
@@ -36,6 +36,8 @@ python3 relay.py --host 0.0.0.0 \
 ```
 
 A Dockerfile is included for hosts accepting a container with this folder as its build context. It serves the API; GitHub Pages serves the original board UI. Without a GitHub credential, a hosted relay needs persistent disk and remains explicitly in local mode. With GitHub configured, the relay reads the repository on startup, commits changes before acknowledgment/broadcast, and uses disk only as a secondary mirror. SHA conflicts refresh repository state and preserve pending client operations for retry. Use one relay instance; concurrent instances are not supported.
+
+Project data uses a separate branch in the same repository, so board edits do not rebuild the Pages website. This data branch is created from published main; its initial session file is empty. Repository writes are serialized with at least two seconds between attempts; live changes are broadcast after the save completes.
 
 Set `relayUrl` in `config.json` to the service's HTTPS URL, run `npm run publish-entry`, and publish both configuration files. Participants can also use **Connection settings** to connect an existing service. The Phase 1 URL remains:
 
