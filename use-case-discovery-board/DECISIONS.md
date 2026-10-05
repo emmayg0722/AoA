@@ -23,3 +23,7 @@ Use accessible HTML dialogs for destructive imports, deletion, draft discard, an
 ## 2026-10-05 — Publish at the requested Phase 1 URL
 
 The user requested publication at `/AoA/Phase%201%20-%20Discovery%20%26%20Assessment/use-case-discovery-board/`. Keep the standalone implementation and JSON at the repository root, with a Phase 1 entry loading those assets. Current remote main already contains a different workflow workshop, so preserve it as linked `workshop.html` and retain its original documentation and assets. Publish against current remote main rather than overwriting it with the older local checkout or unrelated homepage edits.
+
+## 2026-10-05 — Restore the original workshop (supersedes replacement UI and publication facade)
+
+The user explicitly corrected the scope: retain the original discovery board and apply live repository-backed saving to it. The earlier new interface and read-only public facade are superseded. Reuse the original workshop and relay protocol; preserve its browser storage and the replacement interface's saved data.

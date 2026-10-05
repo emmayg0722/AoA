@@ -1,2 +1,4 @@
 data/.board-*.tmp
 node_modules/
+__pycache__/
+data/.sessions-*.tmp

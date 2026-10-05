@@ -1,9 +1,7 @@
-# Published use case discovery board
+# Use Case Discovery Board
 
-This Phase 1 entry loads the standalone application in `../../use-case-discovery-board/`. Its complete source, server, setup instructions, and repository JSON live in that folder.
+The original discovery workshop remains the primary page at this URL, with its canvas, five block types, intake, SOP, scoring, languages, document preview, merge, and exports.
 
-- [Open the published board](https://emmayg0722.github.io/AoA/Phase%201%20-%20Discovery%20%26%20Assessment/use-case-discovery-board/)
-- [Standalone setup and storage documentation](../../use-case-discovery-board/README.md)
-- [Previous workflow workshop](workshop.html) and its [original documentation](WORKSHOP.md)
+Live sessions now use a durable relay and repository JSON in the standalone [`use-case-discovery-board/`](../../use-case-discovery-board/) folder. See its [README](../../use-case-discovery-board/README.md) for setup, storage, and public HTTPS connection settings. Offline browser autosave retains the original `aoa_usecase_board_v1` key.
 
-GitHub Pages displays the saved JSON read-only. Run the standalone Node.js server for repository saves and live collaboration. The previous workshop and its original remote assets are retained.
+`workshop-relay.py` is a compatibility launcher. `workshop.html` preserves the unmodified original source; `WORKSHOP.md` retains its earlier documentation, including the superseded in-memory relay behavior.

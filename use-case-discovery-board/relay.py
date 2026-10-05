@@ -1,0 +1,383 @@
+#!/usr/bin/env python3
+"""Durable relay for the original discovery workshop; standard library only."""
+import argparse
+import copy
+import functools
+import json
+import math
+import os
+from pathlib import Path
+import secrets
+import socket
+import tempfile
+import threading
+import time
+from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
+from urllib.parse import parse_qs, urlparse, unquote
+
+HERE = Path(__file__).resolve().parent
+POLL_TIMEOUT = 25
+PEER_TTL = 60
+OPS_KEPT = 2000
+MAX_BODY = 4_000_000
+COLOURS = ['#1B1474', '#c0392b', '#1a8a5c', '#d4790e', '#5348c4', '#0e7c86']
+
+
+def blank_doc():
+    return dict(fields={}, nodes=[], layout={}, edges=[], sopDone=[], nextId=1,
+                view=dict(x=40, y=40, z=1), lang='en')
+
+
+def identifier(value):
+    return type(value) is int and 0 < value < 9_007_199_254_740_991
+
+
+def finite(value):
+    return type(value) in (int, float) and math.isfinite(value)
+
+
+def validate_doc(doc):
+    if not isinstance(doc, dict):
+        raise ValueError('Board must be an object')
+    doc = copy.deepcopy(doc)
+    for key, value in blank_doc().items():
+        doc.setdefault(key, value)
+    if not isinstance(doc['fields'], dict) or len(doc['fields']) > 100:
+        raise ValueError('Invalid engagement fields')
+    if any(not isinstance(k, str) or not isinstance(v, str) or len(v) > 100000
+           for k, v in doc['fields'].items()):
+        raise ValueError('Invalid engagement field value')
+    if not isinstance(doc['nodes'], list) or len(doc['nodes']) > 5000:
+        raise ValueError('Invalid blocks')
+    if not isinstance(doc['edges'], list) or len(doc['edges']) > 10000:
+        raise ValueError('Invalid connections')
+    if not isinstance(doc['layout'], dict):
+        raise ValueError('Invalid layout')
+    ids = set()
+    for node in doc['nodes']:
+        if not isinstance(node, dict) or not identifier(node.get('id')):
+            raise ValueError('Invalid block id')
+        if node['id'] in ids or node.get('type') not in ('step', 'pain', 'system', 'usecase', 'note'):
+            raise ValueError('Duplicate block id or unknown block type')
+        ids.add(node['id'])
+        for key in ('title', 'detail', 'role', 'volume', 'pattern', 'value', 'effort'):
+            if key in node and (not isinstance(node[key], str) or len(node[key]) > 100000):
+                raise ValueError('Invalid block text')
+        pos = doc['layout'].get(str(node['id']))
+        if not isinstance(pos, dict) or not all(finite(pos.get(k)) for k in ('x', 'y', 'w')) or pos['w'] <= 0:
+            raise ValueError('Each block needs a valid position and width')
+    node_ids = set(ids)
+    for edge in doc['edges']:
+        if not isinstance(edge, dict) or not identifier(edge.get('id')) or edge['id'] in ids:
+            raise ValueError('Invalid or duplicate connection id')
+        ids.add(edge['id'])
+        if edge.get('from') not in node_ids or edge.get('to') not in node_ids:
+            raise ValueError('Connection endpoint is missing')
+        if not isinstance(edge.get('label', ''), str):
+            raise ValueError('Invalid connection label')
+    if not isinstance(doc['sopDone'], list) or len(doc['sopDone']) > 100 or any(type(v) is not bool for v in doc['sopDone']):
+        raise ValueError('Invalid checklist')
+    if not identifier(doc['nextId']):
+        raise ValueError('Invalid allocation counter')
+    doc['nextId'] = max(doc['nextId'], max(ids, default=0) + 1)
+    if not isinstance(doc['view'], dict) or not all(finite(doc['view'].get(k)) for k in ('x', 'y', 'z')) or doc['view']['z'] <= 0:
+        raise ValueError('Invalid viewport')
+    if doc['lang'] not in ('en', 'da', 'sv'):
+        raise ValueError('Invalid language')
+    # JSON encoding also rejects non-finite numbers in any extension fields.
+    json.dumps(doc, allow_nan=False)
+    return doc
+
+
+def apply_op(doc, op):
+    if not isinstance(op, dict):
+        raise ValueError('Invalid operation')
+    kind = op.get('t')
+    if kind == 'doc':
+        return validate_doc(op.get('doc'))
+    if kind == 'node':
+        node = op.get('node')
+        if not isinstance(node, dict) or not identifier(node.get('id')):
+            raise ValueError('Invalid block')
+        doc['nodes'] = [node if n['id'] == node['id'] else n for n in doc['nodes']]
+        if not any(n['id'] == node['id'] for n in doc['nodes']):
+            doc['nodes'].append(node)
+        doc['layout'][str(node['id'])] = op.get('layout')
+    elif kind == 'nodeDel':
+        nid = op.get('id')
+        doc['nodes'] = [n for n in doc['nodes'] if n['id'] != nid]
+        doc['layout'].pop(str(nid), None)
+        doc['edges'] = [e for e in doc['edges'] if e['from'] != nid and e['to'] != nid]
+    elif kind == 'edge':
+        edge = op.get('edge')
+        if not isinstance(edge, dict) or not identifier(edge.get('id')):
+            raise ValueError('Invalid connection')
+        doc['edges'] = [edge if e['id'] == edge['id'] else e for e in doc['edges']]
+        if not any(e['id'] == edge['id'] for e in doc['edges']):
+            doc['edges'].append(edge)
+    elif kind == 'edgeDel':
+        doc['edges'] = [e for e in doc['edges'] if e['id'] != op.get('id')]
+    elif kind == 'field':
+        doc['fields'][op.get('k')] = op.get('v')
+    elif kind == 'sop':
+        doc['sopDone'] = op.get('sopDone')
+    else:
+        raise ValueError('Unknown operation')
+    return doc
+
+
+class Store:
+    def __init__(self, path):
+        self.path = Path(path)
+        self.lock = threading.Lock()
+        self.sessions = {}
+        saved = json.loads(self.path.read_text()) if self.path.exists() else {'schemaVersion': 1, 'sessions': {}}
+        if saved.get('schemaVersion') != 1 or not isinstance(saved.get('sessions'), dict):
+            raise ValueError('Invalid saved session file')
+        self.records = saved['sessions']
+        for record in self.records.values():
+            record['doc'] = validate_doc(record['doc'])
+            if type(record.get('seq')) is not int or record['seq'] < 0 or not identifier(record.get('nextSlot')):
+                raise ValueError('Invalid saved counters')
+
+    def session(self, name):
+        if not isinstance(name, str) or not name.strip() or len(name) > 120:
+            raise ValueError('Invalid session name')
+        with self.lock:
+            if name not in self.sessions:
+                self.sessions[name] = Session(self, name, self.records.get(name))
+            return self.sessions[name]
+
+    def persist(self, name, record):
+        with self.lock:
+            records = copy.deepcopy(self.records)
+            records[name] = copy.deepcopy(record)
+            payload = json.dumps({'schemaVersion': 1, 'sessions': records}, ensure_ascii=False, indent=2, allow_nan=False) + '\n'
+            self.path.parent.mkdir(parents=True, exist_ok=True)
+            fd, filename = tempfile.mkstemp(prefix='.sessions-', suffix='.tmp', dir=self.path.parent)
+            try:
+                with os.fdopen(fd, 'w') as f:
+                    f.write(payload)
+                    f.flush()
+                    os.fsync(f.fileno())
+                os.replace(filename, self.path)
+            finally:
+                if os.path.exists(filename):
+                    os.unlink(filename)
+            self.records = records
+
+
+class Session:
+    def __init__(self, store, name, record=None):
+        self.store, self.name = store, name
+        self.cond = threading.Condition()
+        record = record or dict(doc=blank_doc(), seeded=False, seq=0, nextSlot=1)
+        self.doc = copy.deepcopy(record['doc'])
+        self.seeded, self.seq = record['seeded'], record['seq']
+        self.next_slot = max(record['nextSlot'], self.doc['nextId'] // 1_000_000 + 1)
+        self.ops, self.peers = [], {}
+
+    def commit(self, doc, seeded, seq, next_slot):
+        self.store.persist(self.name, dict(doc=doc, seeded=seeded, seq=seq, nextSlot=next_slot))
+        self.doc, self.seeded, self.seq, self.next_slot = doc, seeded, seq, next_slot
+
+    def join(self, name, seed):
+        if not isinstance(name, str) or len(name) > 120:
+            raise ValueError('Invalid participant name')
+        with self.cond:
+            adopted = self.seeded
+            doc = self.doc if adopted else validate_doc(seed)
+            slot = max(self.next_slot, doc['nextId'] // 1_000_000 + 1)
+            self.commit(doc, True, self.seq + (0 if adopted else 1), slot + 1)
+            pid = secrets.token_hex(12)
+            self.peers[pid] = dict(name=name or f'Guest {slot}', colour=COLOURS[(slot - 1) % len(COLOURS)], seen=time.time())
+            self.cond.notify_all()
+            return dict(peerId=pid, idBase=slot * 1_000_000, seq=self.seq, doc=self.doc,
+                        seeded=True, adopted=adopted, peers=self.roster(), session=self.name)
+
+    def roster(self):
+        now = time.time()
+        self.peers = {pid: p for pid, p in self.peers.items() if now - p['seen'] <= PEER_TTL}
+        return [dict(id=pid, name=p['name'], colour=p['colour']) for pid, p in self.peers.items()]
+
+    def touch(self, pid):
+        if pid not in self.peers:
+            raise LookupError('Session restarted or participant expired; rejoin')
+        self.peers[pid]['seen'] = time.time()
+
+    def push(self, pid, ops):
+        with self.cond:
+            self.touch(pid)
+            if not isinstance(ops, list) or not 1 <= len(ops) <= 1000:
+                raise ValueError('Invalid operation batch')
+            doc = copy.deepcopy(self.doc)
+            for op in ops:
+                doc = apply_op(doc, op)
+            doc = validate_doc(doc)
+            seq = self.seq
+            self.commit(doc, True, seq + len(ops), self.next_slot)
+            self.ops.extend(dict(seq=seq + i + 1, peer=pid, op=copy.deepcopy(op)) for i, op in enumerate(ops))
+            self.ops = self.ops[-OPS_KEPT:]
+            self.cond.notify_all()
+            return self.seq
+
+    def since(self, seq):
+        if seq > self.seq or (seq < self.seq and (not self.ops or seq < self.ops[0]['seq'] - 1)):
+            return None
+        return [o for o in self.ops if o['seq'] > seq]
+
+
+class Handler(SimpleHTTPRequestHandler):
+    def log_message(self, fmt, *args):
+        if not self.path.startswith('/sync/'):
+            super().log_message(fmt, *args)
+
+    def handle_one_request(self):
+        try:
+            super().handle_one_request()
+        except (BrokenPipeError, ConnectionResetError):
+            self.close_connection = True
+
+    def allowed(self):
+        origin = self.headers.get('Origin')
+        if self.server.server_address[0] in ('127.0.0.1', '::1') and urlparse('http://' + self.headers.get('Host', '')).hostname not in ('localhost', '127.0.0.1', '::1'):
+            self.send_json({'error': 'Host is not allowed'}, 403)
+            return False
+        same = origin and urlparse(origin).netloc == self.headers.get('Host')
+        if origin and not same and origin not in self.server.origins:
+            self.send_json({'error': 'Origin is not allowed'}, 403)
+            return False
+        if self.server.token and not secrets.compare_digest(self.headers.get('Authorization', ''), 'Bearer ' + self.server.token):
+            self.send_json({'error': 'Enter the session access code'}, 401)
+            return False
+        return True
+
+    def cors(self):
+        origin = self.headers.get('Origin')
+        if origin and (urlparse(origin).netloc == self.headers.get('Host') or origin in self.server.origins):
+            self.send_header('Access-Control-Allow-Origin', origin)
+            self.send_header('Vary', 'Origin')
+            self.send_header('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+            self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+
+    def send_json(self, payload, status=200):
+        body = json.dumps(payload, ensure_ascii=False, allow_nan=False).encode()
+        self.send_response(status)
+        self.send_header('Content-Type', 'application/json; charset=utf-8')
+        self.send_header('Content-Length', str(len(body)))
+        self.send_header('Cache-Control', 'no-store')
+        self.cors()
+        self.end_headers()
+        self.wfile.write(body)
+
+    def body(self):
+        length = int(self.headers.get('Content-Length', '0'))
+        if not 0 < length <= MAX_BODY:
+            raise ValueError('Request size is invalid')
+        body = json.loads(self.rfile.read(length))
+        if not isinstance(body, dict):
+            raise ValueError('Request must be an object')
+        return body
+
+    def do_OPTIONS(self):
+        self.send_response(204)
+        self.cors()
+        self.end_headers()
+
+    def sync_call(self, action):
+        if not self.allowed():
+            return
+        try:
+            action()
+        except (ValueError, TypeError, KeyError) as exc:
+            self.send_json({'error': str(exc)}, 400)
+        except LookupError as exc:
+            self.send_json({'error': str(exc)}, 410)
+        except OSError:
+            self.send_json({'error': 'Repository save failed; edits were not acknowledged'}, 503)
+
+    def do_GET(self):
+        parsed = urlparse(self.path)
+        if parsed.path in ('/sync/state', '/sync/poll'):
+            return self.sync_call(lambda: self.read_sync(parsed))
+        # Serve toolkit assets, never session files, source, credentials, or directory listings.
+        path = Path(unquote(parsed.path)).parts
+        if any(part.startswith('.') or part == 'data' for part in path) or Path(parsed.path).suffix not in ('', '.html', '.css', '.js', '.json', '.svg', '.png', '.jpg', '.jpeg', '.webp'):
+            return self.send_error(404)
+        return super().do_GET()
+
+    def list_directory(self, path):
+        self.send_error(404)
+
+    def read_sync(self, parsed):
+        q = parse_qs(parsed.query)
+        s = self.server.store.session(q.get('session', ['default'])[0])
+        with s.cond:
+            if parsed.path == '/sync/state':
+                return self.send_json(dict(seq=s.seq, doc=s.doc, seeded=s.seeded, peers=s.roster()))
+            pid, seq = q.get('peerId', [''])[0], int(q.get('since', ['0'])[0])
+            s.touch(pid)
+            deadline = time.monotonic() + POLL_TIMEOUT
+            roster_ids = [p['id'] for p in s.roster()]
+            while True:
+                ops = s.since(seq)
+                if ops is None:
+                    return self.send_json(dict(resync=True, seq=s.seq, doc=s.doc, peers=s.roster()))
+                fresh = [o for o in ops if o['peer'] != pid]
+                roster = s.roster()
+                if fresh or [p['id'] for p in roster] != roster_ids or time.monotonic() >= deadline:
+                    return self.send_json(dict(seq=s.seq, ops=fresh, peers=roster))
+                s.cond.wait(min(1, max(.05, deadline - time.monotonic())))
+
+    def do_POST(self):
+        if urlparse(self.path).path not in ('/sync/join', '/sync/ops', '/sync/leave'):
+            return self.send_error(404)
+        return self.sync_call(self.write_sync)
+
+    def write_sync(self):
+        body = self.body()
+        s = self.server.store.session(body.get('session', 'default'))
+        route = urlparse(self.path).path
+        if route == '/sync/join':
+            return self.send_json(s.join(body.get('name', ''), body.get('doc', blank_doc())))
+        pid = body.get('peerId', '')
+        if route == '/sync/ops':
+            return self.send_json(dict(seq=s.push(pid, body.get('ops')), saved=True))
+        with s.cond:
+            s.peers.pop(pid, None)
+            s.cond.notify_all()
+        return self.send_json(dict(ok=True))
+
+
+def create_server(host='127.0.0.1', port=4317, data_file=HERE / 'data/sessions.json', root=HERE.parent, origins=(), token=''):
+    server = ThreadingHTTPServer((host, port), functools.partial(Handler, directory=str(root)))
+    server.daemon_threads = True
+    server.store, server.origins, server.token = Store(data_file), set(origins), token
+    return server
+
+
+def main():
+    ap = argparse.ArgumentParser(description=__doc__)
+    ap.add_argument('--host', default='127.0.0.1')
+    ap.add_argument('--port', type=int, default=4317)
+    ap.add_argument('--session', default='default')
+    ap.add_argument('--root', default=str(HERE.parent))
+    ap.add_argument('--data', default=str(HERE / 'data/sessions.json'))
+    ap.add_argument('--allow-origin', action='append', default=[])
+    args = ap.parse_args()
+    token = os.environ.get('AOA_RELAY_TOKEN', '')
+    if args.host not in ('127.0.0.1', 'localhost', '::1') and not token:
+        ap.error('Set AOA_RELAY_TOKEN when binding beyond localhost')
+    server = create_server(args.host, args.port, args.data, args.root, args.allow_origin, token)
+    print(f'Original discovery workshop: http://localhost:{args.port}/use-case-discovery-board/?session={args.session}', flush=True)
+    print(f'Saved sessions: {args.data}', flush=True)
+    try:
+        server.serve_forever()
+    except KeyboardInterrupt:
+        pass
+    finally:
+        server.server_close()
+
+
+if __name__ == '__main__':
+    main()

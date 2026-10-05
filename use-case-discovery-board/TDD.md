@@ -1,11 +1,10 @@
 # Technical design
 
-- Stack: Node.js 22+ standard library; vanilla HTML/CSS/JavaScript; no build step or external runtime dependencies.
-- Components: browser graph/editor, HTTP API, server-sent event stream, validated board model, and JSON file store.
-- Flow: browser operation + expected revision → validate → atomically replace `data/board.json` → publish saved snapshot to connected browsers.
-- Concurrency: one server process serializes writes; stale revisions return 409 and never overwrite newer data.
-- Storage: metadata, cards, scores, owners, positions, and connection labels live in `data/board.json`; the initial graph is empty. View pan/zoom is session-only presentation state.
-- Import: a JSON board replaces the graph after explicit confirmation; legacy prioritization JSON appends candidates and retains its original payload in repository data.
-- Hosting: loopback by default; configurable bind address for trusted networks. Host/origin checks protect local write endpoints. Public hosting requires authentication, HTTPS, persistent disk, and a single writer process.
-- Static hosting: display the checked-in JSON read-only when the API is unavailable; never claim a browser-only change was saved to the repo.
-- Public route: `Phase 1 - Discovery & Assessment/use-case-discovery-board/index.html` loads the standalone assets using relative paths; data/API URLs resolve from `app.js`, so both entry points use the same saved JSON. The previous remote board is preserved as `workshop.html`.
+- Frontend: the original self-contained vanilla HTML/CSS/JS workshop, retaining its existing storage key and live operation protocol.
+- Backend: Python standard-library relay in this standalone folder; the Phase 1 launcher delegates to it.
+- Storage: `data/sessions.json` holds every named session and its complete board document. Atomic replacement precedes acknowledgments and broadcasts. Existing replacement-board data remains preserved in `data/board.json`.
+- Concurrency: each session serializes validated operations under a lock; distinct blocks can be edited together. Whole-board actions retain the original last-writer-wins behavior. Persisted allocation counters prevent colliding IDs after restart.
+- Transport: original long polling, participant roster, explicit Go live/Leave session; failed outbound requests retain their queued edits.
+- Hosting: local server by default; public deployment uses HTTPS, persistent repository checkout/storage, an access code, and an explicit allowed-origin list. No credentials are committed.
+- GitHub Pages: the original board remains editable in browser-local mode. Connection settings allow an external HTTPS service; static hosting does not itself perform repository writes.
+- Entry generation: `publish-entry.py` copies the standalone original interface to the Phase 1 route and adjusts only toolkit/sample links.
