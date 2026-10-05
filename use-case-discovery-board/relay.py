@@ -12,8 +12,11 @@ import socket
 import tempfile
 import threading
 import time
+import uuid
+from datetime import datetime, timezone
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import parse_qs, urlparse, unquote
+from github_store import GitHubRepository, RepositoryConflict
 
 HERE = Path(__file__).resolve().parent
 POLL_TIMEOUT = 25
@@ -127,11 +130,12 @@ def apply_op(doc, op):
 
 
 class Store:
-    def __init__(self, path):
+    def __init__(self, path, github=None):
         self.path = Path(path)
+        self.github, self.last_commit = github, None
         self.lock = threading.Lock()
         self.sessions = {}
-        saved = json.loads(self.path.read_text()) if self.path.exists() else {'schemaVersion': 1, 'sessions': {}}
+        saved = github.load() if github else (json.loads(self.path.read_text()) if self.path.exists() else {'schemaVersion': 1, 'sessions': {}})
         if saved.get('schemaVersion') != 1 or not isinstance(saved.get('sessions'), dict):
             raise ValueError('Invalid saved session file')
         self.records = saved['sessions']
@@ -139,6 +143,40 @@ class Store:
             record['doc'] = validate_doc(record['doc'])
             if type(record.get('seq')) is not int or record['seq'] < 0 or not identifier(record.get('nextSlot')):
                 raise ValueError('Invalid saved counters')
+
+    def storage_info(self):
+        if self.github:
+            return dict(mode='github', repository=self.github.repository,
+                        url='https://github.com/' + self.github.repository,
+                        visibility=self.github.visibility, branch=self.github.branch,
+                        path=self.github.path, commit=self.last_commit)
+        return dict(mode='local', path='use-case-discovery-board/data/sessions.json')
+
+    def projects(self):
+        with self.lock:
+            return [copy.deepcopy(r['project']) for r in self.records.values() if r.get('project')]
+
+    def project(self, pid):
+        with self.lock:
+            if pid not in self.records or not self.records[pid].get('project'):
+                raise FileNotFoundError('Project not found')
+        return self.session(pid)
+
+    def create_project(self, name, display_name):
+        if not isinstance(name, str) or not 1 <= len(name.strip()) <= 120:
+            raise ValueError('Enter a project name (up to 120 characters)')
+        if not isinstance(display_name, str) or not 1 <= len(display_name.strip()) <= 80:
+            raise ValueError('Enter your display name (up to 80 characters)')
+        pid = str(uuid.uuid4())
+        stamp = datetime.now(timezone.utc).isoformat()
+        record = dict(doc=blank_doc(), seeded=True, seq=0, nextSlot=1,
+                      project=dict(id=pid, name=name.strip(), createdAt=stamp, updatedAt=stamp,
+                                   createdBy=display_name.strip(), members=[]))
+        session = Session(self, pid, record)
+        joined = session.join(display_name.strip(), blank_doc())
+        with self.lock:
+            self.sessions[pid] = session
+        return joined
 
     def session(self, name):
         if not isinstance(name, str) or not name.strip() or len(name) > 120:
@@ -152,20 +190,36 @@ class Store:
         with self.lock:
             records = copy.deepcopy(self.records)
             records[name] = copy.deepcopy(record)
-            payload = json.dumps({'schemaVersion': 1, 'sessions': records}, ensure_ascii=False, indent=2, allow_nan=False) + '\n'
-            self.path.parent.mkdir(parents=True, exist_ok=True)
-            fd, filename = tempfile.mkstemp(prefix='.sessions-', suffix='.tmp', dir=self.path.parent)
-            try:
-                with os.fdopen(fd, 'w') as f:
-                    f.write(payload)
-                    f.flush()
-                    os.fsync(f.fileno())
-                os.replace(filename, self.path)
-            finally:
-                if os.path.exists(filename):
-                    os.unlink(filename)
+            state = {'schemaVersion': 1, 'sessions': records}
+            payload = json.dumps(state, ensure_ascii=False, indent=2, allow_nan=False) + '\n'
+            if self.github:
+                try:
+                    self.last_commit = self.github.save(state)
+                except RepositoryConflict as exc:
+                    self.records = exc.state['sessions']
+                    raise
+                self.records = records
+                # GitHub is authoritative; mirror failure must not undo an accepted commit.
+                try:
+                    self.write_file(payload)
+                except OSError:
+                    pass
+                return
+            self.write_file(payload)
             self.records = records
 
+    def write_file(self, payload):
+        self.path.parent.mkdir(parents=True, exist_ok=True)
+        fd, filename = tempfile.mkstemp(prefix='.sessions-', suffix='.tmp', dir=self.path.parent)
+        try:
+            with os.fdopen(fd, 'w') as f:
+                f.write(payload)
+                f.flush()
+                os.fsync(f.fileno())
+            os.replace(filename, self.path)
+        finally:
+            if os.path.exists(filename):
+                os.unlink(filename)
 
 class Session:
     def __init__(self, store, name, record=None):
@@ -175,25 +229,48 @@ class Session:
         self.doc = copy.deepcopy(record['doc'])
         self.seeded, self.seq = record['seeded'], record['seq']
         self.next_slot = max(record['nextSlot'], self.doc['nextId'] // 1_000_000 + 1)
+        self.project = copy.deepcopy(record.get('project'))
         self.ops, self.peers = [], {}
 
-    def commit(self, doc, seeded, seq, next_slot):
-        self.store.persist(self.name, dict(doc=doc, seeded=seeded, seq=seq, nextSlot=next_slot))
+    def commit(self, doc, seeded, seq, next_slot, project=None):
+        project = copy.deepcopy(project if project is not None else self.project)
+        record = dict(doc=doc, seeded=seeded, seq=seq, nextSlot=next_slot)
+        if project:
+            project['updatedAt'] = datetime.now(timezone.utc).isoformat()
+            record['project'] = project
+        try:
+            self.store.persist(self.name, record)
+        except RepositoryConflict as exc:
+            current = exc.state['sessions'].get(self.name)
+            if current:
+                self.doc = validate_doc(current['doc'])
+                self.seeded, self.seq, self.next_slot = current['seeded'], current['seq'], current['nextSlot']
+                self.project = copy.deepcopy(current.get('project'))
+                self.ops = []
+                self.cond.notify_all()
+            raise
         self.doc, self.seeded, self.seq, self.next_slot = doc, seeded, seq, next_slot
+        self.project = project
 
     def join(self, name, seed):
         if not isinstance(name, str) or len(name) > 120:
             raise ValueError('Invalid participant name')
         with self.cond:
+            if self.project and not name.strip():
+                raise ValueError('Enter your display name')
             adopted = self.seeded
             doc = self.doc if adopted else validate_doc(seed)
             slot = max(self.next_slot, doc['nextId'] // 1_000_000 + 1)
-            self.commit(doc, True, self.seq + (0 if adopted else 1), slot + 1)
+            project = copy.deepcopy(self.project)
+            if project and name.strip() not in project['members']:
+                project['members'].append(name.strip())
+            self.commit(doc, True, self.seq + (0 if adopted else 1), slot + 1, project)
             pid = secrets.token_hex(12)
             self.peers[pid] = dict(name=name or f'Guest {slot}', colour=COLOURS[(slot - 1) % len(COLOURS)], seen=time.time())
             self.cond.notify_all()
             return dict(peerId=pid, idBase=slot * 1_000_000, seq=self.seq, doc=self.doc,
-                        seeded=True, adopted=adopted, peers=self.roster(), session=self.name)
+                        seeded=True, adopted=adopted, peers=self.roster(), session=self.name,
+                        project=self.project, storage=self.store.storage_info())
 
     def roster(self):
         now = time.time()
@@ -238,7 +315,7 @@ class Handler(SimpleHTTPRequestHandler):
         except (BrokenPipeError, ConnectionResetError):
             self.close_connection = True
 
-    def allowed(self):
+    def allowed(self, authenticate=True):
         origin = self.headers.get('Origin')
         if self.server.server_address[0] in ('127.0.0.1', '::1') and urlparse('http://' + self.headers.get('Host', '')).hostname not in ('localhost', '127.0.0.1', '::1'):
             self.send_json({'error': 'Host is not allowed'}, 403)
@@ -247,7 +324,7 @@ class Handler(SimpleHTTPRequestHandler):
         if origin and not same and origin not in self.server.origins:
             self.send_json({'error': 'Origin is not allowed'}, 403)
             return False
-        if self.server.token and not secrets.compare_digest(self.headers.get('Authorization', ''), 'Bearer ' + self.server.token):
+        if authenticate and self.server.token and not secrets.compare_digest(self.headers.get('Authorization', ''), 'Bearer ' + self.server.token):
             self.send_json({'error': 'Enter the session access code'}, 401)
             return False
         return True
@@ -289,6 +366,10 @@ class Handler(SimpleHTTPRequestHandler):
             return
         try:
             action()
+        except RepositoryConflict as exc:
+            self.send_json({'error': str(exc)}, 409)
+        except FileNotFoundError as exc:
+            self.send_json({'error': str(exc)}, 404)
         except (ValueError, TypeError, KeyError) as exc:
             self.send_json({'error': str(exc)}, 400)
         except LookupError as exc:
@@ -298,6 +379,12 @@ class Handler(SimpleHTTPRequestHandler):
 
     def do_GET(self):
         parsed = urlparse(self.path)
+        if parsed.path == '/sync/info':
+            if self.allowed(authenticate=False):
+                return self.send_json(dict(storage=self.server.store.storage_info(), requiresAccessCode=bool(self.server.token)))
+            return
+        if parsed.path == '/sync/projects':
+            return self.sync_call(lambda: self.send_json(dict(projects=self.server.store.projects(), storage=self.server.store.storage_info())))
         if parsed.path in ('/sync/state', '/sync/poll'):
             return self.sync_call(lambda: self.read_sync(parsed))
         # Serve toolkit assets, never session files, source, credentials, or directory listings.
@@ -330,36 +417,48 @@ class Handler(SimpleHTTPRequestHandler):
                 s.cond.wait(min(1, max(.05, deadline - time.monotonic())))
 
     def do_POST(self):
-        if urlparse(self.path).path not in ('/sync/join', '/sync/ops', '/sync/leave'):
+        if urlparse(self.path).path not in ('/sync/join', '/sync/ops', '/sync/leave', '/sync/projects', '/sync/project/join'):
             return self.send_error(404)
         return self.sync_call(self.write_sync)
 
     def write_sync(self):
         body = self.body()
-        s = self.server.store.session(body.get('session', 'default'))
         route = urlparse(self.path).path
+        if route in ('/sync/projects', '/sync/project/join'):
+            if body.get('acknowledged') is not True:
+                raise ValueError('Acknowledge project storage before continuing')
+            name = body.get('name', '')
+            if not isinstance(name, str) or not 1 <= len(name.strip()) <= 80:
+                raise ValueError('Enter your display name (up to 80 characters)')
+            if route == '/sync/projects':
+                return self.send_json(self.server.store.create_project(body.get('projectName'), name), 201)
+            s = self.server.store.project(body.get('projectId', ''))
+            return self.send_json(s.join(name.strip(), blank_doc()))
+        s = self.server.store.session(body.get('session', 'default'))
         if route == '/sync/join':
+            if s.project:
+                raise ValueError('Use the project join route and acknowledge its storage notice')
             return self.send_json(s.join(body.get('name', ''), body.get('doc', blank_doc())))
         pid = body.get('peerId', '')
         if route == '/sync/ops':
-            return self.send_json(dict(seq=s.push(pid, body.get('ops')), saved=True))
+            return self.send_json(dict(seq=s.push(pid, body.get('ops')), saved=True, storage=self.server.store.storage_info()))
         with s.cond:
             s.peers.pop(pid, None)
             s.cond.notify_all()
         return self.send_json(dict(ok=True))
 
 
-def create_server(host='127.0.0.1', port=4317, data_file=HERE / 'data/sessions.json', root=HERE.parent, origins=(), token=''):
+def create_server(host='127.0.0.1', port=4317, data_file=HERE / 'data/sessions.json', root=HERE.parent, origins=(), token='', github=None):
     server = ThreadingHTTPServer((host, port), functools.partial(Handler, directory=str(root)))
     server.daemon_threads = True
-    server.store, server.origins, server.token = Store(data_file), set(origins), token
+    server.store, server.origins, server.token = Store(data_file, github), set(origins), token
     return server
 
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument('--host', default='127.0.0.1')
-    ap.add_argument('--port', type=int, default=4317)
+    ap.add_argument('--port', type=int, default=int(os.environ.get('PORT', '4317')))
     ap.add_argument('--session', default='default')
     ap.add_argument('--root', default=str(HERE.parent))
     ap.add_argument('--data', default=str(HERE / 'data/sessions.json'))
@@ -368,7 +467,11 @@ def main():
     token = os.environ.get('AOA_RELAY_TOKEN', '')
     if args.host not in ('127.0.0.1', 'localhost', '::1') and not token:
         ap.error('Set AOA_RELAY_TOKEN when binding beyond localhost')
-    server = create_server(args.host, args.port, args.data, args.root, args.allow_origin, token)
+    github_token = os.environ.get('AOA_GITHUB_TOKEN')
+    github = GitHubRepository(os.environ.get('AOA_GITHUB_REPOSITORY', 'emmayg0722/AoA'), github_token,
+                              os.environ.get('AOA_GITHUB_BRANCH', 'main'),
+                              os.environ.get('AOA_GITHUB_DATA_PATH', 'use-case-discovery-board/data/sessions.json')) if github_token else None
+    server = create_server(args.host, args.port, args.data, args.root, args.allow_origin, token, github)
     print(f'Original discovery workshop: http://localhost:{args.port}/use-case-discovery-board/?session={args.session}', flush=True)
     print(f'Saved sessions: {args.data}', flush=True)
     try:

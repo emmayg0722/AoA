@@ -195,6 +195,21 @@
 
 .live-invite[hidden] { display: none; }
 #syncUrl, #syncToken { width: 100%; font-family: var(--font-body); font-size: 14px; color: var(--ink); border: 1.5px solid var(--line); border-radius: 8px; padding: 9px 11px; background: #fff; }
+
+[hidden] { display: none !important; }
+.project-entry { padding-top: 28px; max-width: 820px; }
+.project-entry h2, .project-bar h2 { font-family: var(--font-heading); }
+.project-entry .btn-row { margin: 18px 0; }
+.project-entry [aria-pressed="true"] { background: var(--primary); color: #fff; }
+.project-entry input:not([type="checkbox"]), .project-entry select, .project-share input { width: 100%; font: 14px var(--font-body); color: var(--ink); border: 1.5px solid var(--line); border-radius: 8px; padding: 10px 12px; background: #fff; }
+.project-notice { background: var(--powder); border-left: 3px solid var(--accent); padding: 14px; margin: 20px 0 12px; line-height: 1.6; font-size: 13px; }
+.project-ack { display: flex; align-items: flex-start; gap: 10px; line-height: 1.5; }
+.project-ack input { margin-top: 3px; }
+#projectMessage { margin: 14px 0; font-size: 14px; line-height: 1.6; }
+.project-bar { padding-top: 24px; }
+.project-share { display: flex; gap: 10px; flex-wrap: wrap; }
+.project-share input { flex: 1 1 220px; min-width: 0; }
+button:disabled { opacity: .55; cursor: default; }
 </style>
 </head>
 <body>
@@ -211,7 +226,45 @@
     <p data-i18n="heroDesc"></p>
   </div></header>
 
-  <main>
+  <section class="wrap project-entry" id="projectEntry" aria-label="Choose a project">
+    <div class="card">
+      <h2>Start a discovery project</h2>
+      <p class="hint">Create a shared board or join your team’s project. The original discovery workshop is inside.</p>
+      <div class="btn-row" role="group" aria-label="Project action">
+        <button type="button" class="btn btn-secondary" id="createProjectTab" aria-pressed="true" onclick="chooseProjectMode('create')">Create a project</button>
+        <button type="button" class="btn btn-secondary" id="joinProjectTab" aria-pressed="false" onclick="chooseProjectMode('join')">Join an existing project</button>
+      </div>
+      <form id="projectForm">
+        <div id="createProjectFields"><label for="projectName">Project name</label><input id="projectName" type="text" maxlength="120" required autocomplete="off"></div>
+        <div id="joinProjectFields" hidden>
+          <label for="projectList">Existing projects</label><select id="projectList"><option value="">Connect to load projects</option></select>
+          <label for="joinProjectId">Project ID from your invitation</label><input id="joinProjectId" type="text" maxlength="120" autocomplete="off">
+        </div>
+        <label for="projectDisplayName">Your display name</label><input id="projectDisplayName" type="text" maxlength="80" required autocomplete="nickname">
+        <div class="project-notice" id="projectStorageNotice">Project data and participant names will be stored in the connected repository. The storage details appear after connecting.</div>
+        <label class="project-ack"><input id="projectAcknowledged" type="checkbox" required> I understand where my project data and name will be stored.</label>
+        <div class="btn-row"><button class="btn btn-primary" id="projectSubmit" disabled>Create project &amp; open board</button></div>
+      </form>
+      <p id="projectMessage" role="status" aria-live="polite"></p>
+      <details id="projectConnection"><summary>Connection settings</summary>
+        <label for="projectRelayUrl">Collaboration service URL</label><input id="projectRelayUrl" type="url" placeholder="HTTPS service URL; leave empty on a local server">
+        <label for="projectAccessCode">Service access code</label><input id="projectAccessCode" type="password" autocomplete="off">
+        <div class="btn-row"><button class="btn btn-secondary" type="button" onclick="refreshProjects()">Connect / refresh projects</button></div>
+      </details>
+      <div class="btn-row"><button type="button" class="btn btn-secondary" onclick="openBrowserBoard()">Open browser-only board</button></div>
+    </div>
+  </section>
+  <section class="wrap project-bar" id="projectBar" hidden aria-label="Current project">
+    <div class="card">
+      <div class="hero-top"><h2 id="activeProjectName"></h2><button type="button" class="btn btn-secondary" onclick="changeProject()">Change project</button></div>
+      <p class="hint" id="activeProjectStorage"></p>
+      <div id="projectShareControls"><label for="projectShareLink">Invite collaborators — they enter their own display name</label>
+        <div class="project-share"><input type="url" id="projectShareLink" readonly><button class="btn btn-secondary" type="button" onclick="copyProjectLink()">Copy invite link</button></div>
+        <p class="hint" id="projectCopyStatus" role="status"></p>
+      </div>
+    </div>
+  </section>
+  <main id="workshopMain" hidden>
     <div class="live-invite" id="liveInvite" hidden>
       <span class="li-text" data-i18n="inviteText"></span>
       <input type="text" id="inviteName" data-ph="phYourName">
@@ -364,7 +417,7 @@
 // yields a structured deliverable and a set of candidates that
 // Use Case Prioritization can import and score.
 // ════════════════════════════════════════════════════════════════
-const KEY = 'aoa_usecase_board_v1';
+let KEY = 'aoa_usecase_board_v1';
 
 const STRINGS = {
   en: {
@@ -916,6 +969,7 @@ function applyI18n() {
   renderSampleOptions();
   syncBtnLabel();
   if (!SY.on) setSyncStatus(t('syncOffline'));
+  if (typeof updateProjectLabels === 'function') updateProjectLabels();
   renderPeers();
 }
 
@@ -1938,7 +1992,7 @@ function toggleSop(i, v) { sopDone[i] = v; renderSop(); save(); syncEmit({ t: "s
 document.addEventListener('input', e => {
   if (!e.target.matches('[data-eng]')) return;
   renderPreview(); save();
-  if (SY.on) syncEmit({ t: 'field', k: e.target.getAttribute('data-eng'), v: e.target.value });
+  if (SY.on || SY.project) syncEmit({ t: 'field', k: e.target.getAttribute('data-eng'), v: e.target.value });
 });
 document.addEventListener('change', e => { if (e.target.matches('[data-eng]')) { renderPreview(); save(); } });
 
@@ -1965,6 +2019,7 @@ function prefillEngagement() {
 }
 document.addEventListener('input', e => {
   const k = e.target.getAttribute && e.target.getAttribute('data-eng');
+  if (SY.project) return;
   if (!k || ENG_FIELDS.indexOf(k) === -1 || !e.target.value) return;
   try {
     const eng = JSON.parse(localStorage.getItem(ENG_KEY) || '{}');
@@ -2003,14 +2058,14 @@ function loadSample() {
     .then(o => {
       localStorage.setItem(KEY, JSON.stringify(o));
       // The page is about to reload, so push the new board before it goes.
-      if (SY.on) {
+      if (SY.on || SY.project) {
         syncEmit({ t: 'doc', doc: o });
         flushSync(true);
       }
       // Only the Nordkap board belongs to the engagement every other tool
       // is working on. The supply-chain boards are illustrations, so they
       // must not rename the client across the whole toolkit.
-      if (sample.sharesEngagement) {
+      if (sample.sharesEngagement && !SY.project) {
         try {
           const f = (o && o.fields) || {};
           const eng = JSON.parse(localStorage.getItem(ENG_KEY) || '{}');
@@ -2032,7 +2087,7 @@ function loadSample() {
 const SY = {
   on: false, peerId: null, session: 'default', seq: 0,
   peers: [], queue: [], flushTimer: null, poll: null,
-  busy: false, dirty: false, errs: 0, sending: null, base: "", token: "", generation: 0,
+  busy: false, dirty: false, errs: 0, sending: null, base: "", token: "", generation: 0, project: null, storage: null, inflight: [],
 };
 
 function syncUrl(path) { return SY.base + path; }
@@ -2045,6 +2100,16 @@ function syncPost(path, body, extra) {
   return syncFetch(path, Object.assign({ method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }, extra || {}));
 }
 function setSaveStatus(key) {
+  if (key === 'syncSaved' && SY.storage) {
+    const status = document.getElementById('syncSaveStatus');
+    status.textContent = SY.storage.mode === 'github' ? 'Saved to GitHub · live' : 'Saved on server disk · GitHub sync is not configured';
+    if (SY.storage.mode === 'github' && SY.storage.commit) {
+      const link = document.createElement('a');
+      link.href = SY.storage.url + '/commit/' + SY.storage.commit;
+      link.textContent = ' · ' + SY.storage.commit.slice(0, 7); link.target = '_blank'; link.rel = 'noopener'; status.append(link);
+    }
+    return;
+  }
   document.getElementById('syncSaveStatus').textContent = key ? t(key) : '';
 }
 function reviewSession() {
@@ -2069,7 +2134,7 @@ function setSyncStatus(msg) {
 }
 function syncBtnLabel() {
   const b = document.getElementById('syncBtn');
-  if (b) b.textContent = SY.on ? t('btnLeaveLive') : t('btnGoLive');
+  if (b) b.textContent = SY.project ? (SY.on ? 'Leave live session' : 'Reconnect project') : (SY.on ? t('btnLeaveLive') : t('btnGoLive'));
 }
 function renderPeers() {
   const box = document.getElementById('syncPeers');
@@ -2083,29 +2148,33 @@ function renderPeers() {
 
 // ── outbound ────────────────────────────────────────────────────
 function syncEmit(op) {
-  if (!SY.on) return;
+  if (!SY.on && !SY.project) return;
   SY.queue.push(JSON.parse(JSON.stringify(op)));
+  if (typeof persistProjectPending === 'function') persistProjectPending();
   setSaveStatus("syncSaving");
+  if (!SY.on) { document.getElementById("syncSaveStatus").textContent = "Not sent — reconnect to save this project. Browser copy retained."; return; }
   if (SY.flushTimer) return;
   // Coalesced on a short timer so holding a key down is one request, not thirty.
-  SY.flushTimer = setTimeout(() => { SY.flushTimer = null; flushSync(); }, 120);
+  SY.flushTimer = setTimeout(() => { SY.flushTimer = null; flushSync(); }, 1000);
 }
-function syncNode(id) { if (SY.on) { const n = nodeById(id); if (n) syncEmit({ t: 'node', node: n, layout: layout[id] }); } }
-function syncNodeDel(id) { if (SY.on) syncEmit({ t: 'nodeDel', id }); }
-function syncEdgeOp(id) { if (SY.on) { const e = edgeById(id); if (e) syncEmit({ t: 'edge', edge: e }); } }
-function syncEdgeDel(id) { if (SY.on) syncEmit({ t: 'edgeDel', id }); }
-function syncDoc() { if (SY.on) syncEmit({ t: 'doc', doc: boardDocument() }); }
+function syncNode(id) { if (SY.on || SY.project) { const n = nodeById(id); if (n) syncEmit({ t: 'node', node: n, layout: layout[id] }); } }
+function syncNodeDel(id) { if (SY.on || SY.project) syncEmit({ t: 'nodeDel', id }); }
+function syncEdgeOp(id) { if (SY.on || SY.project) { const e = edgeById(id); if (e) syncEmit({ t: 'edge', edge: e }); } }
+function syncEdgeDel(id) { if (SY.on || SY.project) syncEmit({ t: 'edgeDel', id }); }
+function syncDoc() { if (SY.on || SY.project) syncEmit({ t: 'doc', doc: boardDocument() }); }
 
 async function flushSync(keepalive) {
   if (SY.sending) { await SY.sending; if (!SY.on) return false; }
   if (!SY.on || !SY.queue.length) return !SY.queue.length;
   const generation = SY.generation;
-  const q = SY.queue.splice(0);
+  const q = SY.queue.splice(0, 1000);
+  SY.inflight = q;
   setSaveStatus('syncSaving');
   const send = (async () => {
     try {
       const r = await syncPost('/sync/ops', { session: SY.session, peerId: SY.peerId, ops: q }, keepalive ? { keepalive: true } : null);
       if (!r.ok) throw new Error('HTTP ' + r.status);
+      const ack = await r.json(); SY.storage = ack.storage || SY.storage;
       if (generation === SY.generation) setSaveStatus(SY.queue.length ? 'syncSaving' : 'syncSaved');
       return true;
     } catch (e) {
@@ -2116,6 +2185,8 @@ async function flushSync(keepalive) {
   SY.sending = send;
   const ok = await send;
   if (SY.sending === send) SY.sending = null;
+  SY.inflight = [];
+  if (typeof persistProjectPending === 'function') persistProjectPending();
   if (SY.on && SY.queue.length && !SY.flushTimer) {
     SY.flushTimer = setTimeout(() => { SY.flushTimer = null; flushSync(); }, ok ? 120 : 1500);
   }
@@ -2176,18 +2247,20 @@ function remoteRender() {
 function syncCatchUp() { if (SY.dirty) { SY.dirty = false; remoteRender(); } }
 
 async function pollLoop() {
-  while (SY.on) {
+  const generation = SY.generation;
+  while (SY.on && generation === SY.generation) {
     try {
       const url = '/sync/poll?session=' + encodeURIComponent(SY.session) +
                   '&peerId=' + encodeURIComponent(SY.peerId) + '&since=' + SY.seq;
       const r = await syncFetch(url);
+      if (!SY.on || generation !== SY.generation) return;
       if (r.status === 410) {
         setSyncStatus(t('syncRejoin'));
         if (SY.sending) await SY.sending;
-        const joined = await syncPost('/sync/join', { session: SY.session, name: document.getElementById('syncName').value.trim(), doc: boardDocument() });
+        const joined = await syncPost(SY.project ? '/sync/project/join' : '/sync/join', SY.project ? { projectId: SY.project.id, name: document.getElementById('syncName').value.trim(), acknowledged: true } : { session: SY.session, name: document.getElementById('syncName').value.trim(), doc: boardDocument() });
         if (!joined.ok) throw new Error('Rejoin failed');
         const d = await joined.json();
-        if (!SY.on) return;
+        if (!SY.on || generation !== SY.generation) return;
         SY.peerId = d.peerId; SY.seq = d.seq; SY.peers = d.peers;
         nextId = Math.max(nextId, d.idBase);
         // Rebase unsent operations onto the durable document without losing them.
@@ -2198,7 +2271,7 @@ async function pollLoop() {
       }
       if (!r.ok) throw new Error('HTTP ' + r.status);
       const d = await r.json();
-      if (!SY.on) return;
+      if (!SY.on || generation !== SY.generation) return;
       let changed = false;
       if (d.resync) { applyRemoteOp({ t: 'doc', doc: d.doc }); changed = true; }
       else if (d.ops && d.ops.length) { d.ops.forEach(o => applyRemoteOp(o.op)); changed = true; }
@@ -2207,10 +2280,10 @@ async function pollLoop() {
       SY.peers = d.peers || [];
       if (rosterChanged) renderPeers();
       setSyncStatus(t('syncLive')(SY.peers.length));
-      if (changed) remoteRender();
+      if (changed) { [...SY.inflight, ...SY.queue].forEach(applyRemoteOp); remoteRender(); }
       SY.errs = 0;
     } catch (e) {
-      if (!SY.on) return;
+      if (!SY.on || generation !== SY.generation) return;
       SY.errs++;
       setSyncStatus(t('syncLost'));
       await new Promise(res => setTimeout(res, Math.min(8000, 400 * SY.errs)));
@@ -2221,16 +2294,22 @@ async function pollLoop() {
 // ── connect / disconnect ────────────────────────────────────────
 async function toggleSync() {
   if (SY.on) return leaveSync();
+  if (SY.project) return reconnectProject();
   const session = ((document.getElementById('syncSession') || {}).value || 'default').trim() || 'default';
   const name = ((document.getElementById('syncName') || {}).value || '').trim();
   setSyncStatus(t('syncConnecting'));
   try {
     configureSync();
+    const infoResponse = await syncFetch('/sync/info');
+    if (!infoResponse.ok) throw new Error('Collaboration service unavailable');
+    SY.storage = (await infoResponse.json()).storage;
     // Review before replacing an existing browser board.
     const pre = await syncFetch('/sync/state?session=' + encodeURIComponent(session));
     if (!pre.ok) throw new Error('HTTP ' + pre.status);
     const state = await pre.json();
-    if (state.seeded && nodes.length && !(await reviewSession())) {
+    const needsReview = (state.seeded && nodes.length) || SY.storage.mode === 'github';
+    if (needsReview && SY.storage.mode === 'github') document.querySelector('#syncReview p').textContent = storageDescription(SY.storage) + (state.seeded ? ' Joining replaces this browser view with the saved session.' : ' Going live uploads this browser board.');
+    if (needsReview && !(await reviewSession())) {
       setSyncStatus(t('syncOffline'));
       return;
     }
@@ -2240,7 +2319,7 @@ async function toggleSync() {
     if (!r.ok) throw new Error('HTTP ' + r.status);
     const d = await r.json();
     SY.on = true; SY.generation++; SY.peerId = d.peerId; SY.session = session;
-    SY.seq = d.seq; SY.peers = d.peers || []; SY.errs = 0;
+    SY.seq = d.seq; SY.peers = d.peers || []; SY.errs = 0; SY.storage = d.storage;
     // Mint new blocks from this peer's own id range.
     nextId = Math.max(nextId, d.idBase);
     // Adopting replaces the board, so whatever was selected is gone. Seeding
@@ -2270,14 +2349,14 @@ function syncInviteVisibility() {
 }
 async function leaveSync() {
   // A failed repository save must not silently discard pending work.
-  if (!(await flushSync())) return;
-  if (SY.queue.length && !(await flushSync())) return;
+  do { if (!(await flushSync())) return false; } while (SY.queue.length);
   const session = SY.session, peerId = SY.peerId;
   SY.on = false; SY.generation++; SY.peers = []; SY.queue = [];
   if (SY.flushTimer) { clearTimeout(SY.flushTimer); SY.flushTimer = null; }
   if (peerId) syncPost('/sync/leave', { session, peerId }, { keepalive: true }).catch(() => {});
   SY.peerId = null;
   renderPeers(); syncBtnLabel(); setSyncStatus(t('syncOffline')); setSaveStatus('');
+  return true;
 }
 window.addEventListener('beforeunload', () => {
   if (!SY.on) return;
@@ -2311,5 +2390,6 @@ window.addEventListener('beforeunload', () => {
   window.addEventListener('resize', () => { renderEdges(); });
 })();
 </script>
+<script src="./projects.js"></script>
 </body>
 </html>
