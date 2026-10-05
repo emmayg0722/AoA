@@ -1,0 +1,25 @@
+# Decisions
+
+## 2026-10-05 — Standalone repository-backed board
+
+The user requested a live board with all its data stored in the repository. Keep the feature in `use-case-discovery-board/`, with a small local server writing `data/board.json`. This supersedes the earlier proposed cloud-database approach for this implementation.
+
+## 2026-10-05 — Empty board and explicit migration
+
+Start with no fabricated use cases. Import existing prioritization exports explicitly rather than silently copying private browser data. Preserve the complete original import payload.
+
+## 2026-10-05 — Saved snapshots and optimistic concurrency
+
+Broadcast only successfully persisted snapshots. Reject stale mutations to protect other participants' changes. Leave Git commits and pushes under the user's control.
+
+## 2026-10-05 — Workshop working surface
+
+Architects use this board during a daytime workshop on laptops. Use the toolkit's light working surface, indigo actions, system font, a spacious canvas, and familiar list/editor panels.
+
+## 2026-10-05 — In-page confirmations
+
+Use accessible HTML dialogs for destructive imports, deletion, draft discard, and connection-label edits. Native confirm/prompt dialogs stalled the in-app browser during verification; the in-page alternative was verified with both Cancel and Continue.
+
+## 2026-10-05 — Publish at the requested Phase 1 URL
+
+The user requested publication at `/AoA/Phase%201%20-%20Discovery%20%26%20Assessment/use-case-discovery-board/`. Keep the standalone implementation and JSON at the repository root, with a Phase 1 entry loading those assets. Current remote main already contains a different workflow workshop, so preserve it as linked `workshop.html` and retain its original documentation and assets. Publish against current remote main rather than overwriting it with the older local checkout or unrelated homepage edits.
