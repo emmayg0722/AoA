@@ -9,3 +9,4 @@
 - Preserve: original workshop, old browser key, legacy session JSON, and the user's earlier `test` card.
 - Hosting preparation: project commits use `codex/discovery-data` so data writes do not rebuild the site.
 - Storage preparation: PR #53 merged as `3ad29ca6200ae509d9b42d811069491a4bca3d87`; data branch created and storage notice includes its branch/path. Invalid remote data is rejected without advancing the write SHA.
+- Live acceptance found cached project JavaScript after publication; the entry now versions that asset so normal reloads receive the fixed connection warning.
