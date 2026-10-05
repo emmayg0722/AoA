@@ -9,3 +9,5 @@
 - Hosting: persistent Python HTTP service behind HTTPS with explicit allowed origin and access code. The public Pages frontend reads `config.json` for the live service URL. No credentials enter frontend configuration or exports.
 - Availability: the project screen checks the service and shows an explicit unavailable state if it is missing. It never claims an offline browser draft is committed on GitHub.
 - Publication: `publish-entry.py` generates the established Phase 1 entry and its public configuration from this standalone folder.
+
+- GitHub-only production (supersedes hosted relay requirement): a browser adapter uses the fixed GitHub REST origin and selected repository/data branch. Each participant supplies a personal repository-scoped credential; no shared credential is published. SHA-checked commits reapply individual operations after conflicts. Poll saved snapshots every 12 seconds, and batch edits for 5 seconds. Member names describe project membership, not online presence. The Python relay remains an optional local workflow.

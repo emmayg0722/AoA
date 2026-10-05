@@ -16,7 +16,7 @@ function persistProjectPending() {
 function projectMessage(message) { byId('projectMessage').textContent = message; }
 function storageDescription(storage) {
   if (storage.mode === 'github') {
-    return `Project boards, engagement fields, checklist, project details and participant names are committed to ${storage.repository} on GitHub, in branch ${storage.branch} at ${storage.path}. ${storage.visibility === 'public' ? 'This repository is public: anyone can read this data and its commit history.' : 'The repository is private: people with repository access can read this data and its commit history.'} Display names do not create private accounts.`;
+    return `Project boards, engagement fields, checklist, project details and participant names are committed to ${storage.repository} on GitHub, in branch ${storage.branch} at ${storage.path}. ${storage.visibility === 'public' ? 'This repository is public: anyone can read this data and its commit history.' : 'The repository is private: people with repository access can read this data and its commit history.'} Display names do not create private accounts.${storage.transport === 'direct' ? ' Collaboration runs entirely on GitHub. Teammates’ saved changes are checked every 12 seconds. Participant names show membership, not online presence.' : ''}`;
   }
   return 'This server saves project boards, engagement fields, checklist, project details and participant names to its repository folder. Automatic GitHub saving is not configured on this server. Display names do not create private accounts.';
 }
@@ -46,14 +46,19 @@ async function refreshProjects() {
   PROJECT.ready = false;
   byId('projectSubmit').disabled = true;
   byId('projectAcknowledged').checked = false;
-  projectMessage('Checking the collaboration service…');
+  projectMessage(SY.github ? 'Connecting to the GitHub repository…' : 'Checking the collaboration service…');
   try {
-    byId('syncUrl').value = byId('projectRelayUrl').value;
-    byId('syncToken').value = byId('projectAccessCode').value;
+    if (SY.github) {
+      const input = byId('projectGithubToken');
+      if (input.value.trim()) { SY.github.setToken(input.value); input.value = ''; }
+    } else {
+      byId('syncUrl').value = byId('projectRelayUrl').value;
+      byId('syncToken').value = byId('projectAccessCode').value;
+    }
     configureSync();
     const response = await syncFetch('/sync/info', { signal: AbortSignal.timeout(6500) });
-    if (!response.ok) throw new Error('The collaboration service is unavailable.');
     const info = await response.json();
+    if (!response.ok) throw new Error(info.error || 'The collaboration service is unavailable.');
     PROJECT.storage = info.storage;
     byId('projectStorageNotice').textContent = storageDescription(info.storage);
     const data = await projectRequest('/sync/projects');
@@ -64,11 +69,12 @@ async function refreshProjects() {
     });
     const requested = byId('joinProjectId').value.trim();
     if (Array.from(list.options).some(option => option.value === requested)) list.value = requested;
-    PROJECT.ready = true;
-    byId('projectSubmit').disabled = false;
-    projectMessage(data.projects.length ? `${data.projects.length} project${data.projects.length === 1 ? '' : 's'} available.` : 'No projects yet. Create the first project on this service.');
+    PROJECT.ready = !SY.github || SY.github.connected;
+    byId('projectSubmit').disabled = !PROJECT.ready;
+    projectMessage(SY.github && !PROJECT.ready ? 'GitHub repository connected. Enter your repository token in Connection settings to create or join a project.' : `${SY.github ? 'Connected as ' + SY.github.login + '. ' : ''}` + (data.projects.length ? `${data.projects.length} project${data.projects.length === 1 ? '' : 's'} available.` : 'No projects yet. Create the first project.'));
+    if (SY.github && !PROJECT.ready) byId('projectConnection').open = true;
   } catch (error) {
-    projectMessage(error.message.includes('access code') ? error.message : 'Online collaboration is not connected. Use Connection settings to connect a running service, or open your browser-only board.');
+    projectMessage(SY.github || error.message.includes('access code') ? error.message : 'Online collaboration is not connected. Use Connection settings to connect a running service, or open your browser-only board.');
     byId('projectConnection').open = true;
   }
 }
@@ -85,7 +91,7 @@ function replaceProjectBoard(doc) {
 }
 
 function showProjectBoard(data, name) {
-  KEY = 'aoa_project_' + encodeURIComponent(SY.base || location.origin) + '_' + data.project.id;
+  KEY = 'aoa_project_' + encodeURIComponent(SY.github ? 'github:' + SY.github.repository + ':' + SY.github.branch : SY.base || location.origin) + '_' + data.project.id;
   SY.project = data.project; SY.storage = data.storage;
   SY.session = data.session; SY.peerId = data.peerId; SY.seq = data.seq;
   SY.peers = data.peers || []; SY.on = true; SY.generation++; SY.errs = 0;
@@ -112,7 +118,7 @@ function showProjectBoard(data, name) {
   byId('projectShareLink').value = url.href;
   renderBoard(); renderPreview(); renderPeers(); save(); syncBtnLabel(); updateProjectLabels();
   setSaveStatus(SY.queue.length ? 'syncSaving' : 'syncSaved');
-  setSyncStatus(t('syncLive')(SY.peers.length));
+  setSyncStatus(sharedStatus());
   window.scrollTo({ top: 0, behavior: 'smooth' });
   requestAnimationFrame(() => { renderEdges(); if (nodes.length) fitBoard(); });
   pollLoop();
@@ -146,6 +152,13 @@ async function reconnectProject() {
   } catch (error) { setSyncStatus(error.message); }
 }
 
+async function forgetGithubConnection() {
+  if (SY.on && !(await leaveSync())) return;
+  SY.github?.disconnect();
+  byId('projectGithubToken').value = '';
+  if (SY.project) await changeProject(); else await refreshProjects();
+}
+
 async function changeProject() {
   if (SY.on && !(await leaveSync())) return;
   save();
@@ -163,8 +176,9 @@ async function changeProject() {
 
 function updateProjectLabels() {
   if (!SY.project) return;
-  document.querySelector('[data-i18n="syncHint"]').textContent = 'Collaborators in this project share this board. Accepted changes appear for everyone connected to the same service and project.';
+  document.querySelector('[data-i18n="syncHint"]').textContent = SY.github ? 'This project is saved in GitHub. Teammates’ saved edits are checked every 12 seconds. The names below are project members; they do not indicate who is currently online.' : 'Collaborators in this project share this board. Accepted changes appear for everyone connected to the same service and project.';
   document.querySelector('[data-i18n="syncPrivacy"]').textContent = storageDescription(SY.storage);
+  document.querySelector('#syncUrl').closest('details').hidden = !!SY.github;
 }
 
 function openBrowserBoard() {
@@ -191,8 +205,14 @@ async function initProjects() {
   let configured = '';
   try {
     const response = await fetch('./config.json', { cache: 'no-store', signal: AbortSignal.timeout(5000) });
-    if (response.ok) configured = (await response.json()).relayUrl || '';
-  } catch (_) {}
+    if (!response.ok) throw new Error('Project configuration could not be loaded.');
+    const config = await response.json();
+    if (config.storage === 'github' && !query.has('relay') && query.get('backend') !== 'relay') {
+      SY.github = new AoaGithubProjects(config.github);
+      byId('githubConnection').hidden = false;
+      byId('relayConnection').hidden = true;
+    } else configured = config.relayUrl || '';
+  } catch (error) { projectMessage(error.message); byId('projectConnection').open = true; return; }
   byId('projectRelayUrl').value = query.get('relay') || configured || byId('syncUrl').value;
   await refreshProjects();
 }

@@ -22,3 +22,9 @@
 | Public service configuration | `config.json` | Non-secret live-service URL and repository label for the Pages frontend. |
 | Container service | `Dockerfile` | Runs the Python API on a host-provided port with server-only configuration. |
 | Project verification | `test/test_projects.py` | Checks project creation/join, isolation, recovery, notice enforcement, and GitHub failures/conflicts. |
+
+| GitHub-only browser adapter | `github-projects.js` | Authenticates directly to GitHub, loads/projects, applies operations, SHA-checks commits, and polls shared snapshots. |
+| Browser adapter verification | `test/github-projects.test.mjs` | Exercises conflict recovery, isolation, real commit acknowledgment, failures, and credential boundaries with a simulated API. |
+
+| Shared status and transport selection | `index.html` (`syncFetch`, `sharedStatus`), `projects.js` (`initProjects`) | Selects direct GitHub versus optional relay and reports polling/member semantics accurately. |
+| Forget participant credential | `projects.js` (`forgetGithubConnection`) | Flushes pending work before clearing the in-memory GitHub connection. |

@@ -247,8 +247,16 @@ button:disabled { opacity: .55; cursor: default; }
       </form>
       <p id="projectMessage" role="status" aria-live="polite"></p>
       <details id="projectConnection"><summary>Connection settings</summary>
-        <label for="projectRelayUrl">Collaboration service URL</label><input id="projectRelayUrl" type="url" placeholder="HTTPS service URL; leave empty on a local server">
-        <label for="projectAccessCode">Service access code</label><input id="projectAccessCode" type="password" autocomplete="off">
+        <div id="githubConnection" hidden>
+          <label for="projectGithubToken">Your GitHub repository token</label><input id="projectGithubToken" type="password" autocomplete="off" spellcheck="false">
+          <p class="hint">Your GitHub account needs write access to this repository. The owner can use a fine-grained token limited to AoA with Contents read/write. Repository collaborators may need a classic token with public_repo access; that covers their other public repositories too. Use your own token. It is sent directly to GitHub and kept only in memory; reconnect after reloading.</p>
+          <p class="hint"><a href="https://github.com/settings/personal-access-tokens" target="_blank" rel="noopener">GitHub token settings</a> · <a href="https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens" target="_blank" rel="noopener">Token and collaborator permissions</a></p>
+          <button class="btn btn-secondary" type="button" onclick="forgetGithubConnection()">Forget GitHub token</button>
+        </div>
+        <div id="relayConnection">
+          <label for="projectRelayUrl">Collaboration service URL</label><input id="projectRelayUrl" type="url" placeholder="HTTPS service URL; leave empty on a local server">
+          <label for="projectAccessCode">Service access code</label><input id="projectAccessCode" type="password" autocomplete="off">
+        </div>
         <div class="btn-row"><button class="btn btn-secondary" type="button" onclick="refreshProjects()">Connect / refresh projects</button></div>
       </details>
       <div class="btn-row"><button type="button" class="btn btn-secondary" onclick="openBrowserBoard()">Open browser-only board</button></div>
@@ -2087,11 +2095,12 @@ function loadSample() {
 const SY = {
   on: false, peerId: null, session: 'default', seq: 0,
   peers: [], queue: [], flushTimer: null, poll: null,
-  busy: false, dirty: false, errs: 0, sending: null, base: "", token: "", generation: 0, project: null, storage: null, inflight: [],
+  busy: false, dirty: false, errs: 0, sending: null, base: "", token: "", generation: 0, project: null, storage: null, inflight: [], github: null,
 };
 
 function syncUrl(path) { return SY.base + path; }
 function syncFetch(path, options) {
+  if (SY.github) return SY.github.request(path, options);
   const headers = Object.assign({}, (options || {}).headers);
   if (SY.token) headers.Authorization = 'Bearer ' + SY.token;
   return fetch(syncUrl(path), Object.assign({}, options || {}, { headers }));
@@ -2102,7 +2111,7 @@ function syncPost(path, body, extra) {
 function setSaveStatus(key) {
   if (key === 'syncSaved' && SY.storage) {
     const status = document.getElementById('syncSaveStatus');
-    status.textContent = SY.storage.mode === 'github' ? 'Saved to GitHub · live' : 'Saved on server disk · GitHub sync is not configured';
+    status.textContent = SY.storage.mode === 'github' ? (SY.github ? 'Saved to GitHub · updates checked every 12 seconds' : 'Saved to GitHub · live') : 'Saved on server disk · GitHub sync is not configured';
     if (SY.storage.mode === 'github' && SY.storage.commit) {
       const link = document.createElement('a');
       link.href = SY.storage.url + '/commit/' + SY.storage.commit;
@@ -2120,6 +2129,7 @@ function reviewSession() {
   });
 }
 function configureSync() {
+  if (SY.github) return;
   const raw = document.getElementById('syncUrl').value.trim().replace(/\/+$/, '');
   if (raw) {
     const u = new URL(raw);
@@ -2131,6 +2141,9 @@ function configureSync() {
 function setSyncStatus(msg) {
   const el = document.getElementById('syncStatus');
   if (el) el.textContent = msg || '';
+}
+function sharedStatus() {
+  return SY.github ? `GitHub connected · ${SY.peers.length} project member${SY.peers.length === 1 ? '' : 's'} · checks every 12 seconds` : t('syncLive')(SY.peers.length);
 }
 function syncBtnLabel() {
   const b = document.getElementById('syncBtn');
@@ -2155,7 +2168,7 @@ function syncEmit(op) {
   if (!SY.on) { document.getElementById("syncSaveStatus").textContent = "Not sent — reconnect to save this project. Browser copy retained."; return; }
   if (SY.flushTimer) return;
   // Coalesced on a short timer so holding a key down is one request, not thirty.
-  SY.flushTimer = setTimeout(() => { SY.flushTimer = null; flushSync(); }, 1000);
+  SY.flushTimer = setTimeout(() => { SY.flushTimer = null; flushSync(); }, SY.github ? 5000 : 1000);
 }
 function syncNode(id) { if (SY.on || SY.project) { const n = nodeById(id); if (n) syncEmit({ t: 'node', node: n, layout: layout[id] }); } }
 function syncNodeDel(id) { if (SY.on || SY.project) syncEmit({ t: 'nodeDel', id }); }
@@ -2266,7 +2279,7 @@ async function pollLoop() {
         // Rebase unsent operations onto the durable document without losing them.
         applyRemoteOp({ t: 'doc', doc: d.doc });
         SY.queue.forEach(applyRemoteOp);
-        renderPeers(); remoteRender(); setSyncStatus(t("syncLive")(SY.peers.length)); flushSync();
+        renderPeers(); remoteRender(); setSyncStatus(sharedStatus()); flushSync();
         continue;
       }
       if (!r.ok) throw new Error('HTTP ' + r.status);
@@ -2279,7 +2292,7 @@ async function pollLoop() {
       const rosterChanged = JSON.stringify(d.peers || []) !== JSON.stringify(SY.peers);
       SY.peers = d.peers || [];
       if (rosterChanged) renderPeers();
-      setSyncStatus(t('syncLive')(SY.peers.length));
+      setSyncStatus(sharedStatus());
       if (changed) { [...SY.inflight, ...SY.queue].forEach(applyRemoteOp); remoteRender(); }
       SY.errs = 0;
     } catch (e) {
@@ -2295,6 +2308,7 @@ async function pollLoop() {
 async function toggleSync() {
   if (SY.on) return leaveSync();
   if (SY.project) return reconnectProject();
+  if (SY.github) return changeProject();
   const session = ((document.getElementById('syncSession') || {}).value || 'default').trim() || 'default';
   const name = ((document.getElementById('syncName') || {}).value || '').trim();
   setSyncStatus(t('syncConnecting'));
@@ -2390,6 +2404,7 @@ window.addEventListener('beforeunload', () => {
   window.addEventListener('resize', () => { renderEdges(); });
 })();
 </script>
-<script src="./projects.js?v=20261005-projects-2"></script>
+<script src="./github-projects.js?v=20261005-github-1"></script>
+<script src="./projects.js?v=20261005-github-1"></script>
 </body>
 </html>
