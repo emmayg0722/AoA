@@ -157,6 +157,16 @@ class GitHubTests(unittest.TestCase):
         self.assertNotIn('server-secret', json.dumps(a))
         self.assertEqual(1, len(store.projects()))
 
+    def test_invalid_remote_data_never_advances_the_sha_used_for_retries(self):
+        self.git.validate = relay.validate_saved
+        malformed = dict(schemaVersion=1, sessions={'project': dict(doc=relay.blank_doc(), seeded=True, seq=-1, nextSlot=1)})
+        for content in ('not JSON', json.dumps(malformed)):
+            payload = dict(sha='newer-remote-sha', content=base64.b64encode(content.encode()).decode())
+            with patch.object(self.git, 'request', return_value=payload):
+                with self.assertRaises(OSError):
+                    self.git.load()
+            self.assertEqual('old-content-sha', self.git.sha)
+
 
 if __name__ == '__main__':
     unittest.main()

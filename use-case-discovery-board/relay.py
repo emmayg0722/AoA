@@ -129,20 +129,29 @@ def apply_op(doc, op):
     return doc
 
 
+def validate_saved(state):
+    if not isinstance(state, dict) or state.get('schemaVersion') != 1 or not isinstance(state.get('sessions'), dict):
+        raise ValueError('Invalid saved session file')
+    state = copy.deepcopy(state)
+    for name, record in state['sessions'].items():
+        if not isinstance(name, str) or not name.strip() or len(name) > 120 or not isinstance(record, dict):
+            raise ValueError('Invalid saved session')
+        record['doc'] = validate_doc(record['doc'])
+        if type(record.get('seq')) is not int or record['seq'] < 0 or not identifier(record.get('nextSlot')) or type(record.get('seeded')) is not bool:
+            raise ValueError('Invalid saved counters')
+    return state
+
+
 class Store:
     def __init__(self, path, github=None):
         self.path = Path(path)
         self.github, self.last_commit = github, None
         self.lock = threading.Lock()
         self.sessions = {}
-        saved = github.load() if github else (json.loads(self.path.read_text()) if self.path.exists() else {'schemaVersion': 1, 'sessions': {}})
-        if saved.get('schemaVersion') != 1 or not isinstance(saved.get('sessions'), dict):
-            raise ValueError('Invalid saved session file')
+        if github:
+            github.validate = validate_saved
+        saved = validate_saved(github.load() if github else (json.loads(self.path.read_text()) if self.path.exists() else {'schemaVersion': 1, 'sessions': {}}))
         self.records = saved['sessions']
-        for record in self.records.values():
-            record['doc'] = validate_doc(record['doc'])
-            if type(record.get('seq')) is not int or record['seq'] < 0 or not identifier(record.get('nextSlot')):
-                raise ValueError('Invalid saved counters')
 
     def storage_info(self):
         if self.github:

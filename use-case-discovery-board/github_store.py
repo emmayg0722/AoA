@@ -53,10 +53,18 @@ class GitHubRepository:
                 self.sha = None
                 return {'schemaVersion': 1, 'sessions': {}}
             raise OSError('Could not read GitHub project data (HTTP %s)' % exc.code) from None
+        try:
+            state = json.loads(base64.b64decode(payload['content']).decode()) if payload.get('content') else self.request(self.route() + '?ref=' + quote(self.branch, safe=''), accept='application/vnd.github.raw+json')
+            validator = getattr(self, 'validate', None)
+            if validator:
+                state = validator(state)
+            elif not isinstance(state, dict) or state.get('schemaVersion') != 1 or not isinstance(state.get('sessions'), dict):
+                raise ValueError('Invalid saved data')
+        except (ValueError, KeyError, TypeError) as exc:
+            # Keep the previous SHA: retries must never overwrite unreadable remote data.
+            raise OSError('Saved GitHub project data is invalid; repository contents were left unchanged') from None
         self.sha = payload['sha']
-        if payload.get('content'):
-            return json.loads(base64.b64decode(payload['content']).decode())
-        return self.request(self.route() + '?ref=' + quote(self.branch, safe=''), accept='application/vnd.github.raw+json')
+        return state
 
     def save(self, state):
         body = dict(message='Save discovery project data', branch=self.branch,
