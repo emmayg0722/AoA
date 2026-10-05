@@ -3,6 +3,7 @@
 | Term / function / concept | File | One-line purpose |
 | --- | --- | --- |
 | Workspace interface | index.html, workspace.css, workspace.js | Create/join client projects, navigate phases/tools, disclose storage, and show save/recovery state. |
+| Toolkit landing entry and storage notice | ../index.html | Links to client projects and distinguishes standalone drafts from GitHub project storage. |
 | Operation and verification guide | README.md | Explains project entry, storage, recovery, limitations and reproducible checks. |
 | Tool registry | registry.json | Maps each existing tool, route, storage key, phase, and repository folder. |
 | Registry and page integration | integrate.py | Builds the sourced registry and adds the early storage bridge to original tool pages. |
