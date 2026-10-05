@@ -1,42 +1,61 @@
 # Use Case Discovery Board
 
-The original workshop interface is retained: workflow steps, pain points, systems, candidate use cases, notes, scoring, document preview, SOP, languages, merge, and exports.
+The original workshop is retained: workflow steps, pain points, systems, candidate use cases, notes, scoring, document preview, SOP, languages, merge, and exports. The entry screen offers **Create a project**, **Join an existing project**, and **Open browser-only board**.
 
-## Start a shared workshop
+## Try shared projects locally
 
 ```sh
 cd use-case-discovery-board
 npm start
 ```
 
-Open `http://localhost:4317/use-case-discovery-board/`, enter your name and a session name, then press **Go live**. Participants using the same server and session edit one board. The first participant seeds it from their existing browser board; later participants review adopting the saved session. Browser editing remains available offline.
+Open `http://localhost:4317/use-case-discovery-board/`. Give the project a name, enter your display name, acknowledge the storage notice, and create it. Copy its invite link; collaborators open that link and enter their own names. Join also lists projects on the connected service. Each project has a separate board, engagement fields, checklist, browser draft, and undo history.
 
-## Repository storage
+Names are participant labels, not authenticated accounts. An access code protects the service when hosted. All participants with that code can list and join its projects.
 
-`data/sessions.json` stores every named live session and its complete original board document. Writes are validated and atomic; the server confirms a save and publishes it only after disk persistence succeeds. Sessions and ID allocations survive a restart. Pending failed edits retry and remain in browser autosave.
+Local mode writes `data/sessions.json` atomically in this repository checkout. Its status says **Saved on server disk**; it does not claim a GitHub commit. `data/board.json` preserves the user's earlier replacement-board data. Browser-only mode retains the original `aoa_usecase_board_v1` draft.
 
-`data/board.json` preserves the user's data from the superseded replacement interface. It is not silently substituted for an existing workshop. The earlier Node implementation remains available in source, but `npm start` launches the original workshop's durable Python relay.
+## Enable automatic GitHub saves
 
-Disk saves update the repository checkout on the **server**. They are not automatic Git commits or pushes. Commit and push the JSON when you want it in GitHub history. This repository is public; only publish content you intend to make public.
+Run one Python relay process behind HTTPS. Configure these values in the hosting service's settings:
 
-## Public GitHub Pages connection
+| Setting | Value |
+| --- | --- |
+| `AOA_GITHUB_TOKEN` | Server-only GitHub credential with Contents read/write for the selected repository. |
+| `AOA_GITHUB_REPOSITORY` | `emmayg0722/AoA` (default). |
+| `AOA_GITHUB_BRANCH` | `main` (default); the credential must be allowed to write this branch. |
+| `AOA_GITHUB_DATA_PATH` | `use-case-discovery-board/data/sessions.json` (default). |
+| `AOA_RELAY_TOKEN` | Service access code shared with collaborators; required beyond localhost. |
+| `PORT` | Host-provided listening port, or `4317`. |
 
-The original board is published at its existing Phase 1 URL. GitHub Pages serves static files; shared repository writes need a separate running service. In the board's **Connection settings**, enter that service's HTTPS URL and access code, then use the same session name as other participants. The access code stays in memory and is never placed in board exports or committed configuration.
-
-A hosted relay needs Python, one server process, a persistent checkout/disk, and HTTPS at a reverse proxy. Set `AOA_RELAY_TOKEN` through the host's secret settings and launch:
+Never put the GitHub credential in HTML, configuration JSON, browser storage, or the repository. Enter it directly in the host's secret settings. The service access code stays in browser memory and is excluded from invite links and board exports.
 
 ```sh
-python3 relay.py --host 0.0.0.0 --port 4317 \
+python3 relay.py --host 0.0.0.0 \
   --allow-origin https://emmayg0722.github.io
 ```
 
-For a trusted LAN, the same command can be used with the machine's LAN address. No service has been provisioned by this change. Named-session files are excluded from the relay's static file serving; API access requires the configured access code.
+A Dockerfile is included for hosts accepting a container with this folder as its build context. It serves the API; GitHub Pages serves the original board UI. Without a GitHub credential, a hosted relay needs persistent disk and remains explicitly in local mode. With GitHub configured, the relay reads the repository on startup, commits changes before acknowledgment/broadcast, and uses disk only as a secondary mirror. SHA conflicts refresh repository state and preserve pending client operations for retry. Use one relay instance; concurrent instances are not supported.
 
-## Verify and publish the entry
+Set `relayUrl` in `config.json` to the service's HTTPS URL, run `npm run publish-entry`, and publish both configuration files. Participants can also use **Connection settings** to connect an existing service. The Phase 1 URL remains:
+
+https://emmayg0722.github.io/AoA/Phase%201%20-%20Discovery%20%26%20Assessment/use-case-discovery-board/
+
+GitHub Pages alone cannot run this API. No live hosting target or GitHub server credential is currently configured. The public entry therefore shows a connection-required state and disables project submission until a service responds.
+
+## Storage and recovery
+
+Project metadata contains its ID, name, creator name, timestamps, and member display names. Each record contains the full original board document. Active presence is temporary; participant names remain in the saved metadata. GitHub mode discloses the repository and its actual visibility before entry. In the public AoA repository, anyone can read committed data and history.
+
+Autosave and pending operations have project-specific keys; each browser tab has its own pending journal. Failed writes are not acknowledged or broadcast. Pending operations survive reload and are retried after the participant rejoins that project. Changing projects never copies a browser-only board into a new project. The browser-only board can still export JSON for an explicit import into a project.
+
+## Verify and publish
 
 ```sh
 npm test
 npm run publish-entry
 ```
 
-`index.html` is the canonical original workshop. `publish-entry.py` generates the Phase 1 entry and adjusts only toolkit/sample links. The existing Phase 1 `workshop-relay.py` command delegates to this relay.
+The tests cover original board persistence, concurrent edits, project isolation, missing projects, required names/storage acknowledgment, authentication/origin restrictions, restart recovery, and simulated GitHub failures/conflicts. Mocked GitHub tests validate the save contract; live GitHub acceptance still requires the hosted service and credential.
+
+`index.html` is the canonical original workshop; `projects.js` owns the project flow. `publish-entry.py` generates the Phase 1 HTML and configuration with corrected toolkit/sample/script links. The Phase 1 `workshop-relay.py` command delegates to this relay.

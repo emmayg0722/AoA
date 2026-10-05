@@ -14,3 +14,10 @@
 | Public entry | `../Phase 1 - Discovery & Assessment/use-case-discovery-board/index.html` | Publishes the original workshop at its established URL. |
 | Compatibility launcher | `../Phase 1 - Discovery & Assessment/use-case-discovery-board/workshop-relay.py` | Keeps the original Python launch command working. |
 | Earlier relay implementation | `server.mjs`, `board.mjs`, `app.js`, `styles.css`, `test/board.test.mjs` | Retained implementation of the superseded replacement interface; no longer the default UI. |
+
+| Project entry and isolation | `index.html`, `projects.js` | Create/join forms, project lists/share links, names, storage notice, and per-project browser drafts. |
+| Project API and metadata | `relay.py` | Creates/list/joins isolated project records and persists participant display names. |
+| GitHub persistence adapter | `github_store.py` | Reads and SHA-checks repository commits using a server-only credential. |
+| Public service configuration | `config.json` | Non-secret live-service URL and repository label for the Pages frontend. |
+| Container service | `Dockerfile` | Runs the Python API on a host-provided port with server-only configuration. |
+| Project verification | `test/test_projects.py` | Checks project creation/join, isolation, recovery, notice enforcement, and GitHub failures/conflicts. |

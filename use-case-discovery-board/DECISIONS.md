@@ -27,3 +27,11 @@ The user requested publication at `/AoA/Phase%201%20-%20Discovery%20%26%20Assess
 ## 2026-10-05 — Restore the original workshop (supersedes replacement UI and publication facade)
 
 The user explicitly corrected the scope: retain the original discovery board and apply live repository-backed saving to it. The earlier new interface and read-only public facade are superseded. Reuse the original workshop and relay protocol; preserve its browser storage and the replacement interface's saved data.
+
+## 2026-10-05 — Project entry and actual GitHub persistence
+
+The user requested Create/Join projects with named participants and all project data stored on GitHub. Keep the original board after the entry screen. Server-generated IDs isolate projects, and Join never creates missing projects. This supersedes the earlier manual-commit decision for configured project mode: successful saves are committed by the server. Local development remains clearly labeled and does not claim GitHub saving.
+
+## 2026-10-05 — Repository visibility disclosed before entry
+
+The current AoA repository is public. Participants acknowledge that project names, display names, and board content will be visible there before creating or joining a GitHub-backed project. The server determines the actual storage mode and repository visibility; the frontend cannot assert a GitHub save on its own.
