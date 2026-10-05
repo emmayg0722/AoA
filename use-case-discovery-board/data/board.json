@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "id": "discovery",
+  "title": "Use case discovery",
+  "revision": 15,
+  "updatedAt": "2026-10-05T17:29:34.031Z",
+  "nodes": [
+    {
+      "id": "70d4963d-6ba9-4846-b64a-a2c3448b9a65",
+      "type": "use-case",
+      "title": "test",
+      "description": "",
+      "owner": "",
+      "status": "idea",
+      "x": -230,
+      "y": 155,
+      "scores": {
+        "roi": null,
+        "feasibility": null,
+        "impact": null
+      }
+    }
+  ],
+  "edges": [],
+  "imports": []
+}
