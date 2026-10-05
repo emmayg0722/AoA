@@ -4,6 +4,7 @@
 | --- | --- | --- |
 | Original workshop interface | `index.html` | Existing canvas, five block types, intake, checklist, exports, scoring, and live-session client. |
 | Durable live relay | `relay.py` | Validates operations, atomically saves named sessions, allocates IDs, and long-polls updates. |
+| Saved-state validation | `relay.py` (`validate_saved`) | Validates disk/repository records before loading or accepting a remote conflict refresh. |
 | Session data | `data/sessions.json` | Full workshop records; hosted GitHub mode uses this path on `codex/discovery-data`. |
 | Preserved replacement-board data | `data/board.json` | Retains the user's data from the earlier replacement interface. |
 | Publication entry generator | `publish-entry.py` | Copies the original interface to the Phase 1 URL with adjusted relative links. |
