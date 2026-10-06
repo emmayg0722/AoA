@@ -12,6 +12,11 @@
   <p class="eyebrow">One engagement. Every delivery phase.</p>
   <h1>Your client project,<br>from discovery to delivery.</h1>
   <p class="intro">Create a project or join your team. Work through the existing toolkit with one shared client header and project-specific work across all ten phases.</p>
+  <section id="examples" class="examples" aria-labelledby="examplesTitle">
+    <div class="examples-heading"><h2 id="examplesTitle">Explore an example project</h2><span>No login needed</span></div>
+    <p>Load the existing tool examples together. These fictional projects let you try the original tools and master report. Example edits stay in this tab and reset when you reload.</p>
+    <div id="exampleList" class="example-list"></div><p id="exampleStatus" role="status" aria-live="polite">Loading example projects…</p>
+  </section>
   <div class="entry-grid">
     <section class="panel"><h2>Connect to GitHub</h2>
       <p id="storageNotice" class="notice">Projects are stored in emmayg0722/AoA, a public GitHub repository. Anyone can read saved client names and tool contents. Use only information you can publish.</p>
@@ -21,6 +26,7 @@
       <p id="connectionStatus" role="status" aria-live="polite">Loading the project index…</p>
     </section>
     <section class="panel"><h2>Choose your project</h2>
+      <div id="startingExample" class="notice" hidden><p id="startingExampleText"></p><button id="clearStartingExample" type="button" class="secondary">Start with empty tools instead</button></div>
       <form id="projectForm">
         <div class="mode"><label><input type="radio" name="mode" value="create" checked> Create new</label><label><input type="radio" name="mode" value="join"> Join existing</label></div>
         <div id="createFields"><label for="client">Client</label><input id="client" maxlength="160" autocomplete="organization"><label for="projectTitle">Project name</label><input id="projectTitle" maxlength="160"></div>
@@ -35,12 +41,13 @@
 </section>
 <section id="workspace" hidden>
   <header class="project-head"><div><p class="eyebrow" id="activeClient"></p><h1 id="activeTitle"></h1><p id="members"></p></div>
-    <div class="actions"><button id="switchProject" class="secondary">Switch project</button><button id="invite" class="secondary">Copy invitation</button><button id="save">Save now</button></div>
+    <div class="actions"><button id="switchProject" class="secondary">Switch project</button><button id="resetExample" class="secondary" hidden>Reset example</button><button id="copyExample" hidden>Use as starting project</button><button id="invite" class="secondary">Copy invitation</button><button id="save">Save now</button></div>
   </header>
+  <p id="exampleNotice" class="notice" hidden></p>
   <div class="save-line"><p id="saveStatus" role="status" aria-live="polite"></p><a id="commitLink" target="_blank" rel="noopener" hidden>View saved commit</a><a id="folderLink" target="_blank" rel="noopener">Project folder on GitHub</a></div>
   <div id="updates" class="notice" hidden><span id="updatesText"></span> <button id="refresh" class="secondary">Load latest saved work</button></div>
   <div id="conflicts" class="notice conflict" hidden><p id="conflictText"></p><button id="keepMine">Keep my conflicting edits</button><button id="useRemote" class="secondary">Use GitHub version</button><button id="downloadPending" class="secondary">Download my pending work</button></div>
-  <details class="project-options"><summary>Project options, drafts and connection</summary>
+  <details id="projectOptions" class="project-options"><summary>Project options, drafts and connection</summary>
     <div class="actions"><button id="importDrafts" class="secondary">Review browser drafts</button><button id="exportProject" class="secondary">Export project JSON</button><button id="reconnect" class="secondary">Reconnect GitHub</button><button id="forget" class="secondary">Forget token and leave</button></div>
     <p>Saved project data is on GitHub. Pending edits also have a recovery copy in this browser. Participant names are members of this project; they do not indicate who is online.</p>
   </details>

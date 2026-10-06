@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "projects": [
+    {
+      "id": "nordkap",
+      "client": "Nordkap Insurance",
+      "title": "Fraud triage at first notification of loss",
+      "description": "Follow one insurance engagement from discovery through strategy, architecture, delivery, governance and ROI.",
+      "engagement": {
+        "client": "Nordkap Insurance",
+        "assessor": "E. Gao",
+        "useCase": "Fraud triage at first notification of loss"
+      },
+      "sources": {
+        "aoa_infra_audit_v1": "Phase 1 - Discovery & Assessment/sample-data/engagement-nordkap/infrastructure-audit.json",
+        "aoa_org_readiness_v1": "Phase 1 - Discovery & Assessment/sample-data/engagement-nordkap/organizational-readiness.json",
+        "aoa_usecase_board_v1": "Phase 1 - Discovery & Assessment/sample-data/engagement-nordkap/use-case-discovery-board.json",
+        "aoa_usecase_priority_v1": "Phase 1 - Discovery & Assessment/sample-data/engagement-nordkap/use-case-prioritization.json",
+        "aoa_usecase_evaluator_v1": "Phase 1 - Discovery & Assessment/sample-data/engagement-nordkap/use-case-evaluator.json",
+        "aoa_ai_strategy_v1": "Phase 1 - Discovery & Assessment/sample-data/engagement-nordkap/ai-strategy-planning.json",
+        "aoa_business_case_v1": "Phase 1 - Discovery & Assessment/sample-data/engagement-nordkap/business-case-development.json",
+        "aoa_tech_roadmap_v1": "Phase 1 - Discovery & Assessment/sample-data/engagement-nordkap/technology-roadmap.json",
+        "aoa_org_roadmap_v1": "Phase 1 - Discovery & Assessment/sample-data/engagement-nordkap/organizational-roadmap.json",
+        "aoa_arch_blueprint_v1": "Phase 1 - Discovery & Assessment/sample-data/engagement-nordkap/architecture-blueprint.json",
+        "aoa_adr_v1": "Phase 1 - Discovery & Assessment/sample-data/engagement-nordkap/architecture-decision-records.json",
+        "aoa_tech_stack_report_v1": "Phase 1 - Discovery & Assessment/sample-data/engagement-nordkap/tech-stack-selection-report.json",
+        "aoa_security_arch_v1": "Phase 1 - Discovery & Assessment/sample-data/engagement-nordkap/security-architecture.json",
+        "aoa_nfr_spec_v1": "Phase 1 - Discovery & Assessment/sample-data/engagement-nordkap/nfr-spec.json",
+        "aoa_poc_planning_v1": "Phase 1 - Discovery & Assessment/sample-data/engagement-nordkap/poc-planning.json",
+        "aoa_pilot_planning_v1": "Phase 1 - Discovery & Assessment/sample-data/engagement-nordkap/pilot-planning.json",
+        "aoa_eval_godecision_v1": "Phase 1 - Discovery & Assessment/sample-data/engagement-nordkap/evaluation-godecision.json",
+        "aoa_impl_management_v1": "Phase 1 - Discovery & Assessment/sample-data/engagement-nordkap/implementation-management.json",
+        "aoa_system_integration_v1": "Phase 1 - Discovery & Assessment/sample-data/engagement-nordkap/system-integration.json",
+        "aoa_quality_assurance_v1": "Phase 1 - Discovery & Assessment/sample-data/engagement-nordkap/quality-assurance.json",
+        "aoa_deployment_golive_v1": "Phase 1 - Discovery & Assessment/sample-data/engagement-nordkap/deployment-golive.json",
+        "aoa_technical_documentation_v1": "Phase 1 - Discovery & Assessment/sample-data/engagement-nordkap/technical-documentation.json",
+        "aoa_ai_governance_v1": "Phase 1 - Discovery & Assessment/sample-data/engagement-nordkap/ai-governance-framework.json",
+        "aoa_compliance_assessment_v1": "Phase 1 - Discovery & Assessment/sample-data/engagement-nordkap/compliance-assessment.json",
+        "aoa_responsible_ai_v1": "Phase 1 - Discovery & Assessment/sample-data/engagement-nordkap/responsible-ai.json",
+        "aoa_risk_management_v1": "Phase 1 - Discovery & Assessment/sample-data/engagement-nordkap/risk-management.json",
+        "aoa_mlops_platform_v1": "Phase 1 - Discovery & Assessment/sample-data/engagement-nordkap/mlops-platform-design.json",
+        "aoa_model_monitoring_v1": "Phase 1 - Discovery & Assessment/sample-data/engagement-nordkap/model-monitoring.json",
+        "aoa_retraining_strategy_v1": "Phase 1 - Discovery & Assessment/sample-data/engagement-nordkap/retraining-strategy.json",
+        "aoa_operations_runbook_v1": "Phase 1 - Discovery & Assessment/sample-data/engagement-nordkap/operations-runbook.json",
+        "aoa_cost_optimization_v1": "Phase 1 - Discovery & Assessment/sample-data/engagement-nordkap/cost-optimization.json",
+        "aoa_change_management_v1": "Phase 1 - Discovery & Assessment/sample-data/engagement-nordkap/change-management-plan.json",
+        "aoa_training_curriculum_v1": "Phase 1 - Discovery & Assessment/sample-data/engagement-nordkap/training-curriculum.json",
+        "aoa_ai_coe_v1": "Phase 1 - Discovery & Assessment/sample-data/engagement-nordkap/ai-coe-design.json",
+        "aoa_knowledge_transfer_v1": "Phase 1 - Discovery & Assessment/sample-data/engagement-nordkap/knowledge-transfer.json",
+        "aoa_rfp_builder_v1": "Phase 1 - Discovery & Assessment/sample-data/engagement-nordkap/rfp-builder.json",
+        "aoa_vendor_evaluation_v1": "Phase 1 - Discovery & Assessment/sample-data/engagement-nordkap/vendor-evaluation-matrix.json",
+        "aoa_build_vs_buy_v1": "Phase 1 - Discovery & Assessment/sample-data/engagement-nordkap/build-vs-buy.json",
+        "aoa_platform_shortlist_v1": "Phase 1 - Discovery & Assessment/sample-data/engagement-nordkap/platform-shortlist.json",
+        "aoa_roi_analysis_v1": "Phase 1 - Discovery & Assessment/sample-data/engagement-nordkap/roi-analysis.json",
+        "aoa_tco_analysis_v1": "Phase 1 - Discovery & Assessment/sample-data/engagement-nordkap/tco-analysis.json",
+        "aoa_value_tracking_v1": "Phase 1 - Discovery & Assessment/sample-data/engagement-nordkap/value-tracking.json"
+      }
+    },
+    {
+      "id": "nordvik",
+      "client": "Nordvik Furniture",
+      "title": "Furniture supply chain discovery",
+      "description": "Explore the process from range planning to home delivery, with pain points, systems and candidate use cases.",
+      "engagement": {
+        "client": "Nordvik Furniture",
+        "assessor": "E. Gao",
+        "useCase": "Component purchase order to delivered furniture"
+      },
+      "sources": {
+        "aoa_usecase_board_v1": "Phase 1 - Discovery & Assessment/sample-data/use-case-discovery-board/furniture-supply-chain.json"
+      }
+    },
+    {
+      "id": "gronhoj",
+      "client": "Grønhøj Foods",
+      "title": "Chilled-food supply chain discovery",
+      "description": "Explore the journey from grower contracts to store shelves, where remaining shelf life shapes the decisions.",
+      "engagement": {
+        "client": "Grønhøj Foods",
+        "assessor": "E. Gao",
+        "useCase": "Grower contract to product on the shelf"
+      },
+      "sources": {
+        "aoa_usecase_board_v1": "Phase 1 - Discovery & Assessment/sample-data/use-case-discovery-board/food-supply-chain.json"
+      }
+    }
+  ]
+}
