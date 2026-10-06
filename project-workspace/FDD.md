@@ -18,3 +18,6 @@
 | Leave example | Switch project | Discard temporary values and return to create/join/example entry without a client-data write. |
 
 | Use example as starting project | Explicit example action, create form and GitHub connection | Copy current temporary tool state into a new isolated project; show the fictional-content notice, require normal consent, and allow canceling the seed. Copy identity headers from the form; do not rewrite fictional narratives. |
+
+| Join-list examples | Existing-project selection | Display all committed examples in the shared existing-project list, show sourced coverage, and load without a name, consent checkbox or credential. |
+| Deferred project access | Create or real Join submit while disconnected | Open an access dialog after form validation; resume the requested operation on successful connection, retain inputs on cancellation or failure. No standalone connection card. |

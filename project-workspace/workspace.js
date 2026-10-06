@@ -16,6 +16,7 @@ let active = null, baseline = {}, values = {}, currentPhase = registry[0], curre
 let saveTimer, saving = null, busy = false, remoteHead = null, conflictsPending = false;
 let connectedName = '', createId = null;
 let examples = [];
+let clientProjects = [], pendingEntry = false, connectionVersion = 0;
 let startingExample = null;
 let recoveryAvailable = true;
 let tabId;
@@ -131,15 +132,37 @@ async function openReport() {
   $('toolFrame').title=currentTool.title;$('toolFrame').src=new URL(currentTool.href,root).href;
 }
 async function listProjects() {
-  const list=await projects.list();const selected=$('projectList').value;$('projectList').replaceChildren(new Option('Choose a project',''));
-  for (const project of list) $('projectList').append(new Option(`${project.client} · ${project.title}`,project.id));
-  $('projectList').value=selected;
-  return list;
+  clientProjects=await projects.list();renderProjectList();return clientProjects;
+}
+function renderProjectList() {
+  const selected=$('projectList').value;$('projectList').replaceChildren(new Option('Choose a project',''));
+  const samples=document.createElement('optgroup');samples.label='Example projects';
+  for (const example of examples) {
+    const totals=coverage(example,registry);
+    samples.append(new Option(`${example.client} · Example (${totals.tools} ${totals.tools===1?'tool':'tools'}, ${totals.phases} ${totals.phases===1?'phase':'phases'})`,'example:'+example.id));
+  }
+  if (samples.children.length) $('projectList').append(samples);
+  const clients=document.createElement('optgroup');clients.label='Client projects';
+  for (const project of clientProjects) clients.append(new Option(`${project.client} · ${project.title}`,project.id));
+  if (!clientProjects.length) {const empty=new Option('No saved client projects yet','');empty.disabled=true;clients.append(empty);}
+  $('projectList').append(clients);$('projectList').value=selected;mode();
+}
+function selectedExample() {
+  if (new FormData($('projectForm')).get('mode')!=='join') return null;
+  return examples.find(example => $('projectList').value==='example:'+example.id) || null;
 }
 function mode() {
   const join=new FormData($('projectForm')).get('mode')==='join';
-  $('createFields').hidden=join;$('joinFields').hidden=!join;$('enterProject').textContent=join ? 'Join project' : 'Create project';
+  const example=selectedExample(), id=$('projectId').value.trim() || $('projectList').value;
+  const writable=!join || (!example && !!id);
+  $('createFields').hidden=join;$('joinFields').hidden=!join;$('enterProject').textContent=example ? 'Load example project' : join ? 'Join project' : 'Create project';
   $('client').required=!join;$('projectTitle').required=!join;
+  $('projectIdentity').hidden=!writable;$('participant').required=writable;$('consent').required=writable;
+  $('invitationFields').hidden=!!example;$('enterProject').disabled=busy || (join && !id);
+  if (example) {
+    const totals=coverage(example,registry);
+    $('selectedProject').textContent=example.description+` ${totals.tools} ${totals.tools===1?'tool has':'tools have'} example data across ${totals.phases} ${totals.phases===1?'phase':'phases'}. No login needed; edits stay temporary.`;
+  } else $('selectedProject').textContent=id ? 'Join this client project with your name to collaborate on its saved work.' : 'Choose a client or example project. Examples open without login.';
   $('startingExample').hidden=join || !startingExample;
 }
 function drawManifest() {
@@ -157,7 +180,7 @@ function drawManifest() {
 }
 async function enterExample(id) {
   if (busy) return;
-  busy=true;message('exampleStatus','Loading the example’s tool data…');
+  busy=true;mode();message('exampleStatus','Loading the example’s tool data…');
   try {
     const example=examples.find(project => project.id===id);
     if (!example) throw new Error('This example project was not found. Choose an example below.');
@@ -170,28 +193,24 @@ async function enterExample(id) {
     message('saveStatus','Example loaded from repository samples · edits stay in this tab');message('exampleStatus','');
     await showPhaseWithoutSave(registry[0]);
   } catch (error) {message('exampleStatus',error.message,true);if (active) message('saveStatus','Example could not load. '+error.message,true);}
-  finally {busy=false;}
+  finally {busy=false;mode();}
 }
 async function listExamples() {
   const response=await fetch('examples/catalog.json');
   if (!response.ok) throw new Error('Example projects could not load.');
   const catalog=await response.json();
   if (catalog.schemaVersion!==1 || !Array.isArray(catalog.projects)) throw new Error('Example catalog is invalid.');
-  examples=catalog.projects;$('exampleList').replaceChildren();
-  for (const example of examples) {
-    const card=document.createElement('article');card.className='example-card';
-    const title=document.createElement('h3');title.textContent=example.client;
-    const description=document.createElement('p');description.textContent=example.description;
-    const count=document.createElement('p');count.className='example-coverage';const totals=coverage(example,registry);
-    count.textContent=`${totals.tools} ${totals.tools===1?'tool':'tools'} · ${totals.phases} ${totals.phases===1?'phase':'phases'}`;
-    const button=document.createElement('button');button.type='button';button.textContent='Load example';button.setAttribute('aria-label','Load '+example.client+' example');
-    button.addEventListener('click',() => enterExample(example.id));card.append(title,description,count,button);$('exampleList').append(card);
-  }
+  examples=catalog.projects;renderProjectList();
   message('exampleStatus','');
 }
 async function enter(id) {
   message('entryStatus','Loading project folders and tool state…');
   const loaded=await projects.load(id);active=loaded;baseline=clone(loaded.values);values=clone(loaded.values);
+  // Keep a newly created or invited project in the chooser even before the next
+  // index refresh, including after the participant forgets their connection.
+  if (!clientProjects.some(project => project.id===id)) {
+    const {client,title,createdAt}=loaded.manifest;clientProjects.push({id,client,title,createdAt});renderProjectList();
+  }
   conflictsPending=false;remoteHead=null;$('conflicts').hidden=true;$('updates').hidden=true;
   try {
     const draft=JSON.parse(localStorage.getItem(journalKey(id)) || 'null');
@@ -216,20 +235,36 @@ function download(name,value) {
 }
 
 $('connectionForm').addEventListener('submit',async event => {
-  event.preventDefault();const token=$('token').value;$('token').value='';$('connect').disabled=true;
+  event.preventDefault();const version=++connectionVersion,token=$('token').value;$('token').value='';$('connect').disabled=true;
   message('connectionStatus','Connecting to GitHub…');
   try {
-    connectedName=await repo.connect(token);await listProjects();
+    connectedName=await repo.connect(token);
+    if (version!==connectionVersion) {repo.disconnect();return;}
+    await listProjects();
+    if (version!==connectionVersion) {repo.disconnect();return;}
     $('storageNotice').textContent=`Projects are stored in ${config.repository}, a ${repo.visibility} GitHub repository. `+(repo.visibility==='public' ? 'Anyone can read saved client names and tool contents. Use only information you can publish.' : 'Repository collaborators can read the saved project contents.');
-    message('connectionStatus','Connected as '+connectedName+'.');$('enterProject').disabled=false;
-    if (active) {$('entry').hidden=true;$('workspace').hidden=false;$('projectForm').inert=false;message('saveStatus','GitHub reconnected. Pending work is retained.');}
-  } catch (error) {message('connectionStatus',error.message,true);$('enterProject').disabled=true;}
+    message('connectionStatus','Connected as '+connectedName+'.');
+    if (active) message('saveStatus','GitHub reconnected. Pending work is retained.');
+    const resume=pendingEntry;pendingEntry=false;$('connectionDialog').close();mode();
+    if (resume) $('projectForm').requestSubmit();
+  } catch (error) {message('connectionStatus',error.message,true);}
   finally {$('connect').disabled=false;}
 });
+function requestConnection(resumeEntry=false) {
+  pendingEntry=resumeEntry;message('connectionStatus','');$('connectionDialog').showModal();$('token').focus();
+}
+function cancelConnection() {pendingEntry=false;connectionVersion++;}
+$('cancelConnection').addEventListener('click',() => {cancelConnection();$('connectionDialog').close();});
+$('connectionDialog').addEventListener('cancel',cancelConnection);
+$('connectionDialog').addEventListener('close',() => {pendingEntry=false;$('token').value='';});
 $('projectForm').addEventListener('change',mode);
-$('projectList').addEventListener('change',() => {$('projectId').value=$('projectList').value;});
+$('projectList').addEventListener('change',() => {$('projectId').value=selectedExample() ? '' : $('projectList').value;mode();});
+$('projectId').addEventListener('input',() => {if ($('projectId').value.trim()) $('projectList').value='';mode();});
 $('projectForm').addEventListener('submit',async event => {
-  event.preventDefault();if (!repo.connected || busy) return;busy=true;$('enterProject').disabled=true;
+  event.preventDefault();if (busy) return;
+  const example=selectedExample();if (example) {await enterExample(example.id);return;}
+  if (!repo.connected) {requestConnection(true);return;}
+  busy=true;$('enterProject').disabled=true;
   try {
     const joining=new FormData($('projectForm')).get('mode')==='join';const name=$('participant').value.trim();let id;
     message('entryStatus',joining ? 'Joining project…' : 'Creating the client project and all phase/tool folders…');
@@ -243,7 +278,7 @@ $('projectForm').addEventListener('submit',async event => {
     }
     await enter(id);startingExample=null;$('startingExample').hidden=true;try {sessionStorage.removeItem('aoa_workspace_create');} catch (_) {}createId=null;message('entryStatus','');
   } catch (error) {message('entryStatus',error.message,true);}
-  finally {busy=false;$('enterProject').disabled=!repo.connected;}
+  finally {busy=false;mode();}
 });
 $('save').addEventListener('click',() => save().catch(showSaveError));
 $('backToPhase').addEventListener('click',() => showPhase(currentPhase).catch(showSaveError));
@@ -253,12 +288,12 @@ $('invite').addEventListener('click',async () => {
   catch (_) {message('saveStatus','Invitation: '+new URL('?project='+active.id,location.href).href);}
 });
 $('switchProject').addEventListener('click',async () => {
-  try {await save();active=null;baseline={};values={};$('toolFrame').removeAttribute('src');$('workspace').hidden=true;$('entry').hidden=false;history.replaceState(null,'',location.pathname);await listProjects();}
-  catch (error) {showSaveError(error);}
+  try {await save();active=null;baseline={};values={};$('toolFrame').removeAttribute('src');$('workspace').hidden=true;$('entry').hidden=false;history.replaceState(null,'',location.pathname);mode();await listProjects();}
+  catch (error) {if (active) showSaveError(error);else message('entryStatus','Client projects could not load. Examples remain available. '+error.message,true);}
 });
 $('resetExample').addEventListener('click',() => {if (active?.example) enterExample(active.id);});
 $('copyExample').addEventListener('click',() => {
-  if (!active?.example) return;
+  if (busy || !active?.example) return;
   startingExample={id:active.id,requestId:crypto.randomUUID(),values:clone(values)};
   $('client').value=active.manifest.client;$('projectTitle').value=active.manifest.title;
   $('startingExampleText').textContent='Starting from '+active.manifest.client+'. Current example contents will be copied into a new GitHub project. The copied descriptions, figures and documents are fictional until you replace them.';
@@ -267,12 +302,12 @@ $('copyExample').addEventListener('click',() => {
   history.replaceState(null,'',location.pathname);$('projectForm').scrollIntoView({block:'center'});$('participant').focus();
 });
 $('clearStartingExample').addEventListener('click',() => {startingExample=null;mode();});
-$('reconnect').addEventListener('click',() => {$('workspace').hidden=true;$('entry').hidden=false;$('projectForm').inert=true;$('token').focus();message('entryStatus','Reconnect to resume your current project. Pending edits remain available.');});
+$('reconnect').addEventListener('click',() => requestConnection());
 $('forget').addEventListener('click',async () => {
-  journal();repo.disconnect();$('enterProject').disabled=true;
+  journal();repo.disconnect();
   if (dirty() && !recoveryAvailable) {message('saveStatus','Token forgotten. Browser recovery storage is full; download your pending work before leaving.',true);return;}
   clearTimeout(saveTimer);active=null;baseline={};values={};$('toolFrame').removeAttribute('src');$('workspace').hidden=true;$('entry').hidden=false;$('projectForm').inert=false;
-  message('connectionStatus','Token forgotten. Connect again to join a project. Pending work has a browser recovery copy.');
+  mode();message('entryStatus','Token forgotten. Pending work has a browser recovery copy.');
 });
 $('refresh').addEventListener('click',async () => {
   try {
@@ -326,10 +361,10 @@ setInterval(async () => {
 },15000);
 mode();
 const params=new URLSearchParams(location.search), invited=params.get('project');
-if (invited) {document.querySelector('input[name=mode][value=join]').checked=true;$('projectId').value=invited;mode();}
+if (invited) {document.querySelector('input[name=mode][value=join]').checked=true;$('projectId').value=invited;$('invitationFields').open=true;mode();}
 try {await listExamples();if (params.has('example')) await enterExample(params.get('example'));}
 catch (error) {message('exampleStatus',error.message,true);}
 if (!active?.example) {
-  try {await repo.inspect();const list=await listProjects();message('connectionStatus',`${list.length} project${list.length===1?'':'s'} available. Connect to create or join.`);}
-  catch (error) {message('connectionStatus',error.message,true);}
-} else message('connectionStatus','Connect to GitHub to create or join your own project.');
+  try {await repo.inspect();await listProjects();}
+  catch (error) {message('entryStatus','Client projects could not load. Examples remain available. '+error.message,true);}
+}

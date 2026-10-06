@@ -35,3 +35,7 @@ Load committed examples directly from the static site. Temporary example edits u
 ## 2026-10-06 — Optional starting project from an example
 
 Offer an explicit copy through the existing Create form, with the same personal GitHub connection and visibility acknowledgment. The new project gets its own identity and tool folders; copied content is clearly still fictional. This adds a starting point without making example browsing perform repository writes.
+
+## 2026-10-06 — Examples belong in Join existing
+
+The user asked for example projects in the existing-project list and removal of the Connect to GitHub card. This supersedes separate example cards and an always-visible connection panel as the primary entry design. Keep synthetic examples in the same selector as clients; temporary loading still performs no repository writes. Preserve GitHub-only client storage through a deferred access dialog for writable create/join operations.

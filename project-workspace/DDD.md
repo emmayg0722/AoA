@@ -1,5 +1,4 @@
 # Dictionary
-
 | Term / function / concept | File | One-line purpose |
 | --- | --- | --- |
 | Workspace interface | index.html, workspace.css, workspace.js | Create/join client projects, navigate phases/tools, disclose storage, and show save/recovery state. |
@@ -20,11 +19,11 @@
 | Two-browser collaboration | test/browser-collaborators.js | Tests two named GitHub participants joining the same project and saving independent fields. |
 | Project index and folder policy | ../projects/index.json, ../projects/README.md | Defines the empty repository index and data folder hierarchy. |
 | Public configuration | config.json | Selects the GitHub repository and data branch with no credential. |
-
 | Example project catalog | examples/catalog.json | Maps existing synthetic sample files to project identities and registry keys. |
 | Example loader and coverage | examples.js | Validates same-origin source mappings and assembles isolated project state with honest coverage counts. |
 | Example verification | test/examples.test.mjs, test/browser-examples.js | Verifies sourced coverage, failure atomicity and editable examples without GitHub writes or legacy-draft changes. |
-
 | Example-to-project copy | workspace.js, projects.js | Holds a temporary seed for explicit new-project creation and commits copied tool states atomically. |
-
 | Rendered example copy and failure check | test/browser-example-copy.js | Verifies explicit authenticated copying, source-load failure retention, reset, and clean subsequent project creation. |
+| Combined existing project selector | workspace.js: renderProjectList, selectedExample, mode | Lists source examples and real clients and selects the appropriate no-login or shared-project entry flow. |
+| Deferred access dialog | index.html: connectionDialog, workspace.js: connectionForm | Requests GitHub access only for a real create/join or reconnect action, and resumes the pending form on success. |
+| Join-list and access verification | test/browser-entry.js | Checks example selection, client index failure, deferred access, cancel/invalid connection, create, reconnect and join. |

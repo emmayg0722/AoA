@@ -52,8 +52,8 @@ async (page) => {
   if(errors.length) throw new Error('Runtime errors: '+errors.join('; '));
   page.off('pageerror',onError);page.off('request',onRequest);
   await page.getByRole('button',{name:'Switch project',exact:true}).click();await page.locator('#entry').waitFor({state:'visible'});
-  for (const [client,node] of [['Nordvik Furniture','Range and demand plan'],['Grønhøj Foods','Grower contracts and crop plan']]) {
-    await page.getByRole('button',{name:'Load '+client+' example',exact:true}).click();await page.locator('#workspace').waitFor({state:'visible'});
+  for (const [id,client,node] of [['nordvik','Nordvik Furniture','Range and demand plan'],['gronhoj','Grønhøj Foods','Grower contracts and crop plan']]) {
+    await page.getByLabel('Existing project',{exact:true}).selectOption('example:'+id);await page.getByRole('button',{name:'Load example project',exact:true}).click();await page.locator('#workspace').waitFor({state:'visible'});
     if(!/1 of 45/.test(await page.locator('#exampleNotice').innerText())) throw new Error('Discovery coverage overstated');
     await page.locator('#toolList').getByRole('button',{name:'Use Case Discovery Board',exact:false}).click();
     await page.frameLocator('#toolFrame').locator('.node-title').filter({hasText:node}).waitFor();
