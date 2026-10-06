@@ -27,3 +27,9 @@
 - Verified current entry: all three examples loaded from Join existing with no identity or credential, including client-index failure. The isolated browser verified modal cancellation, invalid token clearing, canceled in-flight connection, resumed create/join, saved client-state restoration, reconnect cancellation and 390px entry layout. Workspace domain/storage tests: 20 pass. Publishing the focused chooser change next; actual public verification follows deployment.
 
 - The updated example-copy browser scenario also passed through the deferred access dialog, including source failure retention, copied identity/phase data, clean subsequent creation and source preservation.
+
+- 2026-10-06 focus: the user confirmed GitHub-only hosting and token-free project-ID access for viewing. Implement anonymous saved-project loading, protected tool state and explicit view-only notices; retain authenticated creation/editing and examples. Verify no authentication, membership writes or recovery-journal changes during viewing.
+
+- Implemented token-free ID/list viewing, immutable raw file loading and explicit refresh. All 45 tool frames and report passed the isolated browser checks with protected storage and unchanged membership/journals; 22 workspace tests pass. Board zoom is retained while node movement is blocked. Added an explicit editor return path so existing-project editing remains available after reload.
+
+- Ready to publish: 22 workspace tests pass. Isolated browser checks opened all 45 view-only tools and report, blocked board-node dragging while retaining zoom, refreshed a saved owner edit, rejected invalid/missing IDs without access prompts, preserved membership/recovery/legacy drafts, and retained examples/authenticated creation and explicit existing-editor return. No production fixture projects were written.

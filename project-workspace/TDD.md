@@ -16,4 +16,8 @@
 - A requested example copy retains a cloned state seed only in the tab. Projects.create validates all seed keys, copies known tool data into its atomic folder commit, and sets shared/client/assessor header fields from the creation form. The example catalog and existing client projects are untouched.
 
 - The project selector renders separate example/client optgroups, preserving example entries even when the public client index fails. An example-prefixed selection invokes the existing temporary example loader.
-- A deferred connection dialog retains the creation/join form and resumes its submit only after successful authentication. Cancel keeps the form and performs no project write. Reconnect uses the same dialog without leaving the open tool.
+- A deferred connection dialog retains the creation form and resumes its submit only after successful authentication. Cancel keeps the form and performs no project write. Reconnect uses the same dialog without leaving the open tool.
+
+- Anonymous project sessions use immutable public GitHub snapshots without a credential. Public file reads use raw.githubusercontent.com at the resolved commit to avoid a separate REST request per tool. View sessions skip mutation, recovery journals and background API polling; an explicit refresh reloads saved work. The tool bridge exposes view-only state, protects storage and disables editing controls while retaining readable forms and workspace navigation.
+
+- The optional editor action from a viewed project reconnects in memory, then requires normal participant/visibility confirmation before loading a writable session. Anonymous opening remains independent of that action.

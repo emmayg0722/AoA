@@ -9,7 +9,7 @@ const server=createServer(async (request,response) => {
     if (request.url==='/fail') {api.failUpdate=body.enabled;response.end('{}');return;}
     if (request.url==='/external') {api.external(files=>{files[body.path].data.fields[body.field]=body.value;});response.end('{}');return;}
     if (request.url!=='/gateway') {response.writeHead(404);response.end('{}');return;}
-    const url=body.url.replace('/repos/emmayg0722/AoA','/repos/test/toolkit');const result=await api.request(url,body.options);
+    const url=body.url.replace('/repos/emmayg0722/AoA','/repos/test/toolkit').replace('raw.githubusercontent.com/emmayg0722/AoA/','raw.githubusercontent.com/test/toolkit/');const result=await api.request(url,body.options);
     response.writeHead(result.status,{'Content-Type':'application/json'});response.end(await result.text());
   } catch (error) {response.writeHead(500);response.end(JSON.stringify({message:error.message}));}
 });

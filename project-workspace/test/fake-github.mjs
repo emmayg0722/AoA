@@ -7,8 +7,14 @@ export class FakeGithub {
   }
   async request(url,options={}) {
     const path=new URL(url).pathname;const method=options.method || 'GET';const body=options.body ? JSON.parse(options.body) : undefined;
-    this.calls.push({path,method,body});
+    this.calls.push({path,method,body,headers:options.headers});
     const response=(value,status=200) => new Response(JSON.stringify(value),{status});
+    if (new URL(url).hostname==='raw.githubusercontent.com') {
+      const [,owner,repo,ref,...file]=path.split('/').map(decodeURIComponent);
+      if (owner!=='test' || repo!=='toolkit') throw new Error('Unexpected raw repository');
+      const value=this.snapshots.get(ref)?.[file.join('/')];
+      return value===undefined ? response({},404) : response(value);
+    }
     if (path==='/user') return (options.headers?.Authorization || options.headers?.authorization)==='Bearer test-valid' ? response({login:'test-architect'}) : response({message:'Bad credentials'},401);
     if (path==='/repos/test/toolkit') return response({private:false,permissions:{push:true}});
     if (path.endsWith('/git/ref/heads/codex/project-data')) return response({object:{sha:this.head}});

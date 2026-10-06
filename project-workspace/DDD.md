@@ -25,5 +25,12 @@
 | Example-to-project copy | workspace.js, projects.js | Holds a temporary seed for explicit new-project creation and commits copied tool states atomically. |
 | Rendered example copy and failure check | test/browser-example-copy.js | Verifies explicit authenticated copying, source-load failure retention, reset, and clean subsequent project creation. |
 | Combined existing project selector | workspace.js: renderProjectList, selectedExample, mode | Lists source examples and real clients and selects the appropriate no-login or shared-project entry flow. |
-| Deferred access dialog | index.html: connectionDialog, workspace.js: connectionForm | Requests GitHub access only for a real create/join or reconnect action, and resumes the pending form on success. |
+| Deferred access dialog | index.html: connectionDialog, workspace.js: connectionForm | Requests GitHub access only for creation or an editor reconnect action, and resumes the pending form on success. |
 | Join-list and access verification | test/browser-entry.js | Checks example selection, client index failure, deferred access, cancel/invalid connection, create, reconnect and join. |
+
+| Token-free project viewing | workspace.js: mode, enter, projectForm; index.html: viewNotice | Opens saved public projects by list or ID without registering a participant or requesting a credential. |
+| View-only original tools | tool-storage.js | Protects project storage and disables editing controls in anonymous saved-project frames. |
+| Anonymous snapshot reads | repository.js: read | Reads public JSON from an immutable raw GitHub commit without using per-file REST quota. |
+| Project-view browser verification | test/browser-viewer.js | Verifies ID/list access, all original tools/report, refresh, missing IDs and no credentials/writes/journals. |
+
+| Resume existing-project editing | workspace.js: editProject, connectionForm | Explicit editor action connects, then requires the normal name/visibility join before enabling changes. |

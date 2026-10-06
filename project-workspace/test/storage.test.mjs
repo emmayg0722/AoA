@@ -22,3 +22,12 @@ test('standalone browsing uses its original browser storage without a project',(
   const original={getItem(){}};const window={localStorage:original};
   runInNewContext(source,{window,parent:window});assert.equal(window.localStorage,original);
 });
+test('view-only tool storage rejects writes, deletes and clears without changing saved state or browser drafts',() => {
+  const native=new Map([['legacy','original draft']]);let writes=0;
+  const window={localStorage:{getItem:key=>native.get(key)??null,setItem:(key,value)=>native.set(key,value),removeItem:key=>native.delete(key)},addEventListener(){}};
+  const parent={ToolkitWorkspace:{bridge:{active:true,viewOnly:true,keys:['tool'],get:()=>'{"saved":"Original"}',set:()=>writes++}}};
+  runInNewContext(source,{window,parent,document:{addEventListener(){}},JSON,Object,MutationObserver:class{}});
+  const storage=window.localStorage;storage.setItem('tool','{"saved":"Changed"}');storage.removeItem('tool');storage.clear();
+  assert.equal(storage.getItem('tool'),'{"saved":"Original"}');assert.equal(writes,0);
+  assert.equal(native.get('legacy'),'original draft');assert.equal(native.has('tool'),false);
+});

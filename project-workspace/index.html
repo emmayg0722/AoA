@@ -26,13 +26,14 @@
       </form><p id="exampleStatus" role="status" aria-live="polite">Loading existing projects…</p><p id="entryStatus" role="status" aria-live="polite"></p>
     </section>
   </div>
-  <p class="entry-foot">Your existing browser drafts stay separate. After joining, you can review and import them into the selected project.</p>
+  <p class="entry-foot">A project ID opens saved work for viewing without a token. Creating and editing projects requires GitHub write access. Your existing browser drafts stay separate.</p>
 </section>
 <section id="workspace" hidden>
   <header class="project-head"><div><p class="eyebrow" id="activeClient"></p><h1 id="activeTitle"></h1><p id="members"></p></div>
-    <div class="actions"><button id="switchProject" class="secondary">Switch project</button><button id="resetExample" class="secondary" hidden>Reset example</button><button id="copyExample" hidden>Use as starting project</button><button id="invite" class="secondary">Copy invitation</button><button id="save">Save now</button></div>
+    <div class="actions"><button id="switchProject" class="secondary">Switch project</button><button id="resetExample" class="secondary" hidden>Reset example</button><button id="copyExample" hidden>Use as starting project</button><button id="editProject" class="secondary" hidden>Edit with GitHub access</button><button id="invite" class="secondary">Copy invitation</button><button id="save">Save now</button></div>
   </header>
   <p id="exampleNotice" class="notice" hidden></p>
+  <p id="viewNotice" class="notice" hidden>View-only project · no GitHub token needed. Explore all phases, saved tools and the master report. Editing and importing are disabled. Project data is stored in a public GitHub repository.</p>
   <div class="save-line"><p id="saveStatus" role="status" aria-live="polite"></p><a id="commitLink" target="_blank" rel="noopener" hidden>View saved commit</a><a id="folderLink" target="_blank" rel="noopener">Project folder on GitHub</a></div>
   <div id="updates" class="notice" hidden><span id="updatesText"></span> <button id="refresh" class="secondary">Load latest saved work</button></div>
   <div id="conflicts" class="notice conflict" hidden><p id="conflictText"></p><button id="keepMine">Keep my conflicting edits</button><button id="useRemote" class="secondary">Use GitHub version</button><button id="downloadPending" class="secondary">Download my pending work</button></div>
@@ -47,7 +48,7 @@
 </section>
 <dialog id="connectionDialog" aria-labelledby="connectionTitle">
   <h2 id="connectionTitle">Save and collaborate</h2>
-  <p>Creating or joining a shared client project requires your own GitHub account with write access to AoA. Your token stays in this tab’s memory and is cleared when you close or reload it.</p>
+  <p>Creating and editing shared client projects requires your own GitHub account with write access to AoA. Project IDs open saved work for viewing without a token. Your token stays in this tab’s memory and is cleared when you close or reload it.</p>
   <details id="tokenHelp"><summary>Which token do I need?</summary><p>The repository owner can use a fine-grained token restricted to AoA with <strong>Contents: read and write</strong>. Outside collaborators currently need a classic token with <strong>public_repo</strong>; that scope also permits writes to other public repositories you can access.</p><p><a href="https://github.com/settings/tokens" target="_blank" rel="noopener">Create your own GitHub token</a> · <a href="https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens" target="_blank" rel="noopener">GitHub token guidance</a>. Paste it here, never into client fields or chat.</p></details>
   <form id="connectionForm"><label for="token">GitHub token</label><input id="token" type="password" required autocomplete="off" spellcheck="false" placeholder="Enter your own token"><div class="actions"><button type="button" id="cancelConnection" class="secondary">Cancel</button><button type="submit" id="connect">Continue</button></div></form>
   <p id="connectionStatus" role="status" aria-live="polite"></p>

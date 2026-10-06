@@ -30,6 +30,18 @@ test('atomic creation initializes one client folder, shared header and all 45 to
   assert.equal(loaded.values[key],null);assert.equal(api.calls.filter(c=>c.method==='PATCH').length,1);
   assert.ok(!JSON.stringify(files).includes('test-valid'));
 });
+test('anonymous project IDs load every saved tool without credentials, membership changes or per-file REST calls',async () => {
+  const {api,projects,repo}=await setup();await projects.create(details('public-project'));
+  const original=JSON.stringify(api.snapshots.get(api.head));repo.disconnect();api.calls=[];
+  const listed=await projects.list();const loaded=await projects.load(listed[0].id);
+  assert.equal(loaded.manifest.client,'Test client Å');assert.equal(Object.keys(loaded.values).length,46);
+  assert.ok(api.calls.every(call=>call.method==='GET' && !call.headers?.Authorization));
+  assert.equal(api.calls.filter(call=>call.path.includes('/contents/')).length,0);
+  assert.equal(JSON.stringify(api.snapshots.get(api.head)),original);
+  await assert.rejects(projects.save(loaded.id,loaded.values,{...loaded.values,[key]:{fields:{vision:'Denied'}}}),/Connect your GitHub/);
+  await assert.rejects(projects.load('../private'),/Invalid project ID/);
+  await assert.rejects(projects.load('missing-public-project'),/does not exist/);
+});
 test('failed branch update never acknowledges or exposes partial project data',async () => {
   const {api,projects}=await setup();api.failUpdate=true;
   await assert.rejects(projects.create(details('test-project')),/access is denied/);

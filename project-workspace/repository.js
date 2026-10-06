@@ -51,6 +51,14 @@ export class Repository {
   }
   async read(path, ref) {
     if (!ref) throw new Error('A snapshot commit is required.');
+    if (!this.#token) {
+      // Public immutable files do not consume one REST request per saved tool.
+      const url='https://raw.githubusercontent.com/'+this.repository+'/'+encodeURIComponent(ref)+'/'+path.split('/').map(encodeURIComponent).join('/');
+      const response=await this.request(url,{credentials:'omit',redirect:'error',cache:'no-store',signal:AbortSignal.timeout(30000)});
+      if (response.status===404) return null;
+      if (!response.ok) throw new GithubError(`Saved project files could not load (${response.status}). Try again.`,response.status);
+      return response.json();
+    }
     try {
       const data = await this.api(this.base + '/contents/' + path.split('/').map(encodeURIComponent).join('/') + '?ref=' + encodeURIComponent(ref));
       if (data.encoding !== 'base64' || typeof data.content !== 'string') throw new Error('Project file is too large to load through GitHub.');
