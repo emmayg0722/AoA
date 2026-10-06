@@ -34,11 +34,11 @@
   const updateNotices = () => {
     for (const node of document.querySelectorAll('[data-i18n="noteBody"], [data-i18n="savedFlag"], #savedFlag')) {
       const text = node.textContent;
-      const replacement = node.id === 'savedFlag' || node.dataset.i18n === 'savedFlag' ? 'Changes captured · see GitHub status above' :
+      const replacement = bridge.example ? (node.id === 'savedFlag' || node.dataset.i18n === 'savedFlag' ? 'Temporary example edits · reset in workspace' : 'This is a fictional example project. Edits stay in this tab; reset or reload restores the repository examples. Raw profiler uploads stay in this browser.') : node.id === 'savedFlag' || node.dataset.i18n === 'savedFlag' ? 'Changes captured · see GitHub status above' :
         'This tool is part of your client project. Changes queue for GitHub saving; check the shared status above. Raw profiler uploads stay in this browser.';
       if (/locally|browser|API|lokalt|webbläs|browseren|lokal/i.test(text) && text !== replacement) node.textContent = replacement;
     }
-    const reportNotes = {statPrivacy:'Reads this project’s saved work from GitHub.',manageHint:'Export this project’s tool state as one JSON backup, or import a backup into this project. Imported changes queue for GitHub saving.',importDone:'Project backup imported. Check the GitHub save status above.',emptyReport:'No saved tool work in this project yet. Open a phase tool to start.'};
+    const reportNotes = bridge.example ? {statPrivacy:'Reads this fictional example project. Edits stay in this tab.',manageHint:'Export this example’s tool state, or import a backup into the temporary example. Reset or reload restores the original examples.',importDone:'Example backup imported into this tab. Changes are temporary.',emptyReport:'No example data for this tool. Open a phase tool to explore.'} : {statPrivacy:'Reads this project’s saved work from GitHub.',manageHint:'Export this project’s tool state as one JSON backup, or import a backup into this project. Imported changes queue for GitHub saving.',importDone:'Project backup imported. Check the GitHub save status above.',emptyReport:'No saved tool work in this project yet. Open a phase tool to start.'};
     for (const [key,text] of Object.entries(reportNotes)) for (const node of document.querySelectorAll(`[data-i18n="${key}"]`)) if (node.textContent!==text) node.textContent=text;
   };
   document.addEventListener('DOMContentLoaded', () => {

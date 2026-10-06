@@ -69,12 +69,15 @@ export class Projects {
     if (!index || index.schemaVersion !== 1 || !Array.isArray(index.projects)) throw new Error('The project index has not been prepared yet.');
     return index.projects;
   }
-  async create({id, client, title, name}) {
+  async create({id, client, title, name, initialValues = {}, example = null}) {
     if (![client,title,name].every(v => typeof v === 'string' && v.trim() && v.length <= 160)) throw new Error('Enter a client, project name, and your name (up to 160 characters).');
     const paths = keyPaths(this.registry, id);
+    if (!object(initialValues) || Object.keys(initialValues).some(key => !paths.has(key))) throw new Error('The starting project contains an unsupported tool.');
+    if (example !== null && (typeof example !== 'string' || !/^[a-z0-9-]+$/.test(example))) throw new Error('The starting example ID is invalid.');
     const now = new Date().toISOString();
     const summary = {id, client: client.trim(), title: title.trim(), createdAt: now};
     const manifest = {schemaVersion: 1, ...summary, members: {[this.repository.login]: {name: name.trim(), joinedAt: now}}};
+    if (example) manifest.sourceExampleId=example;
     return this.repository.commit('Create client project ' + id, async head => {
       const index = await this.repository.read(INDEX_PATH, head);
       if (!index || index.schemaVersion !== 1) throw new Error('Project data branch is not initialized.');
@@ -85,7 +88,19 @@ export class Projects {
       }
       return [{path: INDEX_PATH, value: {...index, projects: [...index.projects, summary]}},
         {path: `projects/${id}/project.json`, value: manifest},
-        ...Array.from(paths, ([key,path]) => ({path, value: {schemaVersion:1, key, data: key === ENGAGEMENT_KEY ? {client:summary.client,assessor:name.trim(),useCase:summary.title} : null}}))];
+        ...Array.from(paths, ([key,path]) => {
+          const data=key===ENGAGEMENT_KEY ? {client:summary.client,assessor:name.trim(),useCase:summary.title} : copy(initialValues[key]) ?? null;
+          // Update identity headers only. Example narratives remain visibly fictional
+          // and must be replaced by the participants before treating them as client work.
+          if (object(data)) {
+            for (const fields of [data,data.fields].filter(object)) {
+              if (own(fields,'client')) fields.client=summary.client;
+              if (own(fields,'company')) fields.company=summary.client;
+              if (own(fields,'assessor')) fields.assessor=name.trim();
+            }
+          }
+          return {path,value:{schemaVersion:1,key,data}};
+        })];
     });
   }
   async join(id, name) {

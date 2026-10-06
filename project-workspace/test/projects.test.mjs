@@ -4,6 +4,7 @@ import {readFile} from 'node:fs/promises';
 import {Repository} from '../repository.js';
 import {Projects,Conflict,merge,keyPaths,ENGAGEMENT_KEY} from '../projects.js';
 import {FakeGithub} from './fake-github.mjs';
+import {loadExample} from '../examples.js';
 const registry=JSON.parse(await readFile(new URL('../registry.json',import.meta.url)));
 const key=registry[1].tools[0].key;
 async function setup() {
@@ -33,6 +34,25 @@ test('failed branch update never acknowledges or exposes partial project data',a
   const {api,projects}=await setup();api.failUpdate=true;
   await assert.rejects(projects.create(details('test-project')),/access is denied/);
   assert.deepEqual(api.snapshots.get(api.head)['projects/index.json'].projects,[]);
+});
+test('copying an example creates separate phase folders atomically and updates only identity headers',async () => {
+  const catalog=JSON.parse(await readFile(new URL('../examples/catalog.json',import.meta.url)));
+  const example=await loadExample(catalog.projects[0],registry,new URL('../../',import.meta.url),async url=>({ok:true,json:async()=>JSON.parse(await readFile(url,'utf8'))}));
+  const before=JSON.stringify(example.values);const {api,projects}=await setup();
+  await projects.create({...details('example-copy'),initialValues:example.values,example:example.id});
+  const loaded=await projects.load('example-copy');
+  assert.equal(loaded.manifest.sourceExampleId,'nordkap');
+  assert.equal(loaded.values.aoa_usecase_board_v1.fields.client,'Test client Å');
+  assert.equal(loaded.values.aoa_ai_strategy_v1.fields.assessor,'Test architect');
+  assert.equal(loaded.values[ENGAGEMENT_KEY].useCase,'Fixture engagement');
+  assert.equal(loaded.values.aoa_ai_strategy_v1.fields.vision,example.values.aoa_ai_strategy_v1.fields.vision);
+  assert.ok(loaded.values.aoa_roi_analysis_v1);
+  assert.equal(loaded.values.dra_arch_builder_v1,null);
+  assert.equal(JSON.stringify(example.values),before);
+  assert.equal(api.calls.filter(c=>c.method==='PATCH').length,1);
+  await projects.create(details('empty-project'));
+  assert.equal((await projects.load('empty-project')).values.aoa_ai_strategy_v1,null);
+  await assert.rejects(projects.create({...details('bad-seed'),initialValues:{unknown:{}}}),/unsupported tool/);
 });
 test('creation retry with the same request ID does not duplicate the project',async () => {
   const {projects}=await setup();await projects.create(details('test-project'));await projects.create(details('test-project'));

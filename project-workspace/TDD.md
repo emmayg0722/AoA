@@ -9,3 +9,8 @@
 - Debounce saves for eight seconds. Poll the branch every fifteen seconds and offer refresh when newer saved work is available; do not reload a form with pending work.
 - Recovery journal stores project-scoped pending values/baselines per tab. Credentials stay out of every persistent store, URL, export, and repository file.
 - Default data branch codex/project-data holds projects/index.json and per-client project folders, so project commits do not rebuild the Pages site.
+
+- examples/catalog.json indexes existing same-origin sample JSON by registry key. examples.js validates and loads all source files before entering an example; missing files fail visibly rather than showing a partial project. No sample data is duplicated or mixed across clients.
+- Example mode uses the same scoped tool bridge with in-memory values, but skips repository saves, recovery journals and GitHub polling. The mode also changes tool/report storage notices. A URL example ID supports direct loading after refresh.
+
+- A requested example copy retains a cloned state seed only in the tab. Projects.create validates all seed keys, copies known tool data into its atomic folder commit, and sets shared/client/assessor header fields from the creation form. The example catalog and existing client projects are untouched.
