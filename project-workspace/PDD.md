@@ -11,4 +11,6 @@
 
 - Explicit example copy: use the current example as the starting content of a new project through the existing GitHub connection, identity and visibility-consent form. Copied narratives remain fictional until replaced by the project participants.
 
-- Entry refinement: the Join existing list includes client projects and the committed example projects. Examples load directly without participant details or GitHub access. Remove the standalone connection card; request access only when creating/joining a writable client project.
+- Entry refinement: the Join existing list includes client projects and the committed example projects. Examples load directly without participant details or GitHub access. Remove the standalone connection card; request access only when creating a project or explicitly reconnecting an editor. Disconnected client-project selection opens saved work for viewing.
+
+- Project-ID access: anyone can open public saved projects for viewing without a token or participant details. Viewing does not register members, edit repository work or import browser drafts. The user confirmed view-only access to retain GitHub-only hosting.

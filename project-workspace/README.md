@@ -1,6 +1,6 @@
 # Toolkit client projects
 
-Open `/project-workspace/` from the toolkit home page. **Join existing → Existing project** lists examples and saved client projects together. Choose an example and press **Load example project** to explore immediately. For a real client, choose Create or Join, enter your name and acknowledge repository visibility; the required GitHub access dialog appears only when you submit. Cancel retains your form without creating or joining a project. The repository owner can use a fine-grained token restricted to AoA with Contents read/write. Outside collaborators currently need GitHub write access and a classic `public_repo` token. Credentials stay in the tab's memory.
+Open `/project-workspace/` from the toolkit home page. **Join existing → Existing project** lists examples and saved client projects together. Choose an example and press **Load example project** to explore immediately. A saved client project or invitation ID opens with **Open project** for viewing, without a token or name. Viewers can browse all phases, saved tools and the master report; editing, importing and membership updates are disabled. **Load latest saved work** refreshes the snapshot. **Edit with GitHub access** lets an existing editor connect, then confirm their name and repository visibility before editing. Cancel retains the viewed tool. Creating and editing still use the deferred personal GitHub connection. Cancel retains your creation form. The repository owner can use a fine-grained token restricted to AoA with Contents read/write. Outside collaborators currently need GitHub write access and a classic `public_repo` token. Credentials stay in the tab's memory.
 
 **Join existing → Existing project → Example projects** works without login. Nordkap Insurance loads all 42 existing engagement samples across ten phases at once. Nordvik Furniture and Grønhøj Foods each load their existing discovery board; all other tools remain empty. Every example is fictional and clearly labeled with its coverage. Tools without a matching client example stay empty rather than mixing other clients’ samples. Edits remain in this tab across navigation. **Reset example**, switching projects, or reloading restores the committed samples and never writes the client data branch or standalone browser drafts. Direct links use `?example=nordkap`, `?example=nordvik`, or `?example=gronhoj`.
 
@@ -8,7 +8,7 @@ Open `/project-workspace/` from the toolkit home page. **Join existing → Exist
 
 Each client project spans ten phases and all 45 existing saved tools. The tools retain their original interfaces inside the workspace. The shared header, master report, cross-tool inputs and exports use only the selected project. Standalone tool pages retain their previous browser drafts. Use **Project options → Review browser drafts** to explicitly import selected drafts.
 
-Data lives in `projects/<project-uuid>/<phase>/<tool>/state.json` on `codex/project-data`. Project creation commits the manifest, header and all tool folders atomically. Autosave waits eight seconds; **Save now** saves immediately. GitHub changes are checked every fifteen seconds and offered for reload. Member names describe durable membership, not online presence. This is collaboration through saved GitHub commits, without a separate server or live cursor service.
+Data lives in `projects/<project-uuid>/<phase>/<tool>/state.json` on `codex/project-data`. Project creation commits the manifest, header and all tool folders atomically. For authenticated editors, autosave waits eight seconds; **Save now** saves immediately. For editors, GitHub changes are checked every fifteen seconds and offered for reload. Member names describe durable membership, not online presence. This is collaboration through saved GitHub commits, without a separate server or live cursor service.
 
 Independent fields and existing ID-based rows/blocks merge. Same-field edits, colliding new record IDs and other competing arrays require review. Failed saves retain a project/tab recovery journal in this browser. Reload, reconnect, and join the same project to recover it. A quota failure is reported; keep that tab open and use a pending-work download. **Forget token and leave** clears the credential even when the service is unavailable.
 
@@ -20,10 +20,11 @@ Run `npm test` here. Run `npm test` in `../use-case-discovery-board` for the exi
 
 | Check | Evidence |
 | --- | --- |
-| Domain, atomic Git API, Unicode, isolation, merge and credential failures | 20 Node tests pass. |
+| Domain, atomic Git API, Unicode, isolation, merge and credential failures | 22 Node tests pass. |
 | Example projects | All 45 tools opened without runtime errors or GitHub API requests; report, temporary edits, reset/refresh, three example identities, draft isolation and 390px layout passed. |
 | Example-to-project copy | Isolated rendered fixture verified source-load failure retention, explicit connection/consent, current-state copy, identity headers, complete phase folders, clean subsequent creation, unchanged source and seed cancellation. |
 | Combined entry and deferred access | Browser checks verified all three example selections without identity or access, unavailable-client-index fallback, preserved cancel state, invalid and canceled in-flight authentication, resumed create/join, saved client work, reconnect cancellation and mobile entry. |
+| Token-free saved-project viewing | Browser verified ID/list access, all 45 original tools, protected state, unchanged membership/journals, report, refresh and invalid IDs without authentication or writes. |
 | Original board regressions | 17 Python and 9 Node tests pass. |
 | Original interfaces and bridge coverage | Playwright CLI opened all 45 tools without page runtime errors. |
 | Rendered project workflow | Isolated API fixture verified create/join, Phase 1 board, Phase 2 strategy, Phase 10 ROI, shared header/report, second-client isolation, failed-save recovery and explicit draft import. |
@@ -35,3 +36,5 @@ The disposable `test/mock-server.mjs` gateway runs only on loopback port 4323 an
 Run `test/browser-examples.js` with the Playwright CLI against the static preview for example browsing without an API fixture. `test/browser-example-copy.js` installs the loopback gateway route itself and verifies copying; keep its fictional records off the live data branch.
 
 `test/browser-entry.js` checks the combined Join list and deferred access flow. It uses an unavailable-index response for anonymous examples, then the isolated gateway for real client creation/join; no fixture records are sent to GitHub.
+
+`test/browser-viewer.js` checks token-free ID/list entry, all 45 view-only tool frames, report, explicit refresh, invalid IDs and protection of saved data/recovery journals. Anonymous file reads use immutable raw GitHub URLs; only snapshot lookup uses REST. Viewing is public access, not project-ID authorization.

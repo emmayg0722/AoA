@@ -3,7 +3,7 @@
 | Feature | Input | Behavior |
 | --- | --- | --- |
 | Create | Client, project, display name, GitHub connection, public-storage acknowledgment | Commit an isolated project manifest, shared header, and all empty phase/tool folders in one commit. |
-| Join | Existing project or invite ID, display name, acknowledgment | Load only that project and record its participant name; missing IDs never create projects. |
+| Join | Existing project or invite ID, display name, acknowledgment | Authenticated editors record their participant name; disconnected users load saved work for viewing. Missing IDs never create projects. |
 | Phase workspace | Phase and tool selection | Show the phase toolkit and open the original tool with project-scoped state. |
 | Autosave | Existing tool localStorage writes | Update that project tool file and shared header atomically; claim GitHub save only after the branch update succeeds. |
 | Conflicts | Competing saved edits | Merge independent fields and existing ID-based records; surface same-field edits, colliding new IDs or other competing arrays, and retain pending work. |
@@ -20,4 +20,10 @@
 | Use example as starting project | Explicit example action, create form and GitHub connection | Copy current temporary tool state into a new isolated project; show the fictional-content notice, require normal consent, and allow canceling the seed. Copy identity headers from the form; do not rewrite fictional narratives. |
 
 | Join-list examples | Existing-project selection | Display all committed examples in the shared existing-project list, show sourced coverage, and load without a name, consent checkbox or credential. |
-| Deferred project access | Create or real Join submit while disconnected | Open an access dialog after form validation; resume the requested operation on successful connection, retain inputs on cancellation or failure. No standalone connection card. |
+| Deferred project access | Create submit while disconnected | Open an access dialog after form validation; resume the requested operation on successful connection, retain inputs on cancellation or failure. No standalone connection card. |
+
+| Open public project | Existing project or invitation ID, no token | Load its saved phases/tools/report in view-only mode; no name, consent, membership update or write. Invalid or missing IDs stay on entry with an error. |
+| View saved tools | View-only project session | Read saved fields and reports; disable editing controls and ignore tool storage mutations. Never restore or change a writer recovery journal. |
+| Refresh viewed project | Explicit reload action | Fetch the latest saved snapshot and retain view-only mode; no background API polling or token prompt. |
+
+| Resume editing | Explicit Edit with GitHub access, connection, name and visibility acknowledgment | Cancel retains the viewed tool; successful connection returns to the existing-project join form before enabling editing. |

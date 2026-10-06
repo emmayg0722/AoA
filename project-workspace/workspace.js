@@ -16,7 +16,7 @@ let active = null, baseline = {}, values = {}, currentPhase = registry[0], curre
 let saveTimer, saving = null, busy = false, remoteHead = null, conflictsPending = false;
 let connectedName = '', createId = null;
 let examples = [];
-let clientProjects = [], pendingEntry = false, connectionVersion = 0;
+let clientProjects = [], pendingEntry = false, pendingEdit = false, connectionVersion = 0;
 let startingExample = null;
 let recoveryAvailable = true;
 let tabId;
@@ -26,7 +26,7 @@ const journalKey = id => `aoa_workspace_pending:${config.repository}:${id}:${tab
 function message(id,text,error=false) { $(id).textContent=text; $(id).classList.toggle('error',error); }
 function dirty() { return active && keys.some(key => !equal(baseline[key],values[key])); }
 function journal() {
-  if (!active || active.example) return;
+  if (!active || active.example || active.viewOnly) return;
   try {
     if (dirty()) localStorage.setItem(journalKey(active.id),JSON.stringify({schemaVersion:1,id:active.id,baseline,values}));
     else localStorage.removeItem(journalKey(active.id));
@@ -34,6 +34,7 @@ function journal() {
   } catch (_) { recoveryAvailable=false;message('saveStatus','Browser recovery storage is full. Keep this tab open and save to GitHub.',true); }
 }
 function queue() {
+  if (active?.viewOnly) return;
   if (active?.example) {message('saveStatus','Example edits are temporary · reset or reload to start again');renderToolList();return;}
   journal(); clearTimeout(saveTimer);
   if (conflictsPending) return;
@@ -41,6 +42,7 @@ function queue() {
   saveTimer=setTimeout(() => save().catch(showSaveError),8000);
 }
 function showSaveError(error) {
+  if (active?.viewOnly) {message('saveStatus',error.message+' Saved project data has not changed.',true);return;}
   message('saveStatus',error.message + (recoveryAvailable ? ' Your pending work is retained in this browser.' : ' Keep this tab open or download pending work; browser recovery storage is full.'),true);
   if (error instanceof Conflict) showConflicts(error.paths);
 }
@@ -55,7 +57,7 @@ function commitStatus(sha) {
 function showUpdates(text) { $('updates').hidden=false; $('updatesText').textContent=text; }
 async function save() {
   clearTimeout(saveTimer);
-  if (active?.example) return;
+  if (active?.example || active?.viewOnly) return;
   if (saving) {await saving; if (dirty()) return save(); return;}
   if (!active || !dirty()) return;
   if (conflictsPending) throw new Error('Resolve the conflicting edits before saving.');
@@ -81,9 +83,10 @@ async function save() {
 window.ToolkitWorkspace={bridge:{
   get active() {return !!active;},keys,
   get example() {return !!active?.example;},
+  get viewOnly() {return !!active?.viewOnly;},
   get(key) {return values[key] == null ? null : JSON.stringify(values[key]);},
   set(key, raw, frameBase) {
-    if (!active || !keys.includes(key)) return;
+    if (!active || active.viewOnly || !keys.includes(key)) return;
     const value=raw===null ? null : JSON.parse(raw);
     const base=frameBase===null ? null : JSON.parse(frameBase);
     const conflicts=[];values[key]=merge(base,value,values[key],key,conflicts);
@@ -154,28 +157,31 @@ function selectedExample() {
 function mode() {
   const join=new FormData($('projectForm')).get('mode')==='join';
   const example=selectedExample(), id=$('projectId').value.trim() || $('projectList').value;
-  const writable=!join || (!example && !!id);
-  $('createFields').hidden=join;$('joinFields').hidden=!join;$('enterProject').textContent=example ? 'Load example project' : join ? 'Join project' : 'Create project';
+  const writable=!join || (repo.connected && !example && !!id);
+  $('createFields').hidden=join;$('joinFields').hidden=!join;$('enterProject').textContent=example ? 'Load example project' : join ? (repo.connected ? 'Join project' : 'Open project') : 'Create project';
   $('client').required=!join;$('projectTitle').required=!join;
   $('projectIdentity').hidden=!writable;$('participant').required=writable;$('consent').required=writable;
   $('invitationFields').hidden=!!example;$('enterProject').disabled=busy || (join && !id);
   if (example) {
     const totals=coverage(example,registry);
     $('selectedProject').textContent=example.description+` ${totals.tools} ${totals.tools===1?'tool has':'tools have'} example data across ${totals.phases} ${totals.phases===1?'phase':'phases'}. No login needed; edits stay temporary.`;
-  } else $('selectedProject').textContent=id ? 'Join this client project with your name to collaborate on its saved work.' : 'Choose a client or example project. Examples open without login.';
+  } else $('selectedProject').textContent=id ? (repo.connected ? 'Join this client project with your name to collaborate on its saved work.' : 'Open this project’s saved work for viewing. No GitHub token or name needed.') : 'Choose a client or example project. Saved projects open for viewing without a token.';
   $('startingExample').hidden=join || !startingExample;
 }
 function drawManifest() {
   $('activeClient').textContent=active.manifest.client;$('activeTitle').textContent=active.manifest.title;
   $('members').textContent=active.example ? 'Fictional example project · no login needed' : 'Project members: '+Object.values(active.manifest.members || {}).map(member => member.name).join(', ');
   if (active.manifest.sourceExampleId) $('members').textContent+=' · Started from a fictional example; replace copied content with your project work.';
-  for (const id of ['invite','save','folderLink','projectOptions']) $(id).hidden=!!active.example;
+  for (const id of ['invite','folderLink']) $(id).hidden=!!active.example;
+  for (const id of ['save','projectOptions']) $(id).hidden=!!active.example || !!active.viewOnly;
+  $('viewNotice').hidden=!active.viewOnly;
+  $('editProject').hidden=!active.viewOnly;
   $('resetExample').hidden=!active.example;$('copyExample').hidden=!active.example;$('exampleNotice').hidden=!active.example;
   if (active.example) {
     $('commitLink').hidden=true;
     $('exampleNotice').textContent=`${active.coverage.tools} of ${tools.length} tools have example data across ${active.coverage.phases} of ${registry.length} phases. All values are fictional. Edits stay in this tab; reset or reload restores the repository examples. Other tools open empty.`;
   }
-  document.querySelector('.frame-note').textContent=active.example ? 'You are exploring a fictional example. Edits stay in this tab and do not save to GitHub.' : 'This tool belongs to the selected project. The GitHub save status above confirms when work is shared.';
+  document.querySelector('.frame-note').textContent=active.example ? 'You are exploring a fictional example. Edits stay in this tab and do not save to GitHub.' : active.viewOnly ? 'Viewing saved project work. Editing is disabled; no GitHub token is needed.' : 'This tool belongs to the selected project. The GitHub save status above confirms when work is shared.';
   $('folderLink').href=`https://github.com/${config.repository}/tree/${config.branch}/projects/${active.id}`;
 }
 async function enterExample(id) {
@@ -205,7 +211,7 @@ async function listExamples() {
 }
 async function enter(id) {
   message('entryStatus','Loading project folders and tool state…');
-  const loaded=await projects.load(id);active=loaded;baseline=clone(loaded.values);values=clone(loaded.values);
+  const loaded=await projects.load(id);active={...loaded,viewOnly:!repo.connected};baseline=clone(loaded.values);values=clone(loaded.values);
   // Keep a newly created or invited project in the chooser even before the next
   // index refresh, including after the participant forgets their connection.
   if (!clientProjects.some(project => project.id===id)) {
@@ -213,7 +219,7 @@ async function enter(id) {
   }
   conflictsPending=false;remoteHead=null;$('conflicts').hidden=true;$('updates').hidden=true;
   try {
-    const draft=JSON.parse(localStorage.getItem(journalKey(id)) || 'null');
+    const draft=active.viewOnly ? null : JSON.parse(localStorage.getItem(journalKey(id)) || 'null');
     if (draft?.schemaVersion===1 && draft.id===id) {
       const conflicts=[];values=merge(draft.baseline,draft.values,values,'',conflicts);
       if (conflicts.length) showConflicts(conflicts);
@@ -222,7 +228,8 @@ async function enter(id) {
   } catch (_) {showUpdates('A browser recovery copy could not be read. Original browser drafts are available under Project options.');}
   drawManifest();$('entry').hidden=true;$('workspace').hidden=false;
   history.replaceState(null,'','?project='+encodeURIComponent(id));
-  commitStatus(active.head);message('saveStatus',dirty() ? 'Recovered changes are pending. Save when ready.' : 'Loaded saved project from GitHub');
+  commitStatus(active.head);message('saveStatus',active.viewOnly ? 'Viewing saved project from GitHub · no token needed' : dirty() ? 'Recovered changes are pending. Save when ready.' : 'Loaded saved project from GitHub');
+  if (active.viewOnly) showUpdates('View-only access. Reload here to see work saved by project editors.');
   currentPhase=registry[0];await showPhaseWithoutSave(currentPhase);journal();
 }
 async function showPhaseWithoutSave(phase) {
@@ -245,7 +252,13 @@ $('connectionForm').addEventListener('submit',async event => {
     $('storageNotice').textContent=`Projects are stored in ${config.repository}, a ${repo.visibility} GitHub repository. `+(repo.visibility==='public' ? 'Anyone can read saved client names and tool contents. Use only information you can publish.' : 'Repository collaborators can read the saved project contents.');
     message('connectionStatus','Connected as '+connectedName+'.');
     if (active) message('saveStatus','GitHub reconnected. Pending work is retained.');
-    const resume=pendingEntry;pendingEntry=false;$('connectionDialog').close();mode();
+    const resume=pendingEntry,edit=pendingEdit;pendingEntry=false;pendingEdit=false;$('connectionDialog').close();mode();
+    if (edit && active?.viewOnly) {
+      $('workspace').hidden=true;$('entry').hidden=false;
+      document.querySelector('input[name=mode][value=join]').checked=true;
+      $('projectList').value=active.id;$('projectId').value=active.id;mode();
+      message('entryStatus','Connected for editing. Enter your name and acknowledge repository visibility to join.');$('participant').focus();
+    }
     if (resume) $('projectForm').requestSubmit();
   } catch (error) {message('connectionStatus',error.message,true);}
   finally {$('connect').disabled=false;}
@@ -253,22 +266,23 @@ $('connectionForm').addEventListener('submit',async event => {
 function requestConnection(resumeEntry=false) {
   pendingEntry=resumeEntry;message('connectionStatus','');$('connectionDialog').showModal();$('token').focus();
 }
-function cancelConnection() {pendingEntry=false;connectionVersion++;}
+function cancelConnection() {pendingEntry=false;pendingEdit=false;connectionVersion++;}
 $('cancelConnection').addEventListener('click',() => {cancelConnection();$('connectionDialog').close();});
 $('connectionDialog').addEventListener('cancel',cancelConnection);
-$('connectionDialog').addEventListener('close',() => {pendingEntry=false;$('token').value='';});
+$('connectionDialog').addEventListener('close',() => {pendingEntry=false;pendingEdit=false;$('token').value='';});
 $('projectForm').addEventListener('change',mode);
 $('projectList').addEventListener('change',() => {$('projectId').value=selectedExample() ? '' : $('projectList').value;mode();});
 $('projectId').addEventListener('input',() => {if ($('projectId').value.trim()) $('projectList').value='';mode();});
 $('projectForm').addEventListener('submit',async event => {
   event.preventDefault();if (busy) return;
   const example=selectedExample();if (example) {await enterExample(example.id);return;}
-  if (!repo.connected) {requestConnection(true);return;}
+  const joining=new FormData($('projectForm')).get('mode')==='join';
+  if (!joining && !repo.connected) {requestConnection(true);return;}
   busy=true;$('enterProject').disabled=true;
   try {
-    const joining=new FormData($('projectForm')).get('mode')==='join';const name=$('participant').value.trim();let id;
+    const name=$('participant').value.trim();let id;
     message('entryStatus',joining ? 'Joining project…' : 'Creating the client project and all phase/tool folders…');
-    if (joining) {id=$('projectId').value.trim() || $('projectList').value;await projects.join(id,name);}
+    if (joining) {id=$('projectId').value.trim() || $('projectList').value;if (repo.connected) await projects.join(id,name);}
     else {
       // Retain the request ID across ambiguous network failures; retries cannot create duplicates.
       const request={client:$('client').value.trim(),title:$('projectTitle').value.trim(),name,example:startingExample?.id || null,seedId:startingExample?.requestId || null};
@@ -284,7 +298,7 @@ $('save').addEventListener('click',() => save().catch(showSaveError));
 $('backToPhase').addEventListener('click',() => showPhase(currentPhase).catch(showSaveError));
 $('report').addEventListener('click',() => openReport().catch(showSaveError));
 $('invite').addEventListener('click',async () => {
-  try {await navigator.clipboard.writeText(new URL('?project='+active.id,location.href).href);message('saveStatus','Invitation copied. Teammates need their own GitHub write access.');}
+  try {await navigator.clipboard.writeText(new URL('?project='+active.id,location.href).href);message('saveStatus','Project link copied. Open saved work without a token; editing requires GitHub write access.');}
   catch (_) {message('saveStatus','Invitation: '+new URL('?project='+active.id,location.href).href);}
 });
 $('switchProject').addEventListener('click',async () => {
@@ -303,6 +317,7 @@ $('copyExample').addEventListener('click',() => {
 });
 $('clearStartingExample').addEventListener('click',() => {startingExample=null;mode();});
 $('reconnect').addEventListener('click',() => requestConnection());
+$('editProject').addEventListener('click',() => {if (active?.viewOnly) {pendingEdit=true;requestConnection();}});
 $('forget').addEventListener('click',async () => {
   journal();repo.disconnect();
   if (dirty() && !recoveryAvailable) {message('saveStatus','Token forgotten. Browser recovery storage is full; download your pending work before leaving.',true);return;}
@@ -312,8 +327,8 @@ $('forget').addEventListener('click',async () => {
 $('refresh').addEventListener('click',async () => {
   try {
     await save();const tool=currentTool,phase=currentPhase;
-    const loaded=await projects.load(active.id);active=loaded;baseline=clone(loaded.values);values=clone(loaded.values);remoteHead=null;drawManifest();journal();
-    $('updates').hidden=true;commitStatus(active.head);message('saveStatus','Loaded latest saved project from GitHub');
+    const viewOnly=active.viewOnly;const loaded=await projects.load(active.id);active={...loaded,viewOnly};baseline=clone(loaded.values);values=clone(loaded.values);remoteHead=null;drawManifest();journal();
+    $('updates').hidden=!viewOnly;commitStatus(active.head);message('saveStatus',viewOnly ? 'Viewing latest saved project from GitHub · no token needed' : 'Loaded latest saved project from GitHub');
     if (tool) {if (tool.href==='engagement-report.html') await openReport();else await openTool(tool);} else await showPhase(phase);
   } catch (error) {showSaveError(error);}
 });
@@ -355,7 +370,7 @@ $('importDialog').addEventListener('close',() => {
 });
 window.addEventListener('beforeunload',event => {if (dirty() && !active.example) {event.preventDefault();event.returnValue='';}});
 setInterval(async () => {
-  if (!active || active.example || saving || busy) return;
+  if (!active || active.example || active.viewOnly || saving || busy) return;
   try {const head=await repo.head();if (head!==active.head && head!==remoteHead) {remoteHead=head;showUpdates('Newer project work is saved on GitHub. Your open tool has not been reloaded.');}}
   catch (error) {message('saveStatus','GitHub refresh failed. '+error.message+' Pending edits remain in this browser.',true);}
 },15000);

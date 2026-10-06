@@ -39,3 +39,7 @@ Offer an explicit copy through the existing Create form, with the same personal 
 ## 2026-10-06 — Examples belong in Join existing
 
 The user asked for example projects in the existing-project list and removal of the Connect to GitHub card. This supersedes separate example cards and an always-visible connection panel as the primary entry design. Keep synthetic examples in the same selector as clients; temporary loading still performs no repository writes. Preserve GitHub-only client storage through a deferred access dialog for writable create/join operations.
+
+## 2026-10-06 — Project ID opens saved work without a token
+
+The user confirmed view-only access to retain GitHub-only hosting. This supersedes the deferred-authentication requirement for disconnected real-project Join actions. Public IDs identify readable projects; they are not write credentials. Anonymous sessions load saved snapshots, skip membership and journals, and disable editing. Authenticated creation and editing keep their existing personal in-memory credentials. Full token-free guest saving would require a trusted service, which the user declined.
