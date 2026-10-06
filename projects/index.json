@@ -1,1 +1,11 @@
-{"schemaVersion":1,"projects":[]}
+{
+  "schemaVersion": 1,
+  "projects": [
+    {
+      "id": "03762373-f9b0-4527-9838-63b0152fe06e",
+      "client": "Test",
+      "title": "Test on the functions",
+      "createdAt": "2026-10-06T07:02:28.110Z"
+    }
+  ]
+}
