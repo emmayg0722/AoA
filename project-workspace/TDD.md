@@ -14,3 +14,6 @@
 - Example mode uses the same scoped tool bridge with in-memory values, but skips repository saves, recovery journals and GitHub polling. The mode also changes tool/report storage notices. A URL example ID supports direct loading after refresh.
 
 - A requested example copy retains a cloned state seed only in the tab. Projects.create validates all seed keys, copies known tool data into its atomic folder commit, and sets shared/client/assessor header fields from the creation form. The example catalog and existing client projects are untouched.
+
+- The project selector renders separate example/client optgroups, preserving example entries even when the public client index fails. An example-prefixed selection invokes the existing temporary example loader.
+- A deferred connection dialog retains the creation/join form and resumes its submit only after successful authentication. Cancel keeps the form and performs no project write. Reconnect uses the same dialog without leaving the open tool.

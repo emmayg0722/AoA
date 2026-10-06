@@ -10,3 +10,5 @@
 - Example projects: explore the existing synthetic Nordkap engagement across all ten phases and two discovery-board examples without authentication. State stays in the tab; switching/reloading starts from the committed example. Coverage is explicit where an example has no tool data.
 
 - Explicit example copy: use the current example as the starting content of a new project through the existing GitHub connection, identity and visibility-consent form. Copied narratives remain fictional until replaced by the project participants.
+
+- Entry refinement: the Join existing list includes client projects and the committed example projects. Examples load directly without participant details or GitHub access. Remove the standalone connection card; request access only when creating/joining a writable client project.

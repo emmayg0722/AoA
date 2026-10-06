@@ -11,30 +11,19 @@
 <section id="entry" class="entry">
   <p class="eyebrow">One engagement. Every delivery phase.</p>
   <h1>Your client project,<br>from discovery to delivery.</h1>
-  <p class="intro">Create a project or join your team. Work through the existing toolkit with one shared client header and project-specific work across all ten phases.</p>
-  <section id="examples" class="examples" aria-labelledby="examplesTitle">
-    <div class="examples-heading"><h2 id="examplesTitle">Explore an example project</h2><span>No login needed</span></div>
-    <p>Load the existing tool examples together. These fictional projects let you try the original tools and master report. Example edits stay in this tab and reset when you reload.</p>
-    <div id="exampleList" class="example-list"></div><p id="exampleStatus" role="status" aria-live="polite">Loading example projects…</p>
-  </section>
+  <p class="intro">Create a client project, or choose an existing project or example. Work through the toolkit with one shared client header and project-specific work across all ten phases.</p>
   <div class="entry-grid">
-    <section class="panel"><h2>Connect to GitHub</h2>
-      <p id="storageNotice" class="notice">Projects are stored in emmayg0722/AoA, a public GitHub repository. Anyone can read saved client names and tool contents. Use only information you can publish.</p>
-      <p>Each participant needs their own GitHub account with write access to AoA. Your token stays in this tab’s memory and is cleared when you close or reload it.</p>
-      <details id="tokenHelp"><summary>Which token do I need?</summary><p>The repository owner can use a fine-grained token restricted to AoA with <strong>Contents: read and write</strong>. Outside collaborators currently need a classic token with <strong>public_repo</strong>; that scope also permits writes to other public repositories you can access.</p><p><a href="https://github.com/settings/tokens" target="_blank" rel="noopener">Create your own GitHub token</a> · <a href="https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens" target="_blank" rel="noopener">GitHub token guidance</a>. Paste it here, never into client fields or chat.</p></details>
-      <form id="connectionForm"><label for="token">GitHub token</label><input id="token" type="password" autocomplete="off" spellcheck="false" placeholder="Enter your own token"><button type="submit" id="connect">Connect</button></form>
-      <p id="connectionStatus" role="status" aria-live="polite">Loading the project index…</p>
-    </section>
-    <section class="panel"><h2>Choose your project</h2>
+    <section id="examples" class="panel"><h2>Choose your project</h2>
       <div id="startingExample" class="notice" hidden><p id="startingExampleText"></p><button id="clearStartingExample" type="button" class="secondary">Start with empty tools instead</button></div>
       <form id="projectForm">
-        <div class="mode"><label><input type="radio" name="mode" value="create" checked> Create new</label><label><input type="radio" name="mode" value="join"> Join existing</label></div>
-        <div id="createFields"><label for="client">Client</label><input id="client" maxlength="160" autocomplete="organization"><label for="projectTitle">Project name</label><input id="projectTitle" maxlength="160"></div>
-        <div id="joinFields" hidden><label for="projectList">Existing project</label><select id="projectList"><option value="">Choose a project</option></select><label for="projectId">Project ID from an invitation</label><input id="projectId" spellcheck="false" autocomplete="off"></div>
-        <label for="participant">Your name</label><input id="participant" maxlength="160" autocomplete="name" required>
-        <label class="consent"><input id="consent" type="checkbox" required> I understand the repository visibility and can publish the information I enter.</label>
-        <button id="enterProject" type="submit" disabled>Create project</button>
-      </form><p id="entryStatus" role="status" aria-live="polite"></p>
+        <div class="mode"><label><input type="radio" name="mode" value="create"> Create new</label><label><input type="radio" name="mode" value="join" checked> Join existing</label></div>
+        <div id="createFields" hidden><label for="client">Client</label><input id="client" maxlength="160" autocomplete="organization"><label for="projectTitle">Project name</label><input id="projectTitle" maxlength="160"></div>
+        <div id="joinFields"><label for="projectList">Existing project</label><select id="projectList"><option value="">Choose a project</option></select><p id="selectedProject" class="selection-note">Choose a client or example project. Examples open without login.</p><details id="invitationFields"><summary>Have a project invitation ID?</summary><label for="projectId">Project ID from an invitation</label><input id="projectId" spellcheck="false" autocomplete="off"></details></div>
+        <div id="projectIdentity" hidden><label for="participant">Your name</label><input id="participant" maxlength="160" autocomplete="name">
+        <p id="storageNotice" class="notice">Project data is saved in emmayg0722/AoA, a public GitHub repository. Anyone can read saved client names and tool contents. Use only information you can publish.</p>
+        <label class="consent"><input id="consent" type="checkbox"> I understand the repository visibility and can publish the information I enter.</label></div>
+        <button id="enterProject" type="submit" disabled>Join project</button>
+      </form><p id="exampleStatus" role="status" aria-live="polite">Loading existing projects…</p><p id="entryStatus" role="status" aria-live="polite"></p>
     </section>
   </div>
   <p class="entry-foot">Your existing browser drafts stay separate. After joining, you can review and import them into the selected project.</p>
@@ -56,6 +45,13 @@
       <div id="toolView" hidden><div class="tool-head"><button id="backToPhase" class="secondary">← Phase tools</button><h2 id="toolTitle"></h2></div><p class="frame-note">This tool belongs to the selected project. The GitHub save status above confirms when work is shared.</p><iframe id="toolFrame" title="Project tool"></iframe></div>
     </section></div>
 </section>
+<dialog id="connectionDialog" aria-labelledby="connectionTitle">
+  <h2 id="connectionTitle">Save and collaborate</h2>
+  <p>Creating or joining a shared client project requires your own GitHub account with write access to AoA. Your token stays in this tab’s memory and is cleared when you close or reload it.</p>
+  <details id="tokenHelp"><summary>Which token do I need?</summary><p>The repository owner can use a fine-grained token restricted to AoA with <strong>Contents: read and write</strong>. Outside collaborators currently need a classic token with <strong>public_repo</strong>; that scope also permits writes to other public repositories you can access.</p><p><a href="https://github.com/settings/tokens" target="_blank" rel="noopener">Create your own GitHub token</a> · <a href="https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens" target="_blank" rel="noopener">GitHub token guidance</a>. Paste it here, never into client fields or chat.</p></details>
+  <form id="connectionForm"><label for="token">GitHub token</label><input id="token" type="password" required autocomplete="off" spellcheck="false" placeholder="Enter your own token"><div class="actions"><button type="button" id="cancelConnection" class="secondary">Cancel</button><button type="submit" id="connect">Continue</button></div></form>
+  <p id="connectionStatus" role="status" aria-live="polite"></p>
+</dialog>
 <dialog id="importDialog"><form method="dialog"><h2>Import existing browser drafts</h2><p>Choose drafts to copy into this project. This replaces the selected project tool’s current contents after you save. Original browser drafts stay available. Uploaded raw profiler files are excluded.</p><div id="draftList"></div><div class="actions"><button value="cancel" class="secondary">Cancel</button><button id="confirmImport" value="import">Import selected drafts</button></div></form></dialog>
 </main>
 </body></html>

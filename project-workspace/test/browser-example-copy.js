@@ -8,7 +8,7 @@ async (page) => {
   await page.goto('http://127.0.0.1:4321/project-workspace/?example=nordkap');await page.locator('#workspace').waitFor({state:'visible'});
   await page.getByRole('button',{name:'Phase 2 — Strategy & Roadmap',exact:false}).click();
   await page.locator('#toolList').getByRole('button',{name:'AI Strategy Planning',exact:false}).click();
-  const vision=()=>page.frameLocator('#toolFrame').locator('[data-eng="vision"]');await vision().waitFor();
+  const vision=()=>page.frameLocator('#toolFrame').locator('[data-eng="vision"]');await vision().waitFor();await page.waitForFunction(()=>document.querySelector('#toolFrame').contentDocument.readyState==='complete');
   await vision().fill('Edited example starting point');
   // A failed reset must retain the active example and its temporary edits.
   await page.route('**/sample-data/engagement-nordkap/roi-analysis.json',route=>route.fulfill({status:503,body:'Unavailable fixture'}));
@@ -18,13 +18,13 @@ async (page) => {
   await page.unroute('**/sample-data/engagement-nordkap/roi-analysis.json');
   await page.getByRole('button',{name:'Use as starting project',exact:true}).click();await page.locator('#entry').waitFor({state:'visible'});
   if(!await page.locator('#startingExample').isVisible() || !(await page.locator('#startingExampleText').innerText()).includes('fictional')) throw new Error('Copy disclosure missing');
-  if(await page.locator('#enterProject').isEnabled()) throw new Error('Copy bypassed authentication');
-  await page.getByLabel('GitHub token',{exact:true}).fill('test-valid');await page.getByRole('button',{name:'Connect',exact:true}).click();
-  await page.waitForFunction(()=>document.getElementById('enterProject').disabled===false);
+  if(await page.locator('#connectionDialog').isVisible()) throw new Error('Connection displayed before creating');
   await page.getByLabel('Client',{exact:true}).fill('Example copy fixture');await page.getByLabel('Project name',{exact:true}).fill('Copied engagement fixture');
   await page.getByLabel('Your name',{exact:true}).fill('Example architect');
   await page.getByLabel('I understand the repository visibility and can publish the information I enter.').check();
-  await page.getByRole('button',{name:'Create project',exact:true}).click();await page.locator('#workspace').waitFor({state:'visible'});
+  await page.getByRole('button',{name:'Create project',exact:true}).click();await page.locator('#connectionDialog').waitFor({state:'visible'});
+  await page.getByLabel('GitHub token',{exact:true}).fill('test-valid');await page.getByRole('button',{name:'Continue',exact:true}).click();
+  await page.locator('#workspace').waitFor({state:'visible'});
   const id=new URL(page.url()).searchParams.get('project');if(!id) throw new Error('Copy did not create its own project');
   if(await page.locator('#resetExample').isVisible() || !await page.locator('#save').isVisible()) throw new Error('Real project retained example mode');
   if(!(await page.locator('#members').innerText()).includes('fictional example')) throw new Error('Copy provenance missing');
@@ -42,7 +42,7 @@ async (page) => {
   await page.getByRole('button',{name:'Phase 2 — Strategy & Roadmap',exact:false}).click();await page.locator('#toolList').getByRole('button',{name:'AI Strategy Planning',exact:false}).click();await vision().waitFor();
   if(await vision().inputValue()!=='') throw new Error('Seed leaked into an empty project');
   await page.getByRole('button',{name:'Switch project',exact:true}).click();await page.locator('#entry').waitFor({state:'visible'});
-  await page.getByRole('button',{name:'Load Nordkap Insurance example',exact:true}).click();await page.locator('#workspace').waitFor({state:'visible'});
+  await page.getByLabel('Join existing',{exact:true}).check();await page.getByLabel('Existing project',{exact:true}).selectOption('example:nordkap');await page.getByRole('button',{name:'Load example project',exact:true}).click();await page.locator('#workspace').waitFor({state:'visible'});
   await page.getByRole('button',{name:'Phase 2 — Strategy & Roadmap',exact:false}).click();await page.locator('#toolList').getByRole('button',{name:'AI Strategy Planning',exact:false}).click();await vision().waitFor();
   if(!(await vision().inputValue()).includes('Nordkap')) throw new Error('Copy mutated the source example');
   await page.getByRole('button',{name:'Use as starting project',exact:true}).click();await page.locator('#entry').waitFor({state:'visible'});
