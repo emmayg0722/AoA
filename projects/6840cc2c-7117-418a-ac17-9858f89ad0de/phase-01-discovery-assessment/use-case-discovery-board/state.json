@@ -1,5 +1,42 @@
 {
   "schemaVersion": 1,
   "key": "aoa_usecase_board_v1",
-  "data": null
+  "data": {
+    "fields": {
+      "client": "FH",
+      "assessor": "Emma",
+      "process": "",
+      "scope": "",
+      "draftDoc": ""
+    },
+    "nodes": [
+      {
+        "id": 1,
+        "type": "step",
+        "title": "Lead Time",
+        "detail": "",
+        "role": "",
+        "volume": "",
+        "pattern": "",
+        "value": "3",
+        "effort": "3"
+      }
+    ],
+    "layout": {
+      "1": {
+        "x": 819,
+        "y": 435,
+        "w": 200
+      }
+    },
+    "edges": [],
+    "nextId": 2,
+    "view": {
+      "x": 40,
+      "y": 40,
+      "z": 1
+    },
+    "sopDone": [],
+    "lang": "en"
+  }
 }
