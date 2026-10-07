@@ -20,6 +20,17 @@
         "pattern": "",
         "value": "3",
         "effort": "3"
+      },
+      {
+        "id": 2,
+        "type": "usecase",
+        "title": "New use case",
+        "detail": "",
+        "role": "",
+        "volume": "",
+        "pattern": "",
+        "value": "3",
+        "effort": "3"
       }
     ],
     "layout": {
@@ -27,14 +38,19 @@
         "x": 215,
         "y": 157,
         "w": 200
+      },
+      "2": {
+        "x": 216,
+        "y": 246,
+        "w": 210
       }
     },
     "edges": [],
-    "nextId": 2,
+    "nextId": 3,
     "view": {
-      "x": 40,
-      "y": 40,
-      "z": 1
+      "x": -29.199999999999932,
+      "y": -32.47999999999996,
+      "z": 1.68
     },
     "sopDone": [],
     "lang": "en"
